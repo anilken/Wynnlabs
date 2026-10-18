@@ -1,0 +1,261 @@
+name: Release
+
+# Cuts a versioned release. The next version comes from the commit headers since the last v* tag
+# (rules in .github/.config.js, worked out by .github/release-version.js); both loaders' jars are
+# built with it, the v<next> tag and the GitHub release are made, and the jars go to Modrinth and
+# CurseForge when their secrets are set. Nothing is committed or pushed to a branch: the version
+# lives in the tag, gradle.properties' mod_version stays the local dev version.
+#
+# Start it from Actions -> Release -> Run workflow on main (dry_run only prints the version and
+# the notes), or push to the release branch.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Only print the next version and its notes (no build, tag or release)
+        type: boolean
+        default: false
+  push:
+    branches: [release]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  version:
+    name: Next version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.next.outputs.version }}
+      tag: ${{ steps.next.outputs.tag }}
+      skipped: ${{ steps.next.outputs.skipped }}
+    steps:
+      - name: Only from main or release
+        if: github.ref != 'refs/heads/main' && github.ref != 'refs/heads/release'
+        run: |
+          echo "::error::Run the release on main (or push to the release branch), not on $GITHUB_REF"
+          exit 1
+
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0              # the whole history and its tags
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Work out the version and notes
+        id: next
+        run: node .github/release-version.js --notes "$RUNNER_TEMP/release-notes.md"
+
+      - name: Summary
+        if: steps.next.outputs.skipped != 'true'
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          {
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "**Dry run:** nothing is built, tagged or released."
+              echo
+            fi
+            cat "$RUNNER_TEMP/release-notes.md"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        if: steps.next.outputs.skipped != 'true' && inputs.dry_run != true
+        with:
+          name: release-notes
+          path: ${{ runner.temp }}/release-notes.md
+          if-no-files-found: error
+
+  build:
+    name: Build the jars
+    needs: version
+    if: needs.version.outputs.skipped != 'true' && inputs.dry_run != true
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: 9.2.0
+
+      # Wynntils is a compile-only dependency and not in the repository: the release named by
+      # wynntils_version, from Modrinth. Both loaders compile against the Fabric jar; the NeoForge
+      # one is fetched too, so a release only goes out when its Wynntils exists on both loaders.
+      - name: Download Wynntils (Fabric and NeoForge)
+        run: |
+          ver=$(grep '^wynntils_version=' gradle.properties | cut -d= -f2)
+          mkdir -p libs
+          for loader in fabric neoforge; do
+            url=$(curl -fsSL "https://api.modrinth.com/v2/project/wynntils/version?loaders=%5B%22${loader}%22%5D&game_versions=%5B%221.21.11%22%5D" \
+              | jq -r --arg v "v$ver" '.[] | select(.version_number == $v) | .files[] | select(.primary) | .url')
+            test -n "$url" || { echo "Wynntils $ver for $loader not found on Modrinth"; exit 1; }
+            curl -fsSL -o "libs/wynntils-$ver-$loader+MC-1.21.11.jar" "$url"
+          done
+
+      # The embedded Wynnventory key (see embedKey in build.gradle): from the WYNNVENTORY_KEY
+      # secret through a temp file, masked in the logs. Without the secret the jars carry no key.
+      - name: Wynnventory key
+        env:
+          WYNNVENTORY_KEY: ${{ secrets.WYNNVENTORY_KEY }}
+        run: |
+          if [ -n "$WYNNVENTORY_KEY" ]; then
+            trimmed=$(printf '%s' "$WYNNVENTORY_KEY" | tr -d '\r\n' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
+            echo "::add-mask::$WYNNVENTORY_KEY"
+            echo "::add-mask::$trimmed"
+            file="$RUNNER_TEMP/wynnventory-key.txt"
+            ( umask 077; printf '%s' "$trimmed" > "$file" )
+            echo "WYNNLABS_WYNNVENTORY_KEY_FILE=$file" >> "$GITHUB_ENV"
+            echo "KEY_ARGS=" >> "$GITHUB_ENV"
+            echo "WYNNVENTORY_KEY is set: the jars carry the embedded key"
+          else
+            echo "KEY_ARGS=-PnoEmbeddedKey" >> "$GITHUB_ENV"
+            echo "WYNNVENTORY_KEY is not set: building with -PnoEmbeddedKey"
+          fi
+
+      - name: Build both jars
+        run: gradle :fabric:remapJar :neoforge:remapJar checkEmbeddedKey "-Pmod_version=$VERSION" $KEY_ARGS
+
+      - name: Remove the key file
+        if: always()
+        run: rm -f "$RUNNER_TEMP/wynnventory-key.txt"
+
+      - name: Check the jars' versions
+        run: |
+          fabric="fabric/build/libs/wynnlabs-fabric-$VERSION.jar"
+          neoforge="neoforge/build/libs/wynnlabs-neoforge-$VERSION.jar"
+          unzip -p "$fabric" fabric.mod.json | grep -q "\"version\": \"$VERSION\"" \
+            || { echo "$fabric does not say version $VERSION"; exit 1; }
+          unzip -p "$neoforge" META-INF/neoforge.mods.toml | grep -q "^version = \"$VERSION\"" \
+            || { echo "$neoforge does not say version $VERSION"; exit 1; }
+          mkdir -p dist
+          cp "$fabric" "$neoforge" dist/
+          ls -l dist
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: jars
+          path: dist/*.jar
+          if-no-files-found: error
+
+  release:
+    name: Tag and GitHub release
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: jars
+          path: dist
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-notes
+          path: notes
+
+      # gh makes the tag on the commit that was built; no branch is pushed to
+      - name: Create v${{ needs.version.outputs.version }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.version.outputs.tag }}
+        run: |
+          gh release create "$TAG" dist/*.jar \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Wynn Labs $TAG" \
+            --notes-file notes/release-notes.md
+
+  publish:
+    name: Publish ${{ matrix.loader }}
+    needs: [version, release]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - loader: fabric
+            label: Fabric
+            dependencies: |
+              wynntils(required)
+              fabric-api(required)
+              wynnventory(optional)
+          - loader: neoforge
+            label: NeoForge
+            dependencies: |
+              wynntils(required)
+              wynnventory(optional)
+    env:
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+      MODRINTH_PROJECT_ID: ${{ secrets.MODRINTH_PROJECT_ID }}
+      CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+      CURSEFORGE_PROJECT_ID: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: jars
+          path: dist
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-notes
+          path: notes
+
+      - name: Modrinth skipped
+        if: env.MODRINTH_TOKEN == '' || env.MODRINTH_PROJECT_ID == ''
+        run: echo "Modrinth - MODRINTH_TOKEN or MODRINTH_PROJECT_ID is not set, skipping"
+
+      - name: Modrinth
+        if: env.MODRINTH_TOKEN != '' && env.MODRINTH_PROJECT_ID != ''
+        uses: Kir-Antipov/mc-publish@v3.3.1
+        with:
+          modrinth-id: ${{ env.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ env.MODRINTH_TOKEN }}
+          files: dist/wynnlabs-${{ matrix.loader }}-${{ needs.version.outputs.version }}.jar
+          name: Wynn Labs ${{ needs.version.outputs.tag }} (${{ matrix.label }})
+          version: ${{ needs.version.outputs.tag }}
+          version-type: release
+          changelog-file: notes/release-notes.md
+          loaders: ${{ matrix.loader }}
+          game-versions: 1.21.11
+          java: 21
+          environment: client
+          dependencies: ${{ matrix.dependencies }}
+
+      - name: CurseForge skipped
+        if: env.CURSEFORGE_TOKEN == '' || env.CURSEFORGE_PROJECT_ID == ''
+        run: echo "CurseForge - CURSEFORGE_TOKEN or CURSEFORGE_PROJECT_ID is not set, skipping"
+
+      - name: CurseForge
+        if: env.CURSEFORGE_TOKEN != '' && env.CURSEFORGE_PROJECT_ID != ''
+        uses: Kir-Antipov/mc-publish@v3.3.1
+        with:
+          curseforge-id: ${{ env.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ env.CURSEFORGE_TOKEN }}
+          files: dist/wynnlabs-${{ matrix.loader }}-${{ needs.version.outputs.version }}.jar
+          name: Wynn Labs ${{ needs.version.outputs.tag }} (${{ matrix.label }})
+          version: ${{ needs.version.outputs.tag }}
+          version-type: release
+          changelog-file: notes/release-notes.md
+          loaders: ${{ matrix.loader }}
+          game-versions: 1.21.11
+          java: 21
+          environment: client
+          dependencies: ${{ matrix.dependencies }}

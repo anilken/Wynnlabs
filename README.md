@@ -75,6 +75,23 @@ java --add-modules jdk.jdi tools/HotSwap.java fabric/build/libs/wynnlabs-fabric-
 Changed methods and new or removed methods and fields load at once (screens show it when reopened;
 F3+T reloads lang files and textures). New classes, mixins and keys or commands need a restart.
 
+**Commits and PR titles** follow [Conventional Commits](https://www.conventionalcommits.org/):
+`type(scope)!: subject`, e.g. `fix(bank): pages save while flipping fast`. PRs are squash-merged,
+so the PR title becomes the commit on `main` (the PR title check enforces it). The header sets the
+next version (`.github/.config.js`): `chore(bump-mc)`, `feat(major)` or `chore!` → major,
+`feat!` or `fix!` → minor, anything else → patch.
+
+**Releases.** Actions → Release → Run workflow on `main` (tick `dry_run` to only see the next
+version and its notes), or push to the `release` branch. It versions from the commits since the
+last `v*` tag, builds both jars with `-Pmod_version=<next>`, tags `v<next>` and makes the GitHub
+release with the notes; nothing is pushed to `main`. Optional repository secrets:
+
+| Secret | Enables |
+|---|---|
+| `WYNNVENTORY_KEY` | the embedded Wynnventory key in the jars (without it: `-PnoEmbeddedKey`) |
+| `MODRINTH_TOKEN`, `MODRINTH_PROJECT_ID` | uploading both jars to Modrinth |
+| `CURSEFORGE_TOKEN`, `CURSEFORGE_PROJECT_ID` | uploading both jars to CurseForge |
+
 ## License
 
 Copyright (c) 2026 anilken. [GNU LGPL v3.0](LICENSE) (with the [GPL v3.0](COPYING) it builds on). Not affiliated with Wynncraft, Wynntils or Wynnventory.
