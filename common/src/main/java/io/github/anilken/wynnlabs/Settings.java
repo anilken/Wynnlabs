@@ -277,7 +277,31 @@ final class Settings {
     static boolean on(String key) {
         load();
         Boolean v = valuesNow.get(key);
-        return v != null ? v : !OFF_BY_DEFAULT.contains(key);
+        return v != null ? v : byDefault(key);
+    }
+
+    /** What a switch is before the player touches it. */
+    static boolean byDefault(String key) {
+        return !OFF_BY_DEFAULT.contains(key);
+    }
+
+    /** Whether a switch differs from its default (the settings tab marks it with a gold dot). */
+    static boolean changed(String key) {
+        return on(key) != byDefault(key);
+    }
+
+    /** A switch back to its default: it is no longer written to settings.json. */
+    static synchronized void reset(String key) {
+        load();
+        VALUES.remove(key);
+        save();
+    }
+
+    /** A number setting back to its default (the fallback its readers give). */
+    static synchronized void resetNumber(String key) {
+        load();
+        NUMBERS.remove(key);
+        save();
     }
 
     static synchronized void setNumber(String key, int value) {

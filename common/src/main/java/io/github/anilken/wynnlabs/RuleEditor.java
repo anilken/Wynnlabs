@@ -78,9 +78,25 @@ final class RuleEditor {
         return g.getAsJsonObject().getAsJsonArray(r.key()).deepCopy();
     }
 
+    /**
+     * The settings tab's sections of the rules, in the order it lists them: a language key and
+     * indexes into {@link #RULES}.
+     */
+    record Section(String title, int[] rules) {}
+
+    static final List<Section> SECTIONS = List.of(
+            new Section("wynnlabs.rules.sec_sell", new int[] {0, 1}),
+            new Section("wynnlabs.rules.sec_shopping", new int[] {2, 3, 4, 5, 13, 14, 15}),
+            new Section("wynnlabs.rules.sec_trade", new int[] {6, 7, 8, 9}),
+            new Section("wynnlabs.rules.sec_quests", new int[] {10, 11, 12}));
+
     /** "8 lv", "%10", "1.9 LE", "on". */
     static String display(Rule r) {
-        double v = value(r);
+        return format(r, value(r));
+    }
+
+    /** A value of this rule as its row shows it. */
+    static String format(Rule r, double v) {
         if (r.isSwitch()) {
             return L.t(v > 0 ? "wynnlabs.rules.on" : "wynnlabs.rules.off");
         }
@@ -91,6 +107,36 @@ final class RuleEditor {
             case "lv" -> L.t("wynnlabs.rules.levels", n);
             default -> String.valueOf(n);
         };
+    }
+
+    /** The lowest and highest value the rule takes (an emerald rule's first and last amount). */
+    static double[] range(Rule r) {
+        if (r.choices() != null) {
+            return new double[] {r.choices()[0], r.choices()[r.choices().length - 1]};
+        }
+        return new double[] {r.min(), r.max()};
+    }
+
+    /** Whether this character's rule differs from its default. */
+    static boolean changed(Rule r) {
+        return Math.abs(value(r) - r.def()) > 1e-9;
+    }
+
+    /** One rule back to its default, for this character. */
+    static void reset(Rule r) {
+        if (r.isSwitch()) {
+            if (!changed(r)) {
+                return;
+            }
+            step(r, 1);                         // a switch's default is on: flip it back
+            return;
+        }
+        write(r, new JsonPrimitive((long) r.def()));
+    }
+
+    /** The rule's short name ("too_low" of "wynnlabs.rules.too_low"), for its example text. */
+    static String id(Rule r) {
+        return r.title().substring(r.title().lastIndexOf('.') + 1);
     }
 
     /** One step up (+1) or down (-1); a switch flips. */
