@@ -68,14 +68,14 @@ final class Vault {
     private static String lastRead = "";
     /** What the bank reader is doing, built only when asked (json()); null: no bank opened yet. */
     private static java.util.function.Supplier<String> status = null;
-    private static int tick;
     static int version;                   // bumps on every change; screens cache on it
 
     private Vault() {}
 
     static void onTick(Minecraft mc) {
-        // four reads a second: two that agree save the page, so flipping pages quickly is fine
-        if (mc.player == null || mc.screen == null || ++tick % 5 != 0) {
+        // a read every tick: two in a row that agree (a page whose items have all arrived) save
+        // it, about a tenth of a second after it opens
+        if (mc.player == null || mc.screen == null) {
             return;
         }
         var menu = mc.player.containerMenu;
@@ -159,12 +159,14 @@ final class Vault {
                         false, "unknown", null, null, null, "", index, encode(stack), null));
             }
         }
-        if (encodeDeferred) {
-            return;                             // items not encoded yet: the next reads finish them
-        }
-        // the page number and the items arrive together; saved only when two reads agreed (above,
-        // names and counts only: a verdict's note can change while the build plan is recomputed)
+        // the page number and the items arrive together; saved as soon as two reads agreed (above,
+        // names and counts only: a verdict's note can change while the build plan is recomputed).
+        // Stacks not encoded yet are saved without their item and filled in by the next reads, so
+        // flipping through the pages quickly still saves every page.
         List<Stored> old = PAGES.get(key);
+        if (encodeDeferred && old != null) {
+            items = keepItems(old, items);      // a stack already kept from an earlier visit stays kept
+        }
         if (old == null || !same(old, items)) {
             PAGES.put(key, items);
             version++;
@@ -439,6 +441,23 @@ final class Vault {
         }
         var m = NUMBER.matcher(clean(st.getHoverName().getString()));
         return m.find() ? Integer.parseInt(m.group(1)) : null;
+    }
+
+    /** The new read with each not-yet-encoded stack's item taken from the same stack saved before. */
+    private static List<Stored> keepItems(List<Stored> old, List<Stored> now) {
+        Map<String, String> kept = new java.util.HashMap<>();
+        for (Stored o : old) {
+            if (o.item() != null) {
+                kept.put(o.slot() + "|" + o.name() + "|" + o.count(), o.item());
+            }
+        }
+        List<Stored> out = new ArrayList<>(now.size());
+        for (Stored n : now) {
+            String item = n.item() == null ? kept.get(n.slot() + "|" + n.name() + "|" + n.count()) : null;
+            out.add(item == null ? n : new Stored(n.name(), n.level(), n.page(), n.seen(), n.count(), n.gear(),
+                    n.kind(), n.verdict(), n.note(), n.by(), n.prof(), n.slot(), item, n.box()));
+        }
+        return out;
     }
 
     private static boolean same(List<Stored> a, List<Stored> b) {
