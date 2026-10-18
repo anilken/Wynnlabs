@@ -1371,9 +1371,9 @@ final class EndgameTab {
                 }
                 if (a != null && d.known() || a != null && pinned != null) {
                     int ring = tierColour(a.aspect().rarity());
-                    rarityGlyph(g, a.aspect().rarity(), tx, y + 5, 8);
-                    ink(g, fit(L.t(pinned != null ? "wynnlabs.endgame.card_selected" : "wynnlabs.endgame.card_next"), tw - 11),
-                            tx + 11, y + 5, Theme.INK_2);
+                    aspectGlyph(g, a.aspect(), tx, y + 3, 12);
+                    ink(g, fit(L.t(pinned != null ? "wynnlabs.endgame.card_selected" : "wynnlabs.endgame.card_next"), tw - 14),
+                            tx + 14, y + 5, Theme.INK_2);
                     Kit.text(g, font, bold(fit(a.aspect().name(), tw)), tx, y + 17, ring);
                     tip = new ArrayList<>(aspectTip(a));
                 } else {
@@ -2216,7 +2216,7 @@ final class EndgameTab {
             g.fill(x + 3, y + 2, x + 3 + bw, y + 12, Theme.BRASS);
             Kit.text(g, font, n, x + 3 + (bw - font.width(n) + 1) / 2, ty, Theme.INK);
         }
-        rarityGlyph(g, a.aspect().rarity(), x + 17, ty, 8);
+        aspectGlyph(g, a.aspect(), x + 16, y + 1, 12);
         // from the right: pips, the equipped dot, the pool tag; the name gets what is left
         int pw = a.ownedTier() < 0 ? font.width("?") : pipsW(a.aspect().tiers());
         int px = x + w - 2 - pw;
@@ -2350,6 +2350,20 @@ final class EndgameTab {
 
     private void mythicGlyph(GuiGraphics g, int x, int y, int size) {
         glyph(g, TEX_LOOT + "mythic", "diamond", x, y, size, Theme.TIER_MYTHIC);
+    }
+
+    /**
+     * An aspect's own picture, drawn the way the Pools view draws it (the game's aspect item for
+     * its class, then the pack texture, then a glyph), so the list and the pools look alike.
+     */
+    private void aspectGlyph(GuiGraphics g, AspectEntry aspect, int x, int y, int size) {
+        Klass k = aspect.klass() == null ? Klass.NONE : aspect.klass();
+        if (k == Klass.NONE) {
+            rarityGlyph(g, aspect.rarity(), x, y, size);
+            return;
+        }
+        String subtype = k.name().charAt(0) + k.name().substring(1).toLowerCase(Locale.ROOT) + "Aspect";
+        ItemIcons.draw(g, new PoolItem(aspect.name(), "AspectItem", aspect.rarity(), subtype, 1), k, x, y, size, false);
     }
 
     private void rarityGlyph(GuiGraphics g, Tier rarity, int x, int y, int size) {
