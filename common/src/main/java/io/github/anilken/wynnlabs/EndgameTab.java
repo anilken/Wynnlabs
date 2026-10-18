@@ -1371,7 +1371,7 @@ final class EndgameTab {
                 }
                 if (a != null && d.known() || a != null && pinned != null) {
                     int ring = tierColour(a.aspect().rarity());
-                    rarityGlyph(g, a.aspect().rarity(), tx, y + 5, 8);
+                    aspectGlyph(g, a.aspect(), tx, y + 5, 8);
                     ink(g, fit(L.t(pinned != null ? "wynnlabs.endgame.card_selected" : "wynnlabs.endgame.card_next"), tw - 11),
                             tx + 11, y + 5, Theme.INK_2);
                     Kit.text(g, font, bold(fit(a.aspect().name(), tw)), tx, y + 17, ring);
@@ -2216,7 +2216,7 @@ final class EndgameTab {
             g.fill(x + 3, y + 2, x + 3 + bw, y + 12, Theme.BRASS);
             Kit.text(g, font, n, x + 3 + (bw - font.width(n) + 1) / 2, ty, Theme.INK);
         }
-        rarityGlyph(g, a.aspect().rarity(), x + 17, ty, 8);
+        aspectGlyph(g, a.aspect(), x + 17, ty, 8);
         // from the right: pips, the equipped dot, the pool tag; the name gets what is left
         int pw = a.ownedTier() < 0 ? font.width("?") : pipsW(a.aspect().tiers());
         int px = x + w - 2 - pw;
@@ -2350,6 +2350,14 @@ final class EndgameTab {
 
     private void mythicGlyph(GuiGraphics g, int x, int y, int size) {
         glyph(g, TEX_LOOT + "mythic", "diamond", x, y, size, Theme.TIER_MYTHIC);
+    }
+
+    /** An aspect's own picture (its class's aspect icon from the pack, as the card and Pools show), else its rarity's. */
+    private void aspectGlyph(GuiGraphics g, AspectEntry aspect, int x, int y, int size) {
+        Klass k = aspect.klass();
+        if (k == null || k == Klass.NONE || !WynnTex.draw(g, TEX_ASPECT + k.name().toLowerCase(Locale.ROOT), x, y, size, size)) {
+            rarityGlyph(g, aspect.rarity(), x, y, size);
+        }
     }
 
     private void rarityGlyph(GuiGraphics g, Tier rarity, int x, int y, int size) {
