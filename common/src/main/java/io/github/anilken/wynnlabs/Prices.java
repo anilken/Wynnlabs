@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 
 import java.lang.reflect.Field;
@@ -147,7 +146,7 @@ final class Prices {
      */
     static boolean installed() {
         if (installed == null) {
-            installed = net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("wynnventory");
+            installed = Platform.get().isModLoaded("wynnventory");
             if (!installed) {
                 problem = L.t("wynnlabs.price.problem_missing");
                 unavailable = true;

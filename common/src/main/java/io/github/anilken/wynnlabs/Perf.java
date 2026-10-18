@@ -61,12 +61,12 @@ public final class Perf {
     }
 
     /** A tick listener timed as the section {@code name}. */
-    static net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.EndTick tick(
-            String name, net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.EndTick body) {
+    static java.util.function.Consumer<net.minecraft.client.Minecraft> tick(
+            String name, java.util.function.Consumer<net.minecraft.client.Minecraft> body) {
         return client -> {
             long t = start();
             try {
-                body.onEndTick(client);
+                body.accept(client);
             } finally {
                 end(name, t);
             }

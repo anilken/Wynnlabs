@@ -8,7 +8,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import io.github.anilken.wynnlabs.model.SkillKind;
-import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
@@ -50,12 +49,18 @@ import java.util.function.Supplier;
  *
  * Port: 47591, or the system property {@code wynninv.port}.
  */
-public final class WynnLabs implements ClientModInitializer {
+public final class WynnLabs {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
-    @Override
-    public void onInitializeClient() {
+    private WynnLabs() {}
+
+    /**
+     * The mod's start-up, the same on every loader: the loader's entrypoint calls it once with its
+     * {@link Platform}, and every listener is registered through that, in this order.
+     */
+    public static void init(Platform platform) {
+        Platform.install(platform);
         Dirs.migrate();                         // before anything reads config
         try {
             var marker = Dirs.config().resolve("ai-write-migrated");
@@ -73,36 +78,28 @@ public final class WynnLabs implements ClientModInitializer {
         // read in the background now, so tooltips never read these files
         Vault.preloadClasses();
         Prices.key();
-        net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register(
-                (stack, context, type, lines) -> {
-                    long t = Perf.start();
-                    try {
-                        lines.addAll(Advice.linesCached(stack));
-                    } catch (Throwable ignored) {
-                        // a broken advice line must never break the tooltip
-                    } finally {
-                        Perf.end("tooltip.fabric", t);
-                    }
-                });
+        platform.onTooltip((stack, lines) -> {
+            long t = Perf.start();
+            try {
+                lines.addAll(Advice.linesCached(stack));
+            } catch (Throwable ignored) {
+                // a broken advice line must never break the tooltip
+            } finally {
+                Perf.end("tooltip.loader", t);
+            }
+        });
         // the timing sections follow the Debug setting (read once a tick)
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(Perf::onTick);
+        platform.onEndTick(Perf::onTick);
         // what the player carries, as one number caches compare against (before anything reads it)
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.Stamp", Stamp::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.MenuWatcher", MenuWatcher::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.Profile", Profile::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.Setup", Setup::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.Wyn", Wyn::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.Prices", Prices::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.Build", Build::onTick));
+        platform.onEndTick(Perf.tick("tick.Stamp", Stamp::onTick));
+        platform.onEndTick(Perf.tick("tick.MenuWatcher", MenuWatcher::onTick));
+        platform.onEndTick(Perf.tick("tick.Profile", Profile::onTick));
+        platform.onEndTick(Perf.tick("tick.Setup", Setup::onTick));
+        platform.onEndTick(Perf.tick("tick.Wyn", Wyn::onTick));
+        platform.onEndTick(Perf.tick("tick.Prices", Prices::onTick));
+        platform.onEndTick(Perf.tick("tick.Build", Build::onTick));
         // the J menu's road map, rebuilt in the background before it runs out, so J opens at once
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(Perf.tick("tick.Roadmap", client -> {
+        platform.onEndTick(Perf.tick("tick.Roadmap", client -> {
             if (client.player != null && client.player.tickCount % 40 == 0) {
                 Roadmap.warm();
             }
@@ -115,96 +112,61 @@ public final class WynnLabs implements ClientModInitializer {
                                 .withStyle(net.minecraft.ChatFormatting.GRAY)), false);
             }
         }));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.ManaMeter", ManaMeter::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.TreePlanner", TreePlanner::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.GroundMarkers", GroundMarkers::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.QuestBook", QuestBook::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.AutoAdvice", AutoAdvice::snapshotArmour));
-        net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents.GAME.register(QuestBook::onChat);
-        net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents.GAME.register(DeathCoach::onChat);
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.DeathCoach", DeathCoach::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.Today", Today::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.WearCheck", WearCheck::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.DiscoveryBook", DiscoveryBook::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.Danger", Danger::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.SellSummary", SellSummary::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.XpMeter", XpMeter::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.Vault", Vault::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.Coach", Coach::onTick));
+        platform.onEndTick(Perf.tick("tick.ManaMeter", ManaMeter::onTick));
+        platform.onEndTick(Perf.tick("tick.TreePlanner", TreePlanner::onTick));
+        platform.onEndTick(Perf.tick("tick.GroundMarkers", GroundMarkers::onTick));
+        platform.onEndTick(Perf.tick("tick.QuestBook", QuestBook::onTick));
+        platform.onEndTick(Perf.tick("tick.AutoAdvice", AutoAdvice::snapshotArmour));
+        platform.onGameMessage(QuestBook::onChat);
+        platform.onGameMessage(DeathCoach::onChat);
+        platform.onEndTick(Perf.tick("tick.DeathCoach", DeathCoach::onTick));
+        platform.onEndTick(Perf.tick("tick.Today", Today::onTick));
+        platform.onEndTick(Perf.tick("tick.WearCheck", WearCheck::onTick));
+        platform.onEndTick(Perf.tick("tick.DiscoveryBook", DiscoveryBook::onTick));
+        platform.onEndTick(Perf.tick("tick.Danger", Danger::onTick));
+        platform.onEndTick(Perf.tick("tick.SellSummary", SellSummary::onTick));
+        platform.onEndTick(Perf.tick("tick.XpMeter", XpMeter::onTick));
+        platform.onEndTick(Perf.tick("tick.Vault", Vault::onTick));
+        platform.onEndTick(Perf.tick("tick.Coach", Coach::onTick));
         // the Endgame tab: raid and lootrun history, the reward pool seen, the aspect list
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.RaidLog", RaidLog::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.RaidPool", RaidPool::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.LootrunLog", LootrunLog::onTick));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
-                Perf.tick("tick.AspectBook", AspectBook::onTick));
+        platform.onEndTick(Perf.tick("tick.RaidLog", RaidLog::onTick));
+        platform.onEndTick(Perf.tick("tick.RaidPool", RaidPool::onTick));
+        platform.onEndTick(Perf.tick("tick.LootrunLog", LootrunLog::onTick));
+        platform.onEndTick(Perf.tick("tick.AspectBook", AspectBook::onTick));
         // the coach's HUD: the death warning and the hunt line
-        net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.addLast(
-                net.minecraft.resources.Identifier.fromNamespaceAndPath("wynnlabs", "coach"), (g, dt) -> {
-                    long t = Perf.start();
-                    try {
-                        Coach.renderHud(g, dt);
-                    } finally {
-                        Perf.end("hud.Coach", t);
-                    }
-                });
+        platform.addHud(net.minecraft.resources.Identifier.fromNamespaceAndPath("wynnlabs", "coach"), (g, dt) -> {
+            long t = Perf.start();
+            try {
+                Coach.renderHud(g, dt);
+            } finally {
+                Perf.end("hud.Coach", t);
+            }
+        });
         // the live DPS meter in a corner (setting dpsHud, off by default)
-        net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.addLast(
-                net.minecraft.resources.Identifier.fromNamespaceAndPath("wynnlabs", "dps"), (g, dt) -> {
-                    long t = Perf.start();
-                    try {
-                        DpsHud.render(g, dt);
-                    } finally {
-                        Perf.end("hud.DpsHud", t);
-                    }
-                });
+        platform.addHud(net.minecraft.resources.Identifier.fromNamespaceAndPath("wynnlabs", "dps"), (g, dt) -> {
+            long t = Perf.start();
+            try {
+                DpsHud.render(g, dt);
+            } finally {
+                Perf.end("hud.DpsHud", t);
+            }
+        });
         // leaving the server closes the session report
-        net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.DISCONNECT.register(
-                (handler, client) -> {
-                    Coach.saveSession(System.currentTimeMillis());
-                    DpsMeter.LIVE.reset();
-                    RaidLog.disconnected();
-                    LootrunLog.disconnected();
-                });
+        platform.onDisconnect(() -> {
+            Coach.saveSession(System.currentTimeMillis());
+            DpsMeter.LIVE.reset();
+            RaidLog.disconnected();
+            LootrunLog.disconnected();
+        });
         // /av <item>: a hunt (client-side command, never sent to the server)
-        net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback.EVENT.register((dispatcher, ctx) ->
-                dispatcher.register(net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal("av")
-                        .executes(c -> {
-                            c.getSource().sendFeedback(net.minecraft.network.chat.Component.literal(Coach.hunt(null))
-                                    .withStyle(net.minecraft.ChatFormatting.GOLD));
-                            return 1;
-                        })
-                        .then(net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument("esya",
-                                        com.mojang.brigadier.arguments.StringArgumentType.greedyString())
-                                .executes(c -> {
-                                    c.getSource().sendFeedback(net.minecraft.network.chat.Component.literal(
-                                            Coach.hunt(com.mojang.brigadier.arguments.StringArgumentType.getString(c, "esya")))
-                                            .withStyle(net.minecraft.ChatFormatting.GOLD));
-                                    return 1;
-                                }))));
+        platform.registerClientCommand(WynnLabs::huntCommand);
         // J opens the road map (rebindable in Controls)
-        var category = net.minecraft.client.KeyMapping.Category.register(
+        var category = platform.keyCategory(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath("wynnlabs", "main"));
-        var roadmapKey = net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding(
+        var roadmapKey = platform.registerKey(
                 new net.minecraft.client.KeyMapping("key.wynnlabs.roadmap",
                         com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM, org.lwjgl.glfw.GLFW.GLFW_KEY_J, category));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        platform.onEndTick(client -> {
             while (roadmapKey.consumeClick()) {
                 if (client.player == null || client.screen != null) {
                     continue;
@@ -213,38 +175,56 @@ public final class WynnLabs implements ClientModInitializer {
             }
         });
         // files waiting in the background writer reach the disk before the game closes
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.CLIENT_STOPPING.register(client -> Saver.flush());
+        platform.onClientStopping(Saver::flush);
         // Wynntils' event bus only exists once the client has started.
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.CLIENT_STARTED.register(
-                client -> {
-                    try {
-                        Wyn.listen(new WynntilsEvents());
-                    } catch (Throwable t) {
-                        System.out.println("[WynnLabs] tooltip hook unavailable: " + t);
-                    }
-                    // the quests tab's "read quests with Wynntils": the lists Wynntils posts after the press
-                    try {
-                        Wyn.listen(Wyn.Feature.QUESTS, new WynntilsEvents.Quests());
-                    } catch (Throwable t) {
-                        System.out.println("[WynnLabs] quest list hook unavailable: " + t);
-                    }
-                    // the Endgame tab's events, each under its own feature
-                    try {
-                        Wyn.listen(Wyn.Feature.RAIDS, new WynntilsEvents.Raids());
-                        Wyn.listen(Wyn.Feature.LOOTRUNS, new WynntilsEvents.Lootruns());
-                        Wyn.listen(Wyn.Feature.LOOTRUNS, new WynntilsEvents.Valuables());
-                    } catch (Throwable t) {
-                        System.out.println("[WynnLabs] raid and lootrun hooks unavailable: " + t);
-                    }
-                });
+        platform.onClientStarted(() -> {
+            try {
+                Wyn.listen(new WynntilsEvents());
+            } catch (Throwable t) {
+                System.out.println("[WynnLabs] tooltip hook unavailable: " + t);
+            }
+            // the quests tab's "read quests with Wynntils": the lists Wynntils posts after the press
+            try {
+                Wyn.listen(Wyn.Feature.QUESTS, new WynntilsEvents.Quests());
+            } catch (Throwable t) {
+                System.out.println("[WynnLabs] quest list hook unavailable: " + t);
+            }
+            // the Endgame tab's events, each under its own feature
+            try {
+                Wyn.listen(Wyn.Feature.RAIDS, new WynntilsEvents.Raids());
+                Wyn.listen(Wyn.Feature.LOOTRUNS, new WynntilsEvents.Lootruns());
+                Wyn.listen(Wyn.Feature.LOOTRUNS, new WynntilsEvents.Valuables());
+            } catch (Throwable t) {
+                System.out.println("[WynnLabs] raid and lootrun hooks unavailable: " + t);
+            }
+        });
         // The local API only runs while "Local API for tools" is on; checked once a second, so
         // flipping the setting starts or stops it without a restart
         syncServer();
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        platform.onEndTick(client -> {
             if (++serverTick % 20 == 0) {
                 syncServer();
             }
         });
+    }
+
+    /** {@code /av [item]}: the hunt line, shown on this client only (built once, for any loader's source). */
+    private static <S> com.mojang.brigadier.builder.LiteralArgumentBuilder<S> huntCommand(
+            java.util.function.BiConsumer<S, net.minecraft.network.chat.Component> feedback) {
+        return com.mojang.brigadier.builder.LiteralArgumentBuilder.<S>literal("av")
+                .executes(c -> {
+                    feedback.accept(c.getSource(), net.minecraft.network.chat.Component.literal(Coach.hunt(null))
+                            .withStyle(net.minecraft.ChatFormatting.GOLD));
+                    return 1;
+                })
+                .then(com.mojang.brigadier.builder.RequiredArgumentBuilder.<S, String>argument("esya",
+                                com.mojang.brigadier.arguments.StringArgumentType.greedyString())
+                        .executes(c -> {
+                            feedback.accept(c.getSource(), net.minecraft.network.chat.Component.literal(
+                                    Coach.hunt(com.mojang.brigadier.arguments.StringArgumentType.getString(c, "esya")))
+                                    .withStyle(net.minecraft.ChatFormatting.GOLD));
+                            return 1;
+                        }));
     }
 
     private static HttpServer server;

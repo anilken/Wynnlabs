@@ -167,7 +167,7 @@ final class ItemIcons {
 
     private static Path wynntilsCache() {
         try {
-            return net.fabricmc.loader.api.FabricLoader.getInstance().getGameDir().resolve("wynntils").resolve("cache");
+            return Platform.get().gameDir().resolve("wynntils").resolve("cache");
         } catch (RuntimeException e) {
             return null;
         }

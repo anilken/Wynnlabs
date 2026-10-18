@@ -381,7 +381,7 @@ final class AspectBook {
         lastTry = System.currentTimeMillis();
         Thread t = new Thread(() -> {
             try {
-                Path f = net.fabricmc.loader.api.FabricLoader.getInstance().getGameDir().resolve(CACHE);
+                Path f = Platform.get().gameDir().resolve(CACHE);
                 if (Files.isRegularFile(f)) {
                     cache = parseCache(Files.readString(f, StandardCharsets.UTF_8));
                     inputs = "";                // rank again with the names

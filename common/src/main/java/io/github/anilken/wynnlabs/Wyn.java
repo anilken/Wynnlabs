@@ -162,8 +162,7 @@ final class Wyn {
 
     static String version() {
         try {
-            return net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer("wynntils")
-                    .map(c -> c.getMetadata().getVersion().getFriendlyString()).orElse("?");
+            return Platform.get().modVersion("wynntils").orElse("?");
         } catch (Throwable t) {
             return "?";                             // never let the guard itself fail
         }

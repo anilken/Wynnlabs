@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.fabricmc.loader.api.FabricLoader;
 import io.github.anilken.wynnlabs.model.ItemView;
 import io.github.anilken.wynnlabs.model.Klass;
 import net.minecraft.ChatFormatting;

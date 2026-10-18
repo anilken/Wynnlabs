@@ -1,7 +1,5 @@
 package io.github.anilken.wynnlabs;
 
-import net.fabricmc.loader.api.FabricLoader;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,7 +12,7 @@ final class Dirs {
     private Dirs() {}
 
     static Path config() {
-        return FabricLoader.getInstance().getConfigDir().resolve("wynnlabs");
+        return Platform.get().configDir().resolve("wynnlabs");
     }
 
     /**
@@ -23,7 +21,7 @@ final class Dirs {
      * copied (never moved, so the old jar still works after a rollback) and a marker is written.
      */
     static void migrate() {
-        Path old = FabricLoader.getInstance().getConfigDir().resolve("wynninvapi");
+        Path old = Platform.get().configDir().resolve("wynninvapi");
         Path now = config();
         if (!Files.isDirectory(old) || Files.exists(now)) {
             return;

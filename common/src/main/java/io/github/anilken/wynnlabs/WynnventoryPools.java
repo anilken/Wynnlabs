@@ -447,7 +447,7 @@ final class WynnventoryPools {
             return;                             // tests set their own labels
         }
         try {
-            Path f = net.fabricmc.loader.api.FabricLoader.getInstance().getGameDir().resolve(SHINY_STATS);
+            Path f = Platform.get().gameDir().resolve(SHINY_STATS);
             if (Files.isRegularFile(f)) {
                 shinyStats = parseShinyStats(Files.readString(f, StandardCharsets.UTF_8));
             }

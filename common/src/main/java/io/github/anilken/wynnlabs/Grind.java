@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
@@ -73,7 +72,7 @@ final class Grind {
     }
 
     private static JsonElement read(String name) throws Exception {
-        Path f = FabricLoader.getInstance().getGameDir().resolve("wynntils/cache/" + name);
+        Path f = Platform.get().gameDir().resolve("wynntils/cache/" + name);
         return GSON.fromJson(Files.readString(f, StandardCharsets.UTF_8), JsonElement.class);
     }
 
