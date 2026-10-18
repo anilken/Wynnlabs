@@ -1,25 +1,34 @@
 #!/usr/bin/env bash
-# Dev helper: waits until Minecraft (javaw.exe) is closed, then copies the freshly built Fabric
-# jar (fabric/build/libs/wynnlabs-fabric-<version>.jar) into the game's mods folder, replacing any
-# older Wynn Labs (wynnlabs-<version>.jar from before the loader split, or pre-rename
-# wynn-inventory-api) jar. Run it in the background after a build. Does nothing if the installed
-# jar is already the latest build.
+# Dev helper: waits until Minecraft (javaw.exe) is closed, then copies the freshly built jar into
+# the game's mods folder, replacing any older Wynn Labs (wynnlabs-<version>.jar from before the
+# loader split, or pre-rename wynn-inventory-api) jar. Run it in the background after a build.
+# Does nothing if the installed jar is already the latest build.
 #
-# The mods folder comes from $WYNNLABS_MODS, or from the first line of .local-mods-path next to
-# this script (git-ignored), e.g. /c/Users/me/curseforge/minecraft/Instances/Wynncraft/mods
+#   ./install-when-closed.sh            the Fabric jar (fabric/build/libs/wynnlabs-fabric-<v>.jar)
+#   ./install-when-closed.sh neoforge   the NeoForge jar (neoforge/build/libs/wynnlabs-neoforge-<v>.jar)
+#
+# Fabric mods folder: $WYNNLABS_MODS, or the first line of .local-mods-path next to this script.
+# NeoForge mods folder: $WYNNLABS_NEOFORGE_MODS, or the first line of .local-mods-path-neoforge.
+# Both files are git-ignored, e.g. /c/Users/me/curseforge/minecraft/Instances/Wynncraft/mods
+# The Fabric folder never gets the NeoForge jar, and the other way round.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
-MODS="${WYNNLABS_MODS:-}"
-if [ -z "$MODS" ] && [ -f "$HERE/.local-mods-path" ]; then
-  MODS="$(head -n 1 "$HERE/.local-mods-path" | tr -d '\r')"
+LOADER="${1:-fabric}"
+case "$LOADER" in
+  fabric)   MODS="${WYNNLABS_MODS:-}";          PATH_FILE=".local-mods-path";          VAR="WYNNLABS_MODS" ;;
+  neoforge) MODS="${WYNNLABS_NEOFORGE_MODS:-}"; PATH_FILE=".local-mods-path-neoforge"; VAR="WYNNLABS_NEOFORGE_MODS" ;;
+  *) echo "usage: $0 [neoforge]   (no argument installs the Fabric jar)" >&2; exit 2 ;;
+esac
+if [ -z "$MODS" ] && [ -f "$HERE/$PATH_FILE" ]; then
+  MODS="$(head -n 1 "$HERE/$PATH_FILE" | tr -d '\r')"
 fi
 if [ -z "$MODS" ] || [ ! -d "$MODS" ]; then
-  echo "set WYNNLABS_MODS or write the mods folder into .local-mods-path" >&2
+  echo "set $VAR or write the $LOADER mods folder into $PATH_FILE" >&2
   exit 1
 fi
-SRC="$(ls -t "$HERE"/fabric/build/libs/wynnlabs-fabric-*.jar 2>/dev/null | grep -v -e '-sources' -e '-dev' | head -n 1)"
+SRC="$(ls -t "$HERE/$LOADER"/build/libs/wynnlabs-"$LOADER"-*.jar 2>/dev/null | grep -v -e '-sources' -e '-dev' | head -n 1)"
 if [ -z "$SRC" ]; then
-  echo "no fabric/build/libs/wynnlabs-fabric-*.jar: build first" >&2
+  echo "no $LOADER/build/libs/wynnlabs-$LOADER-*.jar: build first" >&2
   exit 1
 fi
 DST="$MODS/$(basename "$SRC")"

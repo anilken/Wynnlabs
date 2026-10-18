@@ -7,6 +7,7 @@ run/
 # third-party jars (Wynntils is a compile-only dependency; download it into libs/)
 libs/
 .local-mods-path
+.local-mods-path-neoforge
 release-blocklist.txt
 tools/art/node_modules/
 

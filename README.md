@@ -1,7 +1,7 @@
 # Wynn Labs
 
-An in-game assistant for [Wynncraft](https://wynncraft.com): a client-side Fabric mod for
-Minecraft 1.21.11. It reads your own character, bag and bank, and helps you decide what to do.
+An in-game assistant for [Wynncraft](https://wynncraft.com): a client-side mod for Minecraft
+1.21.11 on Fabric or NeoForge. It reads your own character, bag and bank, and helps you decide what to do.
 
 - **Items:** wear, sell, identify or keep, in the tooltip with the reason.
 - **Upgrades and ability tree:** the best gear for your level and build, and the tree with the plan's order.
@@ -14,10 +14,13 @@ Minecraft 1.21.11. It reads your own character, bag and bank, and helps you deci
 
 ## Install
 
-1. [Fabric Loader](https://fabricmc.net) for 1.21.11 with Fabric API.
-2. [Wynntils](https://modrinth.com/mod/wynntils) 4.1.0 or newer (required).
-3. Optional: [Wynnventory](https://modrinth.com/mod/wynnventory) for item prices.
-4. Put `wynnlabs-fabric-<version>.jar` into `mods`.
+Take the jar for your loader from the release (same mod in both) and put it into `mods`:
+
+- **Fabric:** [Fabric Loader](https://fabricmc.net) for 1.21.11, Fabric API, and
+  [Wynntils](https://modrinth.com/mod/wynntils) for Fabric 4.1.0 or newer. Jar: `wynnlabs-fabric-<version>.jar`.
+- **NeoForge:** [NeoForge](https://neoforged.net) 21.11.48 or newer for 1.21.11, and Wynntils for
+  NeoForge 4.1.0 or newer. Jar: `wynnlabs-neoforge-<version>.jar`.
+- Optional on both: [Wynnventory](https://modrinth.com/mod/wynnventory) for that loader, for item prices.
 
 Press **J** for the menu. The mod follows the game's language (English and Turkish).
 
@@ -45,16 +48,21 @@ and rules** switch and the header `X-Wynninv: 1`.
 
 ## Development
 
-Put the Wynntils fabric jar into `libs/`, then:
+Put the Wynntils fabric jar into `libs/` (both loaders compile against it), then:
 
 ```bash
-gradle build
+gradle build                              # fabric/build/libs/wynnlabs-fabric-<version>.jar and neoforge/...
+gradle build -Penabled_platforms=fabric   # Fabric only, skips NeoForge's setup
 ```
 
 This also runs the tests (fixtures recorded from a real session, `gradle test -PupdateFixtures` to
 approve intended changes) and the checks `checkLang`, `checkPersonal` and `checkWynntilsImports`.
 `gradle checkWynntilsVersions` compiles against every jar in `libs/wynntils-matrix/`.
-`install-when-closed.sh` copies the build into your mods folder once Minecraft is closed.
+`gradle :neoforge:runClient` starts a NeoForge dev client (with Wynntils if its neoforge jar is in `libs/`).
+
+`install-when-closed.sh` copies the Fabric jar into `$WYNNLABS_MODS` (or `.local-mods-path`) once
+Minecraft is closed; with `neoforge` it copies the NeoForge jar into `$WYNNLABS_NEOFORGE_MODS` (or
+`.local-mods-path-neoforge`).
 
 **Hot swap.** Start the game on [JetBrains Runtime 21](https://github.com/JetBrains/JetBrainsRuntime/releases)
 with `-XX:+AllowEnhancedClassRedefinition -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=127.0.0.1:5005`,
