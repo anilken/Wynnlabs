@@ -56,6 +56,17 @@ approve intended changes) and the checks `checkLang`, `checkPersonal` and `check
 `gradle checkWynntilsVersions` compiles against every jar in `libs/wynntils-matrix/`.
 `install-when-closed.sh` copies the build into your mods folder once Minecraft is closed.
 
+**Hot swap.** Start the game on [JetBrains Runtime 21](https://github.com/JetBrains/JetBrainsRuntime/releases)
+with `-XX:+AllowEnhancedClassRedefinition -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=127.0.0.1:5005`,
+then push a fresh build into the running game:
+
+```bash
+java --add-modules jdk.jdi tools/HotSwap.java build/libs/wynnlabs-<version>.jar <installed mod jar>
+```
+
+Changed methods and new or removed methods and fields load at once (screens show it when reopened;
+F3+T reloads lang files and textures). New classes, mixins and keys or commands need a restart.
+
 ## License
 
 Copyright (c) 2026 anilken. [GNU LGPL v3.0](LICENSE) (with the [GPL v3.0](COPYING) it builds on). Not affiliated with Wynncraft, Wynntils or Wynnventory.

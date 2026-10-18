@@ -22,8 +22,10 @@ import java.util.jar.JarFile;
  *
  * Run: java --add-modules jdk.jdi tools/HotSwap.java build/libs/wynnlabs-0.1.0.jar [installed.jar] [port]
  *
- * A plain JVM only accepts changed method bodies. New methods, fields, records or classes still
- * need a restart (the installer copies the jar when the game closes); those are reported.
+ * A plain JVM only accepts changed method bodies. Run the game on JetBrains Runtime 21 with
+ * -XX:+AllowEnhancedClassRedefinition and new or removed methods and fields swap in too. Brand-new
+ * classes, mixin changes and anything registered once at startup (keys, commands) still need a
+ * restart (the installer copies the jar when the game closes); those are reported.
  */
 public class HotSwap {
 
@@ -45,6 +47,9 @@ public class HotSwap {
         }
 
         VirtualMachine vm = attach(port);
+        System.out.println(vm.canAddMethod()
+                ? "Oyun JBR ile açık: yeni metot ve alanlar da yüklenir."
+                : "Oyun normal Java ile açık: yalnız metot içleri yüklenir (JBR için README'ye bak).");
         Map<ReferenceType, byte[]> redefine = new HashMap<>();
         int unchanged = 0;
         int notLoaded = 0;
@@ -82,8 +87,9 @@ public class HotSwap {
                     state.store(out, "classes pushed into the running game");
                 }
             } catch (UnsupportedOperationException ex) {
-                System.out.println("YENİDEN BAŞLATMA GEREKİR: değişiklik yalnız metot içi değil ("
-                        + ex.getMessage() + "). Jar oyun kapanınca kurulur.");
+                System.out.println("YENİDEN BAŞLATMA GEREKİR: bu değişiklik oyun açıkken yüklenemiyor ("
+                        + ex.getMessage() + (vm.canAddMethod() ? "" : "; JBR ile yeni metot ve alanlar yüklenir")
+                        + "). Jar oyun kapanınca kurulur.");
                 System.exit(2);
             }
         }
