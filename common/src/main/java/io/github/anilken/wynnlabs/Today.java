@@ -143,7 +143,7 @@ final class Today {
                 int added = (points.isEmpty() ? 0 : Waypoints.queue(points, labels)) + kept;
                 Files.delete(pf);
                 if (added > 0) {
-                    mc.gui.setOverlayMessage(L.c("wynnlabs.daily.pins_added", added)
+                    mc.gui.setOverlayMessage(L.cn("wynnlabs.daily.pins_added", added)
                             .withStyle(net.minecraft.ChatFormatting.GREEN), false);
                 }
             }

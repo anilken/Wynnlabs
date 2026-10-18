@@ -1177,7 +1177,7 @@ final class RoadmapScreen extends Screen {
             }
         }
         tip.add(Component.empty());
-        String cost = L.t("wynnlabs.tree.tip_cost", a.cost());
+        String cost = L.n("wynnlabs.tree.tip_cost", a.cost());
         if (a.requiredLevel() > 0) {
             cost += " · " + L.t("wynnlabs.tree.tip_level", a.requiredLevel());
         }
@@ -1191,7 +1191,7 @@ final class RoadmapScreen extends Screen {
             tip.add(Component.literal(L.t("wynnlabs.tree.tip_requires", req)).withStyle(ChatFormatting.YELLOW));
         }
         if (a.requiredArchetype() != null && !a.requiredArchetype().isBlank()) {
-            tip.add(Component.literal(L.t("wynnlabs.tree.tip_arch_points", a.requiredArchetype(), a.requiredArchetypePoints()))
+            tip.add(Component.literal(L.n("wynnlabs.tree.tip_arch_points", a.requiredArchetypePoints(), a.requiredArchetype(), a.requiredArchetypePoints()))
                     .withStyle(ChatFormatting.YELLOW));
         }
         if (a.willBlock() != null && !a.willBlock().isEmpty()) {
@@ -1525,7 +1525,7 @@ final class RoadmapScreen extends Screen {
                 {String.valueOf(Math.round(health)), L.t("wynnlabs.home.stat_health") + " · " + L.t("wynnlabs.home.stat_ehp") + " "
                     + Math.round(now.ehp()), health, target == null ? 0 : target.health(),
                     0xFF4A1B0C, 0xFFE96033, 0xFFC6522C, 0xFF8E3B1F, "heart"},
-                {L.t("wynnlabs.home.hud_casts", Math.round(now.casts())), L.t("wynnlabs.home.hud_casts_tip"), now.casts(),
+                {L.n("wynnlabs.home.hud_casts", Math.round(now.casts())), L.t("wynnlabs.home.hud_casts_tip"), now.casts(),
                     target == null ? 0 : target.casts(), 0xFF042C53, 0xFF388EE4, 0xFF3079C2, 0xFF22578B, "droplet"},
                 {String.valueOf(Math.round(now.spellDps())), L.t("wynnlabs.home.stat_spell"), now.spellDps(), target == null ? 0 : target.spellDps(),
                     0xFF26215C, 0xFF867EE9, 0xFF726BC6, 0xFF524D8E, "wand"}};
@@ -2026,7 +2026,7 @@ final class RoadmapScreen extends Screen {
         int fy = Math.max(ry + 4, y + h - footer + 2);
         Component line = Component.empty();
         if (!more.isEmpty()) {
-            line = line.copy().append(Component.literal(L.t("wynnlabs.home.more_slots", more.size(), String.join(", ", more)) + "   ")
+            line = line.copy().append(Component.literal(L.n("wynnlabs.home.more_slots", more.size(), more.size(), String.join(", ", more)) + "   ")
                     .withStyle(ChatFormatting.GRAY));
         }
         if (!good.isEmpty()) {
@@ -2042,7 +2042,7 @@ final class RoadmapScreen extends Screen {
         List<String> extra = new ArrayList<>();
         s.abilities().forEach(a -> extra.add("★ " + a));
         if (s.skillPoints() > 0) {
-            extra.add(L.t("wynnlabs.home.skill_points", s.skillPoints()));
+            extra.add(L.n("wynnlabs.home.skill_points", s.skillPoints()));
         }
         s.places().forEach(p -> extra.add("● " + shortPlace(p)));
         if (!extra.isEmpty() && fy + 20 <= y + h) {
@@ -2308,7 +2308,7 @@ final class RoadmapScreen extends Screen {
             ink(g, fit(sub[i], dx + colW - font.width(v) - 8 - vx), vx, dy, MUTED);
         }
         if (changed.size() > 4) {
-            same.add(0, L.t("wynnlabs.home.card_more", changed.size() - 4));
+            same.add(0, L.n("wynnlabs.home.card_more", changed.size() - 4));
         }
         if (!same.isEmpty() && changed.size() <= 2) {
             ink(g, fit(L.t("wynnlabs.home.card_same", String.join(", ", same)), tw), tx, y + 51, FAINT);
@@ -2421,7 +2421,7 @@ final class RoadmapScreen extends Screen {
                 todo.add(new Object[] {icon("pick"), o.goal(), null, null, null, o});
             }
             if (mine.tickets() > 0) {
-                todo.add(new Object[] {icon("paper"), L.t("wynnlabs.today.tickets", mine.tickets()), L.t("wynnlabs.today.go_compass"),
+                todo.add(new Object[] {icon("paper"), L.n("wynnlabs.today.tickets", mine.tickets()), L.t("wynnlabs.today.go_compass"),
                         "/compass at 437 70 -1613", null, null});
             }
         }
@@ -2432,7 +2432,7 @@ final class RoadmapScreen extends Screen {
         List<Vault.Group> bankJunk = Vault.junk();
         if (!bankJunk.isEmpty()) {
             long tm = bankJunk.stream().filter(j -> "Trade Market".equals(Vault.place(j))).count();
-            todo.add(new Object[] {icon("emerald"), L.t("wynnlabs.today.todo_bank", bankJunk.size())
+            todo.add(new Object[] {icon("emerald"), L.n("wynnlabs.today.todo_bank", bankJunk.size())
                     + (tm > 0 ? " (" + tm + " Trade Market)" : ""), L.t("wynnlabs.today.go_bank"), "#qgo:bank", null, null});
         } else if (Vault.count() == 0) {
             todo.add(new Object[] {icon("emerald"), L.t("wynnlabs.today.open_bank"), null, null, null, null});
@@ -2460,7 +2460,7 @@ final class RoadmapScreen extends Screen {
         }
         int mf = Coach.manaFailsLast5Min();
         if (mf > 0) {
-            todo.add(new Object[] {icon("lapis"), L.t("wynnlabs.today.mana_fails", mf), null, null, null, null});
+            todo.add(new Object[] {icon("lapis"), L.n("wynnlabs.today.mana_fails", mf), null, null, null, null});
         }
         int rowH = 22;
         int listH = Math.max(1, todo.size()) * rowH;
@@ -2701,7 +2701,7 @@ final class RoadmapScreen extends Screen {
         if (min < 24 * 60) {
             return L.t("wynnlabs.screen.ago_hours", min / 60);
         }
-        return L.t("wynnlabs.screen.ago_days", min / 1440);
+        return L.n("wynnlabs.screen.ago_days", min / 1440);
     }
 
     // ---- bank tab (Banka): the bank as a grid of real items ----
@@ -2777,8 +2777,8 @@ final class RoadmapScreen extends Screen {
         long tm = junk.stream().filter(j -> "Trade Market".equals(Vault.place(j))).count();
         double worth = junk.stream().filter(j -> "Trade Market".equals(Vault.place(j)))
                 .map(Vault::value).filter(java.util.Objects::nonNull).mapToDouble(Double::doubleValue).sum();
-        Component head = L.c("wynnlabs.bank.summary", Vault.count(), Vault.pages()).withStyle(ChatFormatting.WHITE)
-                .append(Component.literal(junk.isEmpty() ? L.t("wynnlabs.bank.nothing_to_sell") : L.t("wynnlabs.bank.kinds_sellable", junk.size()))
+        Component head = L.cn("wynnlabs.bank.summary", Vault.pages(), Vault.count(), Vault.pages()).withStyle(ChatFormatting.WHITE)
+                .append(Component.literal(junk.isEmpty() ? L.t("wynnlabs.bank.nothing_to_sell") : L.n("wynnlabs.bank.kinds_sellable", junk.size()))
                         .withStyle(junk.isEmpty() ? ChatFormatting.GRAY : ChatFormatting.RED))
                 .append(Component.literal(junk.isEmpty() ? "" : " (Blacksmith " + (junk.size() - tm) + ", Trade Market " + tm
                         + (worth > 0 ? " ~" + Prices.fmt(worth) : "") + ")").withStyle(ChatFormatting.GRAY));
@@ -2791,7 +2791,7 @@ final class RoadmapScreen extends Screen {
             }
         }
         if (unpriced > 0) {
-            Component u = L.c("wynnlabs.bank.unpriced", unpriced)
+            Component u = L.cn("wynnlabs.bank.unpriced", unpriced)
                     .withStyle(ChatFormatting.GOLD);
             int uw = font.width(u);
             if (font.width(head) + uw + 16 <= w) {
@@ -3024,7 +3024,7 @@ final class RoadmapScreen extends Screen {
             }
             any = true;
             int total = list.stream().mapToInt(Vault.Group::total).sum();
-            section(g, titles[i] + "  " + (total > list.size() ? L.t("wynnlabs.bank.sec_kinds_items", list.size(), total)
+            section(g, titles[i] + "  " + (total > list.size() ? L.n("wynnlabs.bank.sec_kinds_items", list.size(), list.size(), total)
                     : String.valueOf(list.size())), x, cy, w);
             cy += 12;
             for (int k = 0; k < list.size(); k++) {
@@ -3073,7 +3073,7 @@ final class RoadmapScreen extends Screen {
             }
         }
         ink(g, Component.literal(Vault.label(key)).withStyle(UiFont::bold), ox, y, 0xFFFFFFFF);
-        String n = L.t("wynnlabs.bank.page_stacks", Vault.page(key).size()) + (Vault.page(key).isEmpty() ? L.t("wynnlabs.bank.page_empty") : "");
+        String n = L.n("wynnlabs.bank.page_stacks", Vault.page(key).size()) + (Vault.page(key).isEmpty() ? L.t("wynnlabs.bank.page_empty") : "");
         ink(g, n, ox + gw - font.width(n), y, MUTED);
         int gy = y + 12;
         int slots = size[0] * size[1];
@@ -3163,7 +3163,7 @@ final class RoadmapScreen extends Screen {
         int lines = 0;
         for (var e : byLevel.entrySet()) {
             if (lines++ == 10) {
-                tip.add(L.c("wynnlabs.bank.box_more_levels", byLevel.size() - 10).withStyle(ChatFormatting.DARK_GRAY));
+                tip.add(L.cn("wynnlabs.bank.box_more_levels", byLevel.size() - 10).withStyle(ChatFormatting.DARK_GRAY));
                 break;
             }
             int cost = box.tier().identificationCost(e.getKey());
@@ -3345,7 +3345,7 @@ final class RoadmapScreen extends Screen {
         int gap = 6;
         int tw = (w - 2 * gap) / 3;
         int th = 34;
-        tile(g, x, y, tw, th, L.t("wynnlabs.deaths.tile_week"), L.t("wynnlabs.deaths.tile_count", week.size()), 0xFFFFFFFF);
+        tile(g, x, y, tw, th, L.t("wynnlabs.deaths.tile_week"), L.n("wynnlabs.deaths.tile_count", week.size()), 0xFFFFFFFF);
         tile(g, x + tw + gap, y, tw, th, L.t("wynnlabs.deaths.tile_place"),
                 worstPlace == null ? "—" : worstPlace + " ×" + places.get(worstPlace), 0xFFE8E6DF);
         tile(g, x + 2 * (tw + gap), y, tw, th, L.t("wynnlabs.deaths.tile_cause"),
@@ -3386,7 +3386,7 @@ final class RoadmapScreen extends Screen {
                         d.secondsToZero() <= 3 ? 0xFFEF9F27 : 0xFF9C9A92);
             }
             if (d.potions() >= 0) {
-                cx = chip(g, cx, cy, L.t("wynnlabs.deaths.chip_potions", d.potions()), d.potions() == 0 ? 0xFFD4537E : 0xFF9C9A92);
+                cx = chip(g, cx, cy, L.n("wynnlabs.deaths.chip_potions", d.potions()), d.potions() == 0 ? 0xFFD4537E : 0xFF9C9A92);
             }
             if (!d.advice().isEmpty() && cx < x + w - 60) {
                 ink(g, fit("→ " + d.advice().get(0), x + w - cx - 8), cx + 4, cy + 2, 0xFFAFA9EC);
@@ -3416,10 +3416,10 @@ final class RoadmapScreen extends Screen {
         int more = recent.size() - Math.min(recent.size(), fit);
         List<String> foot = new ArrayList<>();
         if (more > 0) {
-            foot.add(L.t("wynnlabs.deaths.more", more));
+            foot.add(L.n("wynnlabs.deaths.more", more));
         }
         if (legacy > 0) {
-            foot.add(L.t("wynnlabs.deaths.legacy", legacy));
+            foot.add(L.n("wynnlabs.deaths.legacy", legacy));
         }
         if (!foot.isEmpty()) {
             ink(g, fit(String.join(" · ", foot), w), x, Math.max(ry + 2, y + h - 11), FAINT);
@@ -3883,7 +3883,7 @@ final class RoadmapScreen extends Screen {
             ink(g, L.c("wynnlabs.quests.none_in_filter").withStyle(ChatFormatting.GRAY), x + 6, cy + 6, 0xFFFFFFFF);
         }
         String foot = list.size() > fit ? (questScroll + 1) + "–" + Math.min(list.size(), questScroll + fit) + " / " + list.size()
-                + " · " + L.t("wynnlabs.screen.scroll_wheel") : L.t("wynnlabs.quests.known", QuestAdvisor.known());
+                + " · " + L.t("wynnlabs.screen.scroll_wheel") : L.n("wynnlabs.quests.known", QuestAdvisor.known());
         ink(g, fit(foot, listW), x, y + h - 9, FAINT);
         drawQuestDetail(g, x + listW + 8, cy, w - listW - 8, colH, tracked, task, mx, my, lists);
     }
@@ -3942,7 +3942,7 @@ final class RoadmapScreen extends Screen {
                 List<Component> ptip = new ArrayList<>();
                 ptip.add(Component.literal(Professions.name(e.getKey()) + " " + e.getValue()).withStyle(ChatFormatting.WHITE));
                 ptip.add((have < 0 ? L.c("wynnlabs.prof.unknown") : ok ? L.c("wynnlabs.prof.met", have)
-                        : L.c("wynnlabs.prof.short", e.getValue() - have, have)).withStyle(ok ? ChatFormatting.GREEN : ChatFormatting.RED));
+                        : L.cn("wynnlabs.prof.short", e.getValue() - have, e.getValue() - have, have)).withStyle(ok ? ChatFormatting.GREEN : ChatFormatting.RED));
                 hits.add(new Hit(px, iy - 1, tw, 10, null, ptip, null));
                 px += tw + 10;
             }
@@ -4220,8 +4220,8 @@ final class RoadmapScreen extends Screen {
         if (iy + 10 > bottom) {
             return;                                     // no room at all (a very short window)
         }
-        String head = nearest == Double.MAX_VALUE ? L.t("wynnlabs.quests.points_count", places.size())
-                : L.t("wynnlabs.quests.points_head", places.size(), far(nearest));
+        String head = nearest == Double.MAX_VALUE ? L.n("wynnlabs.quests.points_count", places.size())
+                : L.n("wynnlabs.quests.points_head", places.size(), places.size(), far(nearest));
         ink(g, fit(head, iw), ix, iy, MUTED);
         iy += Kit.Ui.LINE_DENSE + 2;
         List<String> nums = pointNumbers(places);
@@ -4640,7 +4640,7 @@ final class RoadmapScreen extends Screen {
                 List<String> labels = new ArrayList<>();
                 Discoveries.pins(e, Discoveries.guide(e).steps(), Integer.parseInt(p[0]), pts, labels);
                 int n = Waypoints.all(pts, labels);
-                flash = n > 1 ? L.t("wynnlabs.quests.pins_added", n) : n == 1 ? L.t("wynnlabs.screen.guiding", labels.get(0))
+                flash = n > 1 ? L.n("wynnlabs.quests.pins_added", n) : n == 1 ? L.t("wynnlabs.screen.guiding", labels.get(0))
                         : L.t("wynnlabs.home.mark_failed");
                 flashUntil = System.currentTimeMillis() + 2500;
             }
@@ -5300,7 +5300,7 @@ final class RoadmapScreen extends Screen {
         }
 
         // what one more step of each stat would add
-        String free = report.freePoints() > 0 ? L.t("wynnlabs.damage.free_points", report.freePoints())
+        String free = report.freePoints() > 0 ? L.n("wynnlabs.damage.free_points", report.freePoints())
                 : L.t("wynnlabs.damage.no_free_points");
         // the note in the room the title leaves (cut short on a narrow page)
         free = fit(free, w - font.width(L.t("wynnlabs.damage.what_if")) - 24);
@@ -5364,7 +5364,7 @@ final class RoadmapScreen extends Screen {
         String[][] rows = {
             {L.t("wynnlabs.damage.model_per_cast"), model > 0 ? QuestAdvisor.fmt(Math.round(model)) : na},
             {L.t("wynnlabs.damage.measured_per_cast"), casts > 0
-                    ? L.t("wynnlabs.damage.measured_value", QuestAdvisor.fmt(Math.round(measured)), casts) : na},
+                    ? L.n("wynnlabs.damage.measured_value", casts, QuestAdvisor.fmt(Math.round(measured)), casts) : na},
             {L.t("wynnlabs.damage.ratio"), (casts > 0 && model > 0 ? pct(Math.round(measured / model * 100)) : na)
                     + " · " + L.t("wynnlabs.damage.calibration", dec(cal, 2))}};
         int ry = y + 20;
@@ -5376,7 +5376,7 @@ final class RoadmapScreen extends Screen {
             ry += Kit.Ui.LINE_DENSE;
         }
         String note = casts == 0 ? L.t("wynnlabs.damage.none_measured")
-                : casts < DamageReport.ENOUGH_CASTS ? L.t("wynnlabs.damage.few_casts", casts, DamageReport.ENOUGH_CASTS)
+                : casts < DamageReport.ENOUGH_CASTS ? L.n("wynnlabs.damage.few_casts", casts, casts, DamageReport.ENOUGH_CASTS)
                 : L.t("wynnlabs.damage.enough_casts");
         if (ry + 9 <= y + h - 4) {
             desc(g, note, x + 8, y + h - 13, w - 16);
@@ -5503,12 +5503,23 @@ final class RoadmapScreen extends Screen {
     private void drawKeyRow(GuiGraphics g, int x, int y, int w, int mx, int my) {
         String pr = Prices.problem;
         String an = Vault.annotateProblem;
-        Component src = L.c("wynnlabs.settings.sources").withStyle(ChatFormatting.DARK_GRAY)
-                .append(Component.literal(pr == null ? L.t("wynnlabs.settings.prices_ok") : "✖ " + pr)
-                        .withStyle(pr == null ? ChatFormatting.DARK_GREEN : ChatFormatting.RED))
+        String lead = L.t("wynnlabs.settings.sources");
+        String prices = pr == null ? L.t("wynnlabs.settings.prices_ok") : "✖ " + pr;
+        String bank = an == null ? L.t("wynnlabs.settings.bank_ok") : L.t("wynnlabs.settings.bank_bad", an);
+        // a line too long for the page drops its lead, then the two parts share what is left
+        int sep = font.width(" · ");
+        if (font.width(lead) + font.width(prices) + sep + font.width(bank) > w) {
+            lead = "";
+        }
+        int room = w - sep;
+        if (font.width(prices) + font.width(bank) > room) {
+            prices = fit(prices, Math.max(room / 2, room - font.width(bank)));
+            bank = fit(bank, room - font.width(prices));
+        }
+        Component src = Component.literal(lead).withStyle(ChatFormatting.DARK_GRAY)
+                .append(Component.literal(prices).withStyle(pr == null ? ChatFormatting.DARK_GREEN : ChatFormatting.RED))
                 .append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY))
-                .append(Component.literal(an == null ? L.t("wynnlabs.settings.bank_ok") : L.t("wynnlabs.settings.bank_bad", an))
-                        .withStyle(an == null ? ChatFormatting.DARK_GREEN : ChatFormatting.RED));
+                .append(Component.literal(bank).withStyle(an == null ? ChatFormatting.DARK_GREEN : ChatFormatting.RED));
         ink(g, src, x, y, 0xFFFFFFFF);
         int ky = y + 13;
         keyBoxShown = !(Prices.embeddedKeyInUse() && !Prices.keyInvalid);
@@ -5799,7 +5810,7 @@ final class RoadmapScreen extends Screen {
                     QuestBook.askWynntils();
                 } else if (c.equals("#qclear")) {
                     int n = Waypoints.clearAll();
-                    flash = L.t("wynnlabs.quests.pins_cleared", n);
+                    flash = L.n("wynnlabs.quests.pins_cleared", n);
                     flashUntil = System.currentTimeMillis() + 2500;
                 } else if (c.startsWith("#qpins:")) {
                     String name = c.substring(7);
@@ -5825,7 +5836,7 @@ final class RoadmapScreen extends Screen {
                         labels.add(L.t("wynnlabs.quests.pin_start", QuestGuides.title(name)));
                     }
                     int n = Waypoints.showAll(pts, labels);
-                    flash = n > 0 ? L.t("wynnlabs.quests.pins_added", n) : L.t("wynnlabs.quests.no_coords");
+                    flash = n > 0 ? L.n("wynnlabs.quests.pins_added", n) : L.t("wynnlabs.quests.no_coords");
                     flashUntil = System.currentTimeMillis() + 2500;
                 } else if (c.startsWith("#qpinstage:")) {
                     // the stage you are on (the first one when the quest is not started)
@@ -5845,7 +5856,7 @@ final class RoadmapScreen extends Screen {
                         }
                     }
                     int n = Waypoints.showAll(pts, labels);
-                    flash = n > 0 ? L.t("wynnlabs.quests.pins_added", n) : L.t("wynnlabs.quests.no_coords");
+                    flash = n > 0 ? L.n("wynnlabs.quests.pins_added", n) : L.t("wynnlabs.quests.no_coords");
                     flashUntil = System.currentTimeMillis() + 2500;
                 } else if (c.startsWith("#qadvice:")) {
                     Rules.setAdviceHere(true);
@@ -5894,7 +5905,7 @@ final class RoadmapScreen extends Screen {
                         }
                     }
                     int n = Waypoints.all(pts, labels);
-                    flash = L.t("wynnlabs.quests.plan_marked", n);
+                    flash = L.n("wynnlabs.quests.plan_marked", n);
                     flashUntil = System.currentTimeMillis() + 2500;
                 }
                 return true;

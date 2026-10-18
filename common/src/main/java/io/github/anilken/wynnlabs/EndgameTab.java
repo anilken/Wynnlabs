@@ -573,7 +573,7 @@ final class EndgameTab {
         if (r.raid()) {
             return r.marked() > 0 ? L.t("wynnlabs.endgame.pool_new", r.marked()) : "";
         }
-        return r.mythics() > 0 ? L.t("wynnlabs.endgame.mythic_n", r.mythics()) : "";
+        return r.mythics() > 0 ? L.n("wynnlabs.endgame.mythic_n", r.mythics()) : "";
     }
 
     /** The region list: two lines per raid or camp (glyph and name; the count, the shiny mark and the age). */
@@ -1054,7 +1054,7 @@ final class EndgameTab {
         if (streak) {
             px -= 6 + tw;
             pill(g, px, py, "flame", st, Theme.WARN);
-            tips.add(new Tip(px, py, tw, 13, List.of(title(L.t("wynnlabs.endgame.tip_streak_head", d.streak()), ChatFormatting.GOLD),
+            tips.add(new Tip(px, py, tw, 13, List.of(title(L.n("wynnlabs.endgame.tip_streak_head", d.streak()), ChatFormatting.GOLD),
                     grey(L.t("wynnlabs.endgame.tip_streak")))));
         }
         if (d.raidsUp()) {
@@ -1123,7 +1123,7 @@ final class EndgameTab {
             ink(g, fit(lv[2], lw), lx, y + 42, Theme.INK_3);
         }
         if (large && d.accountDry() >= 0) {
-            ink(g, fit(L.t("wynnlabs.endgame.dry_account_pulls", d.accountDry()), lw), lx, y + 54, Theme.INK_3);
+            ink(g, fit(L.n("wynnlabs.endgame.dry_account_pulls", d.accountDry()), lw), lx, y + 54, Theme.INK_3);
         }
         tips.add(new Tip(mid, y, x + w - mid, h, lootDryTip()));
     }
@@ -1134,7 +1134,7 @@ final class EndgameTab {
         if (!d.raidsUp()) {
             return new String[] {L.t("wynnlabs.endgame.off"), L.t("wynnlabs.endgame.off"), L.t("wynnlabs.endgame.off_wynntils")};
         }
-        String tome = r.tomePulls() >= 0 ? L.t("wynnlabs.endgame.dry_tome", r.tomePulls()) : L.t("wynnlabs.endgame.dry_tome_unknown");
+        String tome = r.tomePulls() >= 0 ? L.n("wynnlabs.endgame.dry_tome", r.tomePulls()) : L.t("wynnlabs.endgame.dry_tome_unknown");
         if (r.aspectPulls() < 0 && r.aspectRaids() < 0) {
             return new String[] {L.t("wynnlabs.endgame.unknown"), L.t("wynnlabs.endgame.unknown"),
                 r.tomePulls() >= 0 ? tome : L.t("wynnlabs.endgame.after_first_raid")};
@@ -1153,7 +1153,7 @@ final class EndgameTab {
                 L.t("wynnlabs.endgame.after_first_lootrun")};
         }
         String sub = d.mythics().isEmpty() ? L.t("wynnlabs.endgame.no_mythic")
-                : L.t("wynnlabs.endgame.mythic_count", d.mythics().size(), d.mythics().get(0).name());
+                : L.n("wynnlabs.endgame.mythic_count", d.mythics().size(), d.mythics().size(), d.mythics().get(0).name());
         return new String[] {L.t("wynnlabs.endgame.dry_loot_value", d.dryPulls(), d.dryRuns()),
             d.dryPulls() + " · " + d.dryRuns(), sub};
     }
@@ -1190,7 +1190,7 @@ final class EndgameTab {
         }
         t.add(grey(L.t("wynnlabs.endgame.tip_loot_dry", d.dryRuns(), d.dryPulls())));
         if (d.accountDry() >= 0) {
-            t.add(dark(L.t("wynnlabs.endgame.tip_loot_account", d.accountDry())));
+            t.add(dark(L.n("wynnlabs.endgame.tip_loot_account", d.accountDry())));
         }
         if (d.mythics().isEmpty()) {
             t.add(grey(L.t("wynnlabs.endgame.no_mythic")));
@@ -1314,7 +1314,7 @@ final class EndgameTab {
             return L.t("wynnlabs.endgame.tier_max");
         }
         if (owned < e.thresholds().size()) {
-            return L.t("wynnlabs.endgame.tier_next", owned + 1, e.thresholds().get(owned));
+            return L.n("wynnlabs.endgame.tier_next", e.thresholds().get(owned), owned + 1, e.thresholds().get(owned));
         }
         return "";
     }
@@ -1343,7 +1343,7 @@ final class EndgameTab {
                 glyph(g, TEX_RAID, "sword", tx, y + 5, 8, Theme.INK_2);
                 ink(g, fit(L.t("wynnlabs.endgame.raid"), tw - 11), tx + 11, y + 5, Theme.INK_2);
                 String v = !d.raidsUp() ? L.t("wynnlabs.endgame.off")
-                        : d.dry().aspectPulls() >= 0 ? L.t("wynnlabs.endgame.pulls_n", d.dry().aspectPulls()) : L.t("wynnlabs.endgame.unknown");
+                        : d.dry().aspectPulls() >= 0 ? L.n("wynnlabs.endgame.pulls_n", d.dry().aspectPulls()) : L.t("wynnlabs.endgame.unknown");
                 value(g, v, d.dry().aspectPulls() >= 0 ? String.valueOf(d.dry().aspectPulls()) : v, tx, y + 17, tw,
                         d.raidsUp() ? Theme.TIER_MYTHIC : Theme.WARN);
                 tip = new ArrayList<>(raidDryTip());
@@ -1352,7 +1352,7 @@ final class EndgameTab {
                 glyph(g, TEX_CAMP, "map-pin", tx, y + 5, 8, Theme.INK_2);
                 ink(g, fit(L.t("wynnlabs.endgame.lootrun"), tw - 11), tx + 11, y + 5, Theme.INK_2);
                 String v = !d.lootUp() ? L.t("wynnlabs.endgame.off")
-                        : d.lootruns().isEmpty() ? L.t("wynnlabs.endgame.no_runs") : L.t("wynnlabs.endgame.pulls_n", d.dryPulls());
+                        : d.lootruns().isEmpty() ? L.t("wynnlabs.endgame.no_runs") : L.n("wynnlabs.endgame.pulls_n", d.dryPulls());
                 value(g, v, d.lootruns().isEmpty() ? v : String.valueOf(d.dryPulls()), tx, y + 17, tw,
                         d.lootUp() ? Theme.TIER_MYTHIC : Theme.WARN);
                 tip = new ArrayList<>(lootDryTip());
@@ -1424,7 +1424,7 @@ final class EndgameTab {
             return y;
         }
         String line = L.t("wynnlabs.endgame.line_loot", d.dryPulls(), d.dryRuns());
-        String m = d.mythics().isEmpty() ? "" : L.t("wynnlabs.endgame.mythic_n", d.mythics().size());
+        String m = d.mythics().isEmpty() ? "" : L.n("wynnlabs.endgame.mythic_n", d.mythics().size());
         int mw = m.isEmpty() ? 0 : font.width(m) + 14;
         String lf = fit(line, w - mw);
         ink(g, lf, x, y, Theme.INK_2);
@@ -1717,7 +1717,7 @@ final class EndgameTab {
             Art.icon(g, f.completed() ? "check" : "x", markX, ty, 8, f.completed() ? Theme.GOOD : Theme.BAD);
             right(g, time(f.durationMs()), timeR, ty, Theme.INK);
             if (!f.isRaid()) {
-                right(g, f.pulls() < 0 ? "-" : L.t("wynnlabs.endgame.pulls_n", f.pulls()), pullsR, ty,
+                right(g, f.pulls() < 0 ? "-" : L.n("wynnlabs.endgame.pulls_n", f.pulls()), pullsR, ty,
                         f.pulls() < 0 ? Theme.INK_3 : Theme.INK);
             }
             right(g, ago(f.endedAt()), ageR, ty, Theme.INK_3);
@@ -1816,7 +1816,7 @@ final class EndgameTab {
     private List<Component> totalsTip(LootrunTotals t) {
         List<Component> out = new ArrayList<>();
         out.add(title(L.t("wynnlabs.endgame.lootrun"), ChatFormatting.GOLD));
-        out.add(grey(L.t("wynnlabs.endgame.tip_totals", t.runs(), t.completed(), t.pulls())));
+        out.add(grey(L.n("wynnlabs.endgame.tip_totals", t.runs(), t.runs(), t.completed(), t.pulls())));
         if (!d.p().loot()) {
             out.add(dark(L.t(d.p().status() == WynnventoryPools.Status.OFF ? "wynnlabs.endgame.mythic_hint_off"
                     : "wynnlabs.endgame.mythic_hint_wait")));
@@ -1827,11 +1827,11 @@ final class EndgameTab {
     /** A large feed row's second line: a lootrun's challenges and beacon colours, a raid's rooms. */
     private void feedDetail(GuiGraphics g, FeedItem f, int x, int y, int w) {
         if (f.isRaid()) {
-            ink(g, fit(L.t("wynnlabs.endgame.rooms_n", f.raid().rooms().size()), w), x, y, Theme.INK_3);
+            ink(g, fit(L.n("wynnlabs.endgame.rooms_n", f.raid().rooms().size()), w), x, y, Theme.INK_3);
             return;
         }
         LootrunRun r = f.lootrun();
-        String ch = L.t("wynnlabs.endgame.challenges_n", r.challenges());
+        String ch = L.n("wynnlabs.endgame.challenges_n", r.challenges());
         String cf = fit(ch, w / 2);
         ink(g, cf, x, y, Theme.INK_3);
         int bx = x + font.width(cf) + 6;
@@ -1859,7 +1859,7 @@ final class EndgameTab {
             ink(g, fit(L.t("wynnlabs.endgame.lootrun_empty"), w), x, y, Theme.INK_3);
             return;
         }
-        ink(g, fit(L.t("wynnlabs.endgame.totals", t.runs(), Math.max(0, t.completionPct()),
+        ink(g, fit(L.n("wynnlabs.endgame.totals", t.runs(), t.runs(), Math.max(0, t.completionPct()),
                 t.pullsPerCompleted() < 0 ? "-" : String.valueOf(Math.round(t.pullsPerCompleted()))), w), x, y, Theme.INK_3);
         tips.add(new Tip(x, y - 1, w, 11, totalsTip(t)));
     }
@@ -1903,7 +1903,7 @@ final class EndgameTab {
         String t = "";
         LootrunTotals tt = d.totals();
         if (d.lootUp() && tt.runs() > 0) {
-            t = L.t("wynnlabs.endgame.totals_short", tt.runs(), Math.max(0, tt.completionPct()),
+            t = L.n("wynnlabs.endgame.totals_short", tt.runs(), tt.runs(), Math.max(0, tt.completionPct()),
                     tt.pullsPerCompleted() < 0 ? "-" : String.valueOf(Math.round(tt.pullsPerCompleted())));
             ink(g, fit(t, w), x, foot, Theme.INK_3);
             tips.add(new Tip(x, foot - 1, w, 11, totalsTip(tt)));
@@ -2544,7 +2544,7 @@ final class EndgameTab {
         if (d < DAY) {
             return L.t("wynnlabs.screen.ago_hours", d / HOUR);
         }
-        return L.t("wynnlabs.screen.ago_days", d / DAY);
+        return L.n("wynnlabs.screen.ago_days", d / DAY);
     }
 
     private void tooltip(GuiGraphics g, int mx, int my, int screenW) {

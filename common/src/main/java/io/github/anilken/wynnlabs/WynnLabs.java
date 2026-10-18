@@ -219,11 +219,11 @@ public final class WynnLabs {
                             .withStyle(net.minecraft.ChatFormatting.GOLD));
                     return 1;
                 })
-                .then(com.mojang.brigadier.builder.RequiredArgumentBuilder.<S, String>argument("esya",
+                .then(com.mojang.brigadier.builder.RequiredArgumentBuilder.<S, String>argument("item",
                                 com.mojang.brigadier.arguments.StringArgumentType.greedyString())
                         .executes(c -> {
                             feedback.accept(c.getSource(), net.minecraft.network.chat.Component.literal(
-                                    Coach.hunt(com.mojang.brigadier.arguments.StringArgumentType.getString(c, "esya")))
+                                    Coach.hunt(com.mojang.brigadier.arguments.StringArgumentType.getString(c, "item")))
                                     .withStyle(net.minecraft.ChatFormatting.GOLD));
                             return 1;
                         }));

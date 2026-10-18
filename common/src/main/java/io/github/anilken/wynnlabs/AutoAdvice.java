@@ -850,7 +850,7 @@ final class AutoAdvice {
         for (int i = 0; i < free; i++) {
             pick.add(nice(order.get(i % order.size())));
         }
-        return L.t("wynnlabs.auto.powder_hint", free, String.join(", ", pick));
+        return L.n("wynnlabs.auto.powder_hint", free, free, String.join(", ", pick));
     }
 
     static String nice(String upper) {

@@ -491,7 +491,7 @@ final class Advice {
             }
         }
         if (dropped > 0) {
-            shortList.add(L.c("wynnlabs.advice.shift_more", dropped).withStyle(ChatFormatting.DARK_GRAY));
+            shortList.add(L.cn("wynnlabs.advice.shift_more", dropped).withStyle(ChatFormatting.DARK_GRAY));
         }
         return shortList;
     }
@@ -631,7 +631,7 @@ final class Advice {
             int shown = 0;
             for (var info : infos) {
                 if (shown++ == 8) {
-                    out.add(L.c("wynnlabs.advice.box_more", infos.size() - 8)
+                    out.add(L.cn("wynnlabs.advice.box_more", infos.size() - 8)
                             .withStyle(ChatFormatting.DARK_GRAY));
                     break;
                 }

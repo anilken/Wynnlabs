@@ -346,9 +346,23 @@ tasks.register('checkLang') {
                 }
             }
         }
+        // a counted text may hold "one|other" forms (L.n): each form has the placeholders of the
+        // other language's text
         enMap.each { k, v ->
-            if (trMap.containsKey(k) && holes(v) != holes(trMap[k])) {
-                problems << "placeholder count differs: ${k}"
+            if (trMap.containsKey(k)) {
+                def counts = (v.split('\\|', -1) + trMap[k].split('\\|', -1)).collect { holes(it) } as Set
+                if (counts.size() != 1) {
+                    problems << "placeholder count differs: ${k}"
+                }
+            }
+        }
+        // L.t would show both forms: a counted text goes through L.n / L.cn
+        def counted = (enMap + trMap).findAll { k, v -> v.contains('|') }.keySet()
+        javaFiles.each { root, f ->
+            (f.getText('UTF-8') =~ /L\.[tc]\(\s*"(wynnlabs\.[A-Za-z0-9_.]*)"/).each { m ->
+                if (counted.contains(m[1])) {
+                    problems << "counted text read with L.t / L.c (use L.n / L.cn): ${m[1]}"
+                }
             }
         }
         (en + tr).findAll { k -> !used.contains(k) && !optional.contains(k) && !prefixes.any { p -> k.startsWith(p) } }

@@ -164,7 +164,7 @@
         "key": "name:Water Powder II",
         "ruleAdvice": {
           "verdict": "USE",
-          "note": "Apply it to your weapon (drag it in the inventory), your build's Water damage"
+          "note": "Add it to your weapon (drag it onto the weapon): your build deals Water damage"
         },
         "kind": "powder"
       },
@@ -381,7 +381,7 @@
         "marketPriceText": "14 EB",
         "ruleAdvice": {
           "verdict": "SELL",
-          "note": "Mage item, you play Shaman. Sell it to the Blacksmith (price not known yet)"
+          "note": "Mage item; you play Shaman. Sell it to the Blacksmith (no price yet)"
         },
         "kind": "gear",
         "type": "WAND",
@@ -458,7 +458,7 @@
         "key": "gearbox:RELIK:UNIQUE:18-22",
         "ruleAdvice": {
           "verdict": "IDENTIFY",
-          "note": "4/4 outcomes suit you, at most 14 emeralds"
+          "note": "4/4 outcomes suit you, costs at most 14 emeralds"
         },
         "kind": "gearbox",
         "type": "RELIK",
