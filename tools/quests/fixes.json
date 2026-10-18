@@ -1,0 +1,30 @@
+{
+  "The Qira Hive": {
+    "stages": [
+      {"title": "Stage 1", "task": "Talk to Yansur at the base of the Qira Hive to start the quest", "hints": ["Each division has nine floors and a Division Leader. To pass a floor, defeat the monsters and put the five catalysts they drop into the collector; the Division Leader drops the single catalyst you need."], "at": null, "points": [], "names": []},
+      {"title": "Stage 2", "task": "Clear the Thunder Division, defeat the Psychomancer, then talk to Yansur for a Thunder Voucher", "hints": ["Take each voucher to the shop at the base of the Hive and talk to the servant there."], "at": null, "points": [], "names": []},
+      {"title": "Stage 3", "task": "Clear the Air Division, defeat Gale, then talk to Yansur for an Air Voucher", "hints": [], "at": null, "points": [], "names": []},
+      {"title": "Stage 4", "task": "Clear the Earth Division, defeat Genesis, then talk to Yansur for an Earth Voucher", "hints": [], "at": null, "points": [], "names": []},
+      {"title": "Stage 5", "task": "Clear the Water Division, defeat the Oceanic Judge, then talk to Yansur for a Water Voucher", "hints": [], "at": null, "points": [], "names": []},
+      {"title": "Stage 6", "task": "Clear the Fire Division, defeat the Solar Vanguard, then talk to Yansur for a Fire Voucher", "hints": [], "at": null, "points": [], "names": []},
+      {"title": "Stage 7", "task": "Clear the Master Division and defeat Qira", "hints": [], "at": null, "points": [], "names": []},
+      {"title": "Stage 8", "task": "Talk to Yansur to finish the quest", "hints": [], "at": null, "points": [], "names": []}
+    ]
+  },
+  "Tower of Ascension": {
+    "stages": [
+      {"title": "Stage 1", "task": "Talk to Ankou at the Tower of Ascension to start the quest", "hints": ["The tower has 7 floors of ten levels each: nine regular levels and one boss level. A regular level needs five tokens from its challenge, a boss level one token."], "at": null, "points": [], "names": []},
+      {"title": "Stage 2", "task": "Begin each floor, collect 5 tokens on each level and hand them to the Floor Master", "hints": ["This repeats for the nine regular levels of every floor."], "at": null, "points": [], "names": []},
+      {"title": "Stage 3", "task": "Collect the boss token on level 10 of each floor and hand it to the Floor Master", "hints": ["After a whole floor you return to Ankou and can begin the next one."], "at": null, "points": [], "names": []},
+      {"title": "Stage 4", "task": "Clear all 7 floors, then talk to Ankou to finish the quest", "hints": [], "at": null, "points": [], "names": []}
+    ]
+  },
+  "???": {
+    "stages": [
+      {"title": "Stage 1", "task": "Talk to the Computer in Gavel and visit the Blue, Red and Yellow Meteors", "hints": ["Each meteor has its own puzzle; the wiki page lists every solution."], "at": null, "points": [], "names": []},
+      {"title": "Stage 2", "task": "Gather the required items and solve the puzzles of Lab Y (Yahya's House)", "hints": [], "at": null, "points": [], "names": []},
+      {"title": "Stage 3", "task": "Solve the puzzles of Lab N (The Checkpoint)", "hints": [], "at": null, "points": [], "names": []},
+      {"title": "Stage 4", "task": "Finish at Lab M (the White Meteor)", "hints": [], "at": null, "points": [], "names": []}
+    ]
+  }
+}

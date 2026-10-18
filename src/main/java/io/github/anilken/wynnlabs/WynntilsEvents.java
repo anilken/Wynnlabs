@@ -1,0 +1,266 @@
+package io.github.anilken.wynnlabs;
+
+import com.wynntils.mc.event.ItemTooltipRenderEvent;
+import com.wynntils.mc.event.SlotRenderEvent;
+import com.wynntils.models.characterstats.event.CombatXpGainEvent;
+import com.wynntils.models.combat.type.DamageDealtEvent;
+import com.wynntils.models.containers.event.ValuableFoundEvent;
+import com.wynntils.models.items.WynnItem;
+import com.wynntils.models.items.items.game.AspectItem;
+import com.wynntils.models.items.properties.NamedItemProperty;
+import com.wynntils.models.lootrun.event.LootrunBeaconSelectedEvent;
+import com.wynntils.models.lootrun.event.LootrunFinishedEvent;
+import com.wynntils.models.raid.event.RaidEndedEvent;
+import com.wynntils.models.raid.event.RaidStartedEvent;
+import com.wynntils.models.raid.raids.RaidKind;
+import com.wynntils.models.raid.type.RaidInfo;
+import com.wynntils.models.spells.event.SpellEvent;
+import com.wynntils.models.spells.type.SpellFailureReason;
+import io.github.anilken.wynnlabs.model.RaidRun;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.TreeMap;
+
+/**
+ * The Wynntils events the mod listens to, registered on Wynntils' bus by {@link Wyn#listen}.
+ * Each handler only unpacks the event and hands plain values to the code that acts on them
+ * ({@link TooltipListener}, {@link Coach}, and for the Endgame tab {@link RaidLog} and
+ * {@link LootrunLog} through the nested listeners), so Wynntils' event types stay in this file.
+ */
+public final class WynntilsEvents {
+
+    /** Slot glows and the red "cannot wear" frame. */
+    @SubscribeEvent
+    public void onSlotPre(SlotRenderEvent.Pre event) {
+        long t = Perf.start();
+        try {
+            TooltipListener.onSlot(event.getGuiGraphics(), event.getSlot());
+        } catch (Throwable ignored) {
+            // drawing a glow must never break the menu
+        } finally {
+            Perf.end("slot.pre", t);
+        }
+    }
+
+    /**
+     * The plan's step number on the ability tree's nodes and the advice word on items, over the
+     * drawn item: last of all, after Wynntils' own slot overlays (the box icon on unidentified
+     * gear), in a layer above them.
+     */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onSlotPost(SlotRenderEvent.Post event) {
+        long t = Perf.start();
+        try {
+            TooltipListener.onSlotAfter(event.getGuiGraphics(), event.getSlot());
+        } catch (Throwable ignored) {
+            // drawing a number must never break the menu
+        } finally {
+            Perf.end("slot.post", t);
+        }
+    }
+
+    /** Advice and prices under the final tooltip: lowest priority, so they go under everything else. */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onTooltip(ItemTooltipRenderEvent.Pre event) {
+        long t = Perf.start();
+        try {
+            List<Component> out = TooltipListener.onTooltip(event.getItemStack(), event.getTooltips());
+            if (out != null) {
+                event.setTooltips(out);
+            }
+        } catch (Throwable ignored) {
+            // a broken advice line must never break the tooltip
+        } finally {
+            Perf.end("tooltip.wynntils", t);
+        }
+    }
+
+    @SubscribeEvent
+    public void onCast(SpellEvent.Cast e) {
+        Coach.onCast();
+    }
+
+    @SubscribeEvent
+    public void onDamage(DamageDealtEvent e) {
+        Coach.onDamage(e.getDamages().values());
+    }
+
+    @SubscribeEvent
+    public void onSpellFailed(SpellEvent.Failed e) {
+        if (e.getFailureReason() == SpellFailureReason.NOT_ENOUGH_MANA) {
+            Coach.onManaFail();
+        }
+    }
+
+    @SubscribeEvent
+    public void onXp(CombatXpGainEvent e) {
+        Coach.onXp();
+    }
+
+    // ---- the Endgame tab: raids, lootruns, reward chest mythics ----
+    //
+    // Each group is a listener of its own, registered under its feature (Wyn.listen), so a
+    // Wynntils change to one of these events turns off that tracking only, never the tooltips
+    // above. Every read of an event runs in Wyn.guard; the logs get plain values.
+
+    /** Raid starts and ends, for {@link RaidLog}. */
+    public static final class Raids {
+
+        @SubscribeEvent
+        public void onRaidStarted(RaidStartedEvent e) {
+            long now = System.currentTimeMillis();
+            String raid = Wyn.guard(Wyn.Feature.RAIDS, () -> e.getRaidKind() == null ? null : e.getRaidKind().getRaidName(), null);
+            if (raid != null) {
+                hand("raid start", () -> RaidLog.started(raid, now));
+            }
+        }
+
+        @SubscribeEvent
+        public void onRaidCompleted(RaidEndedEvent.Completed e) {
+            ended(e, true);
+        }
+
+        @SubscribeEvent
+        public void onRaidFailed(RaidEndedEvent.Failed e) {
+            ended(e, false);
+        }
+
+        private static void ended(RaidEndedEvent e, boolean completed) {
+            long now = System.currentTimeMillis();
+            RaidRun run = Wyn.guard(Wyn.Feature.RAIDS, () -> raidRun(e.getRaid(), completed, now), null);
+            if (run != null) {
+                System.out.println("[WynnLabs] raid " + (completed ? "completed" : "failed") + ": " + run.raid());
+                hand("raid end", () -> RaidLog.record(run));
+            }
+        }
+
+        private static RaidRun raidRun(RaidInfo info, boolean completed, long now) {
+            if (info == null || info.getRaidKind() == null) {
+                return null;
+            }
+            RaidKind kind = info.getRaidKind();
+            List<RaidRun.Room> rooms = new ArrayList<>();
+            if (info.getChallenges() != null) {
+                new TreeMap<>(info.getChallenges()).values().forEach(r -> {
+                    if (r != null) {
+                        rooms.add(new RaidRun.Room(r.getRoomName(), r.getRoomTotalTime()));
+                    }
+                });
+            }
+            return new RaidRun(kind.getRaidName(), kind.getAbbreviation(), completed, now, info.getTimeInRaid(), rooms);
+        }
+    }
+
+    /** Lootrun ends and beacon picks, for {@link LootrunLog}. */
+    public static final class Lootruns {
+
+        @SubscribeEvent
+        public void onLootrunCompleted(LootrunFinishedEvent.Completed e) {
+            long now = System.currentTimeMillis();
+            int[] v = Wyn.guard(Wyn.Feature.LOOTRUNS, () -> new int[] {e.getChallengesCompleted(), e.getTimeElapsed(),
+                    e.getRewardPulls(), e.getRewardRerolls(), e.getRewardSacrifices(), e.getExperienceGained()}, null);
+            if (v != null) {
+                System.out.println("[WynnLabs] lootrun completed: " + v[0] + " challenges, " + v[2] + " pulls");
+                hand("lootrun end", () -> LootrunLog.finished(true, v[0], v[1], v[2], v[3], v[4], v[5], now));
+            }
+        }
+
+        @SubscribeEvent
+        public void onLootrunFailed(LootrunFinishedEvent.Failed e) {
+            long now = System.currentTimeMillis();
+            int[] v = Wyn.guard(Wyn.Feature.LOOTRUNS, () -> new int[] {e.getChallengesCompleted(), e.getTimeElapsed()}, null);
+            if (v != null) {
+                System.out.println("[WynnLabs] lootrun failed: " + v[0] + " challenges");
+                hand("lootrun end", () -> LootrunLog.finished(false, v[0], v[1], 0, 0, 0, 0, now));
+            }
+        }
+
+        @SubscribeEvent
+        public void onBeaconSelected(LootrunBeaconSelectedEvent e) {
+            String colour = Wyn.guard(Wyn.Feature.LOOTRUNS, () -> {
+                Object kind = e.getBeacon() == null ? null : e.getBeacon().beaconKind();
+                return kind instanceof Enum<?> k ? colourName(k.name()) : null;
+            }, null);
+            if (colour != null) {
+                System.out.println("[WynnLabs] lootrun beacon: " + colour);
+                hand("lootrun beacon", () -> LootrunLog.beacon(colour));
+            }
+        }
+
+        /** "DARK_GRAY" → "Dark Gray", as the game names the colour. */
+        private static String colourName(String constant) {
+            StringBuilder b = new StringBuilder();
+            for (String part : constant.toLowerCase(Locale.ROOT).split("_")) {
+                if (part.isEmpty()) {
+                    continue;
+                }
+                if (b.length() > 0) {
+                    b.append(' ');
+                }
+                b.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1));
+            }
+            return b.toString();
+        }
+    }
+
+    /** Mythics found in lootrun and raid reward chests (other sources are ignored). */
+    public static final class Valuables {
+
+        private static final String LOOTRUN = "lootrun";
+        private static final String RAID_ASPECT = "raid aspect";
+        private static final String RAID_OTHER = "raid";
+
+        @SubscribeEvent
+        public void onValuableFound(ValuableFoundEvent e) {
+            long now = System.currentTimeMillis();
+            // source first, under the feature it feeds
+            String source = Wyn.guard(Wyn.Feature.LOOTRUNS, () -> {
+                ValuableFoundEvent.ItemSource s = e.getItemSource();
+                if (s == ValuableFoundEvent.ItemSource.LOOTRUN_REWARD_CHEST) {
+                    return LOOTRUN;
+                }
+                return s == ValuableFoundEvent.ItemSource.RAID_REWARD_CHEST ? RAID_OTHER : null;
+            }, null);
+            if (source == null) {
+                return;
+            }
+            Wyn.Feature f = LOOTRUN.equals(source) ? Wyn.Feature.LOOTRUNS : Wyn.Feature.RAIDS;
+            String[] found = Wyn.guard(f, () -> {
+                ItemStack stack = e.getItem();
+                if (stack == null || stack.isEmpty()) {
+                    return null;
+                }
+                WynnItem item = Wyn.item(stack).orElse(null);
+                String name = item instanceof NamedItemProperty n ? n.getName() : stack.getHoverName().getString();
+                String plain = ChatFormatting.stripFormatting(name);
+                String kind = LOOTRUN.equals(source) ? LOOTRUN : item instanceof AspectItem ? RAID_ASPECT : RAID_OTHER;
+                return plain == null || plain.isBlank() ? null : new String[] {plain.trim(), kind};
+            }, null);
+            if (found == null) {
+                return;
+            }
+            System.out.println("[WynnLabs] mythic from a " + (LOOTRUN.equals(found[1]) ? "lootrun" : "raid") + " reward chest: " + found[0]);
+            if (LOOTRUN.equals(found[1])) {
+                hand("lootrun mythic", () -> LootrunLog.mythic(found[0], now));
+            } else {
+                hand("raid mythic", () -> RaidLog.mythic(found[0], RAID_ASPECT.equals(found[1]), now));
+            }
+        }
+    }
+
+    /** Hands plain values to a log; its failure is logged and never reaches Wynntils' bus. */
+    private static void hand(String what, Runnable r) {
+        try {
+            r.run();
+        } catch (RuntimeException ex) {
+            System.out.println("[WynnLabs] " + what + " failed: " + ex);
+        }
+    }
+}

@@ -1,0 +1,15 @@
+Secret discovery guides (en.json, tr.json)
+
+The names, lore, requirements and access steps in these files come from the Wynncraft Wiki
+(https://wynncraft.wiki.gg), one page per discovery; each entry's "wiki" field links its source
+page. The wiki's text is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 3.0
+(CC BY-NC-SA 3.0, https://creativecommons.org/licenses/by-nc-sa/3.0/).
+
+The English steps were extracted with tools/discoveries/fetch.py and shortened or reworded by hand
+where a page's layout did not cut into clear steps. tr.json is a Turkish translation of en.json.
+Both files are adaptations of the wiki's text and are shared under the same licence,
+CC BY-NC-SA 3.0. They are not covered by Wynn Labs' LGPL-3.0 licence, and they may not be used
+commercially: if Wynn Labs is ever sold or bundled commercially, these files must be removed.
+
+Wynncraft and its content belong to their owners. Wynn Labs is not affiliated with Wynncraft or
+the Wynncraft Wiki.

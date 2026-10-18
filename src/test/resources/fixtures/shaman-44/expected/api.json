@@ -1,0 +1,3955 @@
+{
+  "inventory": {
+    "items": [
+      {
+        "slot": "hotbar_0",
+        "name": "Heavensent",
+        "count": 1,
+        "key": "gear:Heavensent:rawIntelligence=10:rawDefence=-8:rawAgility=10:combatExperience=11:manaRegen=8:walkSpeed=13",
+        "marketPrice": 1166,
+        "marketPriceText": "18 EB",
+        "kind": "gear",
+        "type": "RELIK",
+        "tier": "LEGENDARY",
+        "level": 42,
+        "class": "SHAMAN",
+        "unidentified": false,
+        "powderSlots": 2,
+        "requirements": {
+          "level": 42,
+          "class": "SHAMAN",
+          "skills": {
+            "INTELLIGENCE": 17,
+            "AGILITY": 17
+          }
+        },
+        "identifyCost": 201,
+        "baseStats": {
+          "averageDps": 270,
+          "attackSpeed": "FAST",
+          "damage": {
+            "WATER": "48-60",
+            "AIR": "48-60"
+          }
+        },
+        "overallPercent": 69.4,
+        "rerolls": 2,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Intelligence",
+            "key": "rawIntelligence",
+            "value": 10,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Defence",
+            "key": "rawDefence",
+            "value": -8,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Agility",
+            "key": "rawAgility",
+            "value": 10,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Combat Experience",
+            "key": "combatExperience",
+            "value": 11,
+            "unit": "PERCENT",
+            "min": 3,
+            "max": 13
+          },
+          {
+            "stat": "Mana Regen",
+            "key": "manaRegen",
+            "value": 8,
+            "unit": "PER_5_S",
+            "min": 2,
+            "max": 10
+          },
+          {
+            "stat": "Walk Speed",
+            "key": "walkSpeed",
+            "value": 13,
+            "unit": "PERCENT",
+            "min": 5,
+            "max": 20
+          }
+        ]
+      },
+      {
+        "slot": "hotbar_1",
+        "name": "[+420 ❤] Potions of Healing [24/30]",
+        "count": 1,
+        "key": "name:[+420 ❤] Potions of Healing [24/30]",
+        "ruleAdvice": {
+          "verdict": "USE",
+          "note": "Can iksiri, zor dövüşte iç"
+        },
+        "kind": "multihealthpotion"
+      },
+      {
+        "slot": "hotbar_6",
+        "name": "Wyvern Flute",
+        "count": 1,
+        "key": "name:Wyvern Flute",
+        "kind": "mount"
+      },
+      {
+        "slot": "hotbar_7",
+        "name": "Character Info",
+        "count": 1,
+        "key": "name:Character Info",
+        "kind": "wynn"
+      },
+      {
+        "slot": "hotbar_8",
+        "name": "Content Book",
+        "count": 1,
+        "key": "name:Content Book",
+        "kind": "wynn"
+      },
+      {
+        "slot": "inventory_9",
+        "name": "Warsong",
+        "count": 1,
+        "key": "gear:Warsong:rawStrength=2:rawDexterity=2:manaRegen=-4:spellDamage=5:mainAttackDamage=5",
+        "marketPrice": 1783,
+        "marketPriceText": "28 EB",
+        "kind": "gear",
+        "type": "RING",
+        "tier": "LEGENDARY",
+        "level": 33,
+        "class": null,
+        "unidentified": false,
+        "powderSlots": 0,
+        "requirements": {
+          "level": 33,
+          "skills": {
+            "STRENGTH": 10,
+            "DEXTERITY": 10
+          }
+        },
+        "identifyCost": 161,
+        "baseStats": {
+          "health": 50
+        },
+        "overallPercent": 50.0,
+        "rerolls": 0,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Strength",
+            "key": "rawStrength",
+            "value": 2,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Dexterity",
+            "key": "rawDexterity",
+            "value": 2,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Mana Regen",
+            "key": "manaRegen",
+            "value": -4,
+            "unit": "PER_5_S",
+            "min": -5,
+            "max": -3
+          },
+          {
+            "stat": "Spell Damage",
+            "key": "spellDamage",
+            "value": 5,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 8
+          },
+          {
+            "stat": "Main Attack Damage",
+            "key": "mainAttackDamage",
+            "value": 5,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 8
+          }
+        ]
+      },
+      {
+        "slot": "inventory_10",
+        "name": "Precious",
+        "count": 1,
+        "key": "gear:Precious:rawIntelligence=3:rawAgility=3:combatExperience=12:healthRegenRaw=23:walkSpeed=8",
+        "marketPrice": 2623,
+        "marketPriceText": "41 EB",
+        "kind": "gear",
+        "type": "RING",
+        "tier": "LEGENDARY",
+        "level": 41,
+        "class": null,
+        "unidentified": false,
+        "powderSlots": 0,
+        "requirements": {
+          "level": 41
+        },
+        "identifyCost": 197,
+        "baseStats": {
+          "health": -80
+        },
+        "overallPercent": 86.9,
+        "rerolls": 0,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Intelligence",
+            "key": "rawIntelligence",
+            "value": 3,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Agility",
+            "key": "rawAgility",
+            "value": 3,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Combat Experience",
+            "key": "combatExperience",
+            "value": 12,
+            "unit": "PERCENT",
+            "min": 3,
+            "max": 13
+          },
+          {
+            "stat": "Health Regen",
+            "key": "healthRegenRaw",
+            "value": 23,
+            "unit": "RAW",
+            "min": 6,
+            "max": 26
+          },
+          {
+            "stat": "Walk Speed",
+            "key": "walkSpeed",
+            "value": 8,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 9
+          }
+        ]
+      },
+      {
+        "slot": "inventory_11",
+        "name": "Grisly Gauntlet",
+        "count": 1,
+        "key": "gear:Grisly Gauntlet:rawStrength=5:lifeSteal=-22:healthRegenRaw=-14:rawMainAttackDamage=17:walkSpeed=4",
+        "marketPrice": 572,
+        "marketPriceText": "9 EB",
+        "kind": "gear",
+        "type": "BRACELET",
+        "tier": "LEGENDARY",
+        "level": 37,
+        "class": null,
+        "unidentified": false,
+        "powderSlots": 0,
+        "requirements": {
+          "level": 37,
+          "skills": {
+            "STRENGTH": 20
+          }
+        },
+        "identifyCost": 179,
+        "baseStats": {
+          "defence": {
+            "EARTH": 20
+          }
+        },
+        "overallPercent": 39.9,
+        "rerolls": 0,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Strength",
+            "key": "rawStrength",
+            "value": 5,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Life Steal",
+            "key": "lifeSteal",
+            "value": -22,
+            "unit": "PER_3_S",
+            "min": -30,
+            "max": -16
+          },
+          {
+            "stat": "Health Regen",
+            "key": "healthRegenRaw",
+            "value": -14,
+            "unit": "RAW",
+            "min": -18,
+            "max": -10
+          },
+          {
+            "stat": "Main Attack Damage",
+            "key": "rawMainAttackDamage",
+            "value": 17,
+            "unit": "RAW",
+            "min": 12,
+            "max": 52
+          },
+          {
+            "stat": "Walk Speed",
+            "key": "walkSpeed",
+            "value": 4,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 7
+          }
+        ]
+      },
+      {
+        "slot": "inventory_12",
+        "name": "Generator Amulet",
+        "count": 1,
+        "key": "gear:Generator Amulet:exploding=5:spellDamage=10:rawSpellDamage=15",
+        "marketPrice": 630,
+        "marketPriceText": "10 EB",
+        "kind": "gear",
+        "type": "NECKLACE",
+        "tier": "RARE",
+        "level": 41,
+        "class": null,
+        "unidentified": false,
+        "powderSlots": 0,
+        "requirements": {
+          "level": 41,
+          "quest": "Heart of Llevigar"
+        },
+        "identifyCost": 58,
+        "baseStats": {
+          "defence": {
+            "EARTH": -20,
+            "THUNDER": 10,
+            "WATER": 10,
+            "FIRE": 10,
+            "AIR": -10
+          }
+        },
+        "overallPercent": 68.3,
+        "rerolls": 0,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Exploding",
+            "key": "exploding",
+            "value": 5,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 7
+          },
+          {
+            "stat": "Spell Damage",
+            "key": "spellDamage",
+            "value": 10,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 10
+          },
+          {
+            "stat": "Spell Damage",
+            "key": "rawSpellDamage",
+            "value": 15,
+            "unit": "RAW",
+            "min": 6,
+            "max": 26
+          }
+        ]
+      },
+      {
+        "slot": "inventory_13",
+        "name": "Ingredient Pouch",
+        "count": 1,
+        "key": "name:Ingredient Pouch",
+        "kind": "ingredientpouch"
+      },
+      {
+        "slot": "inventory_14",
+        "name": "Emerald Pouch [Tier 7]",
+        "count": 1,
+        "key": "name:Emerald Pouch [Tier 7]",
+        "kind": "emeraldpouch"
+      },
+      {
+        "slot": "inventory_15",
+        "name": "Unidentified Chestplate",
+        "count": 1,
+        "key": "gearbox:CHESTPLATE:LEGENDARY:36-40",
+        "ruleAdvice": {
+          "verdict": "SELL",
+          "note": "No outcome helps your build (best: Sundown Poncho -3.7%). Sell it to the Blacksmith (untradable)"
+        },
+        "kind": "gearbox",
+        "type": "CHESTPLATE",
+        "tier": "LEGENDARY",
+        "levelRange": {
+          "min": 36,
+          "max": 40
+        },
+        "possibilities": [
+          {
+            "name": "Sundown Poncho",
+            "type": "CHESTPLATE",
+            "tier": "LEGENDARY",
+            "level": 40,
+            "skillRequirements": {
+              "DEXTERITY": 15,
+              "DEFENCE": 15
+            },
+            "identifyCost": 192,
+            "powderSlots": 2,
+            "baseStats": {
+              "health": 500,
+              "defence": {
+                "THUNDER": 30,
+                "FIRE": 25
+              }
+            },
+            "possibleStats": [
+              {
+                "stat": "Combat Experience",
+                "key": "combatExperience",
+                "min": 3,
+                "max": 14,
+                "unit": "PERCENT"
+              },
+              {
+                "stat": "Fire Damage",
+                "key": "fireDamage",
+                "min": 7,
+                "max": 30,
+                "unit": "PERCENT"
+              },
+              {
+                "stat": "Main Attack Damage",
+                "key": "mainAttackDamage",
+                "min": 12,
+                "max": 52,
+                "unit": "PERCENT"
+              },
+              {
+                "stat": "Attack Speed",
+                "key": "rawAttackSpeed",
+                "min": -1,
+                "max": -1,
+                "unit": "TIER"
+              },
+              {
+                "stat": "Defence",
+                "key": "rawDefence",
+                "min": 6,
+                "max": 6,
+                "unit": "RAW"
+              },
+              {
+                "stat": "Dexterity",
+                "key": "rawDexterity",
+                "min": 8,
+                "max": 8,
+                "unit": "RAW"
+              },
+              {
+                "stat": "Thunder Damage",
+                "key": "thunderDamage",
+                "min": 7,
+                "max": 30,
+                "unit": "PERCENT"
+              },
+              {
+                "stat": "Water Defence",
+                "key": "waterDefence",
+                "min": -32,
+                "max": -17,
+                "unit": "PERCENT"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "slot": "inventory_16",
+        "name": "Pink Wool",
+        "count": 1,
+        "key": "ingredient:Pink Wool",
+        "marketPrice": 294,
+        "marketPriceText": "5 EB",
+        "ruleAdvice": {
+          "verdict": "KEEP",
+          "note": "Low value (~5 EB), not worth the Trade Market; get rid of it if you need the space"
+        },
+        "kind": "ingredient",
+        "tier": 1,
+        "level": 2,
+        "professions": [
+          "TAILORING"
+        ]
+      },
+      {
+        "slot": "inventory_17",
+        "name": "Cluckles' Favourite Feather",
+        "count": 1,
+        "key": "name:Cluckles' Favourite Feather",
+        "kind": "misc"
+      },
+      {
+        "slot": "inventory_32",
+        "name": "Llevigar Teleportation Scroll [3/3]",
+        "count": 1,
+        "key": "name:Llevigar Teleportation Scroll [3/3]",
+        "ruleAdvice": {
+          "verdict": "USE",
+          "note": "Şehre hızlı dönüş, yürümekten iyidir"
+        },
+        "kind": "teleportscroll"
+      },
+      {
+        "slot": "inventory_34",
+        "name": "Detlas Teleportation Scroll [3/3]",
+        "count": 1,
+        "key": "name:Detlas Teleportation Scroll [3/3]",
+        "ruleAdvice": {
+          "verdict": "USE",
+          "note": "Şehre hızlı dönüş, yürümekten iyidir"
+        },
+        "kind": "teleportscroll"
+      }
+    ],
+    "note": "Empty slots are omitted. Slots 9-12 hold Wynncraft accessories."
+  },
+  "equipped": {
+    "armour": [
+      {
+        "slot": "head",
+        "name": "Yume",
+        "count": 1,
+        "key": "gear:Yume:rawAgility=5:combatExperience=12:airDamage=5:rawSpellDamage=56:walkSpeed=14",
+        "marketPrice": 1680,
+        "marketPriceText": "26 EB",
+        "kind": "gear",
+        "type": "HELMET",
+        "tier": "LEGENDARY",
+        "level": 37,
+        "class": null,
+        "unidentified": false,
+        "powderSlots": 1,
+        "requirements": {
+          "level": 37,
+          "skills": {
+            "AGILITY": 25
+          }
+        },
+        "identifyCost": 179,
+        "baseStats": {
+          "health": 385,
+          "defence": {
+            "FIRE": -40,
+            "AIR": 15
+          }
+        },
+        "overallPercent": 60.1,
+        "rerolls": 0,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Agility",
+            "key": "rawAgility",
+            "value": 5,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Combat Experience",
+            "key": "combatExperience",
+            "value": 12,
+            "unit": "PERCENT",
+            "min": 4,
+            "max": 16
+          },
+          {
+            "stat": "Air Damage",
+            "key": "airDamage",
+            "value": 5,
+            "unit": "PERCENT",
+            "min": 4,
+            "max": 16
+          },
+          {
+            "stat": "Spell Damage",
+            "key": "rawSpellDamage",
+            "value": 56,
+            "unit": "RAW",
+            "min": 15,
+            "max": 65
+          },
+          {
+            "stat": "Walk Speed",
+            "key": "walkSpeed",
+            "value": 14,
+            "unit": "PERCENT",
+            "min": 4,
+            "max": 16
+          }
+        ]
+      },
+      {
+        "slot": "chest",
+        "name": "Nemract's Ruin",
+        "count": 1,
+        "key": "gear:Nemract's Ruin:rawIntelligence=7:rawMaxMana=17:earthDamage=15:waterDamage=12:fireDamage=-12:spellDamage=8:rawMainAttackDamage=39",
+        "marketPrice": 525,
+        "marketPriceText": "8 EB",
+        "kind": "gear",
+        "type": "CHESTPLATE",
+        "tier": "LEGENDARY",
+        "level": 27,
+        "class": null,
+        "unidentified": false,
+        "powderSlots": 1,
+        "requirements": {
+          "level": 27,
+          "skills": {
+            "STRENGTH": 10,
+            "INTELLIGENCE": 5
+          }
+        },
+        "identifyCost": 134,
+        "baseStats": {
+          "health": 235,
+          "defence": {
+            "EARTH": 20,
+            "THUNDER": -10,
+            "WATER": 20,
+            "AIR": -10
+          }
+        },
+        "overallPercent": 63.3,
+        "rerolls": 2,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Intelligence",
+            "key": "rawIntelligence",
+            "value": 7,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Max Mana",
+            "key": "rawMaxMana",
+            "value": 17,
+            "unit": "RAW",
+            "min": 5,
+            "max": 22
+          },
+          {
+            "stat": "Earth Damage",
+            "key": "earthDamage",
+            "value": 15,
+            "unit": "PERCENT",
+            "min": 4,
+            "max": 16
+          },
+          {
+            "stat": "Water Damage",
+            "key": "waterDamage",
+            "value": 12,
+            "unit": "PERCENT",
+            "min": 3,
+            "max": 13
+          },
+          {
+            "stat": "Fire Damage",
+            "key": "fireDamage",
+            "value": -12,
+            "unit": "PERCENT",
+            "min": -16,
+            "max": -8
+          },
+          {
+            "stat": "Spell Damage",
+            "key": "spellDamage",
+            "value": 8,
+            "unit": "PERCENT",
+            "min": 4,
+            "max": 16
+          },
+          {
+            "stat": "Main Attack Damage",
+            "key": "rawMainAttackDamage",
+            "value": 39,
+            "unit": "RAW",
+            "min": 16,
+            "max": 68
+          }
+        ]
+      },
+      {
+        "slot": "legs",
+        "name": "Chained Pixels",
+        "count": 1,
+        "key": "gear:Chained Pixels:rawStrength=4:rawDexterity=4:rawIntelligence=4:rawDefence=4:rawAgility=4:combatExperience=6:lootBonus=12:elementalDefence=13",
+        "marketPrice": 537,
+        "marketPriceText": "8 EB",
+        "kind": "gear",
+        "type": "LEGGINGS",
+        "tier": "LEGENDARY",
+        "level": 38,
+        "class": null,
+        "unidentified": false,
+        "powderSlots": 0,
+        "requirements": {
+          "level": 38,
+          "skills": {
+            "STRENGTH": 8,
+            "DEXTERITY": 8,
+            "INTELLIGENCE": 8,
+            "DEFENCE": 8,
+            "AGILITY": 8
+          }
+        },
+        "identifyCost": 183,
+        "baseStats": {
+          "health": 512,
+          "defence": {
+            "EARTH": 16,
+            "THUNDER": 16,
+            "WATER": 16,
+            "FIRE": 16,
+            "AIR": 16
+          }
+        },
+        "overallPercent": 41.7,
+        "rerolls": 0,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Strength",
+            "key": "rawStrength",
+            "value": 4,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Dexterity",
+            "key": "rawDexterity",
+            "value": 4,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Intelligence",
+            "key": "rawIntelligence",
+            "value": 4,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Defence",
+            "key": "rawDefence",
+            "value": 4,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Agility",
+            "key": "rawAgility",
+            "value": 4,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Combat Experience",
+            "key": "combatExperience",
+            "value": 6,
+            "unit": "PERCENT",
+            "min": 5,
+            "max": 21
+          },
+          {
+            "stat": "Loot",
+            "key": "lootBonus",
+            "value": 12,
+            "unit": "PERCENT",
+            "min": 5,
+            "max": 21
+          },
+          {
+            "stat": "Elemental Defence",
+            "key": "elementalDefence",
+            "value": 13,
+            "unit": "PERCENT",
+            "min": 4,
+            "max": 16
+          }
+        ]
+      },
+      {
+        "slot": "feet",
+        "name": "Galloping Spurs",
+        "count": 1,
+        "key": "gear:Galloping Spurs:combatExperience=11:thorns=10:earthDamage=8:mainAttackDamage=3:walkSpeed=12",
+        "marketPrice": 1228,
+        "marketPriceText": "19 EB",
+        "kind": "gear",
+        "type": "BOOTS",
+        "tier": "FABLED",
+        "level": 40,
+        "class": null,
+        "unidentified": false,
+        "powderSlots": 0,
+        "requirements": {
+          "level": 40,
+          "skills": {
+            "STRENGTH": 25
+          }
+        },
+        "identifyCost": 336,
+        "baseStats": {
+          "health": 560,
+          "defence": {
+            "EARTH": 20
+          }
+        },
+        "overallPercent": 46.5,
+        "rerolls": 0,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Combat Experience",
+            "key": "combatExperience",
+            "value": 11,
+            "unit": "PERCENT",
+            "min": 5,
+            "max": 20
+          },
+          {
+            "stat": "Thorns",
+            "key": "thorns",
+            "value": 10,
+            "unit": "PERCENT",
+            "min": 3,
+            "max": 13
+          },
+          {
+            "stat": "Earth Damage",
+            "key": "earthDamage",
+            "value": 8,
+            "unit": "PERCENT",
+            "min": 5,
+            "max": 20
+          },
+          {
+            "stat": "Main Attack Damage",
+            "key": "mainAttackDamage",
+            "value": 3,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 10
+          },
+          {
+            "stat": "Walk Speed",
+            "key": "walkSpeed",
+            "value": 12,
+            "unit": "PERCENT",
+            "min": 3,
+            "max": 13
+          }
+        ]
+      }
+    ],
+    "accessories": [
+      {
+        "slot": "accessory_0",
+        "name": "Warsong",
+        "count": 1,
+        "key": "gear:Warsong:rawStrength=2:rawDexterity=2:manaRegen=-4:spellDamage=5:mainAttackDamage=5",
+        "marketPrice": 1783,
+        "marketPriceText": "28 EB",
+        "kind": "gear",
+        "type": "RING",
+        "tier": "LEGENDARY",
+        "level": 33,
+        "class": null,
+        "unidentified": false,
+        "powderSlots": 0,
+        "requirements": {
+          "level": 33,
+          "skills": {
+            "STRENGTH": 10,
+            "DEXTERITY": 10
+          }
+        },
+        "identifyCost": 161,
+        "baseStats": {
+          "health": 50
+        },
+        "overallPercent": 50.0,
+        "rerolls": 0,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Strength",
+            "key": "rawStrength",
+            "value": 2,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Dexterity",
+            "key": "rawDexterity",
+            "value": 2,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Mana Regen",
+            "key": "manaRegen",
+            "value": -4,
+            "unit": "PER_5_S",
+            "min": -5,
+            "max": -3
+          },
+          {
+            "stat": "Spell Damage",
+            "key": "spellDamage",
+            "value": 5,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 8
+          },
+          {
+            "stat": "Main Attack Damage",
+            "key": "mainAttackDamage",
+            "value": 5,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 8
+          }
+        ]
+      },
+      {
+        "slot": "accessory_1",
+        "name": "Precious",
+        "count": 1,
+        "key": "gear:Precious:rawIntelligence=3:rawAgility=3:combatExperience=12:healthRegenRaw=23:walkSpeed=8",
+        "marketPrice": 2623,
+        "marketPriceText": "41 EB",
+        "kind": "gear",
+        "type": "RING",
+        "tier": "LEGENDARY",
+        "level": 41,
+        "class": null,
+        "unidentified": false,
+        "powderSlots": 0,
+        "requirements": {
+          "level": 41
+        },
+        "identifyCost": 197,
+        "baseStats": {
+          "health": -80
+        },
+        "overallPercent": 86.9,
+        "rerolls": 0,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Intelligence",
+            "key": "rawIntelligence",
+            "value": 3,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Agility",
+            "key": "rawAgility",
+            "value": 3,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Combat Experience",
+            "key": "combatExperience",
+            "value": 12,
+            "unit": "PERCENT",
+            "min": 3,
+            "max": 13
+          },
+          {
+            "stat": "Health Regen",
+            "key": "healthRegenRaw",
+            "value": 23,
+            "unit": "RAW",
+            "min": 6,
+            "max": 26
+          },
+          {
+            "stat": "Walk Speed",
+            "key": "walkSpeed",
+            "value": 8,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 9
+          }
+        ]
+      },
+      {
+        "slot": "accessory_2",
+        "name": "Grisly Gauntlet",
+        "count": 1,
+        "key": "gear:Grisly Gauntlet:rawStrength=5:lifeSteal=-22:healthRegenRaw=-14:rawMainAttackDamage=17:walkSpeed=4",
+        "marketPrice": 572,
+        "marketPriceText": "9 EB",
+        "kind": "gear",
+        "type": "BRACELET",
+        "tier": "LEGENDARY",
+        "level": 37,
+        "class": null,
+        "unidentified": false,
+        "powderSlots": 0,
+        "requirements": {
+          "level": 37,
+          "skills": {
+            "STRENGTH": 20
+          }
+        },
+        "identifyCost": 179,
+        "baseStats": {
+          "defence": {
+            "EARTH": 20
+          }
+        },
+        "overallPercent": 39.9,
+        "rerolls": 0,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Strength",
+            "key": "rawStrength",
+            "value": 5,
+            "unit": "RAW"
+          },
+          {
+            "stat": "Life Steal",
+            "key": "lifeSteal",
+            "value": -22,
+            "unit": "PER_3_S",
+            "min": -30,
+            "max": -16
+          },
+          {
+            "stat": "Health Regen",
+            "key": "healthRegenRaw",
+            "value": -14,
+            "unit": "RAW",
+            "min": -18,
+            "max": -10
+          },
+          {
+            "stat": "Main Attack Damage",
+            "key": "rawMainAttackDamage",
+            "value": 17,
+            "unit": "RAW",
+            "min": 12,
+            "max": 52
+          },
+          {
+            "stat": "Walk Speed",
+            "key": "walkSpeed",
+            "value": 4,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 7
+          }
+        ]
+      },
+      {
+        "slot": "accessory_3",
+        "name": "Generator Amulet",
+        "count": 1,
+        "key": "gear:Generator Amulet:exploding=5:spellDamage=10:rawSpellDamage=15",
+        "marketPrice": 630,
+        "marketPriceText": "10 EB",
+        "kind": "gear",
+        "type": "NECKLACE",
+        "tier": "RARE",
+        "level": 41,
+        "class": null,
+        "unidentified": false,
+        "powderSlots": 0,
+        "requirements": {
+          "level": 41,
+          "quest": "Heart of Llevigar"
+        },
+        "identifyCost": 58,
+        "baseStats": {
+          "defence": {
+            "EARTH": -20,
+            "THUNDER": 10,
+            "WATER": 10,
+            "FIRE": 10,
+            "AIR": -10
+          }
+        },
+        "overallPercent": 68.3,
+        "rerolls": 0,
+        "powders": [],
+        "meetsRequirements": true,
+        "identifications": [
+          {
+            "stat": "Exploding",
+            "key": "exploding",
+            "value": 5,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 7
+          },
+          {
+            "stat": "Spell Damage",
+            "key": "spellDamage",
+            "value": 10,
+            "unit": "PERCENT",
+            "min": 2,
+            "max": 10
+          },
+          {
+            "stat": "Spell Damage",
+            "key": "rawSpellDamage",
+            "value": 15,
+            "unit": "RAW",
+            "min": 6,
+            "max": 26
+          }
+        ]
+      }
+    ],
+    "weaponInHand": {
+      "slot": "hotbar_7",
+      "name": "Character Info",
+      "count": 1,
+      "key": "name:Character Info",
+      "kind": "wynn"
+    }
+  },
+  "build": {
+    "slots": {
+      "HELMET": {
+        "name": "Yume",
+        "worn": "Yume",
+        "change": false
+      },
+      "CHESTPLATE": {
+        "name": "Nemract's Ruin",
+        "worn": "Nemract's Ruin",
+        "change": false
+      },
+      "LEGGINGS": {
+        "name": "Chained Pixels",
+        "worn": "Chained Pixels",
+        "change": false
+      },
+      "BOOTS": {
+        "name": "Galloping Spurs",
+        "worn": "Galloping Spurs",
+        "change": false
+      },
+      "RING1": {
+        "name": "Warsong",
+        "worn": "Warsong",
+        "change": false
+      },
+      "RING2": {
+        "name": "Precious",
+        "worn": "Precious",
+        "change": false
+      },
+      "BRACELET": {
+        "name": "Grisly Gauntlet",
+        "worn": "Grisly Gauntlet",
+        "change": false
+      },
+      "NECKLACE": {
+        "name": "Generator Amulet",
+        "worn": "Generator Amulet",
+        "change": false
+      },
+      "WEAPON": {
+        "name": "Heavensent",
+        "worn": "Heavensent",
+        "change": false
+      }
+    },
+    "skillPoints": {
+      "STRENGTH": {
+        "target": 25,
+        "targetForBestBuild": 25,
+        "assigned": 25
+      },
+      "DEXTERITY": {
+        "target": 12,
+        "targetForBestBuild": 15,
+        "assigned": 15
+      },
+      "INTELLIGENCE": {
+        "target": 10,
+        "targetForBestBuild": 15,
+        "assigned": 15
+      },
+      "DEFENCE": {
+        "target": 12,
+        "targetForBestBuild": 8,
+        "assigned": 8
+      },
+      "AGILITY": {
+        "target": 27,
+        "targetForBestBuild": 23,
+        "assigned": 23
+      }
+    },
+    "earnedPoints": 86,
+    "planned": {
+      "objective": 7475.2,
+      "spellDps": 504.0,
+      "mainAttackDps": 856.3,
+      "damagePerCast": 1160,
+      "castsPer5s": 2.17,
+      "health": 1927,
+      "effectiveHealth": 2072,
+      "effectiveHealthElemental": 2216,
+      "parts": {
+        "damage": 1632.837,
+        "life": 1.881,
+        "mana": 1.233,
+        "speed": 1.168,
+        "xp": 1.69,
+        "attackSpeedFeel": 1.0
+      },
+      "xpBonus": 60.0,
+      "walkSpeed": 51.0
+    },
+    "current": {
+      "objective": 7475.2,
+      "spellDps": 504.0,
+      "mainAttackDps": 856.3,
+      "damagePerCast": 1160,
+      "castsPer5s": 2.17,
+      "health": 1927,
+      "effectiveHealth": 2072,
+      "effectiveHealthElemental": 2216,
+      "parts": {
+        "damage": 1632.837,
+        "life": 1.881,
+        "mana": 1.233,
+        "speed": 1.168,
+        "xp": 1.69,
+        "attackSpeedFeel": 1.0
+      },
+      "xpBonus": 60.0,
+      "walkSpeed": 51.0
+    },
+    "gainPercent": 0.0,
+    "minPoints": {
+      "STRENGTH": 25,
+      "DEXTERITY": 12,
+      "INTELLIGENCE": 7,
+      "DEFENCE": 12,
+      "AGILITY": 27
+    },
+    "notes": [
+      "objective = (spell DPS + mainAttackWeight x main DPS) x XP x speed x survival, see rules.model",
+      "parts: the factors the objective multiplies (damage is the weighted DPS sum; life uses effectiveHealthElemental)"
+    ]
+  },
+  "roadmap": {
+    "steps": [
+      {
+        "level": 44,
+        "gear": [
+          {
+            "slot": "CHESTPLATE",
+            "name": "Solid Quartz Chestplate",
+            "level": 43,
+            "tier": "UNIQUE",
+            "gain": 11.9,
+            "from": "Llevigar merchant",
+            "price": "~1 E (median 3 EB)",
+            "tradable": true,
+            "options": [
+              {
+                "name": "Solid Quartz Chestplate",
+                "level": 43,
+                "gain": 11.9,
+                "from": "Llevigar merchant",
+                "tradable": true
+              },
+              {
+                "name": "Enhanced Phosphene",
+                "level": 40,
+                "gain": 6.9,
+                "from": "Rymek merchant",
+                "tradable": true
+              },
+              {
+                "name": "Bob's Battle Chestplate",
+                "level": 45,
+                "gain": 5.4,
+                "from": "Bob's Lost Soul quest",
+                "tradable": true
+              },
+              {
+                "name": "Phosphene",
+                "level": 40,
+                "gain": 5.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Ancient Jazerant",
+                "level": 36,
+                "gain": 4.8,
+                "from": "Improper Burial Rites event",
+                "tradable": true
+              },
+              {
+                "name": "Sawdust",
+                "level": 49,
+                "gain": 3.1,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Brook Keeper",
+                "level": 49,
+                "gain": 1.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "BOOTS",
+            "name": "Prologue",
+            "level": 36,
+            "tier": "LEGENDARY",
+            "gain": 46.7,
+            "from": "Isles of Fiction merchant",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Prologue",
+                "level": 36,
+                "gain": 43.7,
+                "from": "Isles of Fiction merchant",
+                "tradable": false
+              },
+              {
+                "name": "Kaleidoscope",
+                "level": 47,
+                "gain": 12.4,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Ice Climbing Boots",
+                "level": 43,
+                "gain": 9.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Giant Step",
+                "level": 37,
+                "gain": 1.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Cerid's Ingenuity",
+                "level": 45,
+                "gain": 1.0,
+                "from": "Ice Barrows dungeon",
+                "tradable": true
+              },
+              {
+                "name": "Sandstorm Walker",
+                "level": 44,
+                "gain": -0.1,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Ghostly Boots",
+                "level": 49,
+                "gain": -0.5,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "RING",
+            "name": "Tainted Ruby",
+            "level": 37,
+            "tier": "RARE",
+            "gain": 3.1,
+            "from": "Improper Burial Rites event",
+            "price": "~62 EB",
+            "tradable": true,
+            "options": [
+              {
+                "name": "Tainted Ruby",
+                "level": 37,
+                "gain": 3.1,
+                "from": "Improper Burial Rites event",
+                "tradable": true
+              },
+              {
+                "name": "Goblin-Silver Ring",
+                "level": 40,
+                "gain": 1.0,
+                "from": "Goblin Village merchant",
+                "tradable": true
+              },
+              {
+                "name": "Decoder Ring",
+                "level": 41,
+                "gain": -0.2,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Sticky Decoder Ring",
+                "level": 41,
+                "gain": -0.2,
+                "from": "Rymek merchant",
+                "tradable": true
+              },
+              {
+                "name": "Blue Ornament",
+                "level": 45,
+                "gain": -0.3,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Marble",
+                "level": 48,
+                "gain": -1.2,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Gouttes",
+                "level": 38,
+                "gain": -2.4,
+                "from": "cave chest",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "NECKLACE",
+            "name": "Dogfight",
+            "level": 42,
+            "tier": "LEGENDARY",
+            "gain": 4.6,
+            "from": "Encroaching Conflagration event",
+            "price": "~37 EB (median 10.5 LE)",
+            "tradable": true,
+            "options": [
+              {
+                "name": "Dogfight",
+                "level": 42,
+                "gain": 4.6,
+                "from": "Encroaching Conflagration event",
+                "tradable": true
+              },
+              {
+                "name": "Sting-Glass Necklace",
+                "level": 37,
+                "gain": 0.2,
+                "from": "Almuj merchant",
+                "tradable": false
+              },
+              {
+                "name": "Willpower",
+                "level": 42,
+                "gain": -2.0,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Great Charm",
+                "level": 40,
+                "gain": -2.1,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Coarse Torc",
+                "level": 43,
+                "gain": -4.0,
+                "from": "cave chest",
+                "tradable": true
+              }
+            ]
+          }
+        ],
+        "abilities": [
+          "Cleansing Breeze",
+          "Larger Heal"
+        ],
+        "places": [
+          "0|Ice Doors Cave (Lv. 41)",
+          "0|Wolf Den Cave (Lv. 43)"
+        ],
+        "skillPoints": 0
+      },
+      {
+        "level": 50,
+        "gear": [
+          {
+            "slot": "RELIK",
+            "name": "Decaybound Spindle",
+            "level": 50,
+            "tier": "FABLED",
+            "gain": -0.1,
+            "from": "Rogue Wyrmling event",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Decaybound Spindle",
+                "level": 50,
+                "gain": 3.6,
+                "from": "Rogue Wyrmling event",
+                "tradable": true
+              },
+              {
+                "name": "Air Relic Relik",
+                "level": 45,
+                "gain": 0.0,
+                "from": "dropped by Relic Guardian",
+                "tradable": true
+              },
+              {
+                "name": "Water Relic Relik",
+                "level": 45,
+                "gain": -1.6,
+                "from": "dropped by Relic Guardian",
+                "tradable": true
+              },
+              {
+                "name": "Foreword",
+                "level": 50,
+                "gain": -4.1,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Discotek",
+                "level": 49,
+                "gain": -4.5,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "HELMET",
+            "name": "Bloodied Wreath",
+            "level": 45,
+            "tier": "RARE",
+            "gain": 0.8,
+            "from": "Blazing Combustion event",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Bloodied Wreath",
+                "level": 45,
+                "gain": 1.6,
+                "from": "Blazing Combustion event",
+                "tradable": true
+              },
+              {
+                "name": "Wooly Cap",
+                "level": 45,
+                "gain": 0.9,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Avalanche",
+                "level": 43,
+                "gain": 0.5,
+                "from": "Fate of the Fallen quest",
+                "tradable": true
+              },
+              {
+                "name": "Astigmatism",
+                "level": 48,
+                "gain": 0.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Climbing Helmet",
+                "level": 42,
+                "gain": -0.3,
+                "from": "Ice Nations quest",
+                "tradable": false
+              }
+            ]
+          },
+          {
+            "slot": "LEGGINGS",
+            "name": "Inclemency",
+            "level": 45,
+            "tier": "LEGENDARY",
+            "gain": 4.6,
+            "from": "Blazing Combustion event",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Inclemency",
+                "level": 45,
+                "gain": 4.1,
+                "from": "Blazing Combustion event",
+                "tradable": true
+              },
+              {
+                "name": "Holy Greaves",
+                "level": 40,
+                "gain": -1.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Chain Link",
+                "level": 45,
+                "gain": -2.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Fleet",
+                "level": 43,
+                "gain": -5.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Culex",
+                "level": 50,
+                "gain": -9.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "RING2",
+            "name": "Tainted Ruby",
+            "level": 37,
+            "tier": "RARE",
+            "gain": 4.4,
+            "from": "Improper Burial Rites event",
+            "price": "~62 EB",
+            "tradable": true,
+            "options": [
+              {
+                "name": "Tainted Ruby",
+                "level": 37,
+                "gain": 4.4,
+                "from": "Improper Burial Rites event",
+                "tradable": true
+              }
+            ]
+          }
+        ],
+        "abilities": [
+          "Cheaper Bash II",
+          "Counter",
+          "Hummingbird's Song",
+          "Orphion's Pulse",
+          "Seance"
+        ],
+        "places": [
+          "1|Toads in a Hole Cave (Lv. 50)",
+          "2|Maddening Mud Cave (Lv. 53)"
+        ],
+        "skillPoints": 12
+      },
+      {
+        "level": 60,
+        "gear": [
+          {
+            "slot": "RELIK",
+            "name": "Lightshow",
+            "level": 60,
+            "tier": "LEGENDARY",
+            "gain": 105.6,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Lightshow",
+                "level": 60,
+                "gain": 39.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Olux's Prized Relik",
+                "level": 55,
+                "gain": 21.5,
+                "from": "Olux merchant",
+                "tradable": true
+              },
+              {
+                "name": "Adrift",
+                "level": 63,
+                "gain": 8.1,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Anthem",
+                "level": 62,
+                "gain": 3.5,
+                "from": "Isles of Fiction merchant",
+                "tradable": false
+              },
+              {
+                "name": "Tidebreaker",
+                "level": 55,
+                "gain": -4.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Luster Purge",
+                "level": 60,
+                "gain": -2.1,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Poinsettia",
+                "level": 65,
+                "gain": -2.3,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Multiplication",
+                "level": 40,
+                "gain": -27.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Vibrato",
+                "level": 44,
+                "gain": -28.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Calamaro's Relik",
+                "level": 43,
+                "gain": -33.2,
+                "from": "Squid Village merchant",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "HELMET",
+            "name": "Venison",
+            "level": 54,
+            "tier": "LEGENDARY",
+            "gain": 1.2,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Venison",
+                "level": 54,
+                "gain": -2.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Helmet of Blue Stone",
+                "level": 62,
+                "gain": -2.2,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Never-Ending Nightmare",
+                "level": 55,
+                "gain": -4.7,
+                "from": "Isles of Fiction merchant",
+                "tradable": false
+              },
+              {
+                "name": "Upgraded Orc Mask",
+                "level": 64,
+                "gain": -4.4,
+                "from": "All Roads to Peace quest",
+                "tradable": true
+              },
+              {
+                "name": "Avalanche",
+                "level": 43,
+                "gain": -11.1,
+                "from": "Fate of the Fallen quest",
+                "tradable": true
+              },
+              {
+                "name": "Illuminite",
+                "level": 55,
+                "gain": -8.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Mask of Enlightenment",
+                "level": 57,
+                "gain": -6.8,
+                "from": "Iboju Village merchant",
+                "tradable": false
+              },
+              {
+                "name": "Climbing Helmet",
+                "level": 42,
+                "gain": -13.5,
+                "from": "Ice Nations quest",
+                "tradable": false
+              },
+              {
+                "name": "The Scavenged",
+                "level": 41,
+                "gain": -15.9,
+                "from": "Canine Ambush event",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "CHESTPLATE",
+            "name": "Matryoshka Shell",
+            "level": 55,
+            "tier": "LEGENDARY",
+            "gain": 1.8,
+            "from": "dropped by Matryoshka Idol",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Matryoshka Shell",
+                "level": 55,
+                "gain": 1.8,
+                "from": "dropped by Matryoshka Idol",
+                "tradable": false
+              },
+              {
+                "name": "Cloak of Luminosity",
+                "level": 64,
+                "gain": 7.9,
+                "from": "Realm of Light III - A Headless History quest",
+                "tradable": true
+              },
+              {
+                "name": "Millennium",
+                "level": 63,
+                "gain": 9.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Odyssey",
+                "level": 61,
+                "gain": 0.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Drizzling Doublet",
+                "level": 56,
+                "gain": 2.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Bob's Battle Chestplate",
+                "level": 45,
+                "gain": 0.0,
+                "from": "Bob's Lost Soul quest",
+                "tradable": true
+              },
+              {
+                "name": "Opalite",
+                "level": 62,
+                "gain": 1.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Sundown Poncho",
+                "level": 40,
+                "gain": -6.0,
+                "from": "Sunrise Canyon altar",
+                "tradable": false
+              },
+              {
+                "name": "Gladiator",
+                "level": 40,
+                "gain": -3.8,
+                "from": "Isles of Fiction merchant",
+                "tradable": false
+              },
+              {
+                "name": "Enhanced Phosphene",
+                "level": 40,
+                "gain": -4.9,
+                "from": "Rymek merchant",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "BRACELET",
+            "name": "Zhight Powwow Bangle",
+            "level": 55,
+            "tier": "UNIQUE",
+            "gain": 5.8,
+            "from": "Zhight Island merchant",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Zhight Powwow Bangle",
+                "level": 55,
+                "gain": 5.8,
+                "from": "Zhight Island merchant",
+                "tradable": true
+              },
+              {
+                "name": "Purity Filter",
+                "level": 52,
+                "gain": 2.2,
+                "from": "Slimy Schism event",
+                "tradable": true
+              },
+              {
+                "name": "Blazing Bangle",
+                "level": 41,
+                "gain": 0.5,
+                "from": "Encroaching Conflagration event",
+                "tradable": true
+              },
+              {
+                "name": "Fellowship",
+                "level": 65,
+                "gain": -0.3,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Tarod's Search",
+                "level": 47,
+                "gain": -1.8,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Czytash's Compass",
+                "level": 55,
+                "gain": -1.8,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Mistletoe",
+                "level": 50,
+                "gain": -1.9,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Aggression",
+                "level": 44,
+                "gain": -4.3,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Reminiscence",
+                "level": 41,
+                "gain": -1.7,
+                "from": "cave chest",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "RING",
+            "name": "Yellow Ornament",
+            "level": 50,
+            "tier": "RARE",
+            "gain": -1.5,
+            "from": "Isles of Fiction merchant",
+            "price": "~1.0 LE",
+            "tradable": true,
+            "options": [
+              {
+                "name": "Yellow Ornament",
+                "level": 50,
+                "gain": -1.5,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Mirror",
+                "level": 56,
+                "gain": -1.0,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Decoder Ring",
+                "level": 41,
+                "gain": -2.1,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Goblin-Silver Ring",
+                "level": 40,
+                "gain": -2.2,
+                "from": "Goblin Village merchant",
+                "tradable": true
+              },
+              {
+                "name": "Sticky Decoder Ring",
+                "level": 41,
+                "gain": -2.6,
+                "from": "Rymek merchant",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "RING2",
+            "name": "Yellow Ornament",
+            "level": 50,
+            "tier": "RARE",
+            "gain": 1.9,
+            "from": "Isles of Fiction merchant",
+            "price": "~1.0 LE",
+            "tradable": true,
+            "options": [
+              {
+                "name": "Yellow Ornament",
+                "level": 50,
+                "gain": 1.9,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Mirror",
+                "level": 56,
+                "gain": -0.3,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Goblin-Silver Ring",
+                "level": 40,
+                "gain": -1.4,
+                "from": "Goblin Village merchant",
+                "tradable": true
+              },
+              {
+                "name": "Decoder Ring",
+                "level": 41,
+                "gain": -1.4,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Sticky Decoder Ring",
+                "level": 41,
+                "gain": -1.9,
+                "from": "Rymek merchant",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "NECKLACE",
+            "name": "Green Ornament",
+            "level": 55,
+            "tier": "RARE",
+            "gain": 4.6,
+            "from": "Isles of Fiction merchant",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Green Ornament",
+                "level": 55,
+                "gain": 4.9,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Constrict Collar",
+                "level": 45,
+                "gain": 1.2,
+                "from": "Prison of Souls altar",
+                "tradable": false
+              },
+              {
+                "name": "Criistal",
+                "level": 49,
+                "gain": 0.6,
+                "from": "Ice Barrows dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Jagged Bone Necklace",
+                "level": 51,
+                "gain": 0.0,
+                "from": "Encroaching Ablation event",
+                "tradable": true
+              },
+              {
+                "name": "Zhight Weird Magic Necklace",
+                "level": 55,
+                "gain": -0.5,
+                "from": "Zhight Island merchant",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "LEGGINGS",
+            "name": "Nacreous",
+            "level": 51,
+            "tier": "RARE",
+            "gain": 0.5,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Nacreous",
+                "level": 51,
+                "gain": 0.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Lookout",
+                "level": 59,
+                "gain": 1.8,
+                "from": "Gelibord merchant",
+                "tradable": true
+              },
+              {
+                "name": "Greaves of Honor",
+                "level": 58,
+                "gain": 0.0,
+                "from": "An Iron Heart Part II quest",
+                "tradable": true
+              },
+              {
+                "name": "Bob's Lost Leggings",
+                "level": 58,
+                "gain": -0.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Kratke",
+                "level": 58,
+                "gain": -3.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          }
+        ],
+        "abilities": [
+          "Axe Kick",
+          "Cheaper Meteor II",
+          "Cheaper War Scream",
+          "Crystal Knives",
+          "Frigid Grasp",
+          "Incandescence",
+          "Invigorating Wave",
+          "Lightweaver",
+          "Puppetry",
+          "Radiant Devotee",
+          "Riposte",
+          "Soaring Wingbeats",
+          "Whirlwind Strike"
+        ],
+        "places": [
+          "2|Time Valley Grind Spot (Lv. ~62)",
+          "0|Trunk Garrison Cave (Lv. 60)"
+        ],
+        "skillPoints": 20
+      },
+      {
+        "level": 70,
+        "gear": [
+          {
+            "slot": "BRACELET",
+            "name": "Red Ornament",
+            "level": 50,
+            "tier": "RARE",
+            "gain": 5.3,
+            "from": "Isles of Fiction merchant",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Red Ornament",
+                "level": 50,
+                "gain": 5.3,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Growth",
+                "level": 68,
+                "gain": -0.4,
+                "from": "Efilim merchant",
+                "tradable": true
+              },
+              {
+                "name": "Cattail",
+                "level": 70,
+                "gain": -2.2,
+                "from": "Efilim merchant",
+                "tradable": true
+              },
+              {
+                "name": "Siwel's Guilt",
+                "level": 74,
+                "gain": -1.8,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Foam Bracer",
+                "level": 66,
+                "gain": -5.5,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Rayshyroth's Knowledge",
+                "level": 66,
+                "gain": -6.0,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Lazarus' Brace",
+                "level": 69,
+                "gain": -6.3,
+                "from": "Lazarus Pit quest",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "HELMET",
+            "name": "Purified Helmet of the Legends",
+            "level": 68,
+            "tier": "RARE",
+            "gain": -0.9,
+            "from": "Temple of the Legends quest",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Purified Helmet of the Legends",
+                "level": 68,
+                "gain": -0.5,
+                "from": "Temple of the Legends quest",
+                "tradable": false
+              },
+              {
+                "name": "Howler",
+                "level": 70,
+                "gain": 0.0,
+                "from": "Cinfras merchant",
+                "tradable": true
+              },
+              {
+                "name": "Stifling Spores",
+                "level": 69,
+                "gain": -4.7,
+                "from": "Peculiar Grotto event",
+                "tradable": true
+              },
+              {
+                "name": "Helmet of Blue Stone",
+                "level": 62,
+                "gain": -4.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Never-Ending Nightmare",
+                "level": 55,
+                "gain": -7.2,
+                "from": "Isles of Fiction merchant",
+                "tradable": false
+              }
+            ]
+          },
+          {
+            "slot": "CHESTPLATE",
+            "name": "Admiral",
+            "level": 67,
+            "tier": "LEGENDARY",
+            "gain": 5.7,
+            "from": "Galleon's Graveyard dungeon merchant",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Admiral",
+                "level": 67,
+                "gain": 6.5,
+                "from": "Galleon's Graveyard dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Odyssey",
+                "level": 61,
+                "gain": 2.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Millennium",
+                "level": 63,
+                "gain": 1.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Cloak of Luminosity",
+                "level": 64,
+                "gain": 0.0,
+                "from": "Realm of Light III - A Headless History quest",
+                "tradable": true
+              },
+              {
+                "name": "Drizzling Doublet",
+                "level": 56,
+                "gain": -3.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "LEGGINGS",
+            "name": "Lookout",
+            "level": 59,
+            "tier": "UNIQUE",
+            "gain": 3.5,
+            "from": "Gelibord merchant",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Lookout",
+                "level": 59,
+                "gain": 2.2,
+                "from": "Gelibord merchant",
+                "tradable": true
+              },
+              {
+                "name": "Reflection",
+                "level": 67,
+                "gain": 0.4,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Greaves of Honor",
+                "level": 58,
+                "gain": -1.1,
+                "from": "An Iron Heart Part II quest",
+                "tradable": true
+              },
+              {
+                "name": "Bob's Lost Leggings",
+                "level": 58,
+                "gain": -1.4,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Kratke",
+                "level": 58,
+                "gain": -4.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          }
+        ],
+        "abilities": [
+          "Bak'al's Grasp",
+          "Cheaper Uproot II",
+          "Etheric Slash",
+          "Freestyle",
+          "Resilient Light",
+          "Searing Light",
+          "Slingshot",
+          "Tempest"
+        ],
+        "places": [
+          "0|Herb Cave Grind Spot (Lv. ~68)",
+          "0|Temple Entrance Cave (Lv. 68)"
+        ],
+        "skillPoints": 20
+      },
+      {
+        "level": 80,
+        "gear": [
+          {
+            "slot": "CHESTPLATE",
+            "name": "Changeling's Chestplate",
+            "level": 80,
+            "tier": "RARE",
+            "gain": 2.2,
+            "from": "General's Orders quest",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Changeling's Chestplate",
+                "level": 80,
+                "gain": 5.6,
+                "from": "General's Orders quest",
+                "tradable": true
+              },
+              {
+                "name": "Meteoric Aegis",
+                "level": 85,
+                "gain": 5.1,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Papyrus",
+                "level": 77,
+                "gain": 3.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Dragon Hide Plate",
+                "level": 82,
+                "gain": 5.0,
+                "from": "The Thanos Depository quest",
+                "tradable": true
+              },
+              {
+                "name": "Seagazer",
+                "level": 84,
+                "gain": 3.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Efilim Sage Cloak",
+                "level": 77,
+                "gain": -0.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Charybdis",
+                "level": 85,
+                "gain": -1.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "RELIK",
+            "name": "Stone Crunch",
+            "level": 74,
+            "tier": "RARE",
+            "gain": -1.8,
+            "from": "Cinfras merchant",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Stone Crunch",
+                "level": 74,
+                "gain": 3.2,
+                "from": "Cinfras merchant",
+                "tradable": true
+              },
+              {
+                "name": "Slush Rush",
+                "level": 75,
+                "gain": 6.9,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Silver Bay",
+                "level": 80,
+                "gain": 1.1,
+                "from": "Thanos merchant",
+                "tradable": true
+              },
+              {
+                "name": "Ancient Runic Relik",
+                "level": 75,
+                "gain": 0.5,
+                "from": "Temple of the Legends merchant",
+                "tradable": true
+              },
+              {
+                "name": "Asphalt",
+                "level": 77,
+                "gain": -4.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "LEGGINGS",
+            "name": "Ringlets",
+            "level": 80,
+            "tier": "UNIQUE",
+            "gain": 6.5,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Ringlets",
+                "level": 80,
+                "gain": 6.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Triumph",
+                "level": 75,
+                "gain": 5.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Cosmic Ward",
+                "level": 80,
+                "gain": 1.2,
+                "from": "??? quest",
+                "tradable": false
+              },
+              {
+                "name": "Douglas Fir",
+                "level": 75,
+                "gain": 0.0,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Reflection",
+                "level": 67,
+                "gain": -3.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          }
+        ],
+        "abilities": [
+          "Boiling Blood",
+          "Double Totem",
+          "Fortified Formation",
+          "Freezing Sigil",
+          "Uncontainable Corruption"
+        ],
+        "places": [
+          "0|Myconid Cave Grind Spot (Lv. ~77)",
+          "1|Voltaic Crag Cave (Lv. 81)"
+        ],
+        "skillPoints": 20
+      },
+      {
+        "level": 90,
+        "gear": [
+          {
+            "slot": "RELIK",
+            "name": "Sparkling Tones",
+            "level": 88,
+            "tier": "RARE",
+            "gain": 95.3,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Sparkling Tones",
+                "level": 88,
+                "gain": 12.5,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Hardcore",
+                "level": 92,
+                "gain": 40.4,
+                "from": "Fallen Factory dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Stormdrain",
+                "level": 88,
+                "gain": 19.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Arbalest",
+                "level": 87,
+                "gain": 10.2,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Guacamole",
+                "level": 88,
+                "gain": 11.1,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Msitu",
+                "level": 82,
+                "gain": 2.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Thermals",
+                "level": 86,
+                "gain": 5.4,
+                "from": "Corkus merchant",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "HELMET",
+            "name": "Sequencer",
+            "level": 83,
+            "tier": "RARE",
+            "gain": 12.8,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Sequencer",
+                "level": 83,
+                "gain": 3.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Azure Halo",
+                "level": 91,
+                "gain": 4.2,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Dune Storm",
+                "level": 87,
+                "gain": 6.0,
+                "from": "Corrupted Sand-Swept Tomb dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Skyfloat",
+                "level": 94,
+                "gain": 6.4,
+                "from": "Ahmsord merchant",
+                "tradable": true
+              },
+              {
+                "name": "Skywatcher",
+                "level": 84,
+                "gain": 3.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Quartzite Helm",
+                "level": 91,
+                "gain": 2.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Moonbeam",
+                "level": 89,
+                "gain": 1.7,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "LEGGINGS",
+            "name": "Siliquartz Blend",
+            "level": 87,
+            "tier": "UNIQUE",
+            "gain": 10.6,
+            "from": "Corkus merchant",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Siliquartz Blend",
+                "level": 87,
+                "gain": 15.5,
+                "from": "Corkus merchant",
+                "tradable": true
+              },
+              {
+                "name": "Brass Leg Plates",
+                "level": 81,
+                "gain": 6.0,
+                "from": "Thanos merchant",
+                "tradable": true
+              },
+              {
+                "name": "Garland",
+                "level": 90,
+                "gain": 5.6,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Bantisu's Approach",
+                "level": 86,
+                "gain": 5.1,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Turquoise",
+                "level": 95,
+                "gain": 4.5,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Ehoole Drakeskin",
+                "level": 82,
+                "gain": 3.9,
+                "from": "Thanos merchant",
+                "tradable": true
+              },
+              {
+                "name": "Dizzy Spell",
+                "level": 88,
+                "gain": 3.5,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "CHESTPLATE",
+            "name": "Papyrus",
+            "level": 77,
+            "tier": "RARE",
+            "gain": -6.5,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Papyrus",
+                "level": 77,
+                "gain": -1.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Seagazer",
+                "level": 84,
+                "gain": 0.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Dragon Hide Plate",
+                "level": 82,
+                "gain": -3.5,
+                "from": "The Thanos Depository quest",
+                "tradable": true
+              },
+              {
+                "name": "The Master's Gi",
+                "level": 89,
+                "gain": -3.7,
+                "from": "Enter the Dojo quest",
+                "tradable": true
+              },
+              {
+                "name": "Efilim Sage Cloak",
+                "level": 77,
+                "gain": -4.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "BOOTS",
+            "name": "Epilogue",
+            "level": 89,
+            "tier": "LEGENDARY",
+            "gain": 14.4,
+            "from": "Isles of Fiction merchant",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Epilogue",
+                "level": 89,
+                "gain": 9.7,
+                "from": "Isles of Fiction merchant",
+                "tradable": false
+              },
+              {
+                "name": "Low World Greaves",
+                "level": 90,
+                "gain": -0.4,
+                "from": "Rodoroc merchant",
+                "tradable": true
+              },
+              {
+                "name": "Earthsky Eclipse",
+                "level": 80,
+                "gain": -3.4,
+                "from": "Colossi Ingrain event",
+                "tradable": true
+              },
+              {
+                "name": "Dust Skaters",
+                "level": 87,
+                "gain": -3.6,
+                "from": "Corrupted Sand-Swept Tomb dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Ensa's Ideals",
+                "level": 84,
+                "gain": -7.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "RING",
+            "name": "Ring of Wisdom",
+            "level": 80,
+            "tier": "UNIQUE",
+            "gain": -4.7,
+            "from": "Thanos merchant",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Ring of Wisdom",
+                "level": 80,
+                "gain": -5.6,
+                "from": "Thanos merchant",
+                "tradable": true
+              },
+              {
+                "name": "Lifelike",
+                "level": 86,
+                "gain": -7.2,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Detective's Ring",
+                "level": 74,
+                "gain": -8.2,
+                "from": "Murder Mystery quest",
+                "tradable": true
+              },
+              {
+                "name": "Worship",
+                "level": 84,
+                "gain": -9.3,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Raging Wind",
+                "level": 87,
+                "gain": -9.4,
+                "from": "Beyond the Grave quest",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "RING2",
+            "name": "Ring of Wisdom",
+            "level": 80,
+            "tier": "UNIQUE",
+            "gain": 0.8,
+            "from": "Thanos merchant",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Ring of Wisdom",
+                "level": 80,
+                "gain": 0.8,
+                "from": "Thanos merchant",
+                "tradable": true
+              },
+              {
+                "name": "Lifelike",
+                "level": 86,
+                "gain": -0.9,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Detective's Ring",
+                "level": 74,
+                "gain": -2.0,
+                "from": "Murder Mystery quest",
+                "tradable": true
+              },
+              {
+                "name": "Worship",
+                "level": 84,
+                "gain": -3.1,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Raging Wind",
+                "level": 87,
+                "gain": -3.4,
+                "from": "Beyond the Grave quest",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "BRACELET",
+            "name": "Vanguard",
+            "level": 77,
+            "tier": "LEGENDARY",
+            "gain": 5.8,
+            "from": "Corrupted Infested Pit dungeon merchant",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Vanguard",
+                "level": 77,
+                "gain": 5.8,
+                "from": "Corrupted Infested Pit dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Double Vision",
+                "level": 79,
+                "gain": 3.8,
+                "from": "Realm of Light V - The Realm of Light quest",
+                "tradable": true
+              },
+              {
+                "name": "Vortex Bracer",
+                "level": 86,
+                "gain": 3.7,
+                "from": "The Qira Hive quest",
+                "tradable": false
+              },
+              {
+                "name": "Siwel's Guilt",
+                "level": 74,
+                "gain": 2.2,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Corkuff",
+                "level": 87,
+                "gain": 1.1,
+                "from": "Relos merchant",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "NECKLACE",
+            "name": "Charm of the Storms",
+            "level": 88,
+            "tier": "LEGENDARY",
+            "gain": 0.5,
+            "from": "cave chest",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Charm of the Storms",
+                "level": 88,
+                "gain": -0.4,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Royal Stormy Amulet",
+                "level": 75,
+                "gain": 0.3,
+                "from": "Cinfras merchant",
+                "tradable": true
+              },
+              {
+                "name": "Royal Shocking Amulet",
+                "level": 75,
+                "gain": 0.0,
+                "from": "Cinfras merchant",
+                "tradable": true
+              },
+              {
+                "name": "Ensa's Faith",
+                "level": 73,
+                "gain": -1.5,
+                "from": "Corrupted Decrepit Sewers dungeon",
+                "tradable": true
+              },
+              {
+                "name": "Adder Stone",
+                "level": 80,
+                "gain": -2.0,
+                "from": "cave chest",
+                "tradable": true
+              }
+            ]
+          }
+        ],
+        "abilities": [
+          "Intoxicating Blood",
+          "Patchwork Abomination"
+        ],
+        "places": [
+          "1|Pirate Sloop Cave (Lv. 90)",
+          "2|Fallen Factory Dungeon (Lv. 90)"
+        ],
+        "skillPoints": 20
+      },
+      {
+        "level": 100,
+        "gear": [
+          {
+            "slot": "CHESTPLATE",
+            "name": "Ornamental Plate",
+            "level": 91,
+            "tier": "RARE",
+            "gain": 5.2,
+            "from": "Rodoroc merchant",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Ornamental Plate",
+                "level": 91,
+                "gain": 5.2,
+                "from": "Rodoroc merchant",
+                "tradable": true
+              },
+              {
+                "name": "Roridula",
+                "level": 104,
+                "gain": 5.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Meteoric Aegis",
+                "level": 85,
+                "gain": 0.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Azurite",
+                "level": 92,
+                "gain": -0.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Patchwork",
+                "level": 102,
+                "gain": 0.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Ahms' Remains",
+                "level": 97,
+                "gain": -2.1,
+                "from": "Ahmsord merchant",
+                "tradable": true
+              },
+              {
+                "name": "Dondasch",
+                "level": 100,
+                "gain": 1.4,
+                "from": "Aerie of the Recluse altar",
+                "tradable": false
+              }
+            ]
+          },
+          {
+            "slot": "RELIK",
+            "name": "Hardcore",
+            "level": 92,
+            "tier": "RARE",
+            "gain": 8.7,
+            "from": "Fallen Factory dungeon merchant",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Hardcore",
+                "level": 92,
+                "gain": 12.1,
+                "from": "Fallen Factory dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Hard Light",
+                "level": 96,
+                "gain": 2.5,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Royal Hydrangea",
+                "level": 96,
+                "gain": -0.6,
+                "from": "Corrupted Undergrowth Ruins dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "The End",
+                "level": 100,
+                "gain": -7.2,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Imperious",
+                "level": 92,
+                "gain": -12.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "HELMET",
+            "name": "Aquamarine",
+            "level": 100,
+            "tier": "UNIQUE",
+            "gain": 6.0,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Aquamarine",
+                "level": 100,
+                "gain": 6.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Quartzite Helm",
+                "level": 91,
+                "gain": 3.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Spectrum",
+                "level": 97,
+                "gain": 0.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Skyfloat",
+                "level": 94,
+                "gain": -5.2,
+                "from": "Ahmsord merchant",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "NECKLACE",
+            "name": "Altum Spatium",
+            "level": 80,
+            "tier": "LEGENDARY",
+            "gain": 0.7,
+            "from": "??? quest",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Altum Spatium",
+                "level": 80,
+                "gain": 0.5,
+                "from": "??? quest",
+                "tradable": false
+              },
+              {
+                "name": "Contrast",
+                "level": 100,
+                "gain": 0.0,
+                "from": "The Qira Hive quest",
+                "tradable": false
+              },
+              {
+                "name": "Drain",
+                "level": 85,
+                "gain": -1.7,
+                "from": "Corrupted Underworld Crypt dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Diamond Fusion Necklace",
+                "level": 95,
+                "gain": -2.1,
+                "from": "challenge: legendary island",
+                "tradable": false
+              },
+              {
+                "name": "Bottled Thunderstorm",
+                "level": 81,
+                "gain": -5.1,
+                "from": "The Qira Hive quest",
+                "tradable": false
+              }
+            ]
+          }
+        ],
+        "abilities": [
+          "Blood Pact",
+          "Exhilarate",
+          "Imbued Totem",
+          "Massacre",
+          "Triple Totem"
+        ],
+        "places": [
+          "2|Abandoned Passage Grind Spot (Lv. ~102)",
+          "1|Loot Symposium Cave (Lv. 100)"
+        ],
+        "skillPoints": 20
+      },
+      {
+        "level": 110,
+        "gear": [
+          {
+            "slot": "HELMET",
+            "name": "Ornate Shadow Cowl",
+            "level": 103,
+            "tier": "FABLED",
+            "gain": 7.2,
+            "from": "Lutho merchant",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Ornate Shadow Cowl",
+                "level": 103,
+                "gain": 10.2,
+                "from": "Lutho merchant",
+                "tradable": false
+              },
+              {
+                "name": "Expertise",
+                "level": 102,
+                "gain": 0.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Dreamscape",
+                "level": 112,
+                "gain": 1.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Quartzite Helm",
+                "level": 91,
+                "gain": 0.5,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Firemoss Veil",
+                "level": 113,
+                "gain": -0.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Cibola",
+                "level": 112,
+                "gain": -1.1,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Aries",
+                "level": 92,
+                "gain": -2.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "CHESTPLATE",
+            "name": "Roridula",
+            "level": 104,
+            "tier": "UNIQUE",
+            "gain": 3.4,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Roridula",
+                "level": 104,
+                "gain": 3.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Shogun",
+                "level": 115,
+                "gain": -2.4,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Azurite",
+                "level": 92,
+                "gain": -4.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Sky Chef's Apron",
+                "level": 96,
+                "gain": -4.7,
+                "from": "Recipe For Disaster quest",
+                "tradable": true
+              },
+              {
+                "name": "Hollow Trunk",
+                "level": 108,
+                "gain": -3.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Ahms' Remains",
+                "level": 97,
+                "gain": -4.6,
+                "from": "Ahmsord merchant",
+                "tradable": true
+              },
+              {
+                "name": "Heart of the Forest",
+                "level": 107,
+                "gain": -4.1,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "NECKLACE",
+            "name": "Contrast",
+            "level": 100,
+            "tier": "LEGENDARY",
+            "gain": 7.5,
+            "from": "The Qira Hive quest",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Contrast",
+                "level": 100,
+                "gain": 4.5,
+                "from": "The Qira Hive quest",
+                "tradable": false
+              },
+              {
+                "name": "Runic Coin",
+                "level": 90,
+                "gain": -2.3,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Diamond Fusion Necklace",
+                "level": 95,
+                "gain": -4.1,
+                "from": "challenge: legendary island",
+                "tradable": false
+              },
+              {
+                "name": "Oaken Pendant",
+                "level": 105,
+                "gain": -2.6,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Ominous Wind",
+                "level": 95,
+                "gain": -2.3,
+                "from": "One Thousand Meters Under quest",
+                "tradable": true
+              },
+              {
+                "name": "Bronze Basic Necklace",
+                "level": 90,
+                "gain": -2.8,
+                "from": "challenge: legendary island",
+                "tradable": false
+              },
+              {
+                "name": "Taxonomy",
+                "level": 107,
+                "gain": -2.5,
+                "from": "cave chest",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "BOOTS",
+            "name": "Unifier",
+            "level": 110,
+            "tier": "UNIQUE",
+            "gain": -1.2,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Unifier",
+                "level": 110,
+                "gain": -2.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Low World Greaves",
+                "level": 90,
+                "gain": -2.0,
+                "from": "Rodoroc merchant",
+                "tradable": true
+              },
+              {
+                "name": "Razor Leaf",
+                "level": 106,
+                "gain": -5.5,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Ramhoof",
+                "level": 93,
+                "gain": -7.4,
+                "from": "Rodoroc merchant",
+                "tradable": true
+              },
+              {
+                "name": "Happenstance",
+                "level": 105,
+                "gain": -12.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "RING",
+            "name": "Dragon's Tear",
+            "level": 107,
+            "tier": "RARE",
+            "gain": 3.9,
+            "from": "cave chest",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Dragon's Tear",
+                "level": 107,
+                "gain": 4.8,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Summa",
+                "level": 95,
+                "gain": 0.0,
+                "from": "Geyser Pit altar",
+                "tradable": false
+              },
+              {
+                "name": "Coral Ring",
+                "level": 93,
+                "gain": -0.1,
+                "from": "The Qira Hive quest",
+                "tradable": false
+              },
+              {
+                "name": "Diamond Fusion Ring",
+                "level": 95,
+                "gain": -0.4,
+                "from": "challenge: legendary island",
+                "tradable": false
+              },
+              {
+                "name": "Gold Fusion Ring",
+                "level": 95,
+                "gain": -2.6,
+                "from": "challenge: legendary island",
+                "tradable": false
+              }
+            ]
+          },
+          {
+            "slot": "RING2",
+            "name": "Dragon's Tear",
+            "level": 107,
+            "tier": "RARE",
+            "gain": 2.9,
+            "from": "cave chest",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Dragon's Tear",
+                "level": 107,
+                "gain": 4.0,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Summa",
+                "level": 95,
+                "gain": -1.5,
+                "from": "Geyser Pit altar",
+                "tradable": false
+              },
+              {
+                "name": "Diamond Fusion Ring",
+                "level": 95,
+                "gain": -2.1,
+                "from": "challenge: legendary island",
+                "tradable": false
+              },
+              {
+                "name": "Coral Ring",
+                "level": 93,
+                "gain": -3.3,
+                "from": "The Qira Hive quest",
+                "tradable": false
+              },
+              {
+                "name": "Gold Fusion Ring",
+                "level": 95,
+                "gain": -4.3,
+                "from": "challenge: legendary island",
+                "tradable": false
+              }
+            ]
+          },
+          {
+            "slot": "LEGGINGS",
+            "name": "Vaward",
+            "level": 99,
+            "tier": "LEGENDARY",
+            "gain": 1.9,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Vaward",
+                "level": 99,
+                "gain": -1.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Aleph Null",
+                "level": 105,
+                "gain": 0.0,
+                "from": "raid: the nameless anomaly",
+                "tradable": true
+              },
+              {
+                "name": "Turquoise",
+                "level": 95,
+                "gain": -6.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Signature",
+                "level": 108,
+                "gain": -7.7,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Garland",
+                "level": 90,
+                "gain": -10.4,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              }
+            ]
+          }
+        ],
+        "abilities": [
+          "Iron Lungs",
+          "Maddening Roots",
+          "Mindless Slaughter"
+        ],
+        "places": [
+          "1|Auburn Lumbermill Cave (Lv. 107)",
+          "1|The Flush Cave (Lv. 110)"
+        ],
+        "skillPoints": 2
+      },
+      {
+        "level": 120,
+        "gear": [
+          {
+            "slot": "CHESTPLATE",
+            "name": "Viridescence",
+            "level": 116,
+            "tier": "RARE",
+            "gain": 3.6,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Viridescence",
+                "level": 116,
+                "gain": 5.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Heart of the Forest",
+                "level": 107,
+                "gain": 0.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Dondasch",
+                "level": 100,
+                "gain": 3.6,
+                "from": "Aerie of the Recluse altar",
+                "tradable": false
+              },
+              {
+                "name": "Atakebune",
+                "level": 100,
+                "gain": -2.6,
+                "from": "Corrupted Galleon's Graveyard dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Liff Leaf Plate",
+                "level": 106,
+                "gain": -2.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Lithosphere",
+                "level": 107,
+                "gain": -2.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Far Cosmos",
+                "level": 100,
+                "gain": -4.4,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "LEGGINGS",
+            "name": "Omniverse",
+            "level": 112,
+            "tier": "UNIQUE",
+            "gain": 1.2,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Omniverse",
+                "level": 112,
+                "gain": 4.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Aleph Null",
+                "level": 105,
+                "gain": 3.4,
+                "from": "raid: the nameless anomaly",
+                "tradable": true
+              },
+              {
+                "name": "Eutrophication",
+                "level": 107,
+                "gain": -1.1,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Haze Striders",
+                "level": 113,
+                "gain": -1.1,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Bull Charge",
+                "level": 116,
+                "gain": -2.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Signature",
+                "level": 108,
+                "gain": -6.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Brute",
+                "level": 105,
+                "gain": -11.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "RING",
+            "name": "Smoulderdew",
+            "level": 115,
+            "tier": "UNIQUE",
+            "gain": 1.6,
+            "from": "cave chest",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Smoulderdew",
+                "level": 115,
+                "gain": 1.8,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Cistern Circlet",
+                "level": 107,
+                "gain": 0.9,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Prime",
+                "level": 109,
+                "gain": 0.1,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Weighted Die",
+                "level": 118,
+                "gain": -0.8,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Prism",
+                "level": 100,
+                "gain": -1.1,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Durian",
+                "level": 106,
+                "gain": -1.6,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Petiole",
+                "level": 108,
+                "gain": -1.8,
+                "from": "cave chest",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "BRACELET",
+            "name": "Depravity",
+            "level": 104,
+            "tier": "UNIQUE",
+            "gain": 3.2,
+            "from": "cave chest",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Depravity",
+                "level": 104,
+                "gain": 3.0,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Enmity",
+                "level": 100,
+                "gain": 3.5,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Roots of Unity",
+                "level": 107,
+                "gain": 2.5,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Anya's Penumbra",
+                "level": 100,
+                "gain": 1.1,
+                "from": "discovery: fate of the olm",
+                "tradable": false
+              },
+              {
+                "name": "Solenoid",
+                "level": 118,
+                "gain": 1.1,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Silent Grove",
+                "level": 108,
+                "gain": 0.8,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Clandestine",
+                "level": 119,
+                "gain": 0.9,
+                "from": "cave chest",
+                "tradable": true
+              }
+            ]
+          }
+        ],
+        "abilities": [],
+        "places": [
+          "0|Glacier Tunnels Cave (Lv. 119)",
+          "0|Hegea Training Grounds Grind Spot (Lv. ~118)"
+        ],
+        "skillPoints": 0
+      }
+    ]
+  }
+}

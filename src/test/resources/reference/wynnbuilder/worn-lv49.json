@@ -1,0 +1,21 @@
+{
+  "name": "worn build, Lv 49 Shaman (Summoner)",
+  "date": "2026-10-15",
+  "wynnbuilderData": "2.2.4.0",
+  "link": "https://wynnbuilder.github.io/builder/#CY0BtmjAuV0ck0fAS3HCD6x0D5S3O4mIW70H263",
+  "level": 49,
+  "items": {
+    "HELMET": "Yume", "CHESTPLATE": "Solid Quartz Chestplate", "LEGGINGS": "Chained Pixels",
+    "BOOTS": "Seven-League Boots", "RING1": "Goblin-Silver Ring", "RING2": "Precious",
+    "BRACELET": "Union", "NECKLACE": "Generator Amulet", "WEAPON": "Heavensent"
+  },
+  "assigned": {"STRENGTH": 22, "DEXTERITY": 12, "INTELLIGENCE": 19, "DEFENCE": 10, "AGILITY": 33},
+  "rolls": "max",
+  "wynnbuilder": {
+    "totalHealth": 1927.0,
+    "effectiveHealth": 2633.45,
+    "effectiveHealthNoAgility": 1461.95,
+    "meleeDps": 553.44
+  },
+  "tolerance": 0.05
+}

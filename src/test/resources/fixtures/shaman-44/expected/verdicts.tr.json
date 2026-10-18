@@ -1,0 +1,1964 @@
+[
+  {
+    "where": "hotbar 0",
+    "name": "Heavensent",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "hotbar 1",
+    "name": "[+420 ❤] Potions of Healing [24/30]",
+    "verdict": "USE",
+    "note": "Can iksiri, zor dövüşte iç"
+  },
+  {
+    "where": "hotbar 6",
+    "name": "Wyvern Flute",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "hotbar 7",
+    "name": "Character Info",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "hotbar 8",
+    "name": "Content Book",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bag 9",
+    "name": "Warsong",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bag 10",
+    "name": "Precious",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bag 11",
+    "name": "Grisly Gauntlet",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bag 12",
+    "name": "Generator Amulet",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bag 13",
+    "name": "Ingredient Pouch",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bag 14",
+    "name": "Emerald Pouch [Tier 7]",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bag 15",
+    "name": "Unidentified Chestplate",
+    "verdict": "SELL",
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Sundown Poncho %-3.7). Blacksmith'e sat (takas edilemez)"
+  },
+  {
+    "where": "bag 16",
+    "name": "Pink Wool",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~5 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bag 17",
+    "name": "Cluckles' Favourite Feather",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bag 32",
+    "name": "Llevigar Teleportation Scroll [3/3]",
+    "verdict": "USE",
+    "note": "Şehre hızlı dönüş, yürümekten iyidir"
+  },
+  {
+    "where": "bag 34",
+    "name": "Detlas Teleportation Scroll [3/3]",
+    "verdict": "USE",
+    "note": "Şehre hızlı dönüş, yürümekten iyidir"
+  },
+  {
+    "where": "worn HEAD",
+    "name": "Yume",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "worn CHEST",
+    "name": "Nemract's Ruin",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "worn LEGS",
+    "name": "Chained Pixels",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "worn FEET",
+    "name": "Galloping Spurs",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#0",
+    "name": "Earth Powder I",
+    "verdict": "USE",
+    "note": "Silahına tak (envanterde sürükle), build'in Earth hasarı"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#1",
+    "name": "Earth Powder II",
+    "verdict": "USE",
+    "note": "Silahına tak (envanterde sürükle), build'in Earth hasarı"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#2",
+    "name": "Earth Powder III",
+    "verdict": "USE",
+    "note": "Silahına tak (envanterde sürükle), build'in Earth hasarı"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#3",
+    "name": "Earth Powder IV",
+    "verdict": "USE",
+    "note": "Silahına tak (envanterde sürükle), build'in Earth hasarı"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#4",
+    "name": "[+1500 ❤] Potions of Healing [16/30]",
+    "verdict": "USE",
+    "note": "Can iksiri, zor dövüşte iç"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#5",
+    "name": "Air Powder I",
+    "verdict": "USE",
+    "note": "Silahına tak (envanterde sürükle), build'in Air hasarı"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#6",
+    "name": "Air Powder II",
+    "verdict": "USE",
+    "note": "Silahına tak (envanterde sürükle), build'in Air hasarı"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#7",
+    "name": "Air Powder III",
+    "verdict": "USE",
+    "note": "Silahına tak (envanterde sürükle), build'in Air hasarı"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#8",
+    "name": "Air Powder IV",
+    "verdict": "USE",
+    "note": "Silahına tak (envanterde sürükle), build'in Air hasarı"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#9",
+    "name": "Thunder Powder I",
+    "verdict": "KEEP",
+    "note": "Mage'in silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#10",
+    "name": "Thunder Powder II",
+    "verdict": "KEEP",
+    "note": "Mage'in silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#11",
+    "name": "Thunder Powder III",
+    "verdict": "KEEP",
+    "note": "Mage'in silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#12",
+    "name": "Thunder Powder IV",
+    "verdict": "KEEP",
+    "note": "Mage'in silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#13",
+    "name": "[+1800 ❤] Potions of Healing [30/30]",
+    "verdict": "USE",
+    "note": "Can iksiri, zor dövüşte iç"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#14",
+    "name": "Fire Powder I",
+    "verdict": "KEEP",
+    "note": "Mage'in silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#15",
+    "name": "Fire Powder II",
+    "verdict": "KEEP",
+    "note": "Mage'in silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#16",
+    "name": "Fire Powder III",
+    "verdict": "KEEP",
+    "note": "Mage'in silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#17",
+    "name": "Fire Powder IV",
+    "verdict": "KEEP",
+    "note": "Mage'in silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#18",
+    "name": "Water Powder I",
+    "verdict": "KEEP",
+    "note": "Warrior'ın silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#19",
+    "name": "Water Powder II",
+    "verdict": "KEEP",
+    "note": "Warrior'ın silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#20",
+    "name": "Water Powder III",
+    "verdict": "KEEP",
+    "note": "Warrior'ın silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#21",
+    "name": "Water Powder IV",
+    "verdict": "KEEP",
+    "note": "Warrior'ın silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#22",
+    "name": "Ability Shard",
+    "verdict": "KEEP",
+    "note": "3 tanesi yetenek ağacını sıfırlar, satma"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#23",
+    "name": "Air Powder V",
+    "verdict": "USE",
+    "note": "Silahına tak (envanterde sürükle), build'in Air hasarı"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#24",
+    "name": "Eldritch Outlook Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#26",
+    "name": "Unidentified Bracelet",
+    "verdict": "SELL",
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Panic Attack %-14.6). Market: tanımlamadan Trade Market'te sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#27",
+    "name": "Liquid Emerald",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#28",
+    "name": "Liquid Emerald",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#29",
+    "name": "Liquid Emerald",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#30",
+    "name": "Liquid Emerald",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#31",
+    "name": "Ability Shard",
+    "verdict": "KEEP",
+    "note": "3 tanesi yetenek ağacını sıfırlar, satma"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#33",
+    "name": "Scrap Chausses",
+    "verdict": "KEEP",
+    "note": "Lv. 111'te giyebilirsin"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#34",
+    "name": "Molten Pickaxe T10",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#35",
+    "name": "Void Pickaxe T11",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#36",
+    "name": "Potion of Wisdom",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#37",
+    "name": "Horse Saddle",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#38",
+    "name": "Horse Saddle",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#39",
+    "name": "Horse Saddle",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#40",
+    "name": "Horse Saddle",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#41",
+    "name": "Charm of the Tempest",
+    "verdict": "KEEP",
+    "note": "Lv. 88'te giyebilirsin"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#42",
+    "name": "Skill Reset Scroll",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#43",
+    "name": "Purple Crystal Shard",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#44",
+    "name": "Bronze Axe T4",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#0",
+    "name": "Corkian Amplifier I",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#1",
+    "name": "Corkian Amplifier II",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#2",
+    "name": "Corkian Amplifier III",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#5",
+    "name": "Potion of Wisdom",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#18",
+    "name": "Infinity",
+    "verdict": "SELL",
+    "note": "Archer eşyası, sen Shaman'sın. Blacksmith'e sat (fiyat henüz bilinmiyor)"
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#36",
+    "name": "Az Rune",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#37",
+    "name": "Uth Rune",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#38",
+    "name": "Champion Helmet",
+    "verdict": "KEEP",
+    "note": "Lv. 75'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#39",
+    "name": "Champion Chestplate",
+    "verdict": "KEEP",
+    "note": "Lv. 75'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#40",
+    "name": "Champion Leggings",
+    "verdict": "KEEP",
+    "note": "Lv. 75'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#41",
+    "name": "Champion Boots",
+    "verdict": "KEEP",
+    "note": "Lv. 75'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#43",
+    "name": "Boat",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#44",
+    "name": "Sleeper Spore's",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#0",
+    "name": "Selchar Teleportation Scroll [2/3]",
+    "verdict": "USE",
+    "note": "Şehre hızlı dönüş, yürümekten iyidir"
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#1",
+    "name": "Ragni Teleportation Scroll [2/3]",
+    "verdict": "USE",
+    "note": "Şehre hızlı dönüş, yürümekten iyidir"
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#2",
+    "name": "Selchar Teleportation Scroll [2/3]",
+    "verdict": "USE",
+    "note": "Şehre hızlı dönüş, yürümekten iyidir"
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#3",
+    "name": "Troms Teleportation Scroll [2/3]",
+    "verdict": "USE",
+    "note": "Şehre hızlı dönüş, yürümekten iyidir"
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#4",
+    "name": "Detlas Teleportation Scroll [2/3]",
+    "verdict": "USE",
+    "note": "Şehre hızlı dönüş, yürümekten iyidir"
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#5",
+    "name": "Corkus City Teleportation Scroll [2/3]",
+    "verdict": "USE",
+    "note": "Şehre hızlı dönüş, yürümekten iyidir"
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#7",
+    "name": "Thanos Teleportation Scroll [2/3]",
+    "verdict": "USE",
+    "note": "Şehre hızlı dönüş, yürümekten iyidir"
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#27",
+    "name": "The Mummy's Bandage",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#36",
+    "name": "Cluckles' Favourite Feather",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#37",
+    "name": "Slime Scooper",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#38",
+    "name": "Yahya's Stained Bowl",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#39",
+    "name": "Corrupted Potato",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#40",
+    "name": "Caissop's Master Piece",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#43",
+    "name": "Sayleros' Brother Ashes",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 3#44",
+    "name": "Maltic's Recommendation Letter",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 4#0",
+    "name": "Unidentified Leggings",
+    "verdict": "KEEP",
+    "note": "Lv. 66'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 4#1",
+    "name": "Unidentified Spear",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 4#2",
+    "name": "Unidentified Boots",
+    "verdict": "SELL",
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Astral Walkers %+0.8). Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 4#3",
+    "name": "Unidentified Bow",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#0",
+    "name": "Jungle Jet Shard",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#1",
+    "name": "Jungle Turquoise Shard",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#2",
+    "name": "Jungle Pearl Shard",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#3",
+    "name": "Jungle Jade Shard",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#4",
+    "name": "Jungle Topaz Shard",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#5",
+    "name": "Decrepit Sewers Fragment",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#6",
+    "name": "Witherhead's Rib",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#7",
+    "name": "Arakadicus' Eye",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#8",
+    "name": "Timelost Sanctum Fragment",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#9",
+    "name": "Corrupted Remains",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#10",
+    "name": "Time Fragment",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#11",
+    "name": "Garoth's Writings",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#12",
+    "name": "Zhight Money",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#13",
+    "name": "Slykaar's Heart",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#14",
+    "name": "Undergrowth Ruins Fragment",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#15",
+    "name": "Charon's Soul",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#16",
+    "name": "Antic Bead",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#17",
+    "name": "Hashr's Crown",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#18",
+    "name": "Blank Powder IV",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 5#19",
+    "name": "Redbeard's Hair",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 6#0",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımlamadan Trade Market'te sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 6#1",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 6#2",
+    "name": "Unidentified Bow",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 6#3",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımlamadan Trade Market'te sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 6#4",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 6#5",
+    "name": "Unidentified Spear",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 6#6",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 6#7",
+    "name": "Unknown Cursed One Report",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 6#8",
+    "name": "Gleaming Titanium Boots",
+    "verdict": "SELL",
+    "note": "Normal eşya, Lv. 118'te bile zayıf kalır. Trade Market'te sat, ~21.0 LE"
+  },
+  {
+    "where": "bank acct:Account Bank p. 6#9",
+    "name": "Diverted Loyalty",
+    "verdict": "KEEP",
+    "note": "Lv. 106'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 6#10",
+    "name": "Lotus Seedpod",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~3 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 7#0",
+    "name": "Diamond Gem",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~3 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 7#1",
+    "name": "Diamond Gem",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~12 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 7#2",
+    "name": "Copper Ingot",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~13 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 7#3",
+    "name": "Copper Ingot",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~50 EB (hepsi)"
+  },
+  {
+    "where": "bank acct:Account Bank p. 7#4",
+    "name": "Diamond Gem",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~1.4 LE (hepsi)"
+  },
+  {
+    "where": "bank acct:Account Bank p. 7#5",
+    "name": "Copper Ingot",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~15 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#0",
+    "name": "Ice Barrows Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#1",
+    "name": "Undergrowth Ruins Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#2",
+    "name": "Sand-Swept Tomb Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#3",
+    "name": "Sand-Swept Tomb Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#4",
+    "name": "Underworld Crypt Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#5",
+    "name": "Decrepit Sewers Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#6",
+    "name": "Decrepit Sewers Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#7",
+    "name": "Infested Pit Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#9",
+    "name": "Ice Barrows Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#10",
+    "name": "Broken Decrepit Sewers Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#11",
+    "name": "Infested Pit Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#12",
+    "name": "Underworld Crypt Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 8#13",
+    "name": "Undergrowth Ruins Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#0",
+    "name": "River Clay",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~1.8 LE (hepsi)"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#1",
+    "name": "Oat String",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~5 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#2",
+    "name": "Oat Grains",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~18 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#3",
+    "name": "Coagulated Clot",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~12 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#4",
+    "name": "Sticky Fern",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~11 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#5",
+    "name": "Putrid Gunk",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~18 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#6",
+    "name": "Poison Sac",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~2 E), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#7",
+    "name": "Mashed Insect",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~40 EB (hepsi)"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#8",
+    "name": "Thick Mud",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~38 EB (hepsi)"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#9",
+    "name": "Waterlogged Branch",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~1.3 LE (hepsi)"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#10",
+    "name": "Viscous Slime",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~9 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#11",
+    "name": "Pink Pelulite",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~9 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#12",
+    "name": "Pink Pelute",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~1.2 LE (hepsi)"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#13",
+    "name": "Death Whistle Leaf",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~11 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#14",
+    "name": "Cyclone Blue Leaves",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~1.5 LE (hepsi)"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#15",
+    "name": "Tropical Honeysuckle",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~1.2 LE"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#16",
+    "name": "Iridescent Elytra",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~56 EB"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#17",
+    "name": "Mineral Cinder",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~20 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#18",
+    "name": "Ghostly Essence",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~46 EB (hepsi)"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#19",
+    "name": "Crumbly Rock",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~3 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#20",
+    "name": "Wolf Fang",
+    "verdict": "PRICE",
+    "note": "Fiyatı bilinmiyor: Trade Market'te üstüne bir kez gel, sonra karar veririm"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#21",
+    "name": "Rotten Flesh",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~12 E), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#22",
+    "name": "Owl Feather",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~1 E), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#23",
+    "name": "Pykrete",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~4 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#24",
+    "name": "Large Lapis",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~7 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#25",
+    "name": "Chitin Plate",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~4 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#26",
+    "name": "Mellow Mango",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~30 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#27",
+    "name": "Gelatinous Slime Chunk",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~20 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#28",
+    "name": "Broken Antic Bead",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~7 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#29",
+    "name": "Adventurer's Diary",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~24 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#30",
+    "name": "Consecrated Ivory",
+    "verdict": "PRICE",
+    "note": "Fiyatı bilinmiyor: Trade Market'te üstüne bir kez gel, sonra karar veririm"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#31",
+    "name": "Egg",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~22 E), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#32",
+    "name": "Eye of The Beast",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~31 EB"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#33",
+    "name": "Zombie Eye",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~22 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#34",
+    "name": "Snow Clump",
+    "verdict": "KEEP",
+    "note": "'Slay Creatures of Nesaak Forest' görevi istiyor"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#35",
+    "name": "Thick Vines",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~5 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#36",
+    "name": "Rotten Log",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~3 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#37",
+    "name": "Pillaged Fragment",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~4 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#38",
+    "name": "Frozen Ghostly Essence",
+    "verdict": "PRICE",
+    "note": "Fiyatı bilinmiyor: Trade Market'te üstüne bir kez gel, sonra karar veririm"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#39",
+    "name": "Penguin Egg",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~4 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 9#40",
+    "name": "Yeti Fur",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~2 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#0",
+    "name": "Unidentified Relik",
+    "verdict": "KEEP",
+    "note": "Lv. 101'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#1",
+    "name": "Unidentified Chestplate",
+    "verdict": "KEEP",
+    "note": "Lv. 101'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#2",
+    "name": "Unidentified Chestplate",
+    "verdict": "KEEP",
+    "note": "Lv. 101'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#3",
+    "name": "Unidentified Chestplate",
+    "verdict": "KEEP",
+    "note": "Lv. 101'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#4",
+    "name": "Unidentified Spear",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#5",
+    "name": "Unidentified Helmet",
+    "verdict": "KEEP",
+    "note": "Lv. 101'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#6",
+    "name": "Unidentified Dagger",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~135 E), sonra Trade Market'te sat (Brazen Blade ~49 EB'e kadar)"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#7",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#8",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#9",
+    "name": "Unidentified Chestplate",
+    "verdict": "KEEP",
+    "note": "Lv. 101'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#10",
+    "name": "Unidentified Boots",
+    "verdict": "KEEP",
+    "note": "Lv. 101'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#11",
+    "name": "Unidentified Dagger",
+    "verdict": "SELL",
+    "note": "Lv. 1-5, seviyenin çok altında. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#12",
+    "name": "Unidentified Boots",
+    "verdict": "KEEP",
+    "note": "Lv. 101'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#13",
+    "name": "Unidentified Boots",
+    "verdict": "KEEP",
+    "note": "Lv. 106'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank acct:Account Bank p. 10#14",
+    "name": "Meliorism",
+    "verdict": "KEEP",
+    "note": "Lv. 105'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#0",
+    "name": "Energy Mushroom",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#1",
+    "name": "Decrepit Sewers Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#2",
+    "name": "Creeper Mask",
+    "verdict": "SELL",
+    "note": "En iyi build'de Yume var. Blacksmith'e sat (takas edilemez)"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#3",
+    "name": "Witherhead's Rib",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#4",
+    "name": "Decrepit Sewers Fragment",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#5",
+    "name": "Breathing Helmet I",
+    "verdict": "KEEP",
+    "note": "Görev eşyası, satma; görev bitince işi biter"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#6",
+    "name": "Timelost Sanctum Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#7",
+    "name": "Ability Shard",
+    "verdict": "KEEP",
+    "note": "3 tanesi yetenek ağacını sıfırlar, satma"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#8",
+    "name": "Arakadicus' Eye",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#9",
+    "name": "Horse Whistle",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#10",
+    "name": "Infested Pit Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#11",
+    "name": "The Chapel",
+    "verdict": "SELL",
+    "note": "En iyi build'de Nemract's Ruin var. Blacksmith'e sat (market ~7 EB)"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#12",
+    "name": "Emblem of the Spirits",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#13",
+    "name": "Rotten Pumpkin [1/1]",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#14",
+    "name": "Soft Sand",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~7 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#15",
+    "name": "Underworld Crypt Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#16",
+    "name": "Vindicator",
+    "verdict": "SELL",
+    "note": "En iyi build'de Grisly Gauntlet var. Trade Market'te sat, ~33 EB"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#17",
+    "name": "Grindcore",
+    "verdict": "SELL",
+    "note": "En iyi build'de Heavensent var. Blacksmith'e sat (market ~2 EB)"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#18",
+    "name": "Gold Bar",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~5 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#19",
+    "name": "Sand-Swept Tomb Key",
+    "verdict": "KEEP",
+    "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#20",
+    "name": "Climbing Helmet",
+    "verdict": "KEEP",
+    "note": "Görev eşyası, satma; görev bitince işi biter"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#43",
+    "name": "Yellow Crystal Shard",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#44",
+    "name": "Scrawled Note",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 2#0",
+    "name": "Meanderthal",
+    "verdict": "SELL",
+    "note": "En iyi build'de Galloping Spurs var. Blacksmith'e sat (market ~7 EB)"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 2#1",
+    "name": "Conductor",
+    "verdict": "SELL",
+    "note": "En iyi build'de Chained Pixels var. Blacksmith'e sat (market ~5 EB)"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 2#2",
+    "name": "Adigard's Snowshoes",
+    "verdict": "SELL",
+    "note": "En iyi build'de Galloping Spurs var. Blacksmith'e sat (market ~17 EB)"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 2#3",
+    "name": "Dynamic",
+    "verdict": "SELL",
+    "note": "En iyi build'de Grisly Gauntlet var. Blacksmith'e sat (market ~23 EB)"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 2#4",
+    "name": "Relic Chestplate",
+    "verdict": "SELL",
+    "note": "En iyi build'de Nemract's Ruin var. Blacksmith'e sat (market ~20 EB)"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 2#5",
+    "name": "Sylar",
+    "verdict": "SELL",
+    "note": "Archer eşyası, sen Shaman'sın. Trade Market'te sat, ~33 EB"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 2#6",
+    "name": "Reversal",
+    "verdict": "SELL",
+    "note": "En iyi build'de Heavensent var. Blacksmith'e sat (market ~8 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#0",
+    "name": "Breathing Helmet II",
+    "verdict": "SELL",
+    "note": "En iyi build'de Yume var. Blacksmith'e sat (takas edilemez)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#1",
+    "name": "Marius' Prison",
+    "verdict": "SELL",
+    "note": "Listedeki Solid Quartz Chestplate daha iyi (Lv. 43). Blacksmith'e sat (takas edilemez)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#2",
+    "name": "Az Rune",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#3",
+    "name": "Morph-Topaz",
+    "verdict": "SELL",
+    "note": "En iyi build'de Warsong, Precious var. Trade Market'te sat, ~1.0 LE"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#4",
+    "name": "Morph-Topaz",
+    "verdict": "SELL",
+    "note": "En iyi build'de Warsong, Precious var. Trade Market'te sat, ~1.0 LE"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#5",
+    "name": "Emerald Pouch [Tier 4]",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#6",
+    "name": "Holy Greaves",
+    "verdict": "SELL",
+    "note": "En iyi build'de Chained Pixels var. Blacksmith'e sat (market ~16 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#7",
+    "name": "Little Inferno",
+    "verdict": "SELL",
+    "note": "En iyi build'de Yume var. Blacksmith'e sat (market ~8 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#8",
+    "name": "Darkiron Ring",
+    "verdict": "SELL",
+    "note": "En iyi build'de Warsong, Precious var. Blacksmith'e sat (market ~16 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#9",
+    "name": "Quartron's Eye",
+    "verdict": "SELL",
+    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (market ~17 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#10",
+    "name": "Emerald Pouch [Tier 5]",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#11",
+    "name": "Climbing Helmet",
+    "verdict": "KEEP",
+    "note": "Görev eşyası, satma; görev bitince işi biter"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#12",
+    "name": "Sage",
+    "verdict": "SELL",
+    "note": "Mage eşyası, sen Shaman'sın. Trade Market'te sat, ~1.5 LE"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#13",
+    "name": "Hisel Azetir",
+    "verdict": "SELL",
+    "note": "Mage eşyası, sen Shaman'sın. Blacksmith'e sat (takas edilemez)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#14",
+    "name": "Morph-Ruby",
+    "verdict": "KEEP",
+    "note": "Lv. 62'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#15",
+    "name": "Druid's Ring",
+    "verdict": "SELL",
+    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (market ~30 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#16",
+    "name": "Druid's Ring",
+    "verdict": "SELL",
+    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (market ~30 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#17",
+    "name": "Durum's Serenity",
+    "verdict": "SELL",
+    "note": "En iyi build'de Generator Amulet var. Blacksmith'e sat (takas edilemez)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#18",
+    "name": "Creeper Mask",
+    "verdict": "SELL",
+    "note": "En iyi build'de Yume var. Blacksmith'e sat (takas edilemez)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#19",
+    "name": "Baab's Wool",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#21",
+    "name": "Climbing Helmet",
+    "verdict": "KEEP",
+    "note": "Görev eşyası, satma; görev bitince işi biter"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#35",
+    "name": "Shameful Greaves",
+    "verdict": "KEEP",
+    "note": "Lv. 58'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#38",
+    "name": "Water Voucher",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#39",
+    "name": "Fire Voucher",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#40",
+    "name": "Air Voucher",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#41",
+    "name": "Earth Voucher",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#42",
+    "name": "Thunder Voucher",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 1#44",
+    "name": "Gigabyte",
+    "verdict": "KEEP",
+    "note": "Lv. 93'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 2#0",
+    "name": "Ultramarine Boots",
+    "verdict": "KEEP",
+    "note": "Lv. 61'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 2#1",
+    "name": "Ultramarine Crown",
+    "verdict": "KEEP",
+    "note": "Lv. 59'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 2#2",
+    "name": "Ultramarine Cape",
+    "verdict": "SELL",
+    "note": "Listedeki Solid Quartz Chestplate daha iyi (Lv. 43). Blacksmith'e sat (market ~30 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 2#3",
+    "name": "Ultramarine Belt",
+    "verdict": "KEEP",
+    "note": "Lv. 63'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 2#4",
+    "name": "Hisel Azetir",
+    "verdict": "SELL",
+    "note": "Mage eşyası, sen Shaman'sın. Blacksmith'e sat (takas edilemez)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 2#5",
+    "name": "Multitool",
+    "verdict": "KEEP",
+    "note": "Lv. 76'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 2#6",
+    "name": "Dragon's Eye Bracelet",
+    "verdict": "KEEP",
+    "note": "Lv. 60'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 2#36",
+    "name": "Crystal Shard [Floor 1 - Lv. 10]",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 2#37",
+    "name": "Crystal Shard [Floor 2 - Lv. 10]",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 2#38",
+    "name": "Crystal Shard [Floor 3 - Lv. 10]",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 2#39",
+    "name": "Crystal Shard [Floor 4 - Lv. 10]",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 2#40",
+    "name": "Crystal Shard [Floor 6 - Lv. 10]",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#0",
+    "name": "Unidentified Boots",
+    "verdict": "SELL",
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Way Back Home %-0.6). Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#1",
+    "name": "Unidentified Leggings",
+    "verdict": "SELL",
+    "note": "Lv. 11-15, seviyenin çok altında. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#2",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~43 E), sonra Trade Market'te sat (Hickory Stick ~42 EB'e kadar)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#3",
+    "name": "Unidentified Necklace",
+    "verdict": "SELL",
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Rycar's Swagger %-9.5). Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#4",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~33 E), sonra Trade Market'te sat (Autumn ~48 EB'e kadar)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#5",
+    "name": "Unidentified Bracelet",
+    "verdict": "SELL",
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-7.5). Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#6",
+    "name": "Unidentified Dagger",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~36 E), sonra Trade Market'te sat (Precedence ~41 EB'e kadar)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#7",
+    "name": "Unidentified Necklace",
+    "verdict": "SELL",
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Charm of the Vampire %-10.7). Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#9",
+    "name": "Unidentified Chestplate",
+    "verdict": "KEEP",
+    "note": "Lv. 71'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#10",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~33 E), sonra Trade Market'te sat (Autumn ~48 EB'e kadar)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#27",
+    "name": "Fuse",
+    "verdict": "SELL",
+    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#28",
+    "name": "Fuse",
+    "verdict": "SELL",
+    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 3#36",
+    "name": "Power Cell",
+    "verdict": "KEEP",
+    "note": "Lv. 86'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 4#9",
+    "name": "Brainwash",
+    "verdict": "KEEP",
+    "note": "Lv. 96'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 4#10",
+    "name": "Sparkling Plate",
+    "verdict": "SELL",
+    "note": "Listedeki Solid Quartz Chestplate daha iyi (Lv. 43). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 4#27",
+    "name": "Photon",
+    "verdict": "SELL",
+    "note": "Listedeki Precious daha iyi (Lv. 41). Trade Market'te sat, ~1.4 LE"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 4#28",
+    "name": "Ozoth's Breath",
+    "verdict": "SELL",
+    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (market ~21 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 4#29",
+    "name": "Euouae",
+    "verdict": "KEEP",
+    "note": "Lv. 75'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 4#30",
+    "name": "Royal Dusty Amulet",
+    "verdict": "KEEP",
+    "note": "Lv. 75'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 4#37",
+    "name": "Remikas' Sanctuary",
+    "verdict": "SELL",
+    "note": "Listedeki Solid Quartz Chestplate daha iyi (Lv. 43). Blacksmith'e sat (market ~9 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 4#38",
+    "name": "The Golem",
+    "verdict": "KEEP",
+    "note": "Lv. 97'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#0",
+    "name": "Hellion",
+    "verdict": "SELL",
+    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#1",
+    "name": "Hellion",
+    "verdict": "SELL",
+    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#2",
+    "name": "Rycar's Bravado",
+    "verdict": "KEEP",
+    "note": "Lv. 58'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#3",
+    "name": "Mech Core",
+    "verdict": "KEEP",
+    "note": "Lv. 86'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#9",
+    "name": "Purified Helmet of the Legends",
+    "verdict": "KEEP",
+    "note": "Lv. 68'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#10",
+    "name": "September",
+    "verdict": "SELL",
+    "note": "Listedeki Solid Quartz Chestplate daha iyi (Lv. 43). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#11",
+    "name": "Vacancy",
+    "verdict": "KEEP",
+    "note": "Lv. 89'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#12",
+    "name": "Flashing Boots",
+    "verdict": "KEEP",
+    "note": "Lv. 87'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#13",
+    "name": "Afterimage",
+    "verdict": "SELL",
+    "note": "Mage eşyası, sen Shaman'sın. Blacksmith'e sat (market ~8 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#28",
+    "name": "Ring of Generosity",
+    "verdict": "SELL",
+    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (market ~11 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#29",
+    "name": "Ring of Generosity",
+    "verdict": "SELL",
+    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (market ~11 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#30",
+    "name": "Tarod's Search",
+    "verdict": "KEEP",
+    "note": "Lv. 47'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#31",
+    "name": "Fiery Torc",
+    "verdict": "KEEP",
+    "note": "Lv. 69'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#36",
+    "name": "Lichclaw",
+    "verdict": "SELL",
+    "note": "Mage eşyası, sen Shaman'sın. Trade Market'te sat, ~1.0 LE"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#37",
+    "name": "Executioner Helmet",
+    "verdict": "KEEP",
+    "note": "Lv. 75'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#38",
+    "name": "Kizuato",
+    "verdict": "SELL",
+    "note": "Listedeki Solid Quartz Chestplate daha iyi (Lv. 43). Blacksmith'e sat (market ~23 EB)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#39",
+    "name": "Refraction",
+    "verdict": "KEEP",
+    "note": "Lv. 74'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 5#40",
+    "name": "Cirrus",
+    "verdict": "KEEP",
+    "note": "Lv. 69'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#0",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~33 E), sonra Trade Market'te sat (Autumn ~48 EB'e kadar)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#1",
+    "name": "Unidentified Spear",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#2",
+    "name": "Unidentified Leggings",
+    "verdict": "SELL",
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Jera %-12.0). Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#3",
+    "name": "Unidentified Chestplate",
+    "verdict": "SELL",
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Hailstone %-0.8). Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#4",
+    "name": "Unidentified Bracelet",
+    "verdict": "SELL",
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-7.5). Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#5",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~74 E), sonra Trade Market'te sat (Water Relic Wand ~1.1 LE'e kadar)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#6",
+    "name": "Unidentified Chestplate",
+    "verdict": "SELL",
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Hailstone %-0.8). Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#7",
+    "name": "Mooington's Skin",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#8",
+    "name": "Unidentified Bracelet",
+    "verdict": "SELL",
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Czytash's Compass %-6.6). Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#9",
+    "name": "Ogre Faceplate",
+    "verdict": "KEEP",
+    "note": "Lv. 83'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#10",
+    "name": "Ultramarine Crown",
+    "verdict": "KEEP",
+    "note": "Lv. 59'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#11",
+    "name": "Shaggy Boots",
+    "verdict": "KEEP",
+    "note": "Lv. 97'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#12",
+    "name": "Mech Core",
+    "verdict": "KEEP",
+    "note": "Lv. 86'te giyebilirsin"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#13",
+    "name": "Exosphere",
+    "verdict": "KEEP",
+    "note": "Lv. 81'e yaklaşınca tanımla"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#14",
+    "name": "Prismatic Spores",
+    "verdict": "SELL",
+    "note": "Trade Market'te sat, ~1.0 LE"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#15",
+    "name": "Tinderbox",
+    "verdict": "SELL",
+    "note": "Listedeki Solid Quartz Chestplate daha iyi (Lv. 43). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+  },
+  {
+    "where": "bank char:char0003:Character Bank p. 6#44",
+    "name": "Thunder Catalyst X",
+    "verdict": null,
+    "note": null
+  }
+]

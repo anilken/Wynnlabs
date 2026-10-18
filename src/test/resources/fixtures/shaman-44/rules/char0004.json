@@ -1,0 +1,191 @@
+{
+  "goal": "otomatik profil: ARCHER",
+  "tooLowLevels": 4,
+  "tooHighLevels": 5,
+  "levelWeight": 1.0,
+  "weaponDpsWeight": 0.3,
+  "armourHealthWeight": 0.04,
+  "tierBonus": {
+    "UNIQUE": 1,
+    "RARE": 2,
+    "SET": 2,
+    "LEGENDARY": 4,
+    "FABLED": 5,
+    "MYTHIC": 8
+  },
+  "statWeights": {
+    "spellDamage": 2.0,
+    "rawSpellDamage": 2.0,
+    "elementalSpellDamage": 1.5,
+    "neutralSpellDamage": 1.5,
+    "waterSpellDamage": 0.3,
+    "thunderSpellDamage": 1.8,
+    "mainAttackDamage": 1.0,
+    "damage": 1.0,
+    "elementalDamage": 1.0,
+    "neutralDamage": 0.8,
+    "waterDamage": 0.3,
+    "thunderDamage": 1.2,
+    "waterMainAttackDamage": 0.3,
+    "thunderMainAttackDamage": 1.0,
+    "thunderMelee": 0.6,
+    "earthDamage": 0.3,
+    "fireDamage": 1.2,
+    "airDamage": 0.3,
+    "earthSpellDamage": 0.3,
+    "fireSpellDamage": 1.8,
+    "airSpellDamage": 0.3,
+    "earthMainAttackDamage": 0.3,
+    "fireMainAttackDamage": 1.0,
+    "airMainAttackDamage": 0.3,
+    "mainAttackFireDamage": 0.3,
+    "criticalDamageBonus": 1.0,
+    "attackSpeed": 0.2,
+    "mainAttackRange": 0.3,
+    "SpellCost": -1.5,
+    "manaRegen": 2.0,
+    "manaSteal": 0.5,
+    "maxMana": 0.5,
+    "intelligence": 1.0,
+    "dexterity": 1.0,
+    "strength": 0.2,
+    "defence": 0.2,
+    "agility": 0.3,
+    "walkSpeed": 1.0,
+    "sprint": 0.3,
+    "jumpHeight": 0.2,
+    "combatExperience": 1.5,
+    "xpBonus": 1.5,
+    "lootBonus": 0.3,
+    "lootQuality": 0.3,
+    "stealing": 0.1,
+    "health": 0.3,
+    "healthRegen": 0.3,
+    "lifeSteal": 0.5,
+    "healing": 0.3,
+    "damageFromMobs": -0.5,
+    "exploding": 0.1,
+    "poison": 0.2,
+    "thorns": 0.1,
+    "reflection": 0.1,
+    "slowEnemy": 0.3,
+    "weakenEnemy": 0.3,
+    "soulPointRegen": 0.1
+  },
+  "powders": {
+    "weapon": [
+      "FIRE",
+      "THUNDER"
+    ],
+    "armour": []
+  },
+  "shopping": {
+    "aheadLevels": 5,
+    "perSlot": 3,
+    "preferTradeMarket": 1,
+    "minGainPercent": 10,
+    "preferredSkills": [
+      "DEFENCE",
+      "DEXTERITY",
+      "INTELLIGENCE"
+    ],
+    "maxOffSkillPoints": 10,
+    "excludeTiers": [
+      "MYTHIC"
+    ],
+    "excludeSources": [
+      "UNAVAILABLE",
+      "RAID",
+      "EVENT"
+    ]
+  },
+  "rerollBelowPercent": 30,
+  "roadmap": {
+    "targets": [
+      "Adventurer's Cap",
+      "Adventurer's Boots",
+      "Adventurer's Pants",
+      "Adventurer's Tunic"
+    ],
+    "targetNote": "Adventurer's seti, topluluk önerisi"
+  },
+  "model": {
+    "spells": [
+      {
+        "name": "Arrow Bomb",
+        "index": 3,
+        "cost": 45,
+        "share": 0.333,
+        "conv": {
+          "neutral": 1.4,
+          "fire": 0.2
+        }
+      },
+      {
+        "name": "Escape",
+        "index": 2,
+        "cost": 20,
+        "share": 0.0,
+        "conv": {}
+      },
+      {
+        "name": "Arrow Storm",
+        "index": 1,
+        "cost": 35,
+        "share": 0.333,
+        "conv": {
+          "neutral": 1.0499999999999998,
+          "thunder": 0.15000000000000002
+        }
+      },
+      {
+        "name": "Arrow Shield",
+        "index": 4,
+        "cost": 30,
+        "share": 0.333,
+        "conv": {
+          "neutral": 0.6,
+          "air": 0.1
+        }
+      }
+    ],
+    "mainAttackWeight": 0.7,
+    "baseManaPer5s": 25,
+    "baseMana": 100,
+    "fightSeconds": 30,
+    "manaStealFactor": 0.6,
+    "maxCastsPer5s": 4,
+    "xpWeight": 1.0,
+    "speedWeight": 0.3,
+    "survivalWeight": 0.4,
+    "manaWeight": 0.3,
+    "skillPriority": [
+      "INTELLIGENCE",
+      "DEFENCE"
+    ],
+    "skillPriorityShare": 0.4,
+    "baseHealth": 100,
+    "healthPerLevel": 5,
+    "passiveDpsFactor": 0.0,
+    "mainAttackClassMult": 1.0
+  },
+  "grind": {
+    "levelsBelow": 3,
+    "levelsAbove": 3
+  },
+  "trade": {
+    "valuableTiers": [
+      "MYTHIC",
+      "FABLED"
+    ],
+    "junkTiers": [
+      "NORMAL"
+    ],
+    "minTradeMarketPrice": 1920,
+    "legendaryMinPercent": 80,
+    "anyMinPercent": 95
+  },
+  "names": {},
+  "kinds": {},
+  "class": "ARCHER"
+}

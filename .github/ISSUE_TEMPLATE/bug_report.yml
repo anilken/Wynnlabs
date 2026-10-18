@@ -1,0 +1,51 @@
+name: Bug report
+description: Something in Wynn Labs does not work as it should
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to make it happen
+      placeholder: |
+        1. Open the J menu
+        2. Go to the Endgame tab
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versions
+      description: Wynn Labs, Wynntils, and Wynnventory if installed.
+      placeholder: Wynn Labs 0.1.0, Wynntils 4.2.13, Wynnventory 2.2.5
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Item tooltips and advice
+        - J menu (layout, tabs)
+        - Quests and discoveries
+        - Endgame (raids, lootruns, aspects, pools)
+        - Crafting
+        - Bank and prices
+        - Coach, damage and HUD
+        - Local API and AI assistant
+        - Other
+  - type: textarea
+    id: log
+    attributes:
+      label: Log or screenshot
+      description: >-
+        The lines from latest.log around the error, or a screenshot. Remove your player name,
+        character ids and any API key before posting.
+      render: text

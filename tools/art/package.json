@@ -1,0 +1,16 @@
+{
+  "name": "wynnlabs-art",
+  "private": true,
+  "description": "Renders Wynn Labs' GUI art (our SVGs and Tabler icons) to the PNG sprites the mod ships",
+  "type": "module",
+  "scripts": {
+    "render": "node render.mjs",
+    "icon": "node icon.mjs"
+  },
+  "devDependencies": {
+    "@expo-google-fonts/inter": "^0.2.3",
+    "@expo-google-fonts/noto-sans": "^0.2.3",
+    "@resvg/resvg-js": "2.6.2",
+    "@tabler/icons": "3.31.0"
+  }
+}

@@ -1,0 +1,295 @@
+{
+  "goal": "damage build, Summoner",
+  "tooLowLevels": 4,
+  "tooHighLevels": 5,
+  "levelWeight": 1.0,
+  "weaponDpsWeight": 0.3,
+  "armourHealthWeight": 0.04,
+  "tierBonus": {
+    "UNIQUE": 1,
+    "RARE": 2,
+    "SET": 2,
+    "LEGENDARY": 4,
+    "FABLED": 5,
+    "MYTHIC": 8
+  },
+  "statWeights": {
+    "spellDamage": 2.0,
+    "rawSpellDamage": 2.0,
+    "elementalSpellDamage": 1.5,
+    "neutralSpellDamage": 1.5,
+    "waterSpellDamage": 0.3,
+    "thunderSpellDamage": 0.3,
+    "mainAttackDamage": 1.0,
+    "damage": 1.0,
+    "elementalDamage": 1.0,
+    "neutralDamage": 0.8,
+    "waterDamage": 0.3,
+    "thunderDamage": 0.3,
+    "waterMainAttackDamage": 0.3,
+    "thunderMainAttackDamage": 0.3,
+    "thunderMelee": 0.6,
+    "earthDamage": 1.2,
+    "fireDamage": 0.3,
+    "airDamage": 1.2,
+    "earthSpellDamage": 1.8,
+    "fireSpellDamage": 0.3,
+    "airSpellDamage": 1.8,
+    "earthMainAttackDamage": 1.0,
+    "fireMainAttackDamage": 0.3,
+    "airMainAttackDamage": 1.0,
+    "mainAttackFireDamage": 0.3,
+    "criticalDamageBonus": 1.0,
+    "attackSpeed": 0.2,
+    "mainAttackRange": 0.3,
+    "SpellCost": -1.5,
+    "manaRegen": 2.0,
+    "manaSteal": 0.5,
+    "maxMana": 0.5,
+    "intelligence": 1.0,
+    "dexterity": 1.0,
+    "strength": 0.2,
+    "defence": 0.2,
+    "agility": 0.3,
+    "walkSpeed": 1.0,
+    "sprint": 0.3,
+    "jumpHeight": 0.2,
+    "combatExperience": 1.5,
+    "xpBonus": 1.5,
+    "lootBonus": 0.3,
+    "lootQuality": 0.3,
+    "stealing": 0.1,
+    "health": 0.3,
+    "healthRegen": 0.3,
+    "lifeSteal": 0.5,
+    "healing": 0.3,
+    "damageFromMobs": -0.5,
+    "exploding": 0.1,
+    "poison": 0.2,
+    "thorns": 0.1,
+    "reflection": 0.1,
+    "slowEnemy": 0.3,
+    "weakenEnemy": 0.3,
+    "soulPointRegen": 0.1
+  },
+  "powders": {
+    "weapon": [
+      "EARTH",
+      "AIR"
+    ],
+    "armour": []
+  },
+  "shopping": {
+    "aheadLevels": 5,
+    "perSlot": 5,
+    "preferTradeMarket": 1,
+    "minGainPercent": 10,
+    "preferredSkills": [
+      "STRENGTH",
+      "AGILITY",
+      "INTELLIGENCE",
+      "DEFENCE"
+    ],
+    "maxOffSkillPoints": 10,
+    "excludeTiers": [
+      "MYTHIC"
+    ],
+    "excludeSources": [
+      "UNAVAILABLE",
+      "RAID",
+      "EVENT",
+      "UNKNOWN"
+    ],
+    "excludeAttackSpeeds": [
+      "SUPER_SLOW",
+      "VERY_SLOW"
+    ],
+    "maxWalkSpeedPenalty": 10,
+    "oldGearLevels": 8
+  },
+  "rerollBelowPercent": 30,
+  "roadmap": {
+    "targets": [],
+    "targetNote": "Adventurer's seti, topluluk önerisi"
+  },
+  "model": {
+    "spells": [
+      {
+        "name": "Totem",
+        "index": 1,
+        "cost": 30,
+        "share": 0.333,
+        "conv": {
+          "neutral": 0.06,
+          "air": 0.06
+        }
+      },
+      {
+        "name": "Haul",
+        "index": 2,
+        "cost": 15,
+        "share": 0.0,
+        "conv": {}
+      },
+      {
+        "name": "Uproot",
+        "index": 4,
+        "cost": 30,
+        "share": 0.333,
+        "conv": {
+          "neutral": 0.8,
+          "earth": 0.3,
+          "thunder": 0.2
+        }
+      },
+      {
+        "name": "Aura",
+        "index": 3,
+        "cost": 40,
+        "share": 0.333,
+        "conv": {
+          "neutral": 1.5,
+          "water": 0.3
+        }
+      }
+    ],
+    "mainAttackWeight": 0.23,
+    "baseManaPer5s": 22.8,
+    "baseMana": 137,
+    "fightSeconds": 30,
+    "manaStealFactor": 0.33,
+    "maxCastsPer5s": 4,
+    "xpWeight": 1.15,
+    "speedWeight": 1.0,
+    "survivalWeight": 0.4,
+    "manaWeight": 0.3,
+    "skillPriority": [
+      "STRENGTH",
+      "INTELLIGENCE"
+    ],
+    "skillPriorityShare": 0.6,
+    "baseHealth": 100,
+    "healthPerLevel": 5,
+    "passiveDpsFactor": 1.0,
+    "manaMeasuredAt": "2026-10-12T15:49:55.592741500Z",
+    "attackSpeedFeel": {
+      "SUPER_SLOW": 0.8,
+      "VERY_SLOW": 0.9,
+      "SLOW": 1.0
+    },
+    "mainAttackClassMult": 1.05,
+    "spellCalibration": 1.4
+  },
+  "grind": {
+    "levelsBelow": 3,
+    "levelsAbove": 3
+  },
+  "trade": {
+    "valuableTiers": [
+      "MYTHIC",
+      "FABLED"
+    ],
+    "junkTiers": [
+      "NORMAL"
+    ],
+    "minTradeMarketPrice": 1920,
+    "legendaryMinPercent": 80,
+    "anyMinPercent": 95
+  },
+  "names": {},
+  "kinds": {
+    "abilityshard": {
+      "verdict": "SAKLA",
+      "note": "3 tanesi yetenek ağacını sıfırlar, satma"
+    },
+    "dungeonkey": {
+      "verdict": "SAKLA",
+      "note": "Zindana girmek için; zindan tüccarında iyi eşyalar var"
+    },
+    "multihealthpotion": {
+      "verdict": "KULLAN",
+      "note": "Can iksiri, zor dövüşte iç"
+    },
+    "teleportscroll": {
+      "verdict": "KULLAN",
+      "note": "Şehre hızlı dönüş, yürümekten iyidir"
+    }
+  },
+  "class": "SHAMAN",
+  "tree": {
+    "archetype": "Summoner"
+  },
+  "community": {
+    "bonusPercent": 3,
+    "picks": {
+      "Bartered Memory": 121,
+      "Time Rift": 121,
+      "Archean": 121,
+      "Memento": 121,
+      "Cistern Circlet": 121,
+      "Shattershard": 121,
+      "Malocchio": 121,
+      "Scattered Psyche": 121,
+      "Transplanted Psyche": 121,
+      "Larrikin": 121,
+      "Inhumanity": 121,
+      "Dawnbreak": 106,
+      "Iterative Loop": 121,
+      "Solenoid": 121,
+      "Xenotransplantation": 121,
+      "Monarch": 121,
+      "Unravel": 106,
+      "Discoverer": 106,
+      "Sagittarius": 106,
+      "Boreal": 106,
+      "Diamond Steam Ring": 106,
+      "Diamond Steam Bracelet": 106,
+      "Diamond Steam Necklace": 106,
+      "Olympic": 106,
+      "Nychthemeron": 106,
+      "Delirium": 106,
+      "Chain Rule": 106,
+      "Revenant": 106,
+      "Ingress": 106,
+      "Euouae": 106,
+      "Contrast": 106,
+      "Arbalest": 106,
+      "Cumulonimbus": 106,
+      "Stratosphere": 106,
+      "Vaward": 106,
+      "Steamjet Walkers": 106,
+      "Prowess": 106,
+      "Diamond Fusion Necklace": 106,
+      "Greatbird Eyrie": 106,
+      "Etiolation": 106,
+      "Perch of the Shrouded Sun": 106,
+      "Summa": 106,
+      "Suppression": 106,
+      "Tenuto": 106,
+      "Immolation": 106,
+      "Antebellum": 106,
+      "Hephaestus-Forged Sabatons": 106,
+      "Aliez": 106,
+      "Atlas": 106,
+      "Bottled Thunderstorm": 106,
+      "Sunstar": 106,
+      "Little Inferno": 40,
+      "Sundown Poncho": 40,
+      "Philosopher": 40,
+      "Prologue": 40,
+      "Morph-Topaz": 40,
+      "Vindicator": 40,
+      "Durum's Serenity": 40,
+      "Cleansing Flame": 40,
+      "Avalanche": 45,
+      "Marius' Prison": 50,
+      "Morph-Iron": 50,
+      "Morph-Gold": 45,
+      "Binding Brace": 50,
+      "Heavensent": 45,
+      "Chained Pixels": 45
+    }
+  },
+  "questLevelMargin": 4,
+  "goalPreset": "DAMAGE"
+}

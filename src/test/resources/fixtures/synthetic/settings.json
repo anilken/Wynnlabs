@@ -1,0 +1,6 @@
+{
+  "itemAdvice": true,
+  "priceApi": false,
+  "localApi": true,
+  "debug": true
+}

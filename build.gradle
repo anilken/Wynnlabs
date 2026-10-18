@@ -1,0 +1,648 @@
+plugins {
+    id 'fabric-loom' version '1.13-SNAPSHOT'
+    id 'java'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+// checkWynntilsVersions compiles each version into its own folder, so build/ stays as it was
+if (project.hasProperty('matrixDir')) {
+    layout.buildDirectory = file(project.property('matrixDir'))
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    // Wynntils uses Mojang names, so we do too.
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    // Wynntils is not on Maven: put the fabric jar in libs/. To check another Wynntils release
+    // before players get it, build with -PwynntilsJar=<path to its jar>.
+    if (project.hasProperty('wynntilsJar')) {
+        modCompileOnly files(project.property('wynntilsJar'))
+    } else {
+        modCompileOnly fileTree(dir: 'libs', include: ["wynntils-${project.wynntils_version}-fabric*.jar"],
+                exclude: ['*-sources.jar'])
+    }
+    // Tests run the mod's logic on recorded game state in a Knot class loader (fabric-loader-junit)
+    testImplementation platform('org.junit:junit-bom:5.13.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
+    // Wynntils and Fabric API are not needed by the logic: tiny stand-in mods satisfy
+    // fabric.mod.json's "depends" instead (this Fabric API's mixins do not apply to 1.21.11 there)
+    testRuntimeOnly files('src/test/stubs/wynntils', 'src/test/stubs/fabric-api')
+}
+
+configurations.named('testRuntimeClasspath') {
+    exclude group: 'remapped.net.fabricmc.fabric-api'
+}
+
+// gradle runClientGameTest: a dev client (no account, no server) opens the J menu on the recorded
+// character and saves a screenshot of each tab to build/preview, to check the layout without
+// the game (tools/preview/README.md)
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = 'wynnlabs-preview'
+        enableGameTests = false
+        enableClientGameTests = true
+        eula = true
+    }
+}
+
+dependencies {
+    gametestImplementation sourceSets.test.output          // the recorded game state (FixtureState)
+    gametestRuntimeOnly files('src/test/stubs/wynntils')  // the logic reads the recording, not Wynntils
+}
+
+loom.runs.matching { it.name == 'clientGameTest' }.configureEach {
+    vmArg "-Dwynnlabs.fixtures=${file('src/test/resources/fixtures').absolutePath}"
+    vmArg "-Dwynnlabs.preview=${layout.buildDirectory.dir('preview').get().asFile.absolutePath}"
+    // -PpreviewOnly=layout: only the size matrix; -PpreviewOnly=jmenu: only the J menu shots; -PlayoutStrict: problems fail
+    if (project.hasProperty('previewOnly')) {
+        vmArg "-Dwynnlabs.previewOnly=${project.property('previewOnly')}"
+    }
+    if (project.hasProperty('previewTab')) {
+        vmArg "-Dwynnlabs.previewTab=${project.property('previewTab')}"
+    }
+    if (project.hasProperty('layoutStrict')) {
+        vmArg "-Dwynnlabs.layoutStrict=true"
+    }
+}
+
+// Fabric API's interfaces injected into Minecraft's classes would be missing at test time
+// without Fabric API. The mod calls none of them: its classes compile to the same bytes.
+loom {
+    interfaceInjection {
+        enableDependencyInterfaceInjection = false
+    }
+}
+
+// -PupdateFixtures: the fixture tests write their expected files instead of comparing
+test {
+    useJUnitPlatform()
+    // the road map tests take most of the time: four JVMs run the test classes side by side
+    maxParallelForks = 4
+    // -PquickTests (CI): leaves out the test classes that take more than a few seconds (upgrade
+    // search, fixtures, the build thread, saving); a local gradle build still runs them all
+    if (project.hasProperty('quickTests')) {
+        filter {
+            ['RoadmapGainTest', 'RoleGoalTest', 'BeamCacheTest', 'FixturePlanTest', 'RoadmapEveryLevelTest',
+             'BuildOffThreadTest', 'AllocatorTest', 'FreshCharacterTest', 'FixtureJsonTest',
+             'FixtureVerdictTest', 'CraftingStockTest', 'SaverTest']
+                    .each { excludeTestsMatching "*.${it}" }
+        }
+    }
+    workingDir = layout.buildDirectory.dir('test-run').get().asFile
+    // -PfixturesDir=<folder>: run on fixtures kept elsewhere (another class, a scratch copy)
+    def fixtures = file(project.findProperty('fixturesDir') ?: 'src/test/resources/fixtures')
+    systemProperty 'wynnlabs.fixtures', fixtures.absolutePath
+    systemProperty 'wynnlabs.updateFixtures', project.hasProperty('updateFixtures')
+    systemProperty 'wynnlabs.debugDump', project.hasProperty('debugDump')
+    // -PdumpQuests: write the shipped quest guides (en.json) from the pages tools/quests/fetch.py kept
+    systemProperty 'wynnlabs.dumpQuests', project.hasProperty('dumpQuests')
+    systemProperty 'wynnlabs.projectDir', projectDir.absolutePath
+    if (project.hasProperty('dumpQuests')) {
+        outputs.upToDateWhen { false }
+    }
+    inputs.files(fileTree(fixtures)).withPropertyName('fixtures')
+    if (project.hasProperty('updateFixtures')) {
+        outputs.upToDateWhen { false }
+    }
+    doFirst {
+        workingDir.mkdirs()
+    }
+    testLogging {
+        events 'failed'
+        exceptionFormat 'full'
+    }
+    // the tests' own notes (a skipped fixture, rewritten expected files), without Minecraft's log;
+    // System.out goes through the game's logger there, so the note sits behind a log prefix
+    onOutput { descriptor, event ->
+        int at = event.message.indexOf('[fixtures] ')
+        if (at >= 0) {
+            logger.lifecycle(event.message.substring(at).trim())
+        }
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+    // the AI assistant skill: one source in ai/, shipped in the jar for the in-game export
+    from('ai/skills/wynnlabs') {
+        include 'SKILL.md'
+        into 'assets/wynnlabs/ai'
+    }
+}
+
+// Embedded Wynnventory key (task 7.3.6): every jar this build makes, release builds included,
+// carries the player's key so the mod needs no key typed in. The key is read at build time from
+// a git-ignored file outside the sources: $WYNNLABS_WYNNVENTORY_KEY_FILE, else
+// <instance>/config/wynnlabs/wynnventory-key.txt, where <instance> is the folder above the mods
+// folder named in .local-mods-path (looked up in this folder and the ones above it, so a git
+// worktree finds the main checkout's). It is encrypted with AES-256-GCM under a fresh random
+// 32-byte key and 12-byte IV per build; the AES key is split by XOR into two shares kept in two
+// jar resources (EmbeddedKey.java describes the layout). Both land in build/generated/ and the
+// jar only, never in src/ or git. This is obfuscation-grade protection, not secrecy: everything
+// needed to decrypt ships in the jar. The key is never printed; the log says only whether one
+// was embedded. No key source: the jar simply has no embedded key. -PnoEmbeddedKey leaves it out.
+def embeddedKeyDir = layout.buildDirectory.dir('generated/embedded-key')
+def embeddedKeySource = { ->
+    def env = System.getenv('WYNNLABS_WYNNVENTORY_KEY_FILE')
+    if (env) {
+        return new File(env)
+    }
+    File dir = projectDir
+    while (dir != null && !new File(dir, '.local-mods-path').isFile()) {
+        dir = dir.parentFile
+    }
+    if (dir == null) {
+        return null
+    }
+    def line = new File(dir, '.local-mods-path').readLines('UTF-8').find { it.trim() }?.trim()
+    if (!line) {
+        return null
+    }
+    def drive = line =~ /^\/([a-zA-Z])\/(.*)$/          // a Git Bash path: /c/Users/... → C:/Users/...
+    if (drive.matches() && System.getProperty('os.name').toLowerCase().contains('windows')) {
+        line = "${drive.group(1)}:/${drive.group(2)}"
+    }
+    def instance = new File(line).parentFile
+    return instance == null ? null : new File(instance, 'config/wynnlabs/wynnventory-key.txt')
+}
+/** The key's bytes, in memory only; null when there is no key source. */
+def embeddedKeyBytes = { ->
+    def f = embeddedKeySource()
+    if (f == null || !f.isFile()) {
+        return null
+    }
+    def k = f.getText('UTF-8').trim()
+    return k ? k.getBytes('UTF-8') : null
+}
+
+tasks.register('embedKey') {
+    group = 'build'
+    description = 'Writes the encrypted Wynnventory key into build/generated/embedded-key for the jar.'
+    outputs.dir(embeddedKeyDir)
+    outputs.upToDateWhen { false }              // the source lives outside the project
+    doLast {
+        def out = embeddedKeyDir.get().asFile
+        project.delete(out)
+        out.mkdirs()
+        def key = project.hasProperty('noEmbeddedKey') ? null : embeddedKeyBytes()
+        if (key == null) {
+            logger.lifecycle('embedKey: no key source, the jar has no embedded key')
+            return
+        }
+        def rnd = new java.security.SecureRandom()
+        byte[] aes = new byte[32]
+        byte[] iv = new byte[12]
+        byte[] shareA = new byte[32]
+        rnd.nextBytes(aes)
+        rnd.nextBytes(iv)
+        rnd.nextBytes(shareA)
+        def cipher = javax.crypto.Cipher.getInstance('AES/GCM/NoPadding')
+        cipher.init(javax.crypto.Cipher.ENCRYPT_MODE, new javax.crypto.spec.SecretKeySpec(aes, 'AES'),
+                new javax.crypto.spec.GCMParameterSpec(128, iv))
+        cipher.updateAAD('wynnlabs-embedded-key-v2'.getBytes('US-ASCII'))
+        byte[] sealed = cipher.doFinal(key)
+        def blob = new ByteArrayOutputStream()
+        blob.write('WLK2'.getBytes('US-ASCII'))
+        blob.write(iv)
+        blob.write(shareA)
+        blob.write(sealed)
+        byte[] shareB = new byte[32]
+        for (int i = 0; i < 32; i++) {
+            shareB[i] = (byte) (aes[i] ^ shareA[i])
+        }
+        java.util.Arrays.fill(key, (byte) 0)
+        java.util.Arrays.fill(aes, (byte) 0)
+        def res = new File(out, 'assets/wynnlabs/embedded-key.bin')
+        def share = new File(out, 'assets/wynnlabs/ui/grain.bin')
+        res.parentFile.mkdirs()
+        share.parentFile.mkdirs()
+        res.bytes = blob.toByteArray()
+        share.bytes = shareB
+        logger.lifecycle('embedKey: key embedded (AES-256-GCM)')
+    }
+}
+
+// the jar only: tests and dev runs read resources from build/resources, where the key never is
+tasks.named('jar') {
+    from(tasks.named('embedKey'))
+    finalizedBy 'checkEmbeddedKey'
+}
+tasks.named('remapJar') {
+    finalizedBy 'checkEmbeddedKey'
+}
+
+// After every jar: no jar may hold the plaintext key, in its raw bytes or in any entry once
+// unpacked (exact or lower-cased, as checkPersonal compares). The key is read into memory only
+// for this comparison; the task prints pass or fail, never the key.
+tasks.register('checkEmbeddedKey') {
+    group = 'verification'
+    description = 'Fails when a built jar contains the Wynnventory key in plain text.'
+    mustRunAfter 'jar', 'remapJar'
+    doLast {
+        byte[] key = embeddedKeyBytes()
+        if (key == null) {
+            logger.lifecycle('checkEmbeddedKey: no key source, nothing to check')
+            return
+        }
+        // bytes as ISO-8859-1 text (one char per byte), so String.indexOf does the byte search
+        String exact = new String(key, 'ISO-8859-1')
+        String low = exact.toLowerCase(Locale.ROOT)
+        def has = { byte[] b ->
+            String hay = new String(b, 'ISO-8859-1')
+            return hay.contains(exact) || hay.toLowerCase(Locale.ROOT).contains(low)
+        }
+        def jars = [tasks.named('jar').get().archiveFile.get().asFile,
+                    tasks.named('remapJar').get().archiveFile.get().asFile].findAll { it.isFile() }
+        def bad = []
+        jars.each { j ->
+            boolean found = has(j.bytes)
+            new java.util.zip.ZipFile(j).withCloseable { zip ->
+                zip.entries().each { e ->
+                    if (!found && !e.directory) {
+                        found = has(zip.getInputStream(e).bytes)
+                    }
+                }
+            }
+            if (found) {
+                bad << j.name
+            }
+        }
+        java.util.Arrays.fill(key, (byte) 0)
+        if (bad) {
+            throw new GradleException("checkEmbeddedKey: FAIL, the plaintext key is in ${bad.join(', ')}")
+        }
+        logger.lifecycle("checkEmbeddedKey: pass (${jars.size()} jar(s), no plaintext key)")
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+    it.options.encoding = 'UTF-8'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+// Release check: none of the values in the git-ignored release-blocklist.txt (character ids,
+// names, key fragments, local paths) may appear in what gets published. Matches are reported
+// by file, line and blocklist line number, never by value. Recorded test fixtures
+// (src/test/resources/fixtures/) are scanned whole, however big: they come from a real game.
+tasks.register('checkPersonal') {
+    group = 'verification'
+    description = 'Fails when a value from release-blocklist.txt appears in the sources or docs.'
+    doLast {
+        def list = file('release-blocklist.txt')
+        if (!list.exists()) {
+            logger.warn('checkPersonal: no release-blocklist.txt, nothing to check')
+            return
+        }
+        def values = []
+        list.readLines('UTF-8').eachWithIndex { line, i ->
+            def v = line.trim()
+            if (v && !v.startsWith('#')) {
+                values << [v.toLowerCase(), i + 1]
+            }
+        }
+        def roots = ['src', 'tools', 'ai', 'openspec', 'README.md', 'build.gradle', 'gradle.properties',
+                     'settings.gradle', 'install-when-closed.sh'].collect { file(it) }.findAll { it.exists() }
+        def hits = []
+        def fixtures = file('src/test/resources/fixtures').toPath()
+        roots.each { root ->
+            def files = root.isDirectory() ? fileTree(root).files : [root]
+            files.each { f ->
+                def bytes = f.bytes
+                def big = bytes.length > 2_000_000 && !f.toPath().startsWith(fixtures)
+                if (big || f.name ==~ /.*\.(png|jar|class|ogg)$/) {
+                    return
+                }
+                new String(bytes, 'UTF-8').readLines().eachWithIndex { text, n ->
+                    def low = text.toLowerCase()
+                    values.each { v ->
+                        if (low.contains(v[0])) {
+                            hits << "${projectDir.toPath().relativize(f.toPath())}:${n + 1} (blocklist line ${v[1]})"
+                        }
+                    }
+                }
+            }
+        }
+        if (hits) {
+            throw new GradleException("Personal values found:\n  " + hits.join('\n  '))
+        }
+        logger.lifecycle("checkPersonal: ${values.size()} values, clean")
+    }
+}
+check.dependsOn checkPersonal
+
+// Language check: every "wynnlabs.*" key the Java code uses must exist in en_us.json and
+// tr_tr.json, both files must have the same keys, and no key may be unused. A literal ending in
+// "." (e.g. "wynnlabs.verdict." + name) marks every key under that prefix as used.
+tasks.register('checkLang') {
+    group = 'verification'
+    description = 'Checks that en_us.json and tr_tr.json cover every text key the code uses.'
+    doLast {
+        def langDir = file('src/main/resources/assets/wynnlabs/lang')
+        def slurper = new groovy.json.JsonSlurper()
+        def en = slurper.parse(new File(langDir, 'en_us.json'), 'UTF-8').keySet()
+        def tr = slurper.parse(new File(langDir, 'tr_tr.json'), 'UTF-8').keySet()
+        def used = [] as Set
+        def prefixes = [] as Set
+        def pattern = ~/"((?:key\.(?:category\.)?)?wynnlabs\.[A-Za-z0-9_.]*)"/
+        fileTree('src/main/java').include('**/*.java').each { f ->
+            (f.getText('UTF-8') =~ pattern).each { m ->
+                def k = m[1]
+                if (k.endsWith('.')) {
+                    prefixes << k
+                } else {
+                    used << k
+                }
+            }
+        }
+        // key-binding categories are named from an Identifier: count them as used when present
+        def optional = [] as Set
+        fileTree('src/main/java').include('**/*.java').each { f ->
+            (f.getText('UTF-8') =~ /fromNamespaceAndPath\("wynnlabs",\s*"([a-z0-9_]+)"\)/).each { m ->
+                optional << "key.category.wynnlabs.${m[1]}".toString()
+            }
+        }
+        def problems = []
+        (used - en).each { problems << "missing in en_us: ${it}" }
+        (used - tr).each { problems << "missing in tr_tr: ${it}" }
+        (en - tr).each { problems << "only in en_us: ${it}" }
+        (tr - en).each { problems << "only in tr_tr: ${it}" }
+        // placeholders: only %s, %1$s and %% (a lone % breaks String.format), same set in both
+        def enMap = slurper.parse(new File(langDir, 'en_us.json'), 'UTF-8')
+        def trMap = slurper.parse(new File(langDir, 'tr_tr.json'), 'UTF-8')
+        def hole = java.util.regex.Pattern.compile('%(\\d+\\$)?s')
+        def bad = java.util.regex.Pattern.compile('%(?!s|\\d+\\$s)')
+        def holes = { String v -> def m = hole.matcher(v.replace('%%', '')); def n = 0; while (m.find()) { n++ }; n }
+        [en: enMap, tr: trMap].each { lang, map ->
+            map.each { k, v ->
+                if (bad.matcher(v.replace('%%', '')).find()) {
+                    problems << "bad % in ${lang}: ${k}"
+                }
+            }
+        }
+        enMap.each { k, v ->
+            if (trMap.containsKey(k) && holes(v) != holes(trMap[k])) {
+                problems << "placeholder count differs: ${k}"
+            }
+        }
+        (en + tr).findAll { k -> !used.contains(k) && !optional.contains(k) && !prefixes.any { p -> k.startsWith(p) } }
+                .each { problems << "unused: ${it}" }
+        if (problems) {
+            throw new GradleException("Language files:\n  " + problems.sort().join('\n  '))
+        }
+        logger.lifecycle("checkLang: ${used.size()} keys, ${prefixes.size()} prefixes, ${en.size()} entries, OK")
+    }
+}
+check.dependsOn checkLang
+
+// Wynntils boundary: only the bridge (Wyn), the item adapter (WynntilsItems) and the event hooks
+// (WynntilsEvents) may name Wynntils' types, by import or fully qualified. Everything else reads
+// the mod's own model, so a Wynntils change or a second item source touches only these files.
+tasks.register('checkWynntilsImports') {
+    group = 'verification'
+    description = 'Fails when a Java file other than the Wynntils bridge files refers to com.wynntils.'
+    doLast {
+        def allowed = ['io/github/anilken/wynnlabs/Wyn.java', 'io/github/anilken/wynnlabs/WynntilsItems.java',
+                       'io/github/anilken/wynnlabs/WynntilsEvents.java'] as Set
+        def root = file('src/main/java')
+        def hits = []
+        fileTree(root).include('**/*.java').each { f ->
+            def rel = root.toPath().relativize(f.toPath()).toString().replace(File.separatorChar, '/' as char)
+            if (allowed.contains(rel)) {
+                return
+            }
+            f.getText('UTF-8').readLines().eachWithIndex { text, n ->
+                if (text =~ /\bcom\.wynntils\b/) {
+                    hits << "${rel}:${n + 1}: ${text.trim()}"
+                }
+            }
+        }
+        if (hits) {
+            throw new GradleException("Wynntils used outside ${allowed.join(', ')}:\n  " + hits.join('\n  '))
+        }
+        logger.lifecycle("checkWynntilsImports: only ${allowed.size()} files use Wynntils, OK")
+    }
+}
+check.dependsOn checkWynntilsImports
+
+// Secret discoveries: tr.json must follow en.json (the same check as tools/discoveries/check.py).
+// Same ids in the same order, the same number of steps with the same places and the same number
+// of requirements; every entry has a location, a wiki link and a step. After a re-fetch of en.json
+// this names the entries whose Turkish needs updating.
+tasks.register('checkDiscoveries') {
+    group = 'verification'
+    description = 'Checks that the Turkish discovery guide matches the English one entry by entry.'
+    def dir = file('src/main/resources/assets/wynnlabs/discoveries')
+    inputs.files(fileTree(dir)).withPropertyName('discoveries')
+    doLast {
+        def slurper = new groovy.json.JsonSlurper()
+        def en = slurper.parse(new File(dir, 'en.json'), 'UTF-8')
+        def tr = slurper.parse(new File(dir, 'tr.json'), 'UTF-8')
+        def byId = tr.collectEntries { [(it.id): it] }
+        def enIds = en*.id
+        def problems = []
+        enIds.findAll { !byId.containsKey(it) }.each { problems << "${it}: missing in tr.json" }
+        tr*.id.findAll { !enIds.contains(it) }.each { problems << "${it}: not in en.json" }
+        if (!problems && enIds != tr*.id) {
+            problems << 'the entries are in a different order'
+        }
+        en.each { e ->
+            if (e.x == null || e.y == null || e.z == null) {
+                problems << "${e.id}: no location"
+            }
+            if (!(e.wiki ?: '').startsWith('https://')) {
+                problems << "${e.id}: no wiki link"
+            }
+            if (!e.steps) {
+                problems << "${e.id}: no step"
+            }
+            def t = byId[e.id]
+            if (t == null) {
+                return
+            }
+            if (t.steps.size() != e.steps.size()) {
+                problems << "${e.id}: ${e.steps.size()} steps in en.json, ${t.steps.size()} in tr.json"
+            } else {
+                e.steps.eachWithIndex { s, n ->
+                    if (s.at != t.steps[n].at) {
+                        problems << "${e.id}: step ${n + 1} has another place in tr.json"
+                    }
+                    if (!(t.steps[n].text ?: '').trim()) {
+                        problems << "${e.id}: step ${n + 1} has no Turkish text"
+                    }
+                }
+            }
+            if ((t.requires ?: []).size() != (e.requires ?: []).size()) {
+                problems << "${e.id}: requirement count differs"
+            }
+            if (!(t.lore ?: '').trim()) {
+                problems << "${e.id}: no Turkish lore"
+            }
+        }
+        if (problems) {
+            throw new GradleException("Discovery data:\n  " + problems.join('\n  '))
+        }
+        logger.lifecycle("checkDiscoveries: ${en.size()} entries, ${en.sum { it.steps.size() }} steps, en.json and tr.json agree")
+    }
+}
+check.dependsOn checkDiscoveries
+
+tasks.register('checkQuests') {
+    group = 'verification'
+    description = 'Checks that the Turkish quest guides match the English ones quest by quest (tools/quests/check.py does the same).'
+    def dir = file('src/main/resources/assets/wynnlabs/quests')
+    inputs.files(fileTree(dir)).withPropertyName('quests')
+    doLast {
+        def slurper = new groovy.json.JsonSlurper()
+        def en = slurper.parse(new File(dir, 'en.json'), 'UTF-8')
+        def problems = []
+        en.each { e ->
+            if (!(e.wiki ?: '').startsWith('https://')) {
+                problems << "${e.id}: no wiki link"
+            }
+            if (!e.stages) {
+                problems << "${e.id}: no stage"
+            }
+        }
+        def trFile = new File(dir, 'tr.json')
+        if (!trFile.exists()) {
+            if (problems) {
+                throw new GradleException("Quest data:\n  " + problems.join('\n  '))
+            }
+            logger.lifecycle("checkQuests: ${en.size()} English guides; no tr.json yet (Turkish falls back to English)")
+            return
+        }
+        def tr = slurper.parse(trFile, 'UTF-8')
+        if (en*.id != tr*.id) {
+            problems << 'tr.json does not list the same quests in the same order as en.json'
+        }
+        def coord = ~/-?\d{1,5}\s*,\s*-?\d{1,5}\s*,\s*-?\d{1,5}/
+        def quoted = ~/"[^"]{2,}"/
+        def norm = { String c -> c.replaceAll(/\s+/, '') }
+        def text = { String where, String a, String b ->
+            def have = (b =~ coord).collect { norm(it) } as Set
+            (a =~ coord).each { if (!have.contains(norm(it))) { problems << "${where}: coordinates ${it} missing" } }
+            (a =~ quoted).each { if (!b.contains(it)) { problems << "${where}: quoted ${it} changed" } }
+            if (a.trim() && !b.trim()) { problems << "${where}: empty" }
+        }
+        def byId = tr.collectEntries { [(it.id): it] }
+        en.each { e ->
+            def t = byId[e.id]
+            if (t == null) {
+                return
+            }
+            if (t.stages.size() != e.stages.size()) {
+                problems << "${e.id}: ${e.stages.size()} stages in en.json, ${t.stages.size()} in tr.json"
+                return
+            }
+            e.stages.eachWithIndex { s, n ->
+                def ts = t.stages[n]
+                text("${e.id} stage ${n + 1}", s.task ?: '', ts.task ?: '')
+                if ((ts.hints ?: []).size() != (s.hints ?: []).size()) {
+                    problems << "${e.id} stage ${n + 1}: hint count differs"
+                } else {
+                    s.hints.eachWithIndex { h, k -> text("${e.id} stage ${n + 1} hint ${k + 1}", h, ts.hints[k]) }
+                }
+            }
+        }
+        if (problems) {
+            throw new GradleException("Quest data:\n  " + problems.take(40).join('\n  ') + (problems.size() > 40 ? "\n  … ${problems.size() - 40} more" : ''))
+        }
+        logger.lifecycle("checkQuests: ${en.size()} guides, ${en.sum { it.stages.size() }} stages, en.json and tr.json agree")
+    }
+}
+check.dependsOn checkQuests
+
+// Wynntils versions: compiles the mod against every Wynntils jar in the git-ignored
+// libs/wynntils-matrix/, one nested build per jar into build/matrix/<version>/, and prints which
+// versions build, with the first compile error of those that do not. Not part of check: each
+// version takes about a minute. Fails only when the minimum fabric.mod.json declares does not build.
+tasks.register('checkWynntilsVersions') {
+    group = 'verification'
+    description = 'Compiles the mod against each Wynntils jar in libs/wynntils-matrix/ and reports which build.'
+    doLast {
+        def dir = file('libs/wynntils-matrix')
+        def jars = (dir.isDirectory() ? dir.listFiles().toList() : [])
+                .findAll { it.name ==~ /wynntils-.+\.jar/ && !it.name.endsWith('-sources.jar') }
+        if (!jars) {
+            logger.lifecycle('checkWynntilsVersions: no Wynntils jars in libs/wynntils-matrix/, nothing to check')
+            return
+        }
+        def versionOf = { File f -> (f.name =~ /wynntils-([0-9][^-+]*)/).with { it.find() ? it.group(1) : f.name } }
+        def order = { String v -> v.tokenize('.').collect { it.isInteger() ? it.toInteger() : 0 } }
+        jars.sort { a, b ->
+            def x = order(versionOf(a))
+            def y = order(versionOf(b))
+            def n = [x.size(), y.size()].max()
+            (0..<n).collect { i -> (i < x.size() ? x[i] : 0) <=> (i < y.size() ? y[i] : 0) }.find { it != 0 } ?: 0
+        }
+        def windows = System.getProperty('os.name').toLowerCase().contains('windows')
+        def gradleExe = new File(gradle.gradleHomeDir, windows ? 'bin/gradle.bat' : 'bin/gradle').absolutePath
+        def results = []
+        jars.each { jar ->
+            def v = versionOf(jar)
+            def out = file("build/matrix/${v}")
+            out.mkdirs()
+            logger.lifecycle("checkWynntilsVersions: compiling against Wynntils ${v} ...")
+            def cmd = [gradleExe, 'compileJava', '--console=plain', '--no-daemon',
+                       "-PwynntilsJar=${jar.absolutePath}", "-PmatrixDir=${out.absolutePath}",
+                       '--project-cache-dir', new File(out, '.gradle').absolutePath]
+            def proc = new ProcessBuilder(cmd*.toString()).directory(projectDir).redirectErrorStream(true).start()
+            def log = proc.inputStream.getText('UTF-8')
+            def code = proc.waitFor()
+            file("build/matrix/${v}/compile.log").setText(log, 'UTF-8')
+            def lines = log.readLines()
+            def errors = lines.findAll { it =~ /\.java:\d+: error: / }
+            def first = errors ? errors[0].replaceAll('^.*[\\\\/]([^\\\\/]+\\.java):(\\d+): error: ', '$1:$2: ') : null
+            if (first != null) {
+                // javac names what it could not find a few lines below: "symbol:   class GearInstanceRequirements"
+                def at = lines.indexOf(errors[0])
+                def symbol = lines.drop(at + 1).take(4).find { it.trim().startsWith('symbol:') }
+                if (symbol != null) {
+                    first += ' ' + symbol.trim().replaceFirst('symbol:\\s+', '')
+                }
+            }
+            if (code != 0 && first == null) {
+                first = log.readLines().find { it.startsWith('* What went wrong') } ? 'build failed, see compile.log' : "exit ${code}"
+            }
+            results << [version: v, ok: code == 0, first: first, count: errors.size()]
+        }
+        def width = [results*.version*.length().max(), 8].max()
+        logger.lifecycle('')
+        logger.lifecycle('Wynntils'.padRight(width) + '  result  first error')
+        results.each { r ->
+            def why = r.ok ? '' : r.first + (r.count > 1 ? " (${r.count} errors)" : '')
+            logger.lifecycle(r.version.padRight(width) + '  ' + (r.ok ? 'builds' : 'FAILS ').padRight(6) + '  ' + why)
+        }
+        logger.lifecycle("logs: build/matrix/<version>/compile.log")
+        def range = new groovy.json.JsonSlurper().parse(file('src/main/resources/fabric.mod.json'), 'UTF-8').depends?.wynntils
+        def floor = range ? (range =~ />=\s*([0-9][^\s<]*)/).with { it.find() ? it.group(1) : null } : null
+        def atFloor = results.find { it.version == floor }
+        if (atFloor != null && !atFloor.ok) {
+            throw new GradleException("fabric.mod.json declares Wynntils ${range}, but ${floor} does not compile")
+        }
+    }
+}

@@ -1,0 +1,2656 @@
+{
+ "note": "A sample of Wynncraft ingredients for the preview shots only (not shipped).",
+ "ingredients": [
+  {
+   "name": "Foul Fairy Dust",
+   "tier": 3,
+   "level": 43,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": -8,
+     "max": -7
+    },
+    "spellDamage": {
+     "min": 12,
+     "max": 16
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -96,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    30,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Obelisk Core",
+   "tier": 3,
+   "level": 76,
+   "professions": [
+    "woodworking",
+    "armouring",
+    "jeweling"
+   ],
+   "ids": {},
+   "positions": [
+    -200,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -131,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Dizzying Void",
+   "tier": 3,
+   "level": 105,
+   "professions": [
+    "armouring",
+    "woodworking"
+   ],
+   "ids": {
+    "rawHealth": {
+     "min": -1200,
+     "max": -1000
+    }
+   },
+   "positions": [
+    0,
+    0,
+    115,
+    115,
+    -115,
+    0
+   ],
+   "durability": -175,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    -25,
+    0
+   ]
+  },
+  {
+   "name": "Depurinated Genome",
+   "tier": 3,
+   "level": 105,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "mainAttackDamage": {
+     "min": 22,
+     "max": 24
+    },
+    "rawAgility": {
+     "min": -4,
+     "max": -4
+    },
+    "rawDefence": {
+     "min": -4,
+     "max": -4
+    },
+    "rawDexterity": {
+     "min": -4,
+     "max": -4
+    },
+    "rawIntelligence": {
+     "min": -4,
+     "max": -4
+    },
+    "rawStrength": {
+     "min": -4,
+     "max": -4
+    },
+    "spellDamage": {
+     "min": 22,
+     "max": 24
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -162,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    -10,
+    -10,
+    -10,
+    -10,
+    -10
+   ]
+  },
+  {
+   "name": "Exquisite Marsh Scale",
+   "tier": 2,
+   "level": 107,
+   "professions": [
+    "woodworking",
+    "tailoring"
+   ],
+   "ids": {
+    "healingEfficiency": {
+     "min": -5,
+     "max": -4
+    },
+    "rawStrength": {
+     "min": 6,
+     "max": 7
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -110,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    22,
+    0,
+    -11,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Gunkfueled Core",
+   "tier": 3,
+   "level": 103,
+   "professions": [
+    "armouring",
+    "woodworking"
+   ],
+   "ids": {
+    "exploding": {
+     "min": 10,
+     "max": 15
+    },
+    "healthRegenRaw": {
+     "min": -180,
+     "max": -150
+    },
+    "rawStrength": {
+     "min": 5,
+     "max": 7
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -160,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    -25,
+    0
+   ]
+  },
+  {
+   "name": "Major's Badge",
+   "tier": 3,
+   "level": 80,
+   "professions": [
+    "armouring",
+    "tailoring",
+    "weaponsmithing",
+    "woodworking",
+    "jeweling",
+    "alchemism"
+   ],
+   "ids": {},
+   "positions": [
+    -15,
+    -180,
+    -110,
+    -20,
+    35,
+    -30
+   ],
+   "durability": -175,
+   "charges": 0,
+   "duration": -300,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Bat Heart",
+   "tier": 3,
+   "level": 37,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "mainAttackDamage": {
+     "min": -20,
+     "max": -20
+    },
+    "spellDamage": {
+     "min": -20,
+     "max": -20
+    },
+    "walkSpeed": {
+     "min": 24,
+     "max": 28
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": -1,
+   "duration": 90,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Active Fireball",
+   "tier": 1,
+   "level": 4,
+   "professions": [
+    "scribing",
+    "cooking",
+    "alchemism"
+   ],
+   "ids": {
+    "fireDamage": {
+     "min": 2,
+     "max": 4
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -160,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Ancient Currency",
+   "tier": 2,
+   "level": 102,
+   "professions": [
+    "tailoring"
+   ],
+   "ids": {
+    "lootBonus": {
+     "min": 5,
+     "max": 7
+    },
+    "lootQuality": {
+     "min": 4,
+     "max": 5
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -150,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Disturbed Dye",
+   "tier": 3,
+   "level": 105,
+   "professions": [
+    "armouring"
+   ],
+   "ids": {
+    "rawSpellDamage": {
+     "min": 70,
+     "max": 75
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    -50,
+    0
+   ],
+   "durability": -144,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    35,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Black Sulphur",
+   "tier": 2,
+   "level": 45,
+   "professions": [
+    "cooking",
+    "alchemism"
+   ],
+   "ids": {
+    "exploding": {
+     "min": 10,
+     "max": 14
+    },
+    "fireDamage": {
+     "min": 4,
+     "max": 10
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -370,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Aqua Vitae",
+   "tier": 3,
+   "level": 60,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "waterDamage": {
+     "min": 15,
+     "max": 17
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -210,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Ancient Heart",
+   "tier": 3,
+   "level": 45,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "mainAttackDamage": {
+     "min": -6,
+     "max": -4
+    },
+    "spellDamage": {
+     "min": -8,
+     "max": -6
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": 370,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Aged Medallion",
+   "tier": 2,
+   "level": 25,
+   "professions": [
+    "jeweling",
+    "weaponsmithing"
+   ],
+   "ids": {
+    "combatExperience": {
+     "min": 3,
+     "max": 4
+    },
+    "spellDamage": {
+     "min": 2,
+     "max": 3
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -51,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    8,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Aged Tome",
+   "tier": 2,
+   "level": 82,
+   "professions": [
+    "woodworking",
+    "weaponsmithing"
+   ],
+   "ids": {
+    "mainAttackDamage": {
+     "min": -12,
+     "max": -9
+    },
+    "spellDamage": {
+     "min": 10,
+     "max": 14
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -105,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    20,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Altered Ash",
+   "tier": 0,
+   "level": 15,
+   "professions": [
+    "alchemism",
+    "scribing"
+   ],
+   "ids": {
+    "spellDamage": {
+     "min": 1,
+     "max": 5
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -45,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Arcane Anomaly",
+   "tier": 0,
+   "level": 75,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": 3,
+     "max": 3
+    },
+    "spellDamage": {
+     "min": -11,
+     "max": -8
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -44,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    10,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Archaic Medallion",
+   "tier": 3,
+   "level": 45,
+   "professions": [
+    "jeweling"
+   ],
+   "ids": {
+    "healthRegen": {
+     "min": 3,
+     "max": 5
+    },
+    "spellDamage": {
+     "min": -5,
+     "max": -4
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -79,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Ashstained Basalt",
+   "tier": 2,
+   "level": 94,
+   "professions": [
+    "woodworking"
+   ],
+   "ids": {
+    "rawMainAttackDamage": {
+     "min": -70,
+     "max": -70
+    },
+    "rawSpellDamage": {
+     "min": -40,
+     "max": -40
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 80,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Azure Blossom",
+   "tier": 3,
+   "level": 80,
+   "professions": [
+    "woodworking"
+   ],
+   "ids": {
+    "healingEfficiency": {
+     "min": 11,
+     "max": 11
+    },
+    "manaRegen": {
+     "min": 6,
+     "max": 6
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -135,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    10,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Bamboo",
+   "tier": 1,
+   "level": 80,
+   "professions": [
+    "tailoring",
+    "armouring",
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "mainAttackDamage": {
+     "min": -4,
+     "max": -1
+    },
+    "spellDamage": {
+     "min": -4,
+     "max": -1
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 37,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Broken Fiddle",
+   "tier": 2,
+   "level": 63,
+   "professions": [
+    "woodworking"
+   ],
+   "ids": {
+    "fireDamage": {
+     "min": 5,
+     "max": 6
+    },
+    "spellDamage": {
+     "min": -3,
+     "max": -2
+    },
+    "walkSpeed": {
+     "min": 4,
+     "max": 7
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -80,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    10,
+    10
+   ]
+  },
+  {
+   "name": "Brown Mushroom",
+   "tier": 0,
+   "level": 1,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "rawHealth": {
+     "min": 3,
+     "max": 5
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -36,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Cat Food",
+   "tier": 2,
+   "level": 28,
+   "professions": [
+    "cooking",
+    "alchemism"
+   ],
+   "ids": {
+    "combatExperience": {
+     "min": -10,
+     "max": -8
+    },
+    "manaRegen": {
+     "min": 3,
+     "max": 3
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -310,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Chitin Plate",
+   "tier": 1,
+   "level": 64,
+   "professions": [
+    "armouring",
+    "tailoring",
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "rawDexterity": {
+     "min": 2,
+     "max": 4
+    },
+    "rawHealth": {
+     "min": 175,
+     "max": 210
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -56,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    20,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Chromatic Bloom",
+   "tier": 3,
+   "level": 80,
+   "professions": [
+    "jeweling"
+   ],
+   "ids": {
+    "rawAgility": {
+     "min": 1,
+     "max": 1
+    },
+    "rawDefence": {
+     "min": 1,
+     "max": 1
+    },
+    "rawDexterity": {
+     "min": 1,
+     "max": 1
+    },
+    "rawIntelligence": {
+     "min": 1,
+     "max": 1
+    },
+    "rawMainAttackDamage": {
+     "min": -45,
+     "max": -45
+    },
+    "rawSpellDamage": {
+     "min": -45,
+     "max": -45
+    },
+    "rawStrength": {
+     "min": 1,
+     "max": 1
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -135,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Cleaned Saccharum",
+   "tier": 2,
+   "level": 3,
+   "professions": [
+    "alchemism",
+    "scribing"
+   ],
+   "ids": {
+    "healthRegenRaw": {
+     "min": 3,
+     "max": 4
+    },
+    "rawHealth": {
+     "min": 16,
+     "max": 20
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -75,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Coagulated Blood Gelatin",
+   "tier": 2,
+   "level": 80,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "healingEfficiency": {
+     "min": -3,
+     "max": -3
+    },
+    "rawHealth": {
+     "min": 425,
+     "max": 475
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -90,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    -10,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Condensed Darkness",
+   "tier": 2,
+   "level": 102,
+   "professions": [
+    "jeweling",
+    "alchemism"
+   ],
+   "ids": {
+    "manaSteal": {
+     "min": 3,
+     "max": 3
+    },
+    "rawHealth": {
+     "min": -260,
+     "max": -240
+    },
+    "rawSpellDamage": {
+     "min": -25,
+     "max": -20
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -106,
+   "charges": 0,
+   "duration": -60,
+   "requirements": [
+    0,
+    0,
+    -20,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Corrupted Metal Scrap",
+   "tier": 2,
+   "level": 39,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": 4,
+     "max": 5
+    },
+    "manaSteal": {
+     "min": -2,
+     "max": -1
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -60,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    -6,
+    12,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Crystal Dust",
+   "tier": 1,
+   "level": 35,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "spellDamage": {
+     "min": 4,
+     "max": 6
+    },
+    "walkSpeed": {
+     "min": -5,
+     "max": -2
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -40,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    8,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Dark Matter",
+   "tier": 2,
+   "level": 100,
+   "professions": [
+    "woodworking"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": -1,
+     "max": -1
+    },
+    "rawMainAttackDamage": {
+     "min": 90,
+     "max": 100
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -110,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Dead Bee",
+   "tier": 1,
+   "level": 5,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "rawHealth": {
+     "min": -6,
+     "max": -4
+    },
+    "rawMainAttackDamage": {
+     "min": 6,
+     "max": 8
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -54,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Dead Naval Shard",
+   "tier": 0,
+   "level": 31,
+   "professions": [
+    "jeweling"
+   ],
+   "ids": {
+    "spellDamage": {
+     "min": 1,
+     "max": 2
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -33,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Decaying Arteries",
+   "tier": 0,
+   "level": 103,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "healthRegenRaw": {
+     "min": -101,
+     "max": -92
+    },
+    "spellDamage": {
+     "min": 8,
+     "max": 9
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -100,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Defender's Stone",
+   "tier": 3,
+   "level": 6,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "rawHealth": {
+     "min": 5,
+     "max": 7
+    },
+    "rawMainAttackDamage": {
+     "min": 6,
+     "max": 8
+    },
+    "rawSpellDamage": {
+     "min": 4,
+     "max": 6
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -60,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Depth's Gem",
+   "tier": 3,
+   "level": 78,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "rawIntelligence": {
+     "min": 8,
+     "max": 9
+    },
+    "spellDamage": {
+     "min": 5,
+     "max": 7
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -133,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Dernic Hydroid",
+   "tier": 2,
+   "level": 104,
+   "professions": [
+    "woodworking"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": -6,
+     "max": -5
+    },
+    "rawWaterSpellDamage": {
+     "min": 40,
+     "max": 45
+    },
+    "waterDamage": {
+     "min": 6,
+     "max": 8
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -109,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    25,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Dernic Sludgebomb",
+   "tier": 2,
+   "level": 105,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "lifeSteal": {
+     "min": 155,
+     "max": 170
+    },
+    "manaRegen": {
+     "min": -3,
+     "max": -3
+    },
+    "poison": {
+     "min": 6000,
+     "max": 6000
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -120,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Devourer's Maw",
+   "tier": 3,
+   "level": 68,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "lifeSteal": {
+     "min": 100,
+     "max": 120
+    },
+    "manaRegen": {
+     "min": -4,
+     "max": -2
+    },
+    "manaSteal": {
+     "min": -3,
+     "max": -2
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -230,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Disturbed Aspect",
+   "tier": 2,
+   "level": 77,
+   "professions": [
+    "armouring",
+    "woodworking"
+   ],
+   "ids": {
+    "earthDamage": {
+     "min": 8,
+     "max": 8
+    },
+    "manaRegen": {
+     "min": 4,
+     "max": 4
+    },
+    "rawHealth": {
+     "min": -600,
+     "max": -600
+    },
+    "waterDamage": {
+     "min": 8,
+     "max": 8
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -88,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    10,
+    0,
+    10,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Elemental Crystal",
+   "tier": 1,
+   "level": 70,
+   "professions": [
+    "armouring",
+    "tailoring",
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "rawHealth": {
+     "min": 200,
+     "max": 230
+    },
+    "rawMainAttackDamage": {
+     "min": 14,
+     "max": 20
+    },
+    "rawSpellDamage": {
+     "min": 18,
+     "max": 25
+    },
+    "reflection": {
+     "min": 4,
+     "max": 5
+    },
+    "thorns": {
+     "min": 4,
+     "max": 5
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -101,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Elephant Toenail",
+   "tier": 2,
+   "level": 85,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "rawHealth": {
+     "min": 1000,
+     "max": 1200
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -170,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Enhanced Behaviour Microchip",
+   "tier": 2,
+   "level": 90,
+   "professions": [
+    "armouring",
+    "woodworking",
+    "weaponsmithing"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": 6,
+     "max": 6
+    },
+    "spellDamage": {
+     "min": 5,
+     "max": 6
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -98,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    30,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Enhanced Dynamics Microchip",
+   "tier": 2,
+   "level": 90,
+   "professions": [
+    "armouring",
+    "woodworking",
+    "weaponsmithing"
+   ],
+   "ids": {
+    "manaSteal": {
+     "min": 4,
+     "max": 4
+    },
+    "rawMainAttackDamage": {
+     "min": 70,
+     "max": 80
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -98,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    30,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Enhanced Potential Microchip",
+   "tier": 2,
+   "level": 90,
+   "professions": [
+    "armouring",
+    "woodworking",
+    "weaponsmithing"
+   ],
+   "ids": {
+    "mainAttackDamage": {
+     "min": 10,
+     "max": 10
+    },
+    "spellDamage": {
+     "min": 7,
+     "max": 7
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -98,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Essence Of Dusk",
+   "tier": 1,
+   "level": 64,
+   "professions": [
+    "alchemism",
+    "scribing"
+   ],
+   "ids": {
+    "rawSpellDamage": {
+     "min": 17,
+     "max": 24
+    },
+    "spellDamage": {
+     "min": 4,
+     "max": 5
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -100,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Eternal Flame",
+   "tier": 2,
+   "level": 37,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "healthRegenRaw": {
+     "min": 28,
+     "max": 34
+    },
+    "mainAttackDamage": {
+     "min": -10,
+     "max": -8
+    },
+    "rawDefence": {
+     "min": 5,
+     "max": 6
+    },
+    "spellDamage": {
+     "min": -10,
+     "max": -8
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -120,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Expelled Shrapnel",
+   "tier": 0,
+   "level": 105,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "rawHealth": {
+     "min": -275,
+     "max": -250
+    },
+    "rawMainAttackDamage": {
+     "min": 35,
+     "max": 40
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -54,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    8,
+    8,
+    0,
+    0,
+    8
+   ]
+  },
+  {
+   "name": "Eye of The Beast",
+   "tier": 3,
+   "level": 50,
+   "professions": [
+    "jeweling"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": 4,
+     "max": 4
+    },
+    "spellDamage": {
+     "min": -4,
+     "max": -4
+    }
+   },
+   "positions": [
+    0,
+    0,
+    -100,
+    -100,
+    0,
+    0
+   ],
+   "durability": -150,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Eyes Yet Open",
+   "tier": 2,
+   "level": 104,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "lootBonus": {
+     "min": 8,
+     "max": 9
+    },
+    "lootQuality": {
+     "min": 1,
+     "max": 2
+    },
+    "rawHealth": {
+     "min": -430,
+     "max": -375
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -126,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Fairy Powder",
+   "tier": 2,
+   "level": 99,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": 3,
+     "max": 4
+    },
+    "rawSpellDamage": {
+     "min": 45,
+     "max": 60
+    },
+    "spellDamage": {
+     "min": 10,
+     "max": 13
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -190,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Farcor's Trust",
+   "tier": 3,
+   "level": 99,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "fireDefence": {
+     "min": 25,
+     "max": 40
+    },
+    "rawHealth": {
+     "min": 1900,
+     "max": 2150
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -280,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Fish Tail",
+   "tier": 2,
+   "level": 42,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": 5,
+     "max": 7
+    },
+    "waterDefence": {
+     "min": 8,
+     "max": 10
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -120,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Fissured Tablet",
+   "tier": 2,
+   "level": 98,
+   "professions": [
+    "woodworking"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": 6,
+     "max": 8
+    },
+    "rawDefence": {
+     "min": 5,
+     "max": 7
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -99,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    12,
+    12,
+    0
+   ]
+  },
+  {
+   "name": "Fragmentation",
+   "tier": 1,
+   "level": 101,
+   "professions": [
+    "armouring",
+    "woodworking"
+   ],
+   "ids": {
+    "rawAgility": {
+     "min": 6,
+     "max": 8
+    },
+    "rawHealth": {
+     "min": -59,
+     "max": -31
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -74,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Frostbound Memory",
+   "tier": 3,
+   "level": 92,
+   "professions": [
+    "woodworking"
+   ],
+   "ids": {
+    "healingEfficiency": {
+     "min": 4,
+     "max": 7
+    },
+    "manaRegen": {
+     "min": 2,
+     "max": 3
+    },
+    "rawWaterMainAttackDamage": {
+     "min": 125,
+     "max": 140
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -148,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    28,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Frozen Ghostly Essence",
+   "tier": 2,
+   "level": 46,
+   "professions": [
+    "jeweling"
+   ],
+   "ids": {
+    "rawIntelligence": {
+     "min": 1,
+     "max": 3
+    },
+    "rawSpellDamage": {
+     "min": 12,
+     "max": 16
+    },
+    "walkSpeed": {
+     "min": -7,
+     "max": -6
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -66,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    25,
+    0,
+    -15
+   ]
+  },
+  {
+   "name": "Glacial Anomaly",
+   "tier": 3,
+   "level": 92,
+   "professions": [
+    "woodworking",
+    "alchemism"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": 8,
+     "max": 8
+    },
+    "rawSpellDamage": {
+     "min": 55,
+     "max": 60
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -149,
+   "charges": 0,
+   "duration": -150,
+   "requirements": [
+    0,
+    0,
+    25,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Glowing Tree Sap",
+   "tier": 3,
+   "level": 14,
+   "professions": [
+    "jeweling"
+   ],
+   "ids": {
+    "gatherXpBonus": {
+     "min": 1,
+     "max": 1
+    },
+    "rawSpellDamage": {
+     "min": 5,
+     "max": 5
+    },
+    "thunderDamage": {
+     "min": 3,
+     "max": 4
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -66,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    5,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Gravitation Crystal",
+   "tier": 2,
+   "level": 95,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "rawAttackSpeed": {
+     "min": -1,
+     "max": -1
+    },
+    "spellDamage": {
+     "min": 10,
+     "max": 12
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -100,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    20,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Gruesome Carnassial",
+   "tier": 3,
+   "level": 105,
+   "professions": [
+    "jeweling"
+   ],
+   "ids": {
+    "rawAgility": {
+     "min": -3,
+     "max": -3
+    },
+    "rawHealth": {
+     "min": -180,
+     "max": -165
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -150,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    20
+   ]
+  },
+  {
+   "name": "Haleva Plant",
+   "tier": 2,
+   "level": 23,
+   "professions": [
+    "alchemism",
+    "scribing"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": 4,
+     "max": 6
+    },
+    "manaSteal": {
+     "min": 2,
+     "max": 3
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -98,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Hardened Magma",
+   "tier": 0,
+   "level": 87,
+   "professions": [
+    "weaponsmithing",
+    "woodworking"
+   ],
+   "ids": {
+    "rawHealth": {
+     "min": 400,
+     "max": 440
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -51,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    5,
+    0
+   ]
+  },
+  {
+   "name": "Haros' Broken Badge",
+   "tier": 3,
+   "level": 30,
+   "professions": [
+    "jeweling"
+   ],
+   "ids": {
+    "rawDexterity": {
+     "min": 1,
+     "max": 2
+    },
+    "spellDamage": {
+     "min": 1,
+     "max": 2
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -82,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    9,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Herbal Extract",
+   "tier": 2,
+   "level": 14,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "gatherSpeed": {
+     "min": 3,
+     "max": 4
+    },
+    "mainAttackDamage": {
+     "min": -4,
+     "max": -2
+    },
+    "rawHealth": {
+     "min": 35,
+     "max": 45
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -90,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Ice Fishing Twine",
+   "tier": 1,
+   "level": 41,
+   "professions": [
+    "woodworking"
+   ],
+   "ids": {
+    "rawHealth": {
+     "min": 80,
+     "max": 100
+    },
+    "rawMainAttackDamage": {
+     "min": -20,
+     "max": -16
+    },
+    "rawSpellDamage": {
+     "min": -20,
+     "max": -16
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -50,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Iceberries",
+   "tier": 1,
+   "level": 75,
+   "professions": [
+    "alchemism"
+   ],
+   "ids": {
+    "manaRegen": {
+     "min": 4,
+     "max": 5
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": 0,
+   "charges": 0,
+   "duration": -110,
+   "requirements": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Igneous Aspect",
+   "tier": 2,
+   "level": 75,
+   "professions": [
+    "tailoring",
+    "woodworking"
+   ],
+   "ids": {
+    "earthDamage": {
+     "min": 8,
+     "max": 8
+    },
+    "fireDamage": {
+     "min": 8,
+     "max": 8
+    },
+    "rawHealth": {
+     "min": 500,
+     "max": 500
+    },
+    "spellDamage": {
+     "min": -10,
+     "max": -10
+    }
+   },
+   "positions": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "durability": -88,
+   "charges": 0,
+   "duration": 0,
+   "requirements": [
+    10,
+    0,
+    0,
+    10,
+    0
+   ]
+  }
+ ]
+}

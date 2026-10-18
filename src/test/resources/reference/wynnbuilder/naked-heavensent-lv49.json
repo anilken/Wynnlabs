@@ -1,0 +1,16 @@
+{
+  "name": "Heavensent alone, Lv 49, every skill at 0 in total",
+  "date": "2026-10-15",
+  "wynnbuilderData": "2.2.4.0",
+  "link": "https://wynnbuilder.github.io/builder/ (only the weapon, all five skill boxes 0)",
+  "level": 49,
+  "items": {"WEAPON": "Heavensent"},
+  "assigned": {"STRENGTH": 0, "DEXTERITY": 0, "INTELLIGENCE": -10, "DEFENCE": 8, "AGILITY": -10},
+  "rolls": "max",
+  "wynnbuilder": {
+    "totalHealth": 250.0,
+    "effectiveHealth": 178.57,
+    "meleeDps": 267.30
+  },
+  "tolerance": 0.05
+}

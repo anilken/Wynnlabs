@@ -1,0 +1,129 @@
+{
+  "slots": {
+    "HELMET": {
+      "name": "Gnocchi",
+      "worn": "Confusing Cap",
+      "change": true
+    },
+    "CHESTPLATE": {
+      "name": "Golden Embrace",
+      "worn": "Golden Embrace",
+      "change": false
+    },
+    "LEGGINGS": {
+      "name": "Jate",
+      "worn": "Jate",
+      "change": false
+    },
+    "BOOTS": {
+      "name": "Ado Saki",
+      "worn": null,
+      "change": true
+    },
+    "RING1": {
+      "name": "Diet",
+      "worn": "Diet",
+      "change": false
+    },
+    "RING2": {
+      "name": null,
+      "worn": null,
+      "change": false
+    },
+    "BRACELET": {
+      "name": "Asher's Relic",
+      "worn": "Asher's Relic",
+      "change": false
+    },
+    "NECKLACE": {
+      "name": "Bovemist Amulet",
+      "worn": "Bovemist Amulet",
+      "change": false
+    },
+    "WEAPON": {
+      "name": "Keen Measure",
+      "worn": "Keen Measure",
+      "change": false
+    }
+  },
+  "skillPoints": {
+    "STRENGTH": {
+      "target": 0,
+      "targetForBestBuild": 0,
+      "assigned": 0
+    },
+    "DEXTERITY": {
+      "target": 5,
+      "targetForBestBuild": 14,
+      "assigned": 0
+    },
+    "INTELLIGENCE": {
+      "target": 28,
+      "targetForBestBuild": 19,
+      "assigned": 10
+    },
+    "DEFENCE": {
+      "target": 0,
+      "targetForBestBuild": 0,
+      "assigned": 4
+    },
+    "AGILITY": {
+      "target": 5,
+      "targetForBestBuild": 5,
+      "assigned": 0
+    }
+  },
+  "earnedPoints": 38,
+  "planned": {
+    "objective": 240.2,
+    "spellDps": 64.5,
+    "mainAttackDps": 69.9,
+    "damagePerCast": 143,
+    "castsPer5s": 2.26,
+    "health": 467,
+    "effectiveHealth": 369,
+    "effectiveHealthElemental": 391,
+    "parts": {
+      "damage": 99.493,
+      "life": 1.552,
+      "mana": 1.244,
+      "speed": 1.0,
+      "xp": 1.25,
+      "attackSpeedFeel": 1.0
+    },
+    "xpBonus": 25.0,
+    "walkSpeed": 0.0
+  },
+  "current": {
+    "objective": 101.6,
+    "spellDps": 29.5,
+    "mainAttackDps": 59.0,
+    "damagePerCast": 101,
+    "castsPer5s": 1.46,
+    "health": 387,
+    "effectiveHealth": 304,
+    "effectiveHealthElemental": 321,
+    "parts": {
+      "damage": 59.03,
+      "life": 1.472,
+      "mana": 1.114,
+      "speed": 1.0,
+      "xp": 1.05,
+      "attackSpeedFeel": 1.0
+    },
+    "xpBonus": 5.0,
+    "walkSpeed": 0.0
+  },
+  "gainPercent": 136.4,
+  "minPoints": {
+    "STRENGTH": 0,
+    "DEXTERITY": 0,
+    "INTELLIGENCE": 8,
+    "DEFENCE": 0,
+    "AGILITY": 5
+  },
+  "notes": [
+    "objective = (spell DPS + mainAttackWeight x main DPS) x XP x speed x survival, see rules.model",
+    "parts: the factors the objective multiplies (damage is the weighted DPS sum; life uses effectiveHealthElemental)"
+  ]
+}

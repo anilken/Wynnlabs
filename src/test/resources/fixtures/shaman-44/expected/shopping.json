@@ -1,0 +1,52 @@
+{
+  "count": 3,
+  "items": [
+    {
+      "slot": "CHESTPLATE",
+      "rank": 1,
+      "tradable": true,
+      "name": "Solid Quartz Chestplate",
+      "tier": "UNIQUE",
+      "level": 43,
+      "score": 8.0,
+      "gain": 8.0,
+      "source": "MERCHANT: Llevigar",
+      "restriction": "NONE",
+      "powderSlots": 2,
+      "price": 1,
+      "priceText": "1 E"
+    },
+    {
+      "slot": "CHESTPLATE",
+      "rank": 2,
+      "tradable": true,
+      "name": "Bob's Battle Chestplate",
+      "tier": "UNIQUE",
+      "level": 45,
+      "score": 2.4,
+      "gain": 2.4,
+      "questRequirement": "Bob's Lost Soul",
+      "source": "QUEST: Bob's Lost Soul",
+      "restriction": "NONE",
+      "powderSlots": 3,
+      "price": 1573,
+      "priceText": "25 EB"
+    },
+    {
+      "slot": "RING",
+      "rank": 1,
+      "tradable": true,
+      "name": "Precious",
+      "tier": "LEGENDARY",
+      "level": 41,
+      "score": 3.8,
+      "gain": 3.8,
+      "source": "CAVE_LOOT_CHEST: Between level 37 and 45",
+      "restriction": "NONE",
+      "powderSlots": 0,
+      "price": 2623,
+      "priceText": "41 EB"
+    }
+  ],
+  "note": "best gear per slot that beats what you wear, at most 5 levels ahead; score uses the rule weights with every stat at the middle of its range"
+}

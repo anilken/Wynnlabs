@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.anilken.wynnlabs.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "MinecraftGlowMixin",
+    "EntityTeamColorMixin",
+    "FontAccessor",
+    "ScreenFontAccessor",
+    "GuiGraphicsBoundsMixin",
+    "GuiGraphicsScaleMixin",
+    "GuiGraphicsAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,110 @@
+{{Infobox/Quest
+| name = Jungle Fever
+| length = Long
+| difficulty = Hard
+| location = [[Jungle]]
+| province = Wynn
+| level = 52
+| npc = [[Worid]]
+| requiredQuest = [[A Sandy Scandal]]
+| experience = 86,250
+| emeralds = 4,096
+| reward = * 1 [[Undergrowth Ruins]] Key
+}}
+'''Jungle Fever''' is a long level 52 quest that takes place all across the [[Wynn Province]]. 
+
+== Preview ==
+Jungle Fever has supposedly fallen upon [[Worid]], he asks the player to fetch a "cure" (64 [[Liquid Emerald|Liquified Emeralds]]). Upon reaching [[Detlas]], the [[Banker]] refuses to give any. [[Worid]] then asks the player to rob the bank of [[Almuj]] in order to "cure" him. 
+
+== Stage 1 ==
+» Talk to [[Worid]] in the [[Iboju Village|jungle village]] at [-760, 79, -666]
+{{RenderLocation|location=[[Worid]]|x=-739|y=80|z=-661}}
+[[File:Worid(Iboju).png|200px|left]]
+'''Dialogue:'''
+*'''Worid:''' Oh, I am so happy to see you! *cough*, I caught a very bad fever, and I really need help! *cough*
+*'''Worid:''' The only cure against this fever is to drink Liquid Emeralds! Yes, exactly! *cough*
+*'''Worid:''' Do you think you could <span style="color:#11aaff">ask the Banker at Detlas</span> if he could give me, oh I don't know, <span style="color:#009999">[64 Liquified Emeralds]</span>?
+*'''Worid:''' If he has the audacity to *cough* say no... you will have to use brute force...
+*'''Worid:''' <span style="color:#11aaff">Break into *cough* to the emerald storage,</span> but don't take anything... come back to me immediately after, if you make it out alive, heheh...
+*'''Worid:''' Oh, uh... I mean *cough* *cough*
+
+== Stage 2 ==
+» Talk to [[Banker|Detlas's Banker]] about the cure for [[Worid]] at [497, 67, -1559]
+[[File:TheBanker.png|200px|left]]<br><br>
+'''Dialogue:'''
+*'''The Banker:''' <span style="color:#009999">[64 Liquified Emeralds]</span>? He is crazy! Liquified Emeralds cannot cure anyone from anything, except being poor!
+*'''The Banker:''' I will not participate in this pathetic fraud attempt!<br><br><br><br>
+
+== Stage 3 ==
+» Enter Detlas' Emerald Stash at [494, 67, -1553]
+[[File:Worid(Iboju).png|200px|left]]<br><br>
+'''Dialogue:'''
+*'''Worid:''' Oh no! How will I ever cure my sickness without any Liquified Emeralds?... *cough*
+*'''Worid:''' We'll have to change our strategy, we won't ask for permission. It's to help me after all.
+*'''Worid:''' First, I need to make sure you can easily break into a bank. <span style="color:#11aaff">Try to enter Detlas' Secret Stash.</span>
+*'''Worid:''' When you're done, talk to me again. Be careful too, they might have some Guards.<br><br>
+
+== Stage 4 ==
+» Return to Worid
+{{MobTable}}
+|[[File:DetlasGolem.png|100px]]
+|Detlas Golem
+|50
+|3500
+|Melee AI
+| -
+| -
+| -
+|Detlas' Emerald Stash
+|-
+|}
+[[File:Worid(Detlas).png|200px|left]]
+'''Dialogue:'''
+*'''Worid:''' What? You're here already. I thought you would take too long so I just went myself.
+*'''Worid:''' My sickness? RIGHT. *cough* You should feel bad for forcing a sick man to do your job.
+*'''Worid:''' Anyway I see you proved yourself, we can start the real thing now.
+*'''Worid:''' You see, <span style="color:#11aaff">Almuj has a very well guarded emerald vault</span> named "The Emerald Labyrinth".
+*'''Worid:''' It is guarded with tons of well trained Guard Golem, who can easily kill any adventurer.
+*'''Worid:''' The Banker in the secret vault must be completely bored out of his mind, and won't mind if you find him.
+*'''Worid:''' Good luck with that. Haha.. I mean, *cough*.
+
+== Stage 5 ==
+» Infiltrate [[Almuj's Emerald Labyrinth|Almuj's Secret Emerald Labyrinth]] at [1019, 84, -1976] underground and find the [[Almuj Banker|Banker]] in the Emerald Room
+{{HideSpoiler|
+To reach the coordinates provided, enter the Almuj Bank and go down one of the ladders leading to the emerald storage. Once you go down the stairs and enter the main labyrinth, drop any item (usually an emerald) on the pressure plate at [998, 21, -2030]. This will open the door at [1019, 21, -1991], allowing you to reach the [[Almuj Banker]].
+|finding the Almuj Banker}}
+{{MobTable}}
+|[[File:EmeraldGolem.png|100px]]
+|Emerald Golem
+|70
+|90000
+|Melee AI
+| -
+| -
+| -
+|[[Almuj's Emerald Labyrinth]]
+|-
+|}
+[[File:AlmujBanker.png|200px|left]]<br><br><br>
+'''Dialogue:'''
+*'''Almuj Banker:''' Oh, uh! Somebody! It has been so long since I've seen someone!
+*'''Almuj Banker:''' Liquified Emeralds? Of course, of course! I've got tons! Here, take them.<br><br><br>
+
+== Stage 6 ==
+» Talk to [[Worid]] at [956, 75, -1960].
+*<span style="color:gray">It appears Worid followed you here, he seems to be near the market..</span>
+{{RenderLocation|location=[[Worid]]|x=956|y=75|z=-1960}}
+[[File:Worid (Almuj).png|200px|left]]<br>
+'''Dialogue:'''
+*'''Worid:''' You are back! Wonderful!
+*'''Worid:''' That is a lot of money, thank you very much, I will finally be able to... *cough* to cure myself!
+*'''Worid:''' Here, take this part, you deserve it. I have to use most of the... *cough* money so I can heal, so I've instead paid you with a key.
+*'''Worid:''' I stole- *cough* I mean, borrowed it, from our tribe's leader. Apparently it was used to lock up a great evil.
+*'''Worid:''' Good ridda- *cough* Er... luck. Yes, good luck, adventurer!<br><br>
+
+==Tips==
+*The [[Liquified Emeralds]] given in stage 4 cannot be spent, but when giving them to [[Worid]], ensure you '''don't''' have any '''normal''' [[Liquified Emeralds]] in your inventory, as there is a glitch which may cause him to take the wrong ones, leaving you with worthless [[Liquified Emeralds]]. Don't right click when holding them in your hand, it can take your fake [[Liquified Emeralds]].
+**If you do lose one of your fake [[Liquified Emeralds]], in order to finish the quest you will have to delete the rest and then use /fixquests to get them all back. You can delete them by filling your inventory with spare items (such as emeralds) and placing them in your crafting grid, or by giving them to a new class and then deleting the class.
+
+{{Navbox Translations}}
+[[Category:Quests]]

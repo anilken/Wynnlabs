@@ -1,0 +1,11 @@
+{
+  "groundGlowNormal": false,
+  "priceApi": true,
+  "chestGlow": true,
+  "localApi": true,
+  "webFont": true,
+  "apiWrite": true,
+  "debug": true,
+  "chestMinStars": 2,
+  "langOverride": 2
+}

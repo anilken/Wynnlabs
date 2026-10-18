@@ -1,0 +1,129 @@
+{
+  "slots": {
+    "HELMET": {
+      "name": "Yume",
+      "worn": "Yume",
+      "change": false
+    },
+    "CHESTPLATE": {
+      "name": "Nemract's Ruin",
+      "worn": "Nemract's Ruin",
+      "change": false
+    },
+    "LEGGINGS": {
+      "name": "Chained Pixels",
+      "worn": "Chained Pixels",
+      "change": false
+    },
+    "BOOTS": {
+      "name": "Galloping Spurs",
+      "worn": "Galloping Spurs",
+      "change": false
+    },
+    "RING1": {
+      "name": "Warsong",
+      "worn": "Warsong",
+      "change": false
+    },
+    "RING2": {
+      "name": "Precious",
+      "worn": "Precious",
+      "change": false
+    },
+    "BRACELET": {
+      "name": "Grisly Gauntlet",
+      "worn": "Grisly Gauntlet",
+      "change": false
+    },
+    "NECKLACE": {
+      "name": "Generator Amulet",
+      "worn": "Generator Amulet",
+      "change": false
+    },
+    "WEAPON": {
+      "name": "Heavensent",
+      "worn": "Heavensent",
+      "change": false
+    }
+  },
+  "skillPoints": {
+    "STRENGTH": {
+      "target": 25,
+      "targetForBestBuild": 25,
+      "assigned": 25
+    },
+    "DEXTERITY": {
+      "target": 12,
+      "targetForBestBuild": 15,
+      "assigned": 15
+    },
+    "INTELLIGENCE": {
+      "target": 10,
+      "targetForBestBuild": 15,
+      "assigned": 15
+    },
+    "DEFENCE": {
+      "target": 12,
+      "targetForBestBuild": 8,
+      "assigned": 8
+    },
+    "AGILITY": {
+      "target": 27,
+      "targetForBestBuild": 23,
+      "assigned": 23
+    }
+  },
+  "earnedPoints": 86,
+  "planned": {
+    "objective": 7475.2,
+    "spellDps": 504.0,
+    "mainAttackDps": 856.3,
+    "damagePerCast": 1160,
+    "castsPer5s": 2.17,
+    "health": 1927,
+    "effectiveHealth": 2072,
+    "effectiveHealthElemental": 2216,
+    "parts": {
+      "damage": 1632.837,
+      "life": 1.881,
+      "mana": 1.233,
+      "speed": 1.168,
+      "xp": 1.69,
+      "attackSpeedFeel": 1.0
+    },
+    "xpBonus": 60.0,
+    "walkSpeed": 51.0
+  },
+  "current": {
+    "objective": 7475.2,
+    "spellDps": 504.0,
+    "mainAttackDps": 856.3,
+    "damagePerCast": 1160,
+    "castsPer5s": 2.17,
+    "health": 1927,
+    "effectiveHealth": 2072,
+    "effectiveHealthElemental": 2216,
+    "parts": {
+      "damage": 1632.837,
+      "life": 1.881,
+      "mana": 1.233,
+      "speed": 1.168,
+      "xp": 1.69,
+      "attackSpeedFeel": 1.0
+    },
+    "xpBonus": 60.0,
+    "walkSpeed": 51.0
+  },
+  "gainPercent": 0.0,
+  "minPoints": {
+    "STRENGTH": 25,
+    "DEXTERITY": 12,
+    "INTELLIGENCE": 7,
+    "DEFENCE": 12,
+    "AGILITY": 27
+  },
+  "notes": [
+    "objective = (spell DPS + mainAttackWeight x main DPS) x XP x speed x survival, see rules.model",
+    "parts: the factors the objective multiplies (damage is the weighted DPS sum; life uses effectiveHealthElemental)"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "floats": {
+    "abilityTree.aspectArcher": 52.0,
+    "abilityTree.aspectAssassin": 55.0,
+    "abilityTree.aspectMage": 58.0,
+    "abilityTree.aspectShaman": 62.0,
+    "abilityTree.aspectWarrior": 66.0,
+    "tome.mana": 4251.0,
+    "tome.utility": 4253.0,
+    "wand.multi3": 4425.0,
+    "spear.water3": 3975.0,
+    "dagger.fire3": 836.0,
+    "boots.diamond": 8.0,
+    "helmet.diamond": 8.0,
+    "corkian_simulator": 190.0,
+    "corkian_amplifier": 188.0,
+    "rune_az": 3833.0,
+    "rune_uth": 3838.0,
+    "ward_blue": 4460.0,
+    "dungeon_key": 992.0,
+    "dungeon_key_broken": 991.0,
+    "charm.void": 604.0
+  },
+  "ranges": {
+    "tome": [
+      4248.0,
+      4254.0
+    ],
+    "wand": [
+      4352.0,
+      4458.0
+    ]
+  }
+}

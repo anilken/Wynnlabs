@@ -1,0 +1,17 @@
+Quest guides (en.json, tr.json)
+
+The quest stages, tasks and hints in these files come from the Wynncraft Wiki
+(https://wynncraft.wiki.gg), one page per quest; each entry's "wiki" field links its source page.
+The wiki's text is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 3.0
+(CC BY-NC-SA 3.0, https://creativecommons.org/licenses/by-nc-sa/3.0/).
+
+en.json was cut into stages from the pages fetched by tools/quests/fetch.py, by the mod's own
+parser (the QuestDump test), with a few pages summarised by hand in tools/quests/fixes.json.
+tr.json is a Turkish translation of en.json. Where a line is the game's own dialogue or
+objective, it uses the WynnChaYuan mod's Turkish translation of that line. Both files are adaptations of the wiki's text and
+are shared under the same licence, CC BY-NC-SA 3.0. They are not covered by Wynn Labs' LGPL-3.0
+licence, and they may not be used commercially: if Wynn Labs is ever sold or bundled
+commercially, these files must be removed.
+
+Wynncraft and its content belong to their owners. Wynn Labs is not affiliated with Wynncraft or
+the Wynncraft Wiki.

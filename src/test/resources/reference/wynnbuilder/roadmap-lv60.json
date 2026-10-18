@@ -1,0 +1,23 @@
+{
+  "name": "road map Lv 60 build, Shaman",
+  "date": "2026-10-15",
+  "wynnbuilderData": "2.2.4.0",
+  "link": "https://wynnbuilder.github.io/builder/#CY0FrWOBue2Rx0OFS3nJFWwnS6a4u6GJ0J1o3",
+  "level": 60,
+  "items": {
+    "HELMET": "Venison", "CHESTPLATE": "Hurricane", "LEGGINGS": "Lookout",
+    "BOOTS": "Prologue", "RING1": "Tainted Ruby", "RING2": "Precious",
+    "BRACELET": "Purity Filter", "NECKLACE": "Jagged Bone Necklace", "WEAPON": "Lightshow"
+  },
+  "assigned": {"STRENGTH": 27, "DEXTERITY": 25, "INTELLIGENCE": 25, "DEFENCE": 15, "AGILITY": 26},
+  "rolls": "max",
+  "wynnbuilderLacksSetKeys": ["rawMainAttackDamage", "rawSpellDamage"],
+  "note": "WynnBuilder's Corrupted set (3/9 here) has no raw main attack or spell damage; the Wynncraft API gives +25 and +20",
+  "wynnbuilder": {
+    "totalHealth": 3075.0,
+    "effectiveHealth": 3500.67,
+    "effectiveHealthNoAgility": 2498.43,
+    "meleeDps": 3692.69
+  },
+  "tolerance": 0.05
+}

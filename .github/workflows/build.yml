@@ -1,0 +1,52 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: 9.2.0
+
+      # Wynntils is a compile-only dependency and not in the repository: fetch the release
+      # named by wynntils_version in gradle.properties from Modrinth.
+      - name: Download Wynntils
+        run: |
+          ver=$(grep '^wynntils_version=' gradle.properties | cut -d= -f2)
+          url=$(curl -fsSL 'https://api.modrinth.com/v2/project/wynntils/version?loaders=%5B%22fabric%22%5D&game_versions=%5B%221.21.11%22%5D' \
+            | jq -r --arg v "v$ver" '.[] | select(.version_number == $v) | .files[] | select(.primary) | .url')
+          test -n "$url" || { echo "Wynntils $ver not found on Modrinth"; exit 1; }
+          mkdir -p libs
+          curl -fsSL -o "libs/wynntils-$ver-fabric+MC-1.21.11.jar" "$url"
+
+      # Only the quick JUnit tests: no game is started. The slow upgrade-search tests, the jar
+      # and the other checks run locally.
+      - name: Tests
+        run: gradle test -PquickTests -PnoEmbeddedKey
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: test-reports
+          path: build/reports/tests/

@@ -1,0 +1,18 @@
+# build output and Gradle caches
+.gradle/
+build/
+run/
+*.log
+
+# third-party jars (Wynntils is a compile-only dependency; download it into libs/)
+libs/
+.local-mods-path
+release-blocklist.txt
+tools/art/node_modules/
+
+# OpenSpec planning and its Claude Code commands/skills (kept locally)
+openspec/
+.claude/
+
+# Python bytecode from the tools
+__pycache__/

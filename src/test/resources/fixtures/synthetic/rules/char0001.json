@@ -1,0 +1,10 @@
+{
+  "goal": "fast levelling, damage build",
+  "powders": {
+    "weapon": [
+      "WATER"
+    ],
+    "armour": []
+  },
+  "class": "SHAMAN"
+}

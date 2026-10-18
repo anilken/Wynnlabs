@@ -1,0 +1,21 @@
+{
+  "name": "road map Lv 80 build, Shaman",
+  "date": "2026-10-15",
+  "wynnbuilderData": "2.2.4.0",
+  "link": "https://wynnbuilder.github.io/builder/#CY00emB8GY2kUW6ES3nS2iy0F7q6eCGf025",
+  "level": 80,
+  "items": {
+    "HELMET": "Howler", "CHESTPLATE": "Papyrus", "LEGGINGS": "Douglas Fir",
+    "BOOTS": "Sodeta Boots", "RING1": "Photon", "RING2": "Precious",
+    "BRACELET": "Vanguard", "NECKLACE": "Royal Shocking Amulet", "WEAPON": "Ancient Runic Relik"
+  },
+  "assigned": {"STRENGTH": 38, "DEXTERITY": 36, "INTELLIGENCE": 68, "DEFENCE": 0, "AGILITY": 16},
+  "rolls": "max",
+  "wynnbuilder": {
+    "totalHealth": 5675.0,
+    "effectiveHealth": 6307.65,
+    "effectiveHealthNoAgility": 4730.54,
+    "meleeDps": 2480.78
+  },
+  "tolerance": 0.05
+}

@@ -1,0 +1,25 @@
+name: Feature request
+description: An idea for Wynn Labs
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would it help with
+      description: The decision or chore in the game this would make easier.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: What the mod should show or do. A sketch is welcome for UI ideas.
+    validations:
+      required: true
+  - type: checkboxes
+    id: readonly
+    attributes:
+      label: Read-only
+      options:
+        - label: The idea only reads and shows; it does not click, move, cast or send anything for the player.
+          required: true

@@ -1,0 +1,29 @@
+<!-- From https://wynncraft.wiki.gg/wiki/Colossal_Ruins (CC BY-NC-SA 3.0), fetched 2026-10-14: test input for DiscoveriesTest -->
+{{Spoiler}}
+{{Infobox/Town
+| type = Stucture
+| name = Colossal Ruins
+| image = [[File:ColossalRuins1.png|300px]]
+| caption =
+| secret = 1
+| lore = Left behind by the Fracturing, this intriguing ruin is thought to have been part of a second Colossus - though it is currently unknown how this one came to be.  
+| xcoordinate = 879
+| zcoordinate = -4674
+| minlevel = 90
+| uses = Discovery
+| requirements = None
+}}
+
+'''Colossal Ruins''' is a [[Secret Discovery]] in the [[Sky Islands]]. The discovery is about a strange ruin which used to be part of another Colossus.
+
+{{RenderLocation|location=Kandon Ridge|x=879|y=85|z=-4674}}
+
+==Access==
+*Use a spell on the rock at 879, 85, -4675.
+[[File:ColossalRuins2.png|250px]]
+*Go to the ruin on the island in front of you.
+
+*Enter the hole made by the rock.
+
+{{Navbox Secret discoveries}}
+[[Category:Locations]][[Category:Area]][[Category:Structure]][[Category:Secret Discoveries]]

@@ -1,0 +1,10 @@
+{
+  "goal": "mage support",
+  "powders": {
+    "weapon": [
+      "THUNDER"
+    ],
+    "armour": []
+  },
+  "class": "MAGE"
+}

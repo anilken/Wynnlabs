@@ -1,0 +1,21 @@
+{
+  "name": "road map Lv 120 build (after exclusive groups and speed fix), Shaman",
+  "date": "2026-10-15",
+  "wynnbuilderData": "2.2.4.0",
+  "link": "https://wynnbuilder.github.io/builder/#CY0Ndm-AiK4-vW10S31vHWGoj66F",
+  "level": 120,
+  "items": {
+    "HELMET": "Skyfloat", "CHESTPLATE": "Ornamental Plate", "LEGGINGS": "Omniverse",
+    "BOOTS": "Skidbladnir", "RING1": "Summa", "RING2": "Precious",
+    "BRACELET": "Roots of Unity", "NECKLACE": "Bookworm", "WEAPON": "Olympic"
+  },
+  "assigned": {"STRENGTH": 20, "DEXTERITY": 18, "INTELLIGENCE": 42, "DEFENCE": 6, "AGILITY": 88},
+  "rolls": "max",
+  "wynnbuilder": {
+    "totalHealth": 13175.0,
+    "effectiveHealth": 31492.04,
+    "effectiveHealthNoAgility": 11755.39,
+    "meleeDps": 2538.67
+  },
+  "tolerance": 0.05
+}

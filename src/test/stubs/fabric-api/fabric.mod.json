@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "id": "fabric-api",
+  "version": "0.135.1+1.21.11",
+  "name": "Fabric API (test stand-in)"
+}

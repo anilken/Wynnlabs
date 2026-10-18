@@ -1,0 +1,248 @@
+{
+  "count": 17,
+  "items": [
+    {
+      "slot": "HELMET",
+      "rank": 1,
+      "tradable": true,
+      "name": "Replica Hallowynn Mask",
+      "tier": "RARE",
+      "level": 22,
+      "score": 16.8,
+      "gain": 16.8,
+      "source": "MERCHANT: Detlas",
+      "restriction": "NONE",
+      "powderSlots": 0
+    },
+    {
+      "slot": "HELMET",
+      "rank": 2,
+      "tradable": true,
+      "name": "Bony Circlet",
+      "tier": "RARE",
+      "level": 21,
+      "score": 12.8,
+      "gain": 12.8,
+      "skillRequirements": {
+        "AGILITY": 6
+      },
+      "source": "LOOT_CHEST",
+      "restriction": "NONE",
+      "powderSlots": 1
+    },
+    {
+      "slot": "HELMET",
+      "rank": 3,
+      "tradable": true,
+      "name": "Hallowynn Mask",
+      "tier": "RARE",
+      "level": 22,
+      "score": 11.2,
+      "gain": 11.2,
+      "source": "LOOT_CHEST",
+      "restriction": "NONE",
+      "powderSlots": 0
+    },
+    {
+      "slot": "CHESTPLATE",
+      "rank": 1,
+      "tradable": true,
+      "name": "Tribal Tunic",
+      "tier": "RARE",
+      "level": 18,
+      "score": 31.8,
+      "gain": 31.8,
+      "source": "NORMAL_MOB_DROP",
+      "restriction": "NONE",
+      "powderSlots": 1
+    },
+    {
+      "slot": "CHESTPLATE",
+      "rank": 2,
+      "tradable": true,
+      "name": "Arakadicus' Body",
+      "tier": "LEGENDARY",
+      "level": 21,
+      "score": 17.7,
+      "gain": 17.7,
+      "source": "MERCHANT: Detlas",
+      "restriction": "NONE",
+      "powderSlots": 1
+    },
+    {
+      "slot": "CHESTPLATE",
+      "rank": 3,
+      "tradable": true,
+      "name": "Fisher's Mail",
+      "tier": "UNIQUE",
+      "level": 22,
+      "score": 13.6,
+      "gain": 13.6,
+      "source": "DUNGEON: Decrepit Sewers",
+      "restriction": "NONE",
+      "powderSlots": 1
+    },
+    {
+      "slot": "LEGGINGS",
+      "rank": 1,
+      "tradable": true,
+      "name": "Lemon Legs",
+      "tier": "LEGENDARY",
+      "level": 18,
+      "score": 32.8,
+      "gain": 32.8,
+      "source": "DUNGEON: Decrepit Sewers",
+      "restriction": "NONE",
+      "powderSlots": 2
+    },
+    {
+      "slot": "LEGGINGS",
+      "rank": 2,
+      "tradable": true,
+      "name": "Tribal Pants",
+      "tier": "RARE",
+      "level": 18,
+      "score": 28.2,
+      "gain": 28.2,
+      "source": "LOOT_CHEST",
+      "restriction": "NONE",
+      "powderSlots": 1
+    },
+    {
+      "slot": "LEGGINGS",
+      "rank": 3,
+      "tradable": true,
+      "name": "Cloudburst",
+      "tier": "LEGENDARY",
+      "level": 19,
+      "score": 18.0,
+      "gain": 18.0,
+      "skillRequirements": {
+        "AGILITY": 10
+      },
+      "source": "MERCHANT: Detlas",
+      "restriction": "NONE",
+      "powderSlots": 0
+    },
+    {
+      "slot": "BOOTS",
+      "rank": 1,
+      "tradable": true,
+      "name": "Cyclo",
+      "tier": "LEGENDARY",
+      "level": 21,
+      "score": 19.5,
+      "gain": 19.5,
+      "skillRequirements": {
+        "DEXTERITY": 4,
+        "AGILITY": 8
+      },
+      "source": "LOOT_CHEST",
+      "restriction": "NONE",
+      "powderSlots": 1
+    },
+    {
+      "slot": "BOOTS",
+      "rank": 2,
+      "tradable": true,
+      "name": "Shajone",
+      "tier": "UNIQUE",
+      "level": 18,
+      "score": 16.0,
+      "gain": 16.0,
+      "source": "MERCHANT: Detlas",
+      "restriction": "NONE",
+      "powderSlots": 1
+    },
+    {
+      "slot": "RING",
+      "rank": 1,
+      "tradable": true,
+      "name": "Major",
+      "tier": "RARE",
+      "level": 20,
+      "score": 8.7,
+      "gain": 8.7,
+      "source": "MERCHANT: Detlas",
+      "restriction": "NONE",
+      "powderSlots": 0
+    },
+    {
+      "slot": "RING",
+      "rank": 2,
+      "tradable": true,
+      "name": "Ring of Focus",
+      "tier": "UNIQUE",
+      "level": 20,
+      "score": 7.1,
+      "gain": 7.1,
+      "skillRequirements": {
+        "INTELLIGENCE": 5
+      },
+      "source": "MERCHANT: Detlas",
+      "restriction": "NONE",
+      "powderSlots": 0
+    },
+    {
+      "slot": "RING",
+      "rank": 3,
+      "tradable": true,
+      "name": "Minor",
+      "tier": "RARE",
+      "level": 20,
+      "score": 4.6,
+      "gain": 4.6,
+      "source": "NORMAL_MOB_DROP",
+      "restriction": "NONE",
+      "powderSlots": 0
+    },
+    {
+      "slot": "RELIK",
+      "rank": 1,
+      "tradable": true,
+      "name": "Grindcore",
+      "tier": "RARE",
+      "level": 25,
+      "score": 147.0,
+      "gain": 147.0,
+      "skillRequirements": {
+        "STRENGTH": 10,
+        "DEXTERITY": 10
+      },
+      "source": "DUNGEON: Decrepit Sewers",
+      "restriction": "NONE",
+      "powderSlots": 1
+    },
+    {
+      "slot": "RELIK",
+      "rank": 2,
+      "tradable": true,
+      "name": "Intestine Lasso",
+      "tier": "RARE",
+      "level": 25,
+      "score": 136.2,
+      "gain": 136.2,
+      "source": "LOOT_CHEST",
+      "restriction": "NONE",
+      "powderSlots": 1
+    },
+    {
+      "slot": "RELIK",
+      "rank": 3,
+      "tradable": true,
+      "name": "Helter Skelter",
+      "tier": "LEGENDARY",
+      "level": 19,
+      "score": 133.0,
+      "gain": 133.0,
+      "skillRequirements": {
+        "DEXTERITY": 10,
+        "AGILITY": 5
+      },
+      "source": "NORMAL_MOB_DROP",
+      "restriction": "NONE",
+      "powderSlots": 1
+    }
+  ],
+  "note": "best gear per slot that beats what you wear, at most 5 levels ahead; score uses the rule weights with every stat at the middle of its range"
+}

@@ -1,0 +1,1514 @@
+{
+  "year": 2026,
+  "week": 42,
+  "regions": [
+    {
+      "region": "The Canyon Colossus",
+      "type": "RAID",
+      "timestamp": "Sat, 17 Oct 2026 22:39:33 GMT",
+      "items": [
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectShaman"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Damnation",
+          "rarity": "Legendary",
+          "subtype": "ShamanAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectShaman"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Gushing Blood",
+          "rarity": "Legendary",
+          "subtype": "ShamanAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectShaman"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Channeler",
+          "rarity": "Fabled",
+          "subtype": "ShamanAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Bulwark",
+          "rarity": "Legendary",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Arcane Wellspring",
+          "rarity": "Legendary",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Sharpshooter",
+          "rarity": "Fabled",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Shadestepper",
+          "rarity": "Legendary",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Rending Steel",
+          "rarity": "Mythic",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Lightweaving",
+          "rarity": "Fabled",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Trapper",
+          "rarity": "Legendary",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Trickster",
+          "rarity": "Legendary",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Warcry",
+          "rarity": "Fabled",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Riftwalker",
+          "rarity": "Legendary",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Boltslinger",
+          "rarity": "Legendary",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Acrobat",
+          "rarity": "Fabled",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Juggernaut",
+          "rarity": "Legendary",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Snowstorm",
+          "rarity": "Mythic",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Volley",
+          "rarity": "Fabled",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Lethal Venom",
+          "rarity": "Legendary",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.utility"
+          },
+          "itemType": "TomeItem",
+          "name": "Tome of Raid Mastery",
+          "rarity": "Fabled",
+          "subtype": "RAID_TOME"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.mana"
+          },
+          "itemType": "TomeItem",
+          "name": "Pegasus' Tome of Mysticism",
+          "rarity": "Fabled",
+          "subtype": "MANA_TOME"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "helmet.diamond"
+          },
+          "itemType": "GearItem",
+          "name": "Stormbringer's Coil",
+          "rarity": "Mythic",
+          "subtype": "Helmet"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "powder.FireSmall"
+          },
+          "itemType": "PowderItem",
+          "name": "Fire Powder III",
+          "rarity": "Normal",
+          "subtype": "FIRE",
+          "tier": 3
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianAmplifier"
+          },
+          "itemType": "AmplifierItem",
+          "name": "Corkian Amplifier III",
+          "rarity": "Rare",
+          "subtype": "",
+          "tier": 3
+        },
+        {
+          "amount": 4,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.liquidEmerald"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Liquid Emerald",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.emeraldBlock"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Emerald Block",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.emeraldBlock"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Emerald Block",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.emeraldBlock"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Emerald Block",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "ward.blue"
+          },
+          "itemType": "WardItem",
+          "name": "Ward of Endurance",
+          "rarity": "Legendary",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "charm.stone"
+          },
+          "itemType": "CharmItem",
+          "name": "Charm of the Colossus",
+          "rarity": "Fabled",
+          "subtype": ""
+        }
+      ]
+    },
+    {
+      "region": "Nest of the Grootslangs",
+      "type": "RAID",
+      "timestamp": "Sun, 18 Oct 2026 08:12:05 GMT",
+      "items": [
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectShaman"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Amphibian",
+          "rarity": "Mythic",
+          "subtype": "ShamanAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectShaman"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Bile Waters",
+          "rarity": "Legendary",
+          "subtype": "ShamanAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Rending Steel",
+          "rarity": "Legendary",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Lightweaving",
+          "rarity": "Fabled",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Trapper",
+          "rarity": "Legendary",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Trickster",
+          "rarity": "Mythic",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Warcry",
+          "rarity": "Fabled",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Riftwalker",
+          "rarity": "Legendary",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Boltslinger",
+          "rarity": "Legendary",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Acrobat",
+          "rarity": "Fabled",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Juggernaut",
+          "rarity": "Legendary",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Snowstorm",
+          "rarity": "Legendary",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Volley",
+          "rarity": "Fabled",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Lethal Venom",
+          "rarity": "Legendary",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Battle Monk",
+          "rarity": "Mythic",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Shattering Light",
+          "rarity": "Fabled",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Arrow Rain",
+          "rarity": "Legendary",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Mirror",
+          "rarity": "Legendary",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.utility"
+          },
+          "itemType": "TomeItem",
+          "name": "Tome of Raid Mastery",
+          "rarity": "Fabled",
+          "subtype": "RAID_TOME"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "skin",
+            "value": "fixture-skin-00"
+          },
+          "itemType": "GearItem",
+          "name": "Gaia's Cradle",
+          "rarity": "Mythic",
+          "subtype": "Helmet"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "powder.FireLarge"
+          },
+          "itemType": "PowderItem",
+          "name": "Fire Powder VI",
+          "rarity": "Normal",
+          "subtype": "FIRE",
+          "tier": 6
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianAmplifier"
+          },
+          "itemType": "AmplifierItem",
+          "name": "Corkian Amplifier III",
+          "rarity": "Rare",
+          "subtype": "",
+          "tier": 3
+        },
+        {
+          "amount": 4,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.liquidEmerald"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Liquid Emerald",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "ward.blue"
+          },
+          "itemType": "WardItem",
+          "name": "Ward of Endurance",
+          "rarity": "Legendary",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "charm.stone"
+          },
+          "itemType": "CharmItem",
+          "name": "Charm of the Colossus",
+          "rarity": "Fabled",
+          "subtype": ""
+        }
+      ]
+    },
+    {
+      "region": "The Nameless Anomaly",
+      "type": "RAID",
+      "timestamp": "Sat, 17 Oct 2026 06:40:51 GMT",
+      "items": [
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectShaman"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Damnation",
+          "rarity": "Legendary",
+          "subtype": "ShamanAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectShaman"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Monolith",
+          "rarity": "Legendary",
+          "subtype": "ShamanAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Warcry",
+          "rarity": "Fabled",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Riftwalker",
+          "rarity": "Legendary",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Boltslinger",
+          "rarity": "Mythic",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Acrobat",
+          "rarity": "Fabled",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Juggernaut",
+          "rarity": "Legendary",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Snowstorm",
+          "rarity": "Legendary",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Volley",
+          "rarity": "Fabled",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Lethal Venom",
+          "rarity": "Legendary",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Battle Monk",
+          "rarity": "Legendary",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Shattering Light",
+          "rarity": "Fabled",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Arrow Rain",
+          "rarity": "Legendary",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Mirror",
+          "rarity": "Mythic",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Paladin",
+          "rarity": "Fabled",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Lightbender",
+          "rarity": "Legendary",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Hunter",
+          "rarity": "Legendary",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Harlequin",
+          "rarity": "Fabled",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Fury",
+          "rarity": "Legendary",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Arcane Wellspring",
+          "rarity": "Legendary",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.utility"
+          },
+          "itemType": "TomeItem",
+          "name": "Tome of Raid Mastery",
+          "rarity": "Fabled",
+          "subtype": "RAID_TOME"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "helmet.diamond"
+          },
+          "itemType": "GearItem",
+          "name": "Stormbringer's Coil",
+          "rarity": "Mythic",
+          "subtype": "Helmet"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "powder.FireLarge"
+          },
+          "itemType": "PowderItem",
+          "name": "Fire Powder VI",
+          "rarity": "Normal",
+          "subtype": "FIRE",
+          "tier": 6
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianAmplifier"
+          },
+          "itemType": "AmplifierItem",
+          "name": "Corkian Amplifier III",
+          "rarity": "Rare",
+          "subtype": "",
+          "tier": 3
+        },
+        {
+          "amount": 4,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.liquidEmerald"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Liquid Emerald",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "ward.blue"
+          },
+          "itemType": "WardItem",
+          "name": "Ward of Endurance",
+          "rarity": "Legendary",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "charm.stone"
+          },
+          "itemType": "CharmItem",
+          "name": "Charm of the Colossus",
+          "rarity": "Fabled",
+          "subtype": ""
+        }
+      ]
+    },
+    {
+      "region": "Orphion's Nexus of Light",
+      "type": "RAID",
+      "timestamp": "Fri, 16 Oct 2026 21:03:17 GMT",
+      "items": [
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectShaman"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Eternal Dance",
+          "rarity": "Fabled",
+          "subtype": "ShamanAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectShaman"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Summoner",
+          "rarity": "Legendary",
+          "subtype": "ShamanAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Juggernaut",
+          "rarity": "Legendary",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Snowstorm",
+          "rarity": "Mythic",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Volley",
+          "rarity": "Fabled",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Lethal Venom",
+          "rarity": "Legendary",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Battle Monk",
+          "rarity": "Legendary",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Shattering Light",
+          "rarity": "Fabled",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Arrow Rain",
+          "rarity": "Legendary",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Mirror",
+          "rarity": "Legendary",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Paladin",
+          "rarity": "Fabled",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Lightbender",
+          "rarity": "Legendary",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Hunter",
+          "rarity": "Mythic",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Harlequin",
+          "rarity": "Fabled",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Fury",
+          "rarity": "Legendary",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Arcane Wellspring",
+          "rarity": "Legendary",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Sharpshooter",
+          "rarity": "Fabled",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Shadestepper",
+          "rarity": "Legendary",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.utility"
+          },
+          "itemType": "TomeItem",
+          "name": "Tome of Raid Mastery",
+          "rarity": "Fabled",
+          "subtype": "RAID_TOME"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "skin",
+            "value": "fixture-skin-00"
+          },
+          "itemType": "GearItem",
+          "name": "Gaia's Cradle",
+          "rarity": "Mythic",
+          "subtype": "Helmet"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "powder.FireLarge"
+          },
+          "itemType": "PowderItem",
+          "name": "Fire Powder VI",
+          "rarity": "Normal",
+          "subtype": "FIRE",
+          "tier": 6
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianAmplifier"
+          },
+          "itemType": "AmplifierItem",
+          "name": "Corkian Amplifier III",
+          "rarity": "Rare",
+          "subtype": "",
+          "tier": 3
+        },
+        {
+          "amount": 4,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.liquidEmerald"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Liquid Emerald",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "ward.blue"
+          },
+          "itemType": "WardItem",
+          "name": "Ward of Endurance",
+          "rarity": "Legendary",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "charm.stone"
+          },
+          "itemType": "CharmItem",
+          "name": "Charm of the Colossus",
+          "rarity": "Fabled",
+          "subtype": ""
+        }
+      ]
+    },
+    {
+      "region": "The Wartorn Palace",
+      "type": "RAID",
+      "timestamp": "Sun, 18 Oct 2026 01:55:42 GMT",
+      "items": [
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectShaman"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Seeping Rot",
+          "rarity": "Fabled",
+          "subtype": "ShamanAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectShaman"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Amphibian",
+          "rarity": "Mythic",
+          "subtype": "ShamanAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Battle Monk",
+          "rarity": "Mythic",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Shattering Light",
+          "rarity": "Fabled",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Arrow Rain",
+          "rarity": "Legendary",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Mirror",
+          "rarity": "Legendary",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Paladin",
+          "rarity": "Fabled",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Lightbender",
+          "rarity": "Legendary",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Hunter",
+          "rarity": "Legendary",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Harlequin",
+          "rarity": "Fabled",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Fury",
+          "rarity": "Legendary",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Arcane Wellspring",
+          "rarity": "Mythic",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Sharpshooter",
+          "rarity": "Fabled",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Shadestepper",
+          "rarity": "Legendary",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Bulwark",
+          "rarity": "Legendary",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectMage"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Lightweaving",
+          "rarity": "Fabled",
+          "subtype": "MageAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectArcher"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Trapper",
+          "rarity": "Legendary",
+          "subtype": "ArcherAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectAssassin"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of the Trickster",
+          "rarity": "Legendary",
+          "subtype": "AssassinAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "aspect_attribute",
+            "value": "abilityTree.aspectWarrior"
+          },
+          "itemType": "AspectItem",
+          "name": "Aspect of Rending Steel",
+          "rarity": "Fabled",
+          "subtype": "WarriorAspect"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.utility"
+          },
+          "itemType": "TomeItem",
+          "name": "Tome of Raid Mastery",
+          "rarity": "Fabled",
+          "subtype": "RAID_TOME"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "helmet.diamond"
+          },
+          "itemType": "GearItem",
+          "name": "Stormbringer's Coil",
+          "rarity": "Mythic",
+          "subtype": "Helmet"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "powder.FireLarge"
+          },
+          "itemType": "PowderItem",
+          "name": "Fire Powder VI",
+          "rarity": "Normal",
+          "subtype": "FIRE",
+          "tier": 6
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianAmplifier"
+          },
+          "itemType": "AmplifierItem",
+          "name": "Corkian Amplifier III",
+          "rarity": "Rare",
+          "subtype": "",
+          "tier": 3
+        },
+        {
+          "amount": 4,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.liquidEmerald"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Liquid Emerald",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "ward.blue"
+          },
+          "itemType": "WardItem",
+          "name": "Ward of Endurance",
+          "rarity": "Legendary",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "charm.stone"
+          },
+          "itemType": "CharmItem",
+          "name": "Charm of the Colossus",
+          "rarity": "Fabled",
+          "subtype": ""
+        }
+      ]
+    }
+  ]
+}

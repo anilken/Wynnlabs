@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "key": "mobsKilled",
+    "displayName": "Mobs Killed",
+    "statUnit": "raw"
+  },
+  {
+    "id": 2,
+    "key": "raidsWon",
+    "displayName": "Raids Won",
+    "statUnit": "raw"
+  },
+  {
+    "id": 3,
+    "key": "chestsOpened",
+    "displayName": "Chests Opened",
+    "statUnit": "raw"
+  },
+  {
+    "id": 7,
+    "key": "deaths",
+    "displayName": "Deaths",
+    "statUnit": "raw"
+  }
+]

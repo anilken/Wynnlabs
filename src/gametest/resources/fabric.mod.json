@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "wynnlabs-preview",
+  "version": "1",
+  "name": "Wynn Labs preview",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-client-gametest": [
+      "io.github.anilken.wynnlabs.JMenuPreview",
+      "io.github.anilken.wynnlabs.LayoutMatrix"
+    ]
+  },
+  "depends": {
+    "wynnlabs": "*"
+  }
+}

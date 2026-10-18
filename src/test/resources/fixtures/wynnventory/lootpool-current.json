@@ -1,0 +1,861 @@
+{
+  "year": 2026,
+  "week": 42,
+  "regions": [
+    {
+      "region": "Canyon of the Lost",
+      "type": "LOOTRUN_CAMP",
+      "timestamp": "Sat, 17 Oct 2026 09:20:00 GMT",
+      "items": [
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "wand.multi3"
+          },
+          "itemType": "GearItem",
+          "name": "Halcyon",
+          "rarity": "Mythic",
+          "subtype": "Weapon",
+          "shiny": true,
+          "shiny_stat": {
+            "key": "raidsWon",
+            "displayName": "Raids Won"
+          }
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "dagger.fire3"
+          },
+          "itemType": "GearItem",
+          "name": "Inferno",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "bow.thunder3"
+          },
+          "itemType": "GearItem",
+          "name": "Quetzalcoatl",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "wand.multi3"
+          },
+          "itemType": "GearItem",
+          "name": "Halcyon",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "spear.water3"
+          },
+          "itemType": "GearItem",
+          "name": "Idol",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianSimulator"
+          },
+          "itemType": "SimulatorItem",
+          "name": "Corkian Simulator",
+          "rarity": "Mythic",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "boots.diamond"
+          },
+          "itemType": "GearItem",
+          "name": "Equites",
+          "rarity": "Fabled",
+          "subtype": "Boots"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "necklace.multi2"
+          },
+          "itemType": "GearItem",
+          "name": "Alkali",
+          "rarity": "Fabled",
+          "subtype": "Necklace"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "relik.earth3"
+          },
+          "itemType": "GearItem",
+          "name": "Sunstar",
+          "rarity": "Legendary",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "rune.az"
+          },
+          "itemType": "RuneItem",
+          "name": "Az Rune",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "dungeon.keyBroken"
+          },
+          "itemType": "DungeonKeyItem",
+          "name": "Corrupted Ice Barrows Key",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.lootrun"
+          },
+          "itemType": "TomeItem",
+          "name": "Tome of Lootrun Mastery",
+          "rarity": "Fabled",
+          "subtype": "LOOTRUN_TOME"
+        },
+        {
+          "amount": 2,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.liquidEmerald"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Liquid Emerald",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianInsulator"
+          },
+          "itemType": "InsulatorItem",
+          "name": "Corkian Insulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "ward.pink"
+          },
+          "itemType": "WardItem",
+          "name": "Ward of Fortune",
+          "rarity": "Legendary",
+          "subtype": ""
+        }
+      ]
+    },
+    {
+      "region": "Corkus",
+      "type": "LOOTRUN_CAMP",
+      "timestamp": "Sun, 18 Oct 2026 00:31:12 GMT",
+      "items": [
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "relik.earth3"
+          },
+          "itemType": "GearItem",
+          "name": "Grandmother",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "bow.thunder3"
+          },
+          "itemType": "GearItem",
+          "name": "Boreal",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "dagger.fire3"
+          },
+          "itemType": "GearItem",
+          "name": "Cataclysm Remnant",
+          "rarity": "Legendary",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "rune.uth"
+          },
+          "itemType": "RuneItem",
+          "name": "Uth Rune",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "dungeon.keyBroken"
+          },
+          "itemType": "DungeonKeyItem",
+          "name": "Corrupted Ice Barrows Key",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.lootrun"
+          },
+          "itemType": "TomeItem",
+          "name": "Tome of Lootrun Mastery",
+          "rarity": "Fabled",
+          "subtype": "LOOTRUN_TOME"
+        },
+        {
+          "amount": 2,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.liquidEmerald"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Liquid Emerald",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianSimulator"
+          },
+          "itemType": "SimulatorItem",
+          "name": "Corkian Simulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianInsulator"
+          },
+          "itemType": "InsulatorItem",
+          "name": "Corkian Insulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "ward.pink"
+          },
+          "itemType": "WardItem",
+          "name": "Ward of Fortune",
+          "rarity": "Legendary",
+          "subtype": ""
+        }
+      ]
+    },
+    {
+      "region": "Fruma Foray (East)",
+      "type": "LOOTRUN_CAMP",
+      "timestamp": "Fri, 16 Oct 2026 20:45:09 GMT",
+      "items": [
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "dagger.fire3"
+          },
+          "itemType": "GearItem",
+          "name": "Nirvana",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "relik.earth3"
+          },
+          "itemType": "GearItem",
+          "name": "Sunstar",
+          "rarity": "Legendary",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "rune.az"
+          },
+          "itemType": "RuneItem",
+          "name": "Az Rune",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "dungeon.keyBroken"
+          },
+          "itemType": "DungeonKeyItem",
+          "name": "Corrupted Ice Barrows Key",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.lootrun"
+          },
+          "itemType": "TomeItem",
+          "name": "Tome of Lootrun Mastery",
+          "rarity": "Fabled",
+          "subtype": "LOOTRUN_TOME"
+        },
+        {
+          "amount": 2,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.liquidEmerald"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Liquid Emerald",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianSimulator"
+          },
+          "itemType": "SimulatorItem",
+          "name": "Corkian Simulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianInsulator"
+          },
+          "itemType": "InsulatorItem",
+          "name": "Corkian Insulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "ward.pink"
+          },
+          "itemType": "WardItem",
+          "name": "Ward of Fortune",
+          "rarity": "Legendary",
+          "subtype": ""
+        }
+      ]
+    },
+    {
+      "region": "Fruma Foray (West)",
+      "type": "LOOTRUN_CAMP",
+      "timestamp": "Sat, 17 Oct 2026 14:02:44 GMT",
+      "items": [
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "dagger.fire3"
+          },
+          "itemType": "GearItem",
+          "name": "Cataclysm Remnant",
+          "rarity": "Legendary",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "rune.az"
+          },
+          "itemType": "RuneItem",
+          "name": "Az Rune",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "dungeon.keyBroken"
+          },
+          "itemType": "DungeonKeyItem",
+          "name": "Corrupted Ice Barrows Key",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.lootrun"
+          },
+          "itemType": "TomeItem",
+          "name": "Tome of Lootrun Mastery",
+          "rarity": "Fabled",
+          "subtype": "LOOTRUN_TOME"
+        },
+        {
+          "amount": 2,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.liquidEmerald"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Liquid Emerald",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianSimulator"
+          },
+          "itemType": "SimulatorItem",
+          "name": "Corkian Simulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianInsulator"
+          },
+          "itemType": "InsulatorItem",
+          "name": "Corkian Insulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "ward.pink"
+          },
+          "itemType": "WardItem",
+          "name": "Ward of Fortune",
+          "rarity": "Legendary",
+          "subtype": ""
+        }
+      ]
+    },
+    {
+      "region": "Molten Heights",
+      "type": "LOOTRUN_CAMP",
+      "timestamp": "Sat, 17 Oct 2026 08:15:30 GMT",
+      "items": [
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "wand.multi3"
+          },
+          "itemType": "GearItem",
+          "name": "Immolation",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "spear.water3"
+          },
+          "itemType": "GearItem",
+          "name": "Hadal",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "relik.earth3"
+          },
+          "itemType": "GearItem",
+          "name": "Sunstar",
+          "rarity": "Legendary",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "rune.az"
+          },
+          "itemType": "RuneItem",
+          "name": "Az Rune",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "dungeon.keyBroken"
+          },
+          "itemType": "DungeonKeyItem",
+          "name": "Corrupted Ice Barrows Key",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.lootrun"
+          },
+          "itemType": "TomeItem",
+          "name": "Tome of Lootrun Mastery",
+          "rarity": "Fabled",
+          "subtype": "LOOTRUN_TOME"
+        },
+        {
+          "amount": 2,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.liquidEmerald"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Liquid Emerald",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianSimulator"
+          },
+          "itemType": "SimulatorItem",
+          "name": "Corkian Simulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianInsulator"
+          },
+          "itemType": "InsulatorItem",
+          "name": "Corkian Insulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "ward.pink"
+          },
+          "itemType": "WardItem",
+          "name": "Ward of Fortune",
+          "rarity": "Legendary",
+          "subtype": ""
+        }
+      ]
+    },
+    {
+      "region": "Silent Expanse",
+      "type": "LOOTRUN_CAMP",
+      "timestamp": "Sun, 18 Oct 2026 07:05:58 GMT",
+      "items": [
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "bow.thunder3"
+          },
+          "itemType": "GearItem",
+          "name": "Divzer",
+          "rarity": "Mythic",
+          "subtype": "Weapon",
+          "shiny": true,
+          "shinyStat": "raidsWon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "wand.multi3"
+          },
+          "itemType": "GearItem",
+          "name": "Warp",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "bow.thunder3"
+          },
+          "itemType": "GearItem",
+          "name": "Divzer",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "spear.water3"
+          },
+          "itemType": "GearItem",
+          "name": "Stratiformis",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "dagger.fire3"
+          },
+          "itemType": "GearItem",
+          "name": "Cataclysm Remnant",
+          "rarity": "Legendary",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "rune.az"
+          },
+          "itemType": "RuneItem",
+          "name": "Az Rune",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "dungeon.keyBroken"
+          },
+          "itemType": "DungeonKeyItem",
+          "name": "Corrupted Ice Barrows Key",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.lootrun"
+          },
+          "itemType": "TomeItem",
+          "name": "Tome of Lootrun Mastery",
+          "rarity": "Fabled",
+          "subtype": "LOOTRUN_TOME"
+        },
+        {
+          "amount": 2,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.liquidEmerald"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Liquid Emerald",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianSimulator"
+          },
+          "itemType": "SimulatorItem",
+          "name": "Corkian Simulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianInsulator"
+          },
+          "itemType": "InsulatorItem",
+          "name": "Corkian Insulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "ward.pink"
+          },
+          "itemType": "WardItem",
+          "name": "Ward of Fortune",
+          "rarity": "Legendary",
+          "subtype": ""
+        }
+      ]
+    },
+    {
+      "region": "Sky Islands",
+      "type": "LOOTRUN_CAMP",
+      "timestamp": "Sun, 18 Oct 2026 04:48:21 GMT",
+      "items": [
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "relik.earth3"
+          },
+          "itemType": "GearItem",
+          "name": "Galleon",
+          "rarity": "Mythic",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "relik.earth3"
+          },
+          "itemType": "GearItem",
+          "name": "Sunstar",
+          "rarity": "Legendary",
+          "subtype": "Weapon"
+        },
+        {
+          "amount": 1,
+          "itemType": "RuneItem",
+          "name": "Uth Rune",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "dungeon.keyBroken"
+          },
+          "itemType": "DungeonKeyItem",
+          "name": "Corrupted Ice Barrows Key",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "tome.lootrun"
+          },
+          "itemType": "TomeItem",
+          "name": "Tome of Lootrun Mastery",
+          "rarity": "Fabled",
+          "subtype": "LOOTRUN_TOME"
+        },
+        {
+          "amount": 2,
+          "icon": {
+            "format": "attribute",
+            "value": "emerald.liquidEmerald"
+          },
+          "itemType": "EmeraldItem",
+          "name": "Liquid Emerald",
+          "rarity": "Normal",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianSimulator"
+          },
+          "itemType": "SimulatorItem",
+          "name": "Corkian Simulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "augment.corkianInsulator"
+          },
+          "itemType": "InsulatorItem",
+          "name": "Corkian Insulator",
+          "rarity": "Rare",
+          "subtype": ""
+        },
+        {
+          "amount": 1,
+          "icon": {
+            "format": "attribute",
+            "value": "ward.pink"
+          },
+          "itemType": "WardItem",
+          "name": "Ward of Fortune",
+          "rarity": "Legendary",
+          "subtype": ""
+        }
+      ]
+    }
+  ]
+}

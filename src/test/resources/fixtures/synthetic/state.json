@@ -1,0 +1,221 @@
+{
+  "format": 1,
+  "recordedAt": 1760000000000,
+  "inGame": true,
+  "klass": "SHAMAN",
+  "level": 20,
+  "characterId": "char0001",
+  "characters": {
+    "active": "char0001",
+    "characters": [
+      {
+        "id": "char0001",
+        "class": "SHAMAN",
+        "reskinned": false,
+        "level": 20,
+        "lastSeen": "2025-10-09T08:53:20Z",
+        "goal": "fast levelling, damage build",
+        "active": true
+      },
+      {
+        "id": "char0002",
+        "class": "MAGE",
+        "reskinned": false,
+        "level": 31,
+        "lastSeen": "2025-10-01T18:00:00Z",
+        "goal": "mage support",
+        "active": false
+      }
+    ]
+  },
+  "characterIds": [
+    "char0001",
+    "char0002"
+  ],
+  "today": {
+    "char0002": {
+      "class": "MAGE",
+      "level": 31,
+      "worn": {
+        "HELMET": {
+          "level": 25
+        },
+        "CHESTPLATE": {
+          "level": 26
+        },
+        "WEAPON": {
+          "level": 28
+        }
+      }
+    }
+  },
+  "skills": {
+    "STRENGTH": {
+      "assigned": 0,
+      "seen": 0,
+      "gear": 0,
+      "tome": 0,
+      "setBonus": 0
+    },
+    "DEXTERITY": {
+      "assigned": 0,
+      "seen": 0,
+      "gear": 0,
+      "tome": 0,
+      "setBonus": 0
+    },
+    "INTELLIGENCE": {
+      "assigned": 10,
+      "seen": 10,
+      "gear": 5,
+      "tome": 0,
+      "setBonus": 0
+    },
+    "DEFENCE": {
+      "assigned": 4,
+      "seen": 4,
+      "gear": 0,
+      "tome": 0,
+      "setBonus": 0
+    },
+    "AGILITY": {
+      "assigned": 0,
+      "seen": 0,
+      "gear": 0,
+      "tome": 0,
+      "setBonus": 0
+    }
+  },
+  "skillsKnown": true,
+  "unspent": 24,
+  "professions": {
+    "TAILORING": 12
+  },
+  "quests": [
+    {
+      "name": "King's Recruit",
+      "status": "COMPLETED",
+      "level": 1,
+      "length": "SHORT",
+      "xp": 1500,
+      "met": true,
+      "task": null,
+      "x": null,
+      "y": null,
+      "z": null,
+      "bookDistance": null,
+      "seen": 1759913600000,
+      "type": "QUEST",
+      "difficulty": null
+    },
+    {
+      "name": "Grave Digger",
+      "status": "STARTED",
+      "level": 18,
+      "length": "SHORT",
+      "xp": 27000,
+      "met": true,
+      "task": "Bring 4 Wybel Fluff to the gravekeeper",
+      "x": null,
+      "y": null,
+      "z": null,
+      "bookDistance": null,
+      "seen": 1759913600000,
+      "type": "QUEST",
+      "difficulty": null
+    },
+    {
+      "name": "Underice",
+      "status": "CAN_START",
+      "level": 24,
+      "length": "SHORT",
+      "xp": 36000,
+      "met": true,
+      "task": null,
+      "x": null,
+      "y": null,
+      "z": null,
+      "bookDistance": null,
+      "seen": 1759913600000,
+      "type": "QUEST",
+      "difficulty": null
+    }
+  ],
+  "abilityPlan": {
+    "Aura": 30,
+    "Haul": 22,
+    "Totem": 1,
+    "Uproot": 18
+  },
+  "position": [
+    -875.5,
+    -1520.25
+  ],
+  "spots": [
+    {
+      "kind": "cave",
+      "name": "Nemract Cave",
+      "level": 19,
+      "estimated": false,
+      "x": -400,
+      "y": 50,
+      "z": -2000,
+      "info": "short, easy, emeralds"
+    },
+    {
+      "kind": "cave",
+      "name": "Ragni Mine",
+      "level": 21,
+      "estimated": false,
+      "x": -700,
+      "y": 40,
+      "z": -1400,
+      "info": "medium, medium, emeralds, potions"
+    },
+    {
+      "kind": "dungeon",
+      "name": "Decrepit Sewers",
+      "level": 22,
+      "estimated": false,
+      "x": -1000,
+      "y": 70,
+      "z": -1600,
+      "info": ""
+    },
+    {
+      "kind": "grind spot",
+      "name": "Abandoned Farm",
+      "level": 25,
+      "estimated": true,
+      "x": -100,
+      "y": 70,
+      "z": -1300,
+      "info": ""
+    },
+    {
+      "kind": "cave",
+      "name": "Elkurn Hollow",
+      "level": 33,
+      "estimated": false,
+      "x": 300,
+      "y": 60,
+      "z": -1100,
+      "info": "long, hard, emeralds"
+    },
+    {
+      "kind": "boss altar",
+      "name": "Scarecrow Altar",
+      "level": 27,
+      "estimated": false,
+      "x": 0,
+      "y": 70,
+      "z": -1500,
+      "info": ""
+    }
+  ],
+  "xpRates": {
+    "Ragni Mine": 42000.0
+  },
+  "pricesInstalled": true,
+  "selectedSlot": 0
+}

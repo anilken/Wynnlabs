@@ -1,0 +1,21 @@
+{
+  "name": "road map Lv 100 build (after the allocator and speed fixes), Shaman",
+  "date": "2026-10-15",
+  "wynnbuilderData": "2.2.4.0",
+  "link": "https://wynnbuilder.github.io/builder/#CY082m-AWX2iqGEBS3nS2QdWt2cC",
+  "level": 100,
+  "items": {
+    "HELMET": "Aquamarine", "CHESTPLATE": "Ornamental Plate", "LEGGINGS": "Siliquartz Blend",
+    "BOOTS": "Undefined", "RING1": "Ring of Wisdom", "RING2": "Precious",
+    "BRACELET": "Vanguard", "NECKLACE": "Contrast", "WEAPON": "Hardcore"
+  },
+  "assigned": {"STRENGTH": 68, "DEXTERITY": 0, "INTELLIGENCE": 35, "DEFENCE": 0, "AGILITY": 0},
+  "rolls": "max",
+  "wynnbuilder": {
+    "totalHealth": 11600.0,
+    "effectiveHealth": 8499.98,
+    "effectiveHealthNoAgility": 8285.71,
+    "meleeDps": 13098.55
+  },
+  "tolerance": 0.05
+}

@@ -1,0 +1,164 @@
+[
+  {
+    "where": "hotbar 0",
+    "name": "Keen Measure",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "hotbar 1",
+    "name": "Butterfly Wings",
+    "verdict": "SELL",
+    "note": "En iyi build'de Keen Measure var. Trade Market'te sat, ~39 EB"
+  },
+  {
+    "where": "hotbar 2",
+    "name": "Water Powder II",
+    "verdict": "USE",
+    "note": "Silahına tak (envanterde sürükle), build'in Water hasarı"
+  },
+  {
+    "where": "bag 9",
+    "name": "Diet",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bag 11",
+    "name": "Asher's Relic",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bag 12",
+    "name": "Bovemist Amulet",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bag 13",
+    "name": "Ado Saki",
+    "verdict": "WEAR",
+    "note": "Bu yuva boş (build +%136). Beceri: Dex 0→14, Int 10→19, Def 4→0, Agi 0→5"
+  },
+  {
+    "where": "bag 14",
+    "name": "Albakaya",
+    "verdict": "SELL",
+    "note": "Mage eşyası, sen Shaman'sın. Blacksmith'e sat (fiyat henüz bilinmiyor)"
+  },
+  {
+    "where": "bag 15",
+    "name": "Unidentified Relik",
+    "verdict": "IDENTIFY",
+    "note": "4/4 olasılık sana uygun, en çok 14 zümrüt"
+  },
+  {
+    "where": "bag 16",
+    "name": "Brainy Beanie",
+    "verdict": "SELL",
+    "note": "Listedeki Replica Hallowynn Mask daha iyi (Lv. 22). Trade Market'te sat, ~48 EB"
+  },
+  {
+    "where": "bag 17",
+    "name": "Unidentified Hourglass",
+    "verdict": "SELL",
+    "note": "Tanımlansa bile giydiğin Keen Measure daha iyi. Blacksmith'e sat (takas edilemez)"
+  },
+  {
+    "where": "bag 18",
+    "name": "Aged Golden Boots",
+    "verdict": "SELL",
+    "note": "Normal eşya, Lv. 22'te bile zayıf kalır. Blacksmith'e sat (market ~40 E)"
+  },
+  {
+    "where": "bag 19",
+    "name": "Wybel Fluff",
+    "verdict": "KEEP",
+    "note": "'Mezar Kazıcı' görevi istiyor"
+  },
+  {
+    "where": "bag 20",
+    "name": "Spider Silk",
+    "verdict": "KEEP",
+    "note": "Değeri düşük (~13 EB), Trade Market'e değmez; yer lazımsa elden çıkar"
+  },
+  {
+    "where": "bag 21",
+    "name": "Gnocchi",
+    "verdict": "WEAR",
+    "note": "Confusing Cap yerine (build +%136). Beceri: Dex 0→14, Int 10→19, Def 4→0, Agi 0→5"
+  },
+  {
+    "where": "bag 22",
+    "name": "Emerald Pouch",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bag 23",
+    "name": "Thunder Powder I",
+    "verdict": "KEEP",
+    "note": "Mage'in silahına takar; hesap bankasında tut"
+  },
+  {
+    "where": "bag 30",
+    "name": "Quest Book",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "worn HEAD",
+    "name": "Confusing Cap",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "worn CHEST",
+    "name": "Golden Embrace",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "worn LEGS",
+    "name": "Jate",
+    "verdict": null,
+    "note": null
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#0",
+    "name": "Cave In",
+    "verdict": "SELL",
+    "note": "Listedeki Grindcore daha iyi (Lv. 25). Trade Market'te sat, ~1.6 LE"
+  },
+  {
+    "where": "bank acct:Account Bank p. 1#1",
+    "name": "Unidentified Wand",
+    "verdict": "SELL",
+    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+  },
+  {
+    "where": "bank acct:Account Bank p. 2#4",
+    "name": "Fire Powder III",
+    "verdict": "KEEP",
+    "note": "Fire şimdilik kimsenin build'inde yok. Powder Master'da 4 tanesi bir üst seviyeye birleşir, Powder Exchange'de elementi değişir"
+  },
+  {
+    "where": "bank char:char0001:Character Bank p. 1#0",
+    "name": "Wybel Fluff",
+    "verdict": "KEEP",
+    "note": "'Mezar Kazıcı' görevi istiyor"
+  },
+  {
+    "where": "bank char:char0002:Character Bank p. 1#3",
+    "name": "Celestial",
+    "verdict": "SELL",
+    "note": "Mage eşyası, sen Shaman'sın. Blacksmith'e sat (market ~11 EB)"
+  },
+  {
+    "where": "bank char:char0002:Character Bank p. 1#5",
+    "name": "Old Map",
+    "verdict": null,
+    "note": null
+  }
+]

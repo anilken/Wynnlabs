@@ -1,0 +1,2693 @@
+{
+  "stacks": [
+    {
+      "name": "Keen Measure",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Keen Measure",
+          "slot": "RELIK",
+          "tier": "UNIQUE",
+          "powderSlots": 1,
+          "requirements": {
+            "level": 17,
+            "klass": "SHAMAN",
+            "skills": [
+              {
+                "skill": "INTELLIGENCE",
+                "points": 5
+              }
+            ],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 59,
+            "health": 0,
+            "attackSpeed": "NORMAL",
+            "majorId": null,
+            "damages": [
+              {
+                "type": "NEUTRAL",
+                "low": 17,
+                "high": 18
+              },
+              {
+                "type": "WATER",
+                "low": 11,
+                "high": 12
+              }
+            ],
+            "defences": []
+          },
+          "stats": [
+            {
+              "key": "2ndSpellCost",
+              "name": "2nd Spell Cost",
+              "unit": "PERCENT",
+              "inverted": true,
+              "min": -18,
+              "max": -4
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "inverted": false,
+              "min": 2,
+              "max": 8
+            },
+            {
+              "key": "rawAgility",
+              "name": "Agility",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 3,
+              "max": 3
+            },
+            {
+              "key": "rawIntelligence",
+              "name": "Intelligence",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 3,
+              "max": 3
+            },
+            {
+              "key": "walkSpeed",
+              "name": "Walk Speed",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": -5,
+              "max": -3
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "2ndSpellCost",
+              "name": "2nd Spell Cost",
+              "unit": "PERCENT",
+              "value": -11,
+              "range": {
+                "key": "2ndSpellCost",
+                "name": "2nd Spell Cost",
+                "unit": "PERCENT",
+                "inverted": true,
+                "min": -18,
+                "max": -4
+              }
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "value": 5,
+              "range": {
+                "key": "manaRegen",
+                "name": "Mana Regen",
+                "unit": "PER_5_S",
+                "inverted": false,
+                "min": 2,
+                "max": 8
+              }
+            },
+            {
+              "key": "rawAgility",
+              "name": "Agility",
+              "unit": "RAW",
+              "value": 3,
+              "range": {
+                "key": "rawAgility",
+                "name": "Agility",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 3,
+                "max": 3
+              }
+            },
+            {
+              "key": "rawIntelligence",
+              "name": "Intelligence",
+              "unit": "RAW",
+              "value": 3,
+              "range": {
+                "key": "rawIntelligence",
+                "name": "Intelligence",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 3,
+                "max": 3
+              }
+            },
+            {
+              "key": "walkSpeed",
+              "name": "Walk Speed",
+              "unit": "PERCENT",
+              "value": -4,
+              "range": {
+                "key": "walkSpeed",
+                "name": "Walk Speed",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": -5,
+                "max": -3
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 50.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {
+              "INTELLIGENCE": true
+            },
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Butterfly Wings",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Butterfly Wings",
+          "slot": "RELIK",
+          "tier": "UNIQUE",
+          "powderSlots": 2,
+          "requirements": {
+            "level": 19,
+            "klass": "SHAMAN",
+            "skills": [],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 62,
+            "health": 0,
+            "attackSpeed": "SLOW",
+            "majorId": null,
+            "damages": [
+              {
+                "type": "NEUTRAL",
+                "low": 33,
+                "high": 49
+              }
+            ],
+            "defences": []
+          },
+          "stats": [
+            {
+              "key": "rawAgility",
+              "name": "Agility",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 2,
+              "max": 2
+            },
+            {
+              "key": "rawDefence",
+              "name": "Defence",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 2,
+              "max": 2
+            },
+            {
+              "key": "rawDexterity",
+              "name": "Dexterity",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 2,
+              "max": 2
+            },
+            {
+              "key": "rawIntelligence",
+              "name": "Intelligence",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 2,
+              "max": 2
+            },
+            {
+              "key": "rawStrength",
+              "name": "Strength",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 2,
+              "max": 2
+            },
+            {
+              "key": "reflection",
+              "name": "Reflection",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 2,
+              "max": 10
+            },
+            {
+              "key": "thorns",
+              "name": "Thorns",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 2,
+              "max": 10
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "rawAgility",
+              "name": "Agility",
+              "unit": "RAW",
+              "value": 2,
+              "range": {
+                "key": "rawAgility",
+                "name": "Agility",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 2,
+                "max": 2
+              }
+            },
+            {
+              "key": "rawDefence",
+              "name": "Defence",
+              "unit": "RAW",
+              "value": 2,
+              "range": {
+                "key": "rawDefence",
+                "name": "Defence",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 2,
+                "max": 2
+              }
+            },
+            {
+              "key": "rawDexterity",
+              "name": "Dexterity",
+              "unit": "RAW",
+              "value": 2,
+              "range": {
+                "key": "rawDexterity",
+                "name": "Dexterity",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 2,
+                "max": 2
+              }
+            },
+            {
+              "key": "rawIntelligence",
+              "name": "Intelligence",
+              "unit": "RAW",
+              "value": 2,
+              "range": {
+                "key": "rawIntelligence",
+                "name": "Intelligence",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 2,
+                "max": 2
+              }
+            },
+            {
+              "key": "rawStrength",
+              "name": "Strength",
+              "unit": "RAW",
+              "value": 2,
+              "range": {
+                "key": "rawStrength",
+                "name": "Strength",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 2,
+                "max": 2
+              }
+            },
+            {
+              "key": "reflection",
+              "name": "Reflection",
+              "unit": "PERCENT",
+              "value": 8,
+              "range": {
+                "key": "reflection",
+                "name": "Reflection",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 2,
+                "max": 10
+              }
+            },
+            {
+              "key": "thorns",
+              "name": "Thorns",
+              "unit": "PERCENT",
+              "value": 8,
+              "range": {
+                "key": "thorns",
+                "name": "Thorns",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 2,
+                "max": 10
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 80.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {},
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Water Powder II",
+      "count": 3,
+      "view": {
+        "kind": "POWDER",
+        "type": "PowderItem",
+        "plain": false,
+        "name": "Water Powder II",
+        "level": 2,
+        "professions": null,
+        "data": null,
+        "rolled": null,
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": {
+          "element": "WATER",
+          "tier": 2
+        },
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Diet",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Diet",
+          "slot": "RING",
+          "tier": "UNIQUE",
+          "powderSlots": 0,
+          "requirements": {
+            "level": 17,
+            "klass": null,
+            "skills": [
+              {
+                "skill": "AGILITY",
+                "points": 5
+              }
+            ],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 0,
+            "health": 0,
+            "attackSpeed": null,
+            "majorId": null,
+            "damages": [],
+            "defences": []
+          },
+          "stats": [
+            {
+              "key": "rawAgility",
+              "name": "Agility",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 4,
+              "max": 4
+            },
+            {
+              "key": "rawStrength",
+              "name": "Strength",
+              "unit": "RAW",
+              "inverted": false,
+              "min": -2,
+              "max": -2
+            },
+            {
+              "key": "walkSpeed",
+              "name": "Walk Speed",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 2,
+              "max": 8
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "rawAgility",
+              "name": "Agility",
+              "unit": "RAW",
+              "value": 4,
+              "range": {
+                "key": "rawAgility",
+                "name": "Agility",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 4,
+                "max": 4
+              }
+            },
+            {
+              "key": "rawStrength",
+              "name": "Strength",
+              "unit": "RAW",
+              "value": -2,
+              "range": {
+                "key": "rawStrength",
+                "name": "Strength",
+                "unit": "RAW",
+                "inverted": false,
+                "min": -2,
+                "max": -2
+              }
+            },
+            {
+              "key": "walkSpeed",
+              "name": "Walk Speed",
+              "unit": "PERCENT",
+              "value": 4,
+              "range": {
+                "key": "walkSpeed",
+                "name": "Walk Speed",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 2,
+                "max": 8
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 40.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {
+              "AGILITY": true
+            },
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Asher's Relic",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Asher's Relic",
+          "slot": "BRACELET",
+          "tier": "RARE",
+          "powderSlots": 0,
+          "requirements": {
+            "level": 17,
+            "klass": null,
+            "skills": [],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 0,
+            "health": -20,
+            "attackSpeed": null,
+            "majorId": null,
+            "damages": [],
+            "defences": []
+          },
+          "stats": [
+            {
+              "key": "healthRegenRaw",
+              "name": "Health Regen",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 2,
+              "max": 8
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "inverted": false,
+              "min": 1,
+              "max": 5
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "healthRegenRaw",
+              "name": "Health Regen",
+              "unit": "RAW",
+              "value": 5,
+              "range": {
+                "key": "healthRegenRaw",
+                "name": "Health Regen",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 2,
+                "max": 8
+              }
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "value": 3,
+              "range": {
+                "key": "manaRegen",
+                "name": "Mana Regen",
+                "unit": "PER_5_S",
+                "inverted": false,
+                "min": 1,
+                "max": 5
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 50.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {},
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Bovemist Amulet",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Bovemist Amulet",
+          "slot": "NECKLACE",
+          "tier": "UNIQUE",
+          "powderSlots": 0,
+          "requirements": {
+            "level": 18,
+            "klass": null,
+            "skills": [
+              {
+                "skill": "INTELLIGENCE",
+                "points": 8
+              }
+            ],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 0,
+            "health": 0,
+            "attackSpeed": null,
+            "majorId": null,
+            "damages": [],
+            "defences": [
+              {
+                "element": "THUNDER",
+                "value": 5
+              },
+              {
+                "element": "WATER",
+                "value": 5
+              }
+            ]
+          },
+          "stats": [
+            {
+              "key": "healthRegenRaw",
+              "name": "Health Regen",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 1,
+              "max": 5
+            },
+            {
+              "key": "rawIntelligence",
+              "name": "Intelligence",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 3,
+              "max": 3
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "healthRegenRaw",
+              "name": "Health Regen",
+              "unit": "RAW",
+              "value": 4,
+              "range": {
+                "key": "healthRegenRaw",
+                "name": "Health Regen",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 1,
+                "max": 5
+              }
+            },
+            {
+              "key": "rawIntelligence",
+              "name": "Intelligence",
+              "unit": "RAW",
+              "value": 3,
+              "range": {
+                "key": "rawIntelligence",
+                "name": "Intelligence",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 3,
+                "max": 3
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 70.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {
+              "INTELLIGENCE": true
+            },
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Ado Saki",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Ado Saki",
+          "slot": "BOOTS",
+          "tier": "RARE",
+          "powderSlots": 1,
+          "requirements": {
+            "level": 20,
+            "klass": null,
+            "skills": [
+              {
+                "skill": "INTELLIGENCE",
+                "points": 5
+              }
+            ],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 0,
+            "health": 105,
+            "attackSpeed": null,
+            "majorId": null,
+            "damages": [],
+            "defences": [
+              {
+                "element": "THUNDER",
+                "value": -8
+              },
+              {
+                "element": "WATER",
+                "value": 10
+              }
+            ]
+          },
+          "stats": [
+            {
+              "key": "combatExperience",
+              "name": "Combat Experience",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 4,
+              "max": 16
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "inverted": false,
+              "min": 2,
+              "max": 8
+            },
+            {
+              "key": "rawMaxMana",
+              "name": "Max Mana",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 3,
+              "max": 14
+            },
+            {
+              "key": "spellDamage",
+              "name": "Spell Damage",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 3,
+              "max": 12
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "combatExperience",
+              "name": "Combat Experience",
+              "unit": "PERCENT",
+              "value": 12,
+              "range": {
+                "key": "combatExperience",
+                "name": "Combat Experience",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 4,
+                "max": 16
+              }
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "value": 6,
+              "range": {
+                "key": "manaRegen",
+                "name": "Mana Regen",
+                "unit": "PER_5_S",
+                "inverted": false,
+                "min": 2,
+                "max": 8
+              }
+            },
+            {
+              "key": "rawMaxMana",
+              "name": "Max Mana",
+              "unit": "RAW",
+              "value": 10,
+              "range": {
+                "key": "rawMaxMana",
+                "name": "Max Mana",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 3,
+                "max": 14
+              }
+            },
+            {
+              "key": "spellDamage",
+              "name": "Spell Damage",
+              "unit": "PERCENT",
+              "value": 9,
+              "range": {
+                "key": "spellDamage",
+                "name": "Spell Damage",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 3,
+                "max": 12
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 65.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {
+              "INTELLIGENCE": true
+            },
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Albakaya",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Albakaya",
+          "slot": "WAND",
+          "tier": "UNIQUE",
+          "powderSlots": 1,
+          "requirements": {
+            "level": 22,
+            "klass": "MAGE",
+            "skills": [
+              {
+                "skill": "DEFENCE",
+                "points": 5
+              }
+            ],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 39,
+            "health": 0,
+            "attackSpeed": "NORMAL",
+            "majorId": null,
+            "damages": [
+              {
+                "type": "NEUTRAL",
+                "low": 6,
+                "high": 12
+              },
+              {
+                "type": "FIRE",
+                "low": 8,
+                "high": 12
+              }
+            ],
+            "defences": []
+          },
+          "stats": [
+            {
+              "key": "fireDefence",
+              "name": "Fire Defence",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 4,
+              "max": 18
+            },
+            {
+              "key": "healthRegenRaw",
+              "name": "Health Regen",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 3,
+              "max": 13
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "inverted": false,
+              "min": 2,
+              "max": 8
+            },
+            {
+              "key": "rawHealth",
+              "name": "Health",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 12,
+              "max": 52
+            },
+            {
+              "key": "rawIntelligence",
+              "name": "Intelligence",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 3,
+              "max": 3
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "fireDefence",
+              "name": "Fire Defence",
+              "unit": "PERCENT",
+              "value": 8,
+              "range": {
+                "key": "fireDefence",
+                "name": "Fire Defence",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 4,
+                "max": 18
+              }
+            },
+            {
+              "key": "healthRegenRaw",
+              "name": "Health Regen",
+              "unit": "RAW",
+              "value": 6,
+              "range": {
+                "key": "healthRegenRaw",
+                "name": "Health Regen",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 3,
+                "max": 13
+              }
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "value": 4,
+              "range": {
+                "key": "manaRegen",
+                "name": "Mana Regen",
+                "unit": "PER_5_S",
+                "inverted": false,
+                "min": 2,
+                "max": 8
+              }
+            },
+            {
+              "key": "rawHealth",
+              "name": "Health",
+              "unit": "RAW",
+              "value": 24,
+              "range": {
+                "key": "rawHealth",
+                "name": "Health",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 12,
+                "max": 52
+              }
+            },
+            {
+              "key": "rawIntelligence",
+              "name": "Intelligence",
+              "unit": "RAW",
+              "value": 3,
+              "range": {
+                "key": "rawIntelligence",
+                "name": "Intelligence",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 3,
+                "max": 3
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 30.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {
+              "DEFENCE": true
+            },
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Unidentified Relik",
+      "count": 1,
+      "view": {
+        "kind": "BOX",
+        "type": "GearBoxItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": null,
+        "rolled": null,
+        "crafted": null,
+        "box": {
+          "slot": "RELIK",
+          "tier": "UNIQUE",
+          "low": 18,
+          "high": 22
+        },
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Brainy Beanie",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Brainy Beanie",
+          "slot": "HELMET",
+          "tier": "RARE",
+          "powderSlots": 1,
+          "requirements": {
+            "level": 22,
+            "klass": null,
+            "skills": [
+              {
+                "skill": "DEXTERITY",
+                "points": 5
+              },
+              {
+                "skill": "INTELLIGENCE",
+                "points": 10
+              }
+            ],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 0,
+            "health": 110,
+            "attackSpeed": null,
+            "majorId": null,
+            "damages": [],
+            "defences": [
+              {
+                "element": "EARTH",
+                "value": -10
+              }
+            ]
+          },
+          "stats": [
+            {
+              "key": "combatExperience",
+              "name": "Combat Experience",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 4,
+              "max": 16
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "inverted": false,
+              "min": 2,
+              "max": 8
+            },
+            {
+              "key": "manaSteal",
+              "name": "Mana Steal",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 1,
+              "max": 4
+            },
+            {
+              "key": "rawIntelligence",
+              "name": "Intelligence",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 5,
+              "max": 5
+            },
+            {
+              "key": "rawStrength",
+              "name": "Strength",
+              "unit": "RAW",
+              "inverted": false,
+              "min": -5,
+              "max": -5
+            },
+            {
+              "key": "spellDamage",
+              "name": "Spell Damage",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": -10,
+              "max": -6
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "combatExperience",
+              "name": "Combat Experience",
+              "unit": "PERCENT",
+              "value": 15,
+              "range": {
+                "key": "combatExperience",
+                "name": "Combat Experience",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 4,
+                "max": 16
+              }
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "value": 7,
+              "range": {
+                "key": "manaRegen",
+                "name": "Mana Regen",
+                "unit": "PER_5_S",
+                "inverted": false,
+                "min": 2,
+                "max": 8
+              }
+            },
+            {
+              "key": "manaSteal",
+              "name": "Mana Steal",
+              "unit": "PERCENT",
+              "value": 4,
+              "range": {
+                "key": "manaSteal",
+                "name": "Mana Steal",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 1,
+                "max": 4
+              }
+            },
+            {
+              "key": "rawIntelligence",
+              "name": "Intelligence",
+              "unit": "RAW",
+              "value": 5,
+              "range": {
+                "key": "rawIntelligence",
+                "name": "Intelligence",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 5,
+                "max": 5
+              }
+            },
+            {
+              "key": "rawStrength",
+              "name": "Strength",
+              "unit": "RAW",
+              "value": -5,
+              "range": {
+                "key": "rawStrength",
+                "name": "Strength",
+                "unit": "RAW",
+                "inverted": false,
+                "min": -5,
+                "max": -5
+              }
+            },
+            {
+              "key": "spellDamage",
+              "name": "Spell Damage",
+              "unit": "PERCENT",
+              "value": -6,
+              "range": {
+                "key": "spellDamage",
+                "name": "Spell Damage",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": -10,
+                "max": -6
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 90.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {
+              "DEXTERITY": true,
+              "INTELLIGENCE": true
+            },
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Unidentified Hourglass",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Hourglass",
+          "slot": "RELIK",
+          "tier": "RARE",
+          "powderSlots": 0,
+          "requirements": {
+            "level": 19,
+            "klass": "SHAMAN",
+            "skills": [],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 2,
+            "health": 0,
+            "attackSpeed": "SLOW",
+            "majorId": null,
+            "damages": [
+              {
+                "type": "NEUTRAL",
+                "low": 1,
+                "high": 1
+              }
+            ],
+            "defences": []
+          },
+          "stats": [
+            {
+              "key": "1stSpellCost",
+              "name": "1st Spell Cost",
+              "unit": "PERCENT",
+              "inverted": true,
+              "min": 40,
+              "max": 40
+            },
+            {
+              "key": "poison",
+              "name": "Poison",
+              "unit": "PER_3_S",
+              "inverted": false,
+              "min": 220,
+              "max": 220
+            },
+            {
+              "key": "rawAgility",
+              "name": "Agility",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 4,
+              "max": 4
+            },
+            {
+              "key": "thorns",
+              "name": "Thorns",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 18,
+              "max": 18
+            }
+          ],
+          "set": null,
+          "restriction": "UNTRADABLE"
+        },
+        "rolled": null,
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Aged Golden Boots",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Aged Golden Boots",
+          "slot": "BOOTS",
+          "tier": "NORMAL",
+          "powderSlots": 0,
+          "requirements": {
+            "level": 22,
+            "klass": null,
+            "skills": [],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 0,
+            "health": 78,
+            "attackSpeed": null,
+            "majorId": null,
+            "damages": [],
+            "defences": []
+          },
+          "stats": [],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [],
+          "powders": [],
+          "rerolls": 0,
+          "overall": null,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {},
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Wybel Fluff",
+      "count": 4,
+      "view": {
+        "kind": "INGREDIENT",
+        "type": "IngredientItem",
+        "plain": false,
+        "name": "Wybel Fluff",
+        "level": 18,
+        "professions": [
+          "TAILORING"
+        ],
+        "data": null,
+        "rolled": null,
+        "crafted": null,
+        "box": null,
+        "qualityTier": 1,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Spider Silk",
+      "count": 20,
+      "view": {
+        "kind": "INGREDIENT",
+        "type": "IngredientItem",
+        "plain": false,
+        "name": "Spider Silk",
+        "level": 15,
+        "professions": [
+          "TAILORING"
+        ],
+        "data": null,
+        "rolled": null,
+        "crafted": null,
+        "box": null,
+        "qualityTier": 1,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Gnocchi",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Gnocchi",
+          "slot": "HELMET",
+          "tier": "RARE",
+          "powderSlots": 2,
+          "requirements": {
+            "level": 17,
+            "klass": null,
+            "skills": [],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 0,
+            "health": 74,
+            "attackSpeed": null,
+            "majorId": null,
+            "damages": [],
+            "defences": []
+          },
+          "stats": [
+            {
+              "key": "combatExperience",
+              "name": "Combat Experience",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 2,
+              "max": 10
+            },
+            {
+              "key": "mainAttackDamage",
+              "name": "Main Attack Damage",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": -6,
+              "max": -3
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "inverted": false,
+              "min": 2,
+              "max": 8
+            },
+            {
+              "key": "spellDamage",
+              "name": "Spell Damage",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 2,
+              "max": 10
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "combatExperience",
+              "name": "Combat Experience",
+              "unit": "PERCENT",
+              "value": 8,
+              "range": {
+                "key": "combatExperience",
+                "name": "Combat Experience",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 2,
+                "max": 10
+              }
+            },
+            {
+              "key": "mainAttackDamage",
+              "name": "Main Attack Damage",
+              "unit": "PERCENT",
+              "value": -4,
+              "range": {
+                "key": "mainAttackDamage",
+                "name": "Main Attack Damage",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": -6,
+                "max": -3
+              }
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "value": 6,
+              "range": {
+                "key": "manaRegen",
+                "name": "Mana Regen",
+                "unit": "PER_5_S",
+                "inverted": false,
+                "min": 2,
+                "max": 8
+              }
+            },
+            {
+              "key": "spellDamage",
+              "name": "Spell Damage",
+              "unit": "PERCENT",
+              "value": 8,
+              "range": {
+                "key": "spellDamage",
+                "name": "Spell Damage",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 2,
+                "max": 10
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 75.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {},
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Emerald Pouch",
+      "count": 1,
+      "view": {
+        "kind": "OTHER",
+        "type": "EmeraldPouchItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": null,
+        "rolled": null,
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Thunder Powder I",
+      "count": 2,
+      "view": {
+        "kind": "POWDER",
+        "type": "PowderItem",
+        "plain": false,
+        "name": "Thunder Powder I",
+        "level": 1,
+        "professions": null,
+        "data": null,
+        "rolled": null,
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": {
+          "element": "THUNDER",
+          "tier": 1
+        },
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Quest Book",
+      "count": 1,
+      "view": null
+    },
+    {
+      "name": "Jate",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Jate",
+          "slot": "LEGGINGS",
+          "tier": "UNIQUE",
+          "powderSlots": 1,
+          "requirements": {
+            "level": 17,
+            "klass": null,
+            "skills": [],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 0,
+            "health": 63,
+            "attackSpeed": null,
+            "majorId": null,
+            "damages": [],
+            "defences": []
+          },
+          "stats": [
+            {
+              "key": "combatExperience",
+              "name": "Combat Experience",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 2,
+              "max": 8
+            },
+            {
+              "key": "rawMaxMana",
+              "name": "Max Mana",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 5,
+              "max": 20
+            },
+            {
+              "key": "reflection",
+              "name": "Reflection",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 2,
+              "max": 8
+            },
+            {
+              "key": "spellDamage",
+              "name": "Spell Damage",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 2,
+              "max": 10
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "combatExperience",
+              "name": "Combat Experience",
+              "unit": "PERCENT",
+              "value": 5,
+              "range": {
+                "key": "combatExperience",
+                "name": "Combat Experience",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 2,
+                "max": 8
+              }
+            },
+            {
+              "key": "rawMaxMana",
+              "name": "Max Mana",
+              "unit": "RAW",
+              "value": 13,
+              "range": {
+                "key": "rawMaxMana",
+                "name": "Max Mana",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 5,
+                "max": 20
+              }
+            },
+            {
+              "key": "reflection",
+              "name": "Reflection",
+              "unit": "PERCENT",
+              "value": 5,
+              "range": {
+                "key": "reflection",
+                "name": "Reflection",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 2,
+                "max": 8
+              }
+            },
+            {
+              "key": "spellDamage",
+              "name": "Spell Damage",
+              "unit": "PERCENT",
+              "value": 6,
+              "range": {
+                "key": "spellDamage",
+                "name": "Spell Damage",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 2,
+                "max": 10
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 55.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {},
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Golden Embrace",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Golden Embrace",
+          "slot": "CHESTPLATE",
+          "tier": "RARE",
+          "powderSlots": 1,
+          "requirements": {
+            "level": 19,
+            "klass": null,
+            "skills": [],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 0,
+            "health": 140,
+            "attackSpeed": null,
+            "majorId": null,
+            "damages": [],
+            "defences": []
+          },
+          "stats": [
+            {
+              "key": "elementalDefence",
+              "name": "Elemental Defence",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 4,
+              "max": 16
+            },
+            {
+              "key": "lootBonus",
+              "name": "Loot Bonus",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 4,
+              "max": 16
+            },
+            {
+              "key": "reflection",
+              "name": "Reflection",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 2,
+              "max": 8
+            },
+            {
+              "key": "thorns",
+              "name": "Thorns",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 2,
+              "max": 8
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "elementalDefence",
+              "name": "Elemental Defence",
+              "unit": "PERCENT",
+              "value": 11,
+              "range": {
+                "key": "elementalDefence",
+                "name": "Elemental Defence",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 4,
+                "max": 16
+              }
+            },
+            {
+              "key": "lootBonus",
+              "name": "Loot Bonus",
+              "unit": "PERCENT",
+              "value": 11,
+              "range": {
+                "key": "lootBonus",
+                "name": "Loot Bonus",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 4,
+                "max": 16
+              }
+            },
+            {
+              "key": "reflection",
+              "name": "Reflection",
+              "unit": "PERCENT",
+              "value": 6,
+              "range": {
+                "key": "reflection",
+                "name": "Reflection",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 2,
+                "max": 8
+              }
+            },
+            {
+              "key": "thorns",
+              "name": "Thorns",
+              "unit": "PERCENT",
+              "value": 6,
+              "range": {
+                "key": "thorns",
+                "name": "Thorns",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 2,
+                "max": 8
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 60.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {},
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "name": "Confusing Cap",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Confusing Cap",
+          "slot": "HELMET",
+          "tier": "UNIQUE",
+          "powderSlots": 0,
+          "requirements": {
+            "level": 18,
+            "klass": null,
+            "skills": [],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 0,
+            "health": 99,
+            "attackSpeed": null,
+            "majorId": null,
+            "damages": [],
+            "defences": []
+          },
+          "stats": [
+            {
+              "key": "rawIntelligence",
+              "name": "Intelligence",
+              "unit": "RAW",
+              "inverted": false,
+              "min": -20,
+              "max": -20
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "rawIntelligence",
+              "name": "Intelligence",
+              "unit": "RAW",
+              "value": -20,
+              "range": {
+                "key": "rawIntelligence",
+                "name": "Intelligence",
+                "unit": "RAW",
+                "inverted": false,
+                "min": -20,
+                "max": -20
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 50.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {},
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    }
+  ],
+  "inventory": [
+    0,
+    1,
+    2,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    3,
+    null,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    17,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    18,
+    19,
+    20,
+    null
+  ],
+  "armour": {
+    "HEAD": 20,
+    "CHEST": 19,
+    "LEGS": 18,
+    "FEET": null
+  },
+  "accessories": [
+    3,
+    null,
+    4,
+    5
+  ],
+  "mainHand": 0,
+  "bank": [
+    {
+      "page": "acct:Account Bank p. 1",
+      "slot": 0,
+      "name": "Cave In",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Cave In",
+          "slot": "RELIK",
+          "tier": "LEGENDARY",
+          "powderSlots": 1,
+          "requirements": {
+            "level": 21,
+            "klass": "SHAMAN",
+            "skills": [
+              {
+                "skill": "STRENGTH",
+                "points": 18
+              }
+            ],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 154,
+            "health": 0,
+            "attackSpeed": "SLOW",
+            "majorId": null,
+            "damages": [
+              {
+                "type": "NEUTRAL",
+                "low": 50,
+                "high": 60
+              },
+              {
+                "type": "EARTH",
+                "low": 40,
+                "high": 55
+              }
+            ],
+            "defences": []
+          },
+          "stats": [
+            {
+              "key": "3rdSpellCost",
+              "name": "3rd Spell Cost",
+              "unit": "PERCENT",
+              "inverted": true,
+              "min": -16,
+              "max": -4
+            },
+            {
+              "key": "earthDamage",
+              "name": "Earth Damage",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 6,
+              "max": 26
+            },
+            {
+              "key": "exploding",
+              "name": "Exploding",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 7,
+              "max": 30
+            },
+            {
+              "key": "healthRegenRaw",
+              "name": "Health Regen",
+              "unit": "RAW",
+              "inverted": false,
+              "min": -26,
+              "max": -14
+            },
+            {
+              "key": "lootBonus",
+              "name": "Loot Bonus",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 3,
+              "max": 13
+            },
+            {
+              "key": "walkSpeed",
+              "name": "Walk Speed",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": -26,
+              "max": -14
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "3rdSpellCost",
+              "name": "3rd Spell Cost",
+              "unit": "PERCENT",
+              "value": -8,
+              "range": {
+                "key": "3rdSpellCost",
+                "name": "3rd Spell Cost",
+                "unit": "PERCENT",
+                "inverted": true,
+                "min": -16,
+                "max": -4
+              }
+            },
+            {
+              "key": "earthDamage",
+              "name": "Earth Damage",
+              "unit": "PERCENT",
+              "value": 20,
+              "range": {
+                "key": "earthDamage",
+                "name": "Earth Damage",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 6,
+                "max": 26
+              }
+            },
+            {
+              "key": "exploding",
+              "name": "Exploding",
+              "unit": "PERCENT",
+              "value": 23,
+              "range": {
+                "key": "exploding",
+                "name": "Exploding",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 7,
+                "max": 30
+              }
+            },
+            {
+              "key": "healthRegenRaw",
+              "name": "Health Regen",
+              "unit": "RAW",
+              "value": -18,
+              "range": {
+                "key": "healthRegenRaw",
+                "name": "Health Regen",
+                "unit": "RAW",
+                "inverted": false,
+                "min": -26,
+                "max": -14
+              }
+            },
+            {
+              "key": "lootBonus",
+              "name": "Loot Bonus",
+              "unit": "PERCENT",
+              "value": 10,
+              "range": {
+                "key": "lootBonus",
+                "name": "Loot Bonus",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 3,
+                "max": 13
+              }
+            },
+            {
+              "key": "walkSpeed",
+              "name": "Walk Speed",
+              "unit": "PERCENT",
+              "value": -18,
+              "range": {
+                "key": "walkSpeed",
+                "name": "Walk Speed",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": -26,
+                "max": -14
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 70.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {
+              "STRENGTH": true
+            },
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "page": "acct:Account Bank p. 1",
+      "slot": 1,
+      "name": "Unidentified Wand",
+      "count": 1,
+      "view": {
+        "kind": "BOX",
+        "type": "GearBoxItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": null,
+        "rolled": null,
+        "crafted": null,
+        "box": {
+          "slot": "WAND",
+          "tier": "RARE",
+          "low": 20,
+          "high": 24
+        },
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "page": "acct:Account Bank p. 2",
+      "slot": 4,
+      "name": "Fire Powder III",
+      "count": 5,
+      "view": {
+        "kind": "POWDER",
+        "type": "PowderItem",
+        "plain": false,
+        "name": "Fire Powder III",
+        "level": 3,
+        "professions": null,
+        "data": null,
+        "rolled": null,
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": {
+          "element": "FIRE",
+          "tier": 3
+        },
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "page": "char:char0001:Character Bank p. 1",
+      "slot": 0,
+      "name": "Wybel Fluff",
+      "count": 30,
+      "view": {
+        "kind": "INGREDIENT",
+        "type": "IngredientItem",
+        "plain": false,
+        "name": "Wybel Fluff",
+        "level": 18,
+        "professions": [
+          "TAILORING"
+        ],
+        "data": null,
+        "rolled": null,
+        "crafted": null,
+        "box": null,
+        "qualityTier": 1,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "page": "char:char0002:Character Bank p. 1",
+      "slot": 3,
+      "name": "Celestial",
+      "count": 1,
+      "view": {
+        "kind": "GEAR",
+        "type": "GearItem",
+        "plain": false,
+        "name": null,
+        "level": null,
+        "professions": null,
+        "data": {
+          "name": "Celestial",
+          "slot": "WAND",
+          "tier": "RARE",
+          "powderSlots": 1,
+          "requirements": {
+            "level": 23,
+            "klass": "MAGE",
+            "skills": [
+              {
+                "skill": "AGILITY",
+                "points": 10
+              }
+            ],
+            "quest": null
+          },
+          "base": {
+            "averageDps": 50,
+            "health": 0,
+            "attackSpeed": "FAST",
+            "majorId": null,
+            "damages": [
+              {
+                "type": "AIR",
+                "low": 6,
+                "high": 11
+              },
+              {
+                "type": "NEUTRAL",
+                "low": 7,
+                "high": 16
+              }
+            ],
+            "defences": []
+          },
+          "stats": [
+            {
+              "key": "combatExperience",
+              "name": "Combat Experience",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 3,
+              "max": 12
+            },
+            {
+              "key": "jumpHeight",
+              "name": "Jump Height",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 1,
+              "max": 1
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "inverted": false,
+              "min": 2,
+              "max": 10
+            },
+            {
+              "key": "rawAgility",
+              "name": "Agility",
+              "unit": "RAW",
+              "inverted": false,
+              "min": 5,
+              "max": 5
+            },
+            {
+              "key": "reflection",
+              "name": "Reflection",
+              "unit": "PERCENT",
+              "inverted": false,
+              "min": 3,
+              "max": 12
+            }
+          ],
+          "set": null,
+          "restriction": "NONE"
+        },
+        "rolled": {
+          "rolls": [
+            {
+              "key": "combatExperience",
+              "name": "Combat Experience",
+              "unit": "PERCENT",
+              "value": 8,
+              "range": {
+                "key": "combatExperience",
+                "name": "Combat Experience",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 3,
+                "max": 12
+              }
+            },
+            {
+              "key": "jumpHeight",
+              "name": "Jump Height",
+              "unit": "PERCENT",
+              "value": 1,
+              "range": {
+                "key": "jumpHeight",
+                "name": "Jump Height",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 1,
+                "max": 1
+              }
+            },
+            {
+              "key": "manaRegen",
+              "name": "Mana Regen",
+              "unit": "PER_5_S",
+              "value": 6,
+              "range": {
+                "key": "manaRegen",
+                "name": "Mana Regen",
+                "unit": "PER_5_S",
+                "inverted": false,
+                "min": 2,
+                "max": 10
+              }
+            },
+            {
+              "key": "rawAgility",
+              "name": "Agility",
+              "unit": "RAW",
+              "value": 5,
+              "range": {
+                "key": "rawAgility",
+                "name": "Agility",
+                "unit": "RAW",
+                "inverted": false,
+                "min": 5,
+                "max": 5
+              }
+            },
+            {
+              "key": "reflection",
+              "name": "Reflection",
+              "unit": "PERCENT",
+              "value": 8,
+              "range": {
+                "key": "reflection",
+                "name": "Reflection",
+                "unit": "PERCENT",
+                "inverted": false,
+                "min": 3,
+                "max": 12
+              }
+            }
+          ],
+          "powders": [],
+          "rerolls": 0,
+          "overall": 50.0,
+          "shiny": false,
+          "marks": {
+            "known": true,
+            "all": true,
+            "skills": {
+              "AGILITY": true
+            },
+            "quest": false
+          }
+        },
+        "crafted": null,
+        "box": null,
+        "qualityTier": null,
+        "powder": null,
+        "potion": null,
+        "dungeonKey": null,
+        "skillPoint": null,
+        "crystalCount": null,
+        "abilityName": null
+      }
+    },
+    {
+      "page": "char:char0002:Character Bank p. 1",
+      "slot": 5,
+      "name": "Old Map",
+      "count": 1,
+      "view": null
+    }
+  ]
+}
