@@ -432,41 +432,85 @@ final class Coach {
             o.addProperty("xp", XpMeter.sessionXp());
             o.addProperty("emeralds", emeralds() - startEmeralds);
             int deaths = 0;
-            String worst = "";
-            java.util.Map<String, Integer> where = new java.util.HashMap<>();
+            Words worst = null;
+            java.util.Map<Words, Integer> where = new java.util.HashMap<>();
             for (DeathCoach.Death d : DeathCoach.all()) {
                 if (d.time() >= sessionStart) {
                     deaths++;
-                    where.merge(d.area(), 1, Integer::sum);
+                    where.merge(d.placeWords(), 1, Integer::sum);
                 }
             }
             for (var e : where.entrySet()) {
-                if (worst.isEmpty() || e.getValue() > where.get(worst)) {
+                if (worst == null || e.getValue() > where.get(worst)) {
                     worst = e.getKey();
                 }
             }
+            if (worst != null && worst.text().isEmpty()) {
+                worst = null;
+            }
             o.addProperty("deaths", deaths);
-            o.addProperty("worstArea", worst);
+            o.addProperty("worstArea", worst == null ? "" : worst.text());
             o.addProperty("manaFails", MANA_FAILS.size());
-            List<String> tips = new ArrayList<>();
+            List<Words> tips = new ArrayList<>();
             if (deaths >= 2) {
-                tips.add(worst.isEmpty() ? L.t("wynnlabs.coach.tip_deaths", deaths)
-                        : L.t("wynnlabs.coach.tip_deaths_at", worst));
+                tips.add(worst == null ? Words.of("wynnlabs.coach.tip_deaths", deaths)
+                        : Words.of("wynnlabs.coach.tip_deaths_at", worst));
             }
             if (MANA_FAILS.size() >= 8) {
-                tips.add(L.t("wynnlabs.coach.tip_mana"));
+                tips.add(Words.of("wynnlabs.coach.tip_mana"));
             }
             double rate = XpMeter.sessionRate();
             if (rate > 0) {
-                tips.add(L.t("wynnlabs.coach.tip_rate", QuestAdvisor.fmt(Math.round(rate))));
+                tips.add(Words.of("wynnlabs.coach.tip_rate", QuestAdvisor.fmt(Math.round(rate))));
             }
+            // the tips as language keys, worded when shown; "tips" worded too, for older versions
+            var notes = new com.google.gson.JsonArray();
             var arr = new com.google.gson.JsonArray();
-            tips.forEach(arr::add);
+            for (Words t : tips) {
+                notes.add(t.json());
+                arr.add(t.text());
+            }
+            o.add("notes", notes);
             o.add("tips", arr);
             Files.writeString(Profile.dir().getParent().resolve(sessionFor).resolve("last-session.json"), o.toString());
         } catch (Exception e) {
             System.out.println("[WynnLabs] session report failed: " + e);
         }
+    }
+
+    private static final List<String> TIP_KEYS = List.of("wynnlabs.coach.tip_deaths", "wynnlabs.coach.tip_deaths_at",
+            "wynnlabs.coach.tip_mana", "wynnlabs.coach.tip_rate");
+
+    /**
+     * A saved session's tips in the language the mod speaks now: from "notes" (language keys),
+     * or in a file from an older version from "tips", matched back to their keys (a tip no key
+     * matches stays as it was).
+     */
+    static List<String> sessionTips(JsonObject last) {
+        List<String> out = new ArrayList<>();
+        if (last == null) {
+            return out;
+        }
+        if (last.has("notes")) {
+            for (var n : last.getAsJsonArray("notes")) {
+                Words w = Words.fromJson(n);
+                if (w != null) {
+                    out.add(w.text());
+                }
+            }
+        } else if (last.has("tips")) {
+            for (var t : last.getAsJsonArray("tips")) {
+                Words w = Words.unword(t.getAsString(), TIP_KEYS);
+                if (w != null && w.key().equals("wynnlabs.coach.tip_deaths_at")) {
+                    Words near = Words.unword(String.valueOf(w.args().get(0)), List.of("wynnlabs.death.area_near"));
+                    if (near != null) {
+                        w = Words.of(w.key(), near);  // the place was "near X", worded then too
+                    }
+                }
+                out.add(w != null ? w.text() : t.getAsString());
+            }
+        }
+        return out;
     }
 
     /** The last saved session of this character, or null. */
