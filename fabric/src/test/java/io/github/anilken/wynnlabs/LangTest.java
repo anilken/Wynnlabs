@@ -42,6 +42,23 @@ class LangTest {
     }
 
     @Test
+    void englishCountsPickOneOrOther() {
+        language(1);
+        assertEquals("1 day ago", L.n("wynnlabs.screen.ago_days", 1));
+        assertEquals("3 days ago", L.n("wynnlabs.screen.ago_days", 3));
+        assertEquals("0 deaths", L.n("wynnlabs.deaths.tile_count", 0));
+        assertEquals("Hunt over: Wybel Fluff (1 kill)", L.n("wynnlabs.coach.hunt_ended", 1, "Wybel Fluff", 1));
+        assertEquals("area Lv. 34 · you Lv. 60", L.t("wynnlabs.deaths.chip_zone", 34, 60));
+    }
+
+    @Test
+    void turkishCountsHaveOneForm() {
+        language(2);
+        assertEquals("1 gün önce", L.n("wynnlabs.screen.ago_days", 1));
+        assertEquals("3 gün önce", L.n("wynnlabs.screen.ago_days", 3));
+    }
+
+    @Test
     void unknownKeyStaysAKey() {
         language(1);
         assertEquals("wynnlabs.no.such.key", L.t("wynnlabs.no.such.key"));

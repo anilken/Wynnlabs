@@ -208,7 +208,7 @@ final class Profile {
         if (!ready.isEmpty()) {
             todo.add(L.t("wynnlabs.profile.levelup_abilities", String.join(", ", ready)));
         } else if (apNow > apBefore) {
-            todo.add(L.t("wynnlabs.profile.levelup_ability_points", apNow - apBefore));
+            todo.add(L.n("wynnlabs.profile.levelup_ability_points", apNow - apBefore));
         }
 
         // Skill points: to the build skill that has the fewest

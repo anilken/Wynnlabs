@@ -571,7 +571,7 @@ final class RaidPool {
             return L.t("wynnlabs.raid.pool_age_hours", min / 60);
         }
         long days = min / (24 * 60);
-        return days == 1 ? L.t("wynnlabs.raid.pool_age_day") : L.t("wynnlabs.raid.pool_age_days", days);
+        return L.n("wynnlabs.raid.pool_age_days", days);
     }
 
     private static Klass klass(String name) {

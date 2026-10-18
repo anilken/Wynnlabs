@@ -454,7 +454,7 @@ final class CraftingTab {
         int crafts = known > 0 ? CraftChecks.craftsToLevel(r.xp(), xp[0], xp[1]) : -1;
         String prof = Professions.name(r.profession().toUpperCase(Locale.ROOT));
         String line = crafts < 0 ? L.t("wynnlabs.craft.prof_line_unknown", prof, lv, thousands(r.xp()))
-                : L.t("wynnlabs.craft.prof_line", prof, known, known + 1, crafts, thousands(r.xp()));
+                : L.n("wynnlabs.craft.prof_line", crafts, prof, known, known + 1, crafts, thousands(r.xp()));
         int titleW = font.width(L.t("wynnlabs.screen.tab_craft")) + 12;
         int room = bx - (x + titleW) - 6;
         String shown = fitFine(line, room);
@@ -999,7 +999,7 @@ final class CraftingTab {
         String foot;
         boolean bad = false;
         if (r.consumable()) {
-            foot = L.t("wynnlabs.craft.consumable_foot", range(c.duration(), ""), c.charges());
+            foot = L.n("wynnlabs.craft.consumable_foot", c.charges(), range(c.duration(), ""), c.charges());
         } else {
             bad = c.durability().min() <= 0;
             foot = (c.powderSlots() > 0 ? L.t("wynnlabs.craft.powder", c.powderSlots()) + " · " : "")
@@ -1775,7 +1775,7 @@ final class CraftingTab {
         }
         // the page bar: ‹ 1 2 3 … › and how many there are
         int by = y + h - pageBar + 2;
-        String count = L.t(running ? "wynnlabs.craft.suggest_count_running" : "wynnlabs.craft.suggest_count",
+        String count = L.n(running ? "wynnlabs.craft.suggest_count_running" : "wynnlabs.craft.suggest_count", list.size(),
                 list.size(), suggestPage + 1, pages);
         fine(g, count, x, by + 2, Theme.INK_3);
         int px = x + w;
@@ -2044,7 +2044,7 @@ final class CraftingTab {
             setCard(g, list.get(setPage * per + i), cx, cy, cardW, cardH, mx, my);
         }
         int by = y + h - pageBar + 2;
-        String count = L.t(running ? "wynnlabs.craft.set_count_running" : "wynnlabs.craft.set_count", list.size(),
+        String count = L.n(running ? "wynnlabs.craft.set_count_running" : "wynnlabs.craft.set_count", list.size(), list.size(),
                 setPage + 1, pages);
         fine(g, count, x, by + 2, Theme.INK_3);
         pageButtons(g, x + w, by, setPage, pages, pg -> setPage = pg, mx, my);
@@ -2317,7 +2317,7 @@ final class CraftingTab {
             }
         }
         Minecraft.getInstance().keyboardHandler.setClipboard(String.join("\n", lines));
-        flash.accept(L.t("wynnlabs.craft.set_codes_copied", lines.size()));
+        flash.accept(L.n("wynnlabs.craft.set_codes_copied", lines.size()));
     }
 
     private void openPiece(SetSuggestions.CraftSet s, SetSuggestions.Piece pc) {
@@ -2355,7 +2355,7 @@ final class CraftingTab {
             n++;
         }
         Crafting.persist();
-        flash.accept(L.t("wynnlabs.craft.set_saved", n));
+        flash.accept(L.n("wynnlabs.craft.set_saved", n));
     }
 
     private int subTabs(GuiGraphics g, int x, int y, int w, int mx, int my) {

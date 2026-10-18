@@ -129,8 +129,8 @@ final class Vault {
         boolean stable = seenNow.equals(lastRead);
         lastRead = seenNow;
         int count = shown;
-        status = stable ? () -> L.t("wynnlabs.vault.status_saved", key, count)
-                : () -> L.t("wynnlabs.vault.status_waiting", key, count);
+        status = stable ? () -> L.n("wynnlabs.vault.status_saved", count, key, count)
+                : () -> L.n("wynnlabs.vault.status_waiting", count, key, count);
         if (!stable) {
             return;
         }
