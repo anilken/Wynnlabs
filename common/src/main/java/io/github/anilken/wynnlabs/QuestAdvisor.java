@@ -95,12 +95,12 @@ final class QuestAdvisor {
             int want = (int) Rules.num("questLevelMargin", 4);
             boolean hard = "HARD".equals(q.difficulty());
             if (margin < 0) {
-                reasons.add(L.t("wynnlabs.questadv.reason_levels_later", -margin));
+                reasons.add(L.n("wynnlabs.questadv.reason_levels_later", -margin));
             } else if (margin < want) {
                 score -= 0.25 * (want - margin);
                 reasons.add(margin == 0 ? L.t("wynnlabs.questadv.reason_at_level") : L.t("wynnlabs.questadv.reason_near_level"));
             } else {
-                reasons.add(L.t("wynnlabs.questadv.reason_comfortable", margin));
+                reasons.add(L.n("wynnlabs.questadv.reason_comfortable", margin));
             }
             if (hard) {
                 // hard quests kill: only near the top once you clearly out-level them

@@ -170,7 +170,7 @@ final class Coach {
                 String price = huntPrice == null ? "" : L.t("wynnlabs.coach.hud_price", Prices.fmt(huntPrice));
                 huntLine = L.c("wynnlabs.coach.hud_hunt").withStyle(ChatFormatting.GOLD)
                         .append(Component.literal(huntTarget).withStyle(ChatFormatting.WHITE))
-                        .append(L.c("wynnlabs.coach.hud_progress", huntKills, min, price).withStyle(ChatFormatting.GRAY));
+                        .append(L.cn("wynnlabs.coach.hud_progress", huntKills, huntKills, min, price).withStyle(ChatFormatting.GRAY));
             }
             g.drawString(font, huntLine, 6, 6, 0xFFFFFFFF);
         }
@@ -338,7 +338,7 @@ final class Coach {
         if (target == null || target.isBlank()) {
             String was = huntTarget;
             huntTarget = null;
-            return was == null ? L.t("wynnlabs.coach.hunt_none") : L.t("wynnlabs.coach.hunt_ended", was, huntKills);
+            return was == null ? L.t("wynnlabs.coach.hunt_none") : L.n("wynnlabs.coach.hunt_ended", huntKills, was, huntKills);
         }
         huntTarget = target.trim();
         huntStart = System.currentTimeMillis();
@@ -376,7 +376,7 @@ final class Coach {
             if (!st.isEmpty() && ItemJson.clean(st.getHoverName().getString()).toLowerCase(Locale.ROOT)
                     .contains(huntTarget.toLowerCase(Locale.ROOT))) {
                 long min = (now - huntStart) / 60000;
-                toast(L.c("wynnlabs.coach.hunt_dropped", huntTarget, huntKills, min)
+                toast(L.cn("wynnlabs.coach.hunt_dropped", huntKills, huntTarget, huntKills, min)
                         .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
                 huntTarget = null;
                 return;

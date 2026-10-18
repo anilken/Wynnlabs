@@ -72,4 +72,44 @@ final class L {
     static MutableComponent c(String key, Object... args) {
         return Component.literal(t(key, args));
     }
+
+    /**
+     * {@link #t} for a text that counts something. A value may hold two forms, "one|other"
+     * ("%s day ago|%s days ago"): {@code count} 1 picks the first, anything else the second. A
+     * value without "|" (Turkish needs none) is used as it is. Without {@code args} the count
+     * fills the text.
+     */
+    static String n(String key, long count, Object... args) {
+        try {
+            String v = raw(key);
+            if (v == null) {
+                return key;
+            }
+            int bar = v.indexOf('|');
+            if (bar >= 0) {
+                v = count == 1 ? v.substring(0, bar) : v.substring(bar + 1);
+            }
+            return String.format(java.util.Locale.ROOT, v, args.length == 0 ? new Object[] {count} : args);
+        } catch (java.util.IllegalFormatException e) {
+            return key;
+        }
+    }
+
+    static MutableComponent cn(String key, long count, Object... args) {
+        return Component.literal(n(key, count, args));
+    }
+
+    /** The unformatted text {@link #t} would use, or null when no language has the key. */
+    private static String raw(String key) {
+        int pick = Settings.number("langOverride", 0);
+        boolean game = GameState.current().running();
+        if (pick == 1 || pick == 2 || !game) {
+            String v = table(pick == 2 ? "tr_tr" : "en_us").get(key);
+            if (v != null || !game) {
+                return v;
+            }
+        }
+        var lang = net.minecraft.locale.Language.getInstance();
+        return lang.has(key) ? lang.getOrDefault(key) : null;
+    }
 }

@@ -51,7 +51,7 @@ final class Prices {
             String ago = min < 60 ? L.t("wynnlabs.price.minutes", min)
                     : min < 48 * 60 ? L.t("wynnlabs.price.hours", min / 60) : L.t("wynnlabs.price.days", min / 1440);
             String w = L.t("wynnlabs.price.last_listing", ago);
-            return count == null ? w : L.t("wynnlabs.price.when_listings", at, count, w);
+            return count == null ? w : L.n("wynnlabs.price.when_listings", count, at, count, w);
         }
 
         /** Old (2+ days), thin (2 listings or fewer) or no current listing: say so; else null. */
