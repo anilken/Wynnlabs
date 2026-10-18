@@ -60,6 +60,7 @@
   "wynnlabs.settings.key_saved": "Wynnventory anahtarı kaydedildi, canlı fiyatlar açık",
   "wynnlabs.settings.key_removed": "Wynnventory anahtarı silindi",
   "wynnlabs.setting.questGuides": "Görev rehberleri · wynncraft.wiki.gg",
+  "wynnlabs.setting.updateCheck": "Güncellemeleri kontrol et",
   "wynnlabs.setting.localApi": "Araçlar için yerel API · 127.0.0.1",
   "wynnlabs.setting.debug": "Hata ayıklama kayıtları",
   "wynnlabs.advice.shop_alternative": "%s alternatif (takas edilemez)",
@@ -673,6 +674,7 @@
   "wynnlabs.setting_desc.manaMeter": "Manayı ölçüp modeli sana göre ayarlar",
   "wynnlabs.setting_desc.priceApi": "Gördüğün eşyaların ilanlarını ve bu haftanın raid ve lootrun havuzlarını saatte bir yeniler",
   "wynnlabs.setting_desc.questGuides": "Görev ve gizli keşif sayfalarını indirir, bir hafta saklar",
+  "wynnlabs.setting_desc.updateCheck": "Oturumda bir kez GitHub'a daha yeni bir sürüm çıkıp çıkmadığını sorar",
   "wynnlabs.setting_desc.localApi": "Sadece bu bilgisayardaki programlar okuyabilir",
   "wynnlabs.setting_desc.debug": "Hata bildirmek için; normalde kapalı kalsın",
   "wynnlabs.settings.cat_tips": "İpuçları",
@@ -1466,5 +1468,8 @@
   "wynnlabs.endgame.tip_owned": "Sende: Tier %s/%s",
   "wynnlabs.endgame.tip_owned_none": "Sende yok",
   "wynnlabs.endgame.tip_owned_unknown": "Sende: bilinmiyor",
-  "wynnlabs.endgame.tip_also": "Bu hafta ayrıca: %s"
+  "wynnlabs.endgame.tip_also": "Bu hafta ayrıca: %s",
+  "wynnlabs.update.newer": "Yeni sürüm var: %s (sende %s)",
+  "wynnlabs.update.download": "[İndir]",
+  "wynnlabs.update.download_hover": "GitHub'daki sürüm sayfasını açar"
 }
