@@ -1,0 +1,185 @@
+// The Fabric jar: the entrypoint, FabricPlatform and fabric.mod.json here, everything else from
+// common. The JUnit tests and the client gametest previews run from this module.
+plugins {
+    id 'com.gradleup.shadow' version "${shadow_version}"
+}
+
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+loom {
+    accessWidenerPath = project(':common').loom.accessWidenerPath
+}
+
+base {
+    archivesName = "${rootProject.archives_base_name}-fabric"
+}
+
+configurations {
+    common
+    // common's classes as they go into the jar (not named "shadow": IDEs would index it)
+    shadowCommon
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    // not developmentFabric: that would run Architectury's dev-time transformer over common, which
+    // recomputes stack frames and needs Wynntils, absent from the previews; common uses none of
+    // the transforms (no @ExpectPlatform, no injectables) and the mod group below makes it a mod
+}
+
+// in tests and dev runs, this module's classes and common's jar are one mod: Fabric Loader then
+// finds the access widener, the assets and the lang files under the id wynnlabs
+loom {
+    mods {
+        wynnlabs {
+            sourceSet sourceSets.main
+            modFiles.from(configurations.named('common'))
+        }
+    }
+}
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
+
+    common(project(path: ':common', configuration: 'namedElements')) { transitive = false }
+    shadowCommon(project(path: ':common', configuration: 'transformProductionFabric')) { transitive = false }
+
+    // Tests run the mod's logic on recorded game state in a Knot class loader (fabric-loader-junit)
+    testImplementation(project(path: ':common', configuration: 'namedElements')) { transitive = false }
+    testImplementation platform('org.junit:junit-bom:5.13.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation "net.fabricmc:fabric-loader-junit:${rootProject.loader_version}"
+    // Wynntils and Fabric API are not needed by the logic: tiny stand-in mods satisfy
+    // fabric.mod.json's "depends" instead (this Fabric API's mixins do not apply to 1.21.11 there)
+    testRuntimeOnly files('src/test/stubs/wynntils', 'src/test/stubs/fabric-api')
+}
+
+configurations.named('testRuntimeClasspath') {
+    exclude group: 'remapped.net.fabricmc.fabric-api'
+}
+
+// gradle runClientGameTest: a dev client (no account, no server) opens the J menu on the recorded
+// character and saves a screenshot of each tab to build/preview, to check the layout without
+// the game (tools/preview/README.md)
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = 'wynnlabs-preview'
+        enableGameTests = false
+        enableClientGameTests = true
+        eula = true
+    }
+}
+
+dependencies {
+    gametestImplementation(project(path: ':common', configuration: 'namedElements')) { transitive = false }
+    gametestImplementation sourceSets.test.output          // the recorded game state (FixtureState)
+    gametestRuntimeOnly files('src/test/stubs/wynntils')  // the logic reads the recording, not Wynntils
+}
+
+loom.runs.matching { it.name == 'clientGameTest' }.configureEach {
+    vmArg "-Dwynnlabs.fixtures=${file('src/test/resources/fixtures').absolutePath}"
+    // the shots stay in the root build/preview, where the tools and the README look
+    vmArg "-Dwynnlabs.preview=${rootProject.layout.buildDirectory.dir('preview').get().asFile.absolutePath}"
+    // -PpreviewOnly=layout: only the size matrix; -PpreviewOnly=jmenu: only the J menu shots; -PlayoutStrict: problems fail
+    if (rootProject.hasProperty('previewOnly')) {
+        vmArg "-Dwynnlabs.previewOnly=${rootProject.property('previewOnly')}"
+    }
+    if (rootProject.hasProperty('previewTab')) {
+        vmArg "-Dwynnlabs.previewTab=${rootProject.property('previewTab')}"
+    }
+    if (rootProject.hasProperty('layoutStrict')) {
+        vmArg "-Dwynnlabs.layoutStrict=true"
+    }
+}
+
+// -PupdateFixtures: the fixture tests write their expected files instead of comparing
+test {
+    useJUnitPlatform()
+    // the road map tests take most of the time: four JVMs run the test classes side by side
+    maxParallelForks = 4
+    // -PquickTests (CI): leaves out the test classes that take more than a few seconds (upgrade
+    // search, fixtures, the build thread, saving); a local gradle build still runs them all
+    if (rootProject.hasProperty('quickTests')) {
+        filter {
+            ['RoadmapGainTest', 'RoleGoalTest', 'BeamCacheTest', 'FixturePlanTest', 'RoadmapEveryLevelTest',
+             'BuildOffThreadTest', 'AllocatorTest', 'FreshCharacterTest', 'FixtureJsonTest',
+             'FixtureVerdictTest', 'CraftingStockTest', 'SaverTest']
+                    .each { excludeTestsMatching "*.${it}" }
+        }
+    }
+    // the root build/test-run, as before the split: tests find build/discoveries-wiki next to it
+    workingDir = rootProject.layout.buildDirectory.dir('test-run').get().asFile
+    // -PfixturesDir=<folder>: run on fixtures kept elsewhere (another class, a scratch copy)
+    def fixtures = rootProject.hasProperty('fixturesDir') ? rootProject.file(rootProject.property('fixturesDir'))
+            : file('src/test/resources/fixtures')
+    systemProperty 'wynnlabs.fixtures', fixtures.absolutePath
+    systemProperty 'wynnlabs.updateFixtures', rootProject.hasProperty('updateFixtures')
+    systemProperty 'wynnlabs.debugDump', rootProject.hasProperty('debugDump')
+    // -PdumpQuests: write the shipped quest guides (en.json) from the pages tools/quests/fetch.py kept
+    systemProperty 'wynnlabs.dumpQuests', rootProject.hasProperty('dumpQuests')
+    systemProperty 'wynnlabs.projectDir', rootProject.projectDir.absolutePath
+    if (rootProject.hasProperty('dumpQuests')) {
+        outputs.upToDateWhen { false }
+    }
+    inputs.files(fileTree(fixtures)).withPropertyName('fixtures')
+    if (rootProject.hasProperty('updateFixtures')) {
+        outputs.upToDateWhen { false }
+    }
+    doFirst {
+        workingDir.mkdirs()
+    }
+    testLogging {
+        events 'failed'
+        exceptionFormat 'full'
+    }
+    // the tests' own notes (a skipped fixture, rewritten expected files), without Minecraft's log;
+    // System.out goes through the game's logger there, so the note sits behind a log prefix
+    onOutput { descriptor, event ->
+        int at = event.message.indexOf('[fixtures] ')
+        if (at >= 0) {
+            logger.lifecycle(event.message.substring(at).trim())
+        }
+    }
+}
+
+/** wynntils_range ("[4.1.0,5.0.0)", Maven style) in fabric.mod.json's style: ">=4.1.0 <5.0.0-". */
+def fabricRange = { String range ->
+    def m = range.trim() =~ /^\[\s*([^,\s]+)\s*,\s*([^)\s]+)\s*\)$/
+    if (!m.matches()) {
+        throw new GradleException("wynntils_range must look like [4.1.0,5.0.0), not ${range}")
+    }
+    return ">=${m.group(1)} <${m.group(2)}-"
+}
+
+processResources {
+    def props = [version: project.version, wynntils_range: fabricRange(rootProject.wynntils_range)]
+    inputs.properties props
+    filesMatching('fabric.mod.json') {
+        expand props
+    }
+}
+
+shadow {
+    addShadowVariantIntoJavaComponent = false
+}
+
+// jars (D7): the dev jar and the shadowed one carry classifiers; the player jar is
+// build/libs/wynnlabs-fabric-<version>.jar
+jar {
+    archiveClassifier = 'dev'
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier = 'dev-shadow'
+}
+
+remapJar {
+    inputFile.set shadowJar.archiveFile
+    dependsOn shadowJar
+    archiveClassifier = null
+}

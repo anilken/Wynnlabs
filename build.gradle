@@ -1,152 +1,74 @@
+// Wynn Labs is one Architectury build (design: openspec neoforge-support, D1): common holds every
+// class, screen, mixin and asset; fabric and neoforge hold only the entrypoint, the loader wiring
+// and the metadata. No Architectury API at runtime: players install nothing extra. The checks
+// below live here and look into the modules.
 plugins {
-    id 'fabric-loom' version '1.13-SNAPSHOT'
-    id 'java'
+    id 'base'
+    id 'architectury-plugin' version "${architectury_plugin_version}"
+    id 'dev.architectury.loom' version "${architectury_loom_version}" apply false
 }
 
-version = project.mod_version
-group = project.maven_group
-
-base {
-    archivesName = project.archives_base_name
+architectury {
+    minecraft = project.minecraft_version
 }
 
-// checkWynntilsVersions compiles each version into its own folder, so build/ stays as it was
-if (project.hasProperty('matrixDir')) {
-    layout.buildDirectory = file(project.property('matrixDir'))
+allprojects {
+    version = rootProject.mod_version
+    group = rootProject.maven_group
 }
 
-repositories {
-    mavenCentral()
-    maven { url = 'https://maven.fabricmc.net/' }
-}
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'architectury-plugin'
+    apply plugin: 'dev.architectury.loom'
 
-dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    // Wynntils uses Mojang names, so we do too.
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    // Wynntils is not on Maven: put the fabric jar in libs/. To check another Wynntils release
-    // before players get it, build with -PwynntilsJar=<path to its jar>.
-    if (project.hasProperty('wynntilsJar')) {
-        modCompileOnly files(project.property('wynntilsJar'))
-    } else {
-        modCompileOnly fileTree(dir: 'libs', include: ["wynntils-${project.wynntils_version}-fabric*.jar"],
-                exclude: ['*-sources.jar'])
+    // checkWynntilsVersions compiles each version into its own folder, so build/ stays as it was
+    if (rootProject.hasProperty('matrixDir')) {
+        layout.buildDirectory = new File(rootProject.file(rootProject.property('matrixDir')), project.name)
     }
-    // Tests run the mod's logic on recorded game state in a Knot class loader (fabric-loader-junit)
-    testImplementation platform('org.junit:junit-bom:5.13.4')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
-    // Wynntils and Fabric API are not needed by the logic: tiny stand-in mods satisfy
-    // fabric.mod.json's "depends" instead (this Fabric API's mixins do not apply to 1.21.11 there)
-    testRuntimeOnly files('src/test/stubs/wynntils', 'src/test/stubs/fabric-api')
-}
 
-configurations.named('testRuntimeClasspath') {
-    exclude group: 'remapped.net.fabricmc.fabric-api'
-}
-
-// gradle runClientGameTest: a dev client (no account, no server) opens the J menu on the recorded
-// character and saves a screenshot of each tab to build/preview, to check the layout without
-// the game (tools/preview/README.md)
-fabricApi {
-    configureTests {
-        createSourceSet = true
-        modId = 'wynnlabs-preview'
-        enableGameTests = false
-        enableClientGameTests = true
-        eula = true
+    repositories {
+        mavenCentral()
+        maven { url = 'https://maven.fabricmc.net/' }
+        maven { url = 'https://maven.neoforged.net/releases' }
     }
-}
 
-dependencies {
-    gametestImplementation sourceSets.test.output          // the recorded game state (FixtureState)
-    gametestRuntimeOnly files('src/test/stubs/wynntils')  // the logic reads the recording, not Wynntils
-}
-
-loom.runs.matching { it.name == 'clientGameTest' }.configureEach {
-    vmArg "-Dwynnlabs.fixtures=${file('src/test/resources/fixtures').absolutePath}"
-    vmArg "-Dwynnlabs.preview=${layout.buildDirectory.dir('preview').get().asFile.absolutePath}"
-    // -PpreviewOnly=layout: only the size matrix; -PpreviewOnly=jmenu: only the J menu shots; -PlayoutStrict: problems fail
-    if (project.hasProperty('previewOnly')) {
-        vmArg "-Dwynnlabs.previewOnly=${project.property('previewOnly')}"
-    }
-    if (project.hasProperty('previewTab')) {
-        vmArg "-Dwynnlabs.previewTab=${project.property('previewTab')}"
-    }
-    if (project.hasProperty('layoutStrict')) {
-        vmArg "-Dwynnlabs.layoutStrict=true"
-    }
-}
-
-// Fabric API's interfaces injected into Minecraft's classes would be missing at test time
-// without Fabric API. The mod calls none of them: its classes compile to the same bytes.
-loom {
-    interfaceInjection {
-        enableDependencyInterfaceInjection = false
-    }
-}
-
-// -PupdateFixtures: the fixture tests write their expected files instead of comparing
-test {
-    useJUnitPlatform()
-    // the road map tests take most of the time: four JVMs run the test classes side by side
-    maxParallelForks = 4
-    // -PquickTests (CI): leaves out the test classes that take more than a few seconds (upgrade
-    // search, fixtures, the build thread, saving); a local gradle build still runs them all
-    if (project.hasProperty('quickTests')) {
-        filter {
-            ['RoadmapGainTest', 'RoleGoalTest', 'BeamCacheTest', 'FixturePlanTest', 'RoadmapEveryLevelTest',
-             'BuildOffThreadTest', 'AllocatorTest', 'FreshCharacterTest', 'FixtureJsonTest',
-             'FixtureVerdictTest', 'CraftingStockTest', 'SaverTest']
-                    .each { excludeTestsMatching "*.${it}" }
+    loom {
+        silentMojangMappingsLicense()
+        // Fabric API's interfaces injected into Minecraft's classes would be missing at test time
+        // without Fabric API. The mod calls none of them: its classes compile to the same bytes.
+        interfaceInjection {
+            enableDependencyInterfaceInjection = false
         }
     }
-    workingDir = layout.buildDirectory.dir('test-run').get().asFile
-    // -PfixturesDir=<folder>: run on fixtures kept elsewhere (another class, a scratch copy)
-    def fixtures = file(project.findProperty('fixturesDir') ?: 'src/test/resources/fixtures')
-    systemProperty 'wynnlabs.fixtures', fixtures.absolutePath
-    systemProperty 'wynnlabs.updateFixtures', project.hasProperty('updateFixtures')
-    systemProperty 'wynnlabs.debugDump', project.hasProperty('debugDump')
-    // -PdumpQuests: write the shipped quest guides (en.json) from the pages tools/quests/fetch.py kept
-    systemProperty 'wynnlabs.dumpQuests', project.hasProperty('dumpQuests')
-    systemProperty 'wynnlabs.projectDir', projectDir.absolutePath
-    if (project.hasProperty('dumpQuests')) {
-        outputs.upToDateWhen { false }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        // Wynntils uses Mojang names, so we do too.
+        mappings loom.officialMojangMappings()
     }
-    inputs.files(fileTree(fixtures)).withPropertyName('fixtures')
-    if (project.hasProperty('updateFixtures')) {
-        outputs.upToDateWhen { false }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.release = 21
+        it.options.encoding = 'UTF-8'
     }
-    doFirst {
-        workingDir.mkdirs()
-    }
-    testLogging {
-        events 'failed'
-        exceptionFormat 'full'
-    }
-    // the tests' own notes (a skipped fixture, rewritten expected files), without Minecraft's log;
-    // System.out goes through the game's logger there, so the note sits behind a log prefix
-    onOutput { descriptor, event ->
-        int at = event.message.indexOf('[fixtures] ')
-        if (at >= 0) {
-            logger.lifecycle(event.message.substring(at).trim())
-        }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 }
 
-processResources {
-    inputs.property "version", project.version
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
-    }
-    // the AI assistant skill: one source in ai/, shipped in the jar for the in-game export
-    from('ai/skills/wynnlabs') {
-        include 'SKILL.md'
-        into 'assets/wynnlabs/ai'
-    }
+// the root keeps the commands from before the split: gradle test, gradle runClientGameTest
+tasks.register('test') {
+    group = 'verification'
+    description = "Runs the JUnit tests (the fabric module's test task)."
+    dependsOn ':fabric:test'
+}
+tasks.register('runClientGameTest') {
+    group = 'fabric'
+    description = "Runs the client gametest previews (the fabric module's runClientGameTest)."
+    dependsOn ':fabric:runClientGameTest'
 }
 
 // Embedded Wynnventory key (task 7.3.6): every jar this build makes, release builds included,
@@ -241,13 +163,24 @@ tasks.register('embedKey') {
     }
 }
 
-// the jar only: tests and dev runs read resources from build/resources, where the key never is
-tasks.named('jar') {
-    from(tasks.named('embedKey'))
-    finalizedBy 'checkEmbeddedKey'
-}
-tasks.named('remapJar') {
-    finalizedBy 'checkEmbeddedKey'
+// The loader modules whose jars carry the key and are checked for it (the Fabric jar for now)
+def keyJarProjects = [':fabric']
+def keyJarTasks = ['jar', 'shadowJar', 'remapJar']
+
+// the jars only: tests and dev runs read resources from build/resources, where the key never is.
+// shadowJar is the one that feeds remapJar, the player jar.
+keyJarProjects.each { path ->
+    def p = project(path)
+    p.pluginManager.withPlugin('com.gradleup.shadow') {
+        p.tasks.named('shadowJar') {
+            from(rootProject.tasks.named('embedKey'))
+        }
+    }
+    keyJarTasks.each { name ->
+        p.tasks.matching { it.name == name }.configureEach {
+            finalizedBy ':checkEmbeddedKey'
+        }
+    }
 }
 
 // After every jar: no jar may hold the plaintext key, in its raw bytes or in any entry once
@@ -256,7 +189,7 @@ tasks.named('remapJar') {
 tasks.register('checkEmbeddedKey') {
     group = 'verification'
     description = 'Fails when a built jar contains the Wynnventory key in plain text.'
-    mustRunAfter 'jar', 'remapJar'
+    keyJarProjects.each { path -> keyJarTasks.each { name -> mustRunAfter "${path}:${name}" } }
     doLast {
         byte[] key = embeddedKeyBytes()
         if (key == null) {
@@ -270,8 +203,9 @@ tasks.register('checkEmbeddedKey') {
             String hay = new String(b, 'ISO-8859-1')
             return hay.contains(exact) || hay.toLowerCase(Locale.ROOT).contains(low)
         }
-        def jars = [tasks.named('jar').get().archiveFile.get().asFile,
-                    tasks.named('remapJar').get().archiveFile.get().asFile].findAll { it.isFile() }
+        def jars = keyJarProjects.collectMany { path ->
+            keyJarTasks.collect { name -> project(path).tasks.named(name).get().archiveFile.get().asFile }
+        }.findAll { it.isFile() }
         def bad = []
         jars.each { j ->
             boolean found = has(j.bytes)
@@ -294,20 +228,10 @@ tasks.register('checkEmbeddedKey') {
     }
 }
 
-tasks.withType(JavaCompile).configureEach {
-    it.options.release = 21
-    it.options.encoding = 'UTF-8'
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
-
 // Release check: none of the values in the git-ignored release-blocklist.txt (character ids,
 // names, key fragments, local paths) may appear in what gets published. Matches are reported
 // by file, line and blocklist line number, never by value. Recorded test fixtures
-// (src/test/resources/fixtures/) are scanned whole, however big: they come from a real game.
+// (fabric/src/test/resources/fixtures/) are scanned whole, however big: they come from a real game.
 tasks.register('checkPersonal') {
     group = 'verification'
     description = 'Fails when a value from release-blocklist.txt appears in the sources or docs.'
@@ -324,10 +248,12 @@ tasks.register('checkPersonal') {
                 values << [v.toLowerCase(), i + 1]
             }
         }
-        def roots = ['src', 'tools', 'ai', 'openspec', 'README.md', 'build.gradle', 'gradle.properties',
-                     'settings.gradle', 'install-when-closed.sh'].collect { file(it) }.findAll { it.exists() }
+        def roots = ['common/src', 'common/build.gradle', 'fabric/src', 'fabric/build.gradle', 'neoforge/src',
+                     'neoforge/build.gradle', 'neoforge/gradle.properties', 'tools', 'ai', 'openspec', 'README.md',
+                     'build.gradle', 'gradle.properties', 'settings.gradle', 'install-when-closed.sh']
+                .collect { file(it) }.findAll { it.exists() }
         def hits = []
-        def fixtures = file('src/test/resources/fixtures').toPath()
+        def fixtures = file('fabric/src/test/resources/fixtures').toPath()
         roots.each { root ->
             def files = root.isDirectory() ? fileTree(root).files : [root]
             files.each { f ->
@@ -361,14 +287,14 @@ tasks.register('checkLang') {
     group = 'verification'
     description = 'Checks that en_us.json and tr_tr.json cover every text key the code uses.'
     doLast {
-        def langDir = file('src/main/resources/assets/wynnlabs/lang')
+        def langDir = file('common/src/main/resources/assets/wynnlabs/lang')
         def slurper = new groovy.json.JsonSlurper()
         def en = slurper.parse(new File(langDir, 'en_us.json'), 'UTF-8').keySet()
         def tr = slurper.parse(new File(langDir, 'tr_tr.json'), 'UTF-8').keySet()
         def used = [] as Set
         def prefixes = [] as Set
         def pattern = ~/"((?:key\.(?:category\.)?)?wynnlabs\.[A-Za-z0-9_.]*)"/
-        fileTree('src/main/java').include('**/*.java').each { f ->
+        fileTree('common/src/main/java').include('**/*.java').each { f ->
             (f.getText('UTF-8') =~ pattern).each { m ->
                 def k = m[1]
                 if (k.endsWith('.')) {
@@ -380,7 +306,7 @@ tasks.register('checkLang') {
         }
         // key-binding categories are named from an Identifier: count them as used when present
         def optional = [] as Set
-        fileTree('src/main/java').include('**/*.java').each { f ->
+        fileTree('common/src/main/java').include('**/*.java').each { f ->
             (f.getText('UTF-8') =~ /fromNamespaceAndPath\("wynnlabs",\s*"([a-z0-9_]+)"\)/).each { m ->
                 optional << "key.category.wynnlabs.${m[1]}".toString()
             }
@@ -427,7 +353,7 @@ tasks.register('checkWynntilsImports') {
     doLast {
         def allowed = ['io/github/anilken/wynnlabs/Wyn.java', 'io/github/anilken/wynnlabs/WynntilsItems.java',
                        'io/github/anilken/wynnlabs/WynntilsEvents.java'] as Set
-        def root = file('src/main/java')
+        def root = file('common/src/main/java')
         def hits = []
         fileTree(root).include('**/*.java').each { f ->
             def rel = root.toPath().relativize(f.toPath()).toString().replace(File.separatorChar, '/' as char)
@@ -455,7 +381,7 @@ check.dependsOn checkWynntilsImports
 tasks.register('checkDiscoveries') {
     group = 'verification'
     description = 'Checks that the Turkish discovery guide matches the English one entry by entry.'
-    def dir = file('src/main/resources/assets/wynnlabs/discoveries')
+    def dir = file('common/src/main/resources/assets/wynnlabs/discoveries')
     inputs.files(fileTree(dir)).withPropertyName('discoveries')
     doLast {
         def slurper = new groovy.json.JsonSlurper()
@@ -513,7 +439,7 @@ check.dependsOn checkDiscoveries
 tasks.register('checkQuests') {
     group = 'verification'
     description = 'Checks that the Turkish quest guides match the English ones quest by quest (tools/quests/check.py does the same).'
-    def dir = file('src/main/resources/assets/wynnlabs/quests')
+    def dir = file('common/src/main/resources/assets/wynnlabs/quests')
     inputs.files(fileTree(dir)).withPropertyName('quests')
     doLast {
         def slurper = new groovy.json.JsonSlurper()
@@ -579,7 +505,7 @@ check.dependsOn checkQuests
 // Wynntils versions: compiles the mod against every Wynntils jar in the git-ignored
 // libs/wynntils-matrix/, one nested build per jar into build/matrix/<version>/, and prints which
 // versions build, with the first compile error of those that do not. Not part of check: each
-// version takes about a minute. Fails only when the minimum fabric.mod.json declares does not build.
+// version takes about a minute. Fails only when the minimum wynntils_range declares does not build.
 tasks.register('checkWynntilsVersions') {
     group = 'verification'
     description = 'Compiles the mod against each Wynntils jar in libs/wynntils-matrix/ and reports which build.'
@@ -607,7 +533,7 @@ tasks.register('checkWynntilsVersions') {
             def out = file("build/matrix/${v}")
             out.mkdirs()
             logger.lifecycle("checkWynntilsVersions: compiling against Wynntils ${v} ...")
-            def cmd = [gradleExe, 'compileJava', '--console=plain', '--no-daemon',
+            def cmd = [gradleExe, ':common:compileJava', '-Penabled_platforms=fabric', '--console=plain', '--no-daemon',
                        "-PwynntilsJar=${jar.absolutePath}", "-PmatrixDir=${out.absolutePath}",
                        '--project-cache-dir', new File(out, '.gradle').absolutePath]
             def proc = new ProcessBuilder(cmd*.toString()).directory(projectDir).redirectErrorStream(true).start()
@@ -638,11 +564,12 @@ tasks.register('checkWynntilsVersions') {
             logger.lifecycle(r.version.padRight(width) + '  ' + (r.ok ? 'builds' : 'FAILS ').padRight(6) + '  ' + why)
         }
         logger.lifecycle("logs: build/matrix/<version>/compile.log")
-        def range = new groovy.json.JsonSlurper().parse(file('src/main/resources/fabric.mod.json'), 'UTF-8').depends?.wynntils
-        def floor = range ? (range =~ />=\s*([0-9][^\s<]*)/).with { it.find() ? it.group(1) : null } : null
+        // the floor both loaders' metadata declare (gradle.properties, "[4.1.0,5.0.0)")
+        def range = project.wynntils_range
+        def floor = (range =~ /^\[\s*([0-9][^,\s]*)/).with { it.find() ? it.group(1) : null }
         def atFloor = results.find { it.version == floor }
         if (atFloor != null && !atFloor.ok) {
-            throw new GradleException("fabric.mod.json declares Wynntils ${range}, but ${floor} does not compile")
+            throw new GradleException("wynntils_range declares Wynntils ${range}, but ${floor} does not compile")
         }
     }
 }

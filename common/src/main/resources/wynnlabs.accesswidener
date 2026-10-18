@@ -1,0 +1,4 @@
+accessWidener	v2	named
+# Display.TextDisplay.getText(): the death coach and the ground debug read floating text
+# labels. Fabric API used to widen it for us; common has no Fabric API, so the mod says it itself.
+accessible	method	net/minecraft/world/entity/Display$TextDisplay	getText	()Lnet/minecraft/network/chat/Component;

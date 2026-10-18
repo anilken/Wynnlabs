@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-/** Where the fixture folders are (src/test/resources/fixtures/, passed in by the build). */
+/** Where the fixture folders are (fabric/src/test/resources/fixtures/, passed in by the build). */
 final class Fixtures {
 
     private static boolean told;
@@ -13,7 +13,7 @@ final class Fixtures {
     private Fixtures() {}
 
     static Path root() {
-        return Path.of(System.getProperty("wynnlabs.fixtures", "src/test/resources/fixtures"));
+        return Path.of(System.getProperty("wynnlabs.fixtures", "fabric/src/test/resources/fixtures"));
     }
 
     /** True with -PupdateFixtures: write the expected files instead of comparing. */

@@ -1,0 +1,36 @@
+// Shared code: every class, screen, mixin, asset and lang file. No loader API here (only the
+// Platform interface); the loader modules wire it up.
+architectury {
+    // no @ExpectPlatform: keeps Architectury's injected helper class out of the jars
+    injectInjectables = false
+    common(rootProject.enabled_platforms.split(',')*.trim())
+}
+
+// the vanilla members the mod reaches that are not public (Fabric API widened them before the
+// split); the loader modules ship it: Fabric as an access widener, NeoForge as an access transformer
+loom {
+    accessWidenerPath = file('src/main/resources/wynnlabs.accesswidener')
+}
+
+dependencies {
+    // Fabric Loader for the mixin annotations only; do not use its other classes in common
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    // Wynntils' events run on NeoForge's event bus on both loaders (shaded into Wynntils' Fabric jar)
+    compileOnly "net.neoforged:bus:${rootProject.neoforge_eventbus_version}"
+    // Wynntils is not on Maven: put the fabric jar in libs/. To check another Wynntils release
+    // before players get it, build with -PwynntilsJar=<path to its jar>.
+    if (rootProject.hasProperty('wynntilsJar')) {
+        modCompileOnly files(rootProject.property('wynntilsJar'))
+    } else {
+        modCompileOnly fileTree(dir: rootProject.file('libs'), include: ["wynntils-${rootProject.wynntils_version}-fabric*.jar"],
+                exclude: ['*-sources.jar'])
+    }
+}
+
+processResources {
+    // the AI assistant skill: one source in ai/, shipped in the jar for the in-game export
+    from(rootProject.file('ai/skills/wynnlabs')) {
+        include 'SKILL.md'
+        into 'assets/wynnlabs/ai'
+    }
+}

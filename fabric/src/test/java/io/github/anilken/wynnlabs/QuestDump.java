@@ -75,7 +75,7 @@ class QuestDump {
                 out.add(e);
             }
         }
-        Path file = root.resolve("src/main/resources/assets/wynnlabs/quests/en.json");
+        Path file = root.resolve("common/src/main/resources/assets/wynnlabs/quests/en.json");
         Files.createDirectories(file.getParent());
         // one quest per line: small, and a re-fetch shows up as a diff of the quests that changed
         List<String> lines = new ArrayList<>();
