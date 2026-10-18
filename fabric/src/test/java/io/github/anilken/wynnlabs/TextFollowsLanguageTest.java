@@ -40,7 +40,7 @@ class TextFollowsLanguageTest {
         language(EN);
         Words w = Words.of("wynnlabs.death.area_level", 48, 44);
         Words back = Words.fromJson(JsonParser.parseString(w.json().toString()));
-        assertEquals("Area Lv. 48, you 44", back.text());
+        assertEquals("Area Lv. 48, you're Lv. 44", back.text());
         language(TR);
         assertEquals("Bölge Lv. 48, sen 44", back.text());
         // a nested argument is worded with it
@@ -52,7 +52,7 @@ class TextFollowsLanguageTest {
     @Test
     void oldWordedTextMatchesBackToItsKeyInEitherLanguage() {
         Words fromTr = Words.unword("Bölge Lv. 48, sen 44", List.of("wynnlabs.death.one_off", "wynnlabs.death.area_level"));
-        Words fromEn = Words.unword("Area Lv. 48, you 44", List.of("wynnlabs.death.area_level"));
+        Words fromEn = Words.unword("Area Lv. 48, you're Lv. 44", List.of("wynnlabs.death.area_level"));
         assertEquals("wynnlabs.death.area_level", fromTr.key());
         assertEquals(List.of("48", "44"), fromTr.args());
         assertEquals(fromTr, fromEn);
@@ -79,10 +79,10 @@ class TextFollowsLanguageTest {
 
         DeathCoach.Death back = DeathCoach.read(file).get(0);
         assertEquals("near Nivla Woods", back.place());
-        assertEquals(List.of("Area Lv. 48, you 44",
-                "Your health ran out in 2.5 s: burst damage, effective HP is low (2900)",
+        assertEquals(List.of("Area Lv. 48, you're Lv. 44",
+                "Your health ran out in 2.5 s: burst damage, and your effective HP is low (2900)",
                 "Put a few points into Defence (now 3)",
-                "You had no healing potions left, bring some"), back.adviceText());
+                "You had no healing potions left; bring some"), back.adviceText());
 
         language(TR);
         assertEquals("Nivla Woods yakını", back.place());
@@ -117,8 +117,8 @@ class TextFollowsLanguageTest {
         language(EN);
         DeathCoach.Death d = DeathCoach.read(file.toString()).get(0);
         assertEquals("near Nivla Woods", d.place());
-        assertEquals(List.of("Death no. 3 here, leave this area for now",
-                "You had no healing potions left, bring some", "a line no key knows"), d.adviceText());
+        assertEquals(List.of("Death #3 here: leave this area for now",
+                "You had no healing potions left; bring some", "a line no key knows"), d.adviceText());
         // saved again, it is keys from now on
         DeathCoach.Death again = DeathCoach.read(DeathCoach.write(List.of(d))).get(0);
         language(TR);
