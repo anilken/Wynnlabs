@@ -6,7 +6,7 @@ description: Wynncraft progression assistant. Reads the player's live game state
 # Wynn Labs assistant
 
 The Wynn Labs mod serves the player's own game state as JSON on their computer. The address
-is shown in the game: J menu → AI assistant tab (default `http://127.0.0.1:47591/`).
+is shown in the game: Wynn Labs menu (key Y) → AI assistant tab (default `http://127.0.0.1:47591/`).
 It only answers from this computer.
 
 **Answer in the player's language.** Be short and concrete: "Take off X, wear Y from your bag,
@@ -71,12 +71,12 @@ and explain or disagree when you have a reason.
 5. Quests: `/quests` gives status and requirements. Prefer quests the player out-levels a little.
 6. Secret discoveries: `/discoveries` lists them with `done`, `minLevel`, `distance` and whether each
    requirement is met (`null` when the mod cannot tell). Suggest near ones within the player's level
-   whose requirements are met; the step-by-step guide is in the J menu's Secret Discoveries tab.
+   whose requirements are met; the step-by-step guide is in the Wynn Labs menu (key Y)'s Secret Discoveries tab.
 
 ## Writing (only when the player turns it on)
 
 Writing needs two things:
-- the switch "AI may write advice and rules" (J menu → AI assistant);
+- the switch "AI may write advice and rules" (Wynn Labs menu (key Y) → AI assistant);
 - the header `X-Wynninv: 1`.
 
 Without either, the API answers 403 and says which one is missing.
@@ -103,7 +103,7 @@ coordinates from `/quests` (`startsAt`, `nextTask`) or the wiki, never guess the
   Wynntils clears the waypoints for a new compass target. It goes when the player removes it on
   the map, on a line `clear keep`, or when the game is closed (every pin the mod placed, waiting
   checkpoints included, is gone at the next start). A plain `clear` leaves lasting pins alone.
-- The same through HTTP, with the write switch on (J menu → AI assistant) and the header
+- The same through HTTP, with the write switch on (Wynn Labs menu (key Y) → AI assistant) and the header
   `X-Wynninv: 1`: `POST /compass` with `{"x":..,"y":..,"z":..,"label":".."}` (add `"keep":true` for a
   lasting pin) or `{"points":[{"x":..,"y":..,"z":..,"label":".."}]}` for checkpoints in order;
   `DELETE /compass` removes the checkpoints, `DELETE /compass?keep=1` the lasting pins.

@@ -98,7 +98,7 @@ public final class WynnLabs {
         platform.onEndTick(Perf.tick("tick.Wyn", Wyn::onTick));
         platform.onEndTick(Perf.tick("tick.Prices", Prices::onTick));
         platform.onEndTick(Perf.tick("tick.Build", Build::onTick));
-        // the J menu's road map, rebuilt in the background before it runs out, so J opens at once
+        // the menu's road map, rebuilt in the background before it runs out, so the menu opens at once
         platform.onEndTick(Perf.tick("tick.Roadmap", client -> {
             if (client.player != null && client.player.tickCount % 40 == 0) {
                 Roadmap.warm();
@@ -160,12 +160,12 @@ public final class WynnLabs {
         });
         // /av <item>: a hunt (client-side command, never sent to the server)
         platform.registerClientCommand(WynnLabs::huntCommand);
-        // J opens the road map (rebindable in Controls)
+        // Y opens the road map (rebindable in Controls; J clashed with Wynntils)
         var category = platform.keyCategory(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath("wynnlabs", "main"));
         var roadmapKey = platform.registerKey(
                 new net.minecraft.client.KeyMapping("key.wynnlabs.roadmap",
-                        com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM, org.lwjgl.glfw.GLFW.GLFW_KEY_J, category));
+                        com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM, org.lwjgl.glfw.GLFW.GLFW_KEY_Y, category));
         platform.onEndTick(client -> {
             while (roadmapKey.consumeClick()) {
                 if (client.player == null || client.screen != null) {
@@ -316,7 +316,7 @@ public final class WynnLabs {
                     return;
                 }
                 if (!Settings.on("apiWrite")) {
-                    send(ex, 403, error("writing is switched off: turn on 'AI may write advice and rules' in the J menu"
+                    send(ex, 403, error("writing is switched off: turn on 'AI may write advice and rules' in the Wynn Labs menu (Y)"
                             + " (AI assistant tab)"));
                     return;
                 }
@@ -341,7 +341,7 @@ public final class WynnLabs {
                     return;
                 }
                 if (!Settings.on("apiWrite")) {
-                    send(ex, 403, error("writing is switched off: turn on 'AI may write advice and rules' in the J menu"
+                    send(ex, 403, error("writing is switched off: turn on 'AI may write advice and rules' in the Wynn Labs menu (Y)"
                             + " (AI assistant tab)"));
                     return;
                 }
@@ -364,7 +364,7 @@ public final class WynnLabs {
                     return;
                 }
                 if (!Settings.on("apiWrite")) {
-                    send(ex, 403, error("writing is switched off: turn on 'AI may write advice and rules' in the J menu"
+                    send(ex, 403, error("writing is switched off: turn on 'AI may write advice and rules' in the Wynn Labs menu (Y)"
                             + " (AI assistant tab)"));
                     return;
                 }
