@@ -1,4 +1,4 @@
-// Renders Wynn Labs' GUI sprites into src/main/resources/assets/wynnlabs/textures/gui/sprites/:
+// Renders Wynn Labs' GUI sprites into common/src/main/resources/assets/wynnlabs/textures/gui/sprites/:
 //  - rounded shapes (fill and 1px outline) for each corner radius, nine-sliced so one file draws
 //    any size; white, tinted in game, so one shape serves every colour
 //  - Tabler icons (MIT, https://tabler.io/icons), white, tinted in game
@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { renderKit } from './kit.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const out = join(here, '../../src/main/resources/assets/wynnlabs/textures/gui/sprites');
+const out = join(here, '../../common/src/main/resources/assets/wynnlabs/textures/gui/sprites');
 const DENSITY = 2;
 
 rmSync(out, { recursive: true, force: true });
@@ -100,7 +100,7 @@ const kit = renderKit(out, DENSITY);
 // items), tiny 7, small 7.8,
 // base 9, large 11.5, big 13.5. The game keeps a TTF's baseline where size 9 has it, so larger
 // sizes grow upwards; SHIFT moves large and big down so their tops line up with the line's top.
-const fontDir = join(here, '../../src/main/resources/assets/wynnlabs/font');
+const fontDir = join(here, '../../common/src/main/resources/assets/wynnlabs/font');
 const fs = await import('node:fs');
 for (const f of fs.readdirSync(fontDir)) {
   if (f.endsWith('.json') || f.endsWith('.ttf')) rmSync(join(fontDir, f));

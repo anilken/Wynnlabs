@@ -15,7 +15,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DIR = os.path.join(ROOT, "src", "main", "resources", "assets", "wynnlabs", "quests")
+DIR = os.path.join(ROOT, "common", "src", "main", "resources", "assets", "wynnlabs", "quests")
 COORD = re.compile(r"-?\d{1,5}\s*,\s*-?\d{1,5}\s*,\s*-?\d{1,5}")
 QUOTED = re.compile(r"\"[^\"]{2,}\"")
 WORDS = re.compile(r"[A-Za-z]{3,}")

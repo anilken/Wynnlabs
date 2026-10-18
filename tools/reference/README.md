@@ -1,7 +1,7 @@
 # Reference builds (WynnBuilder)
 
 `ReferenceModelTest` checks the mod's build model against WynnBuilder, the community's build
-calculator. The reference numbers live in `src/test/resources/reference/wynnbuilder/*.json`;
+calculator. The reference numbers live in `fabric/src/test/resources/reference/wynnbuilder/*.json`;
 this is how to make or refresh one. Only numbers and links are stored, never WynnBuilder's code
 or data.
 

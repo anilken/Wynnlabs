@@ -4,7 +4,7 @@ A WynnBuilder craft code stores each ingredient and the recipe by WynnBuilder's 
 To read and write those codes the mod ships the two tables (name -> id), taken from the data
 files the WynnBuilder site loads. Only the ids are kept; nothing else of their data is shipped.
 
-    src/main/resources/assets/wynnlabs/crafting/wynnbuilder-ids.json
+    common/src/main/resources/assets/wynnlabs/crafting/wynnbuilder-ids.json
 
 Run it after a game update adds ingredients or recipes, then rebuild:
 
@@ -16,7 +16,7 @@ import pathlib
 import urllib.request
 
 BASE = "https://wynnbuilder.github.io/data/baseline/compressed/"
-OUT = pathlib.Path(__file__).resolve().parents[2] / "src/main/resources/assets/wynnlabs/crafting/wynnbuilder-ids.json"
+OUT = pathlib.Path(__file__).resolve().parents[2] / "common/src/main/resources/assets/wynnlabs/crafting/wynnbuilder-ids.json"
 AGENT = "WynnLabs tools (https://github.com/anilken/wynnlabs)"
 
 

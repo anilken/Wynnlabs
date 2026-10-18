@@ -4,7 +4,7 @@ Wynncraft's official API lists every crafting recipe (15 item types x 48 level b
 /v3/item/recipe/database. The mod only needs the numbers that decide a craft, so this keeps
 those, fixes the API's quirks, and writes one compact file:
 
-    src/main/resources/assets/wynnlabs/crafting/recipes.json
+    common/src/main/resources/assets/wynnlabs/crafting/recipes.json
 
 Quirks fixed here, so the mod reads clean data:
 - durability is stored x1000 (571000 means 571): divided once;
@@ -22,7 +22,7 @@ import pathlib
 import urllib.request
 
 URL = "https://api.wynncraft.com/v3/item/recipe/database?full_result"
-OUT = pathlib.Path(__file__).resolve().parents[2] / "src/main/resources/assets/wynnlabs/crafting/recipes.json"
+OUT = pathlib.Path(__file__).resolve().parents[2] / "common/src/main/resources/assets/wynnlabs/crafting/recipes.json"
 AGENT = "WynnLabs tools (https://github.com/anilken/wynnlabs)"
 
 # The refined material's kind as the game shows it ("Refined Oak Wood" is "Oak Planks").

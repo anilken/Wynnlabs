@@ -17,7 +17,7 @@ Minecraft 1.21.11. It reads your own character, bag and bank, and helps you deci
 1. [Fabric Loader](https://fabricmc.net) for 1.21.11 with Fabric API.
 2. [Wynntils](https://modrinth.com/mod/wynntils) 4.1.0 or newer (required).
 3. Optional: [Wynnventory](https://modrinth.com/mod/wynnventory) for item prices.
-4. Put `wynnlabs-<version>.jar` into `mods`.
+4. Put `wynnlabs-fabric-<version>.jar` into `mods`.
 
 Press **J** for the menu. The mod follows the game's language (English and Turkish).
 
@@ -61,7 +61,7 @@ with `-XX:+AllowEnhancedClassRedefinition -agentlib:jdwp=transport=dt_socket,ser
 then push a fresh build into the running game:
 
 ```bash
-java --add-modules jdk.jdi tools/HotSwap.java build/libs/wynnlabs-<version>.jar <installed mod jar>
+java --add-modules jdk.jdi tools/HotSwap.java fabric/build/libs/wynnlabs-fabric-<version>.jar <installed mod jar>
 ```
 
 Changed methods and new or removed methods and fields load at once (screens show it when reopened;

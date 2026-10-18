@@ -12,7 +12,7 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DIR = os.path.join(ROOT, "src", "main", "resources", "assets", "wynnlabs", "discoveries")
+DIR = os.path.join(ROOT, "common", "src", "main", "resources", "assets", "wynnlabs", "discoveries")
 
 
 def load(name):

@@ -20,7 +20,7 @@ import java.util.jar.JarFile;
  * code change shows up without restarting the game. Needs the game started with
  * -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=127.0.0.1:5005
  *
- * Run: java --add-modules jdk.jdi tools/HotSwap.java build/libs/wynnlabs-0.1.0.jar [installed.jar] [port]
+ * Run: java --add-modules jdk.jdi tools/HotSwap.java fabric/build/libs/wynnlabs-fabric-0.1.0.jar [installed.jar] [port]
  *
  * A plain JVM only accepts changed method bodies. Run the game on JetBrains Runtime 21 with
  * -XX:+AllowEnhancedClassRedefinition and new or removed methods and fields swap in too. Brand-new
