@@ -15,10 +15,17 @@ final class Stamp {
     /** How often {@link #inventory} changed (for /perf). */
     static final java.util.concurrent.atomic.AtomicInteger INVENTORY_CHANGES = new java.util.concurrent.atomic.AtomicInteger();
 
+    /**
+     * The language the mod speaks ({@link L#code}), checked every tick: cached advice is worded,
+     * and with "Auto" a change of the game's own language must reword it too (picking EN or TR in
+     * the menu already changes {@link Rules#version}).
+     */
+    static volatile int language;
+
     private Stamp() {}
 
     static int now() {
-        return ((Rules.version * 31 + Prices.version) * 31 + Advice.version) * 31 + inventory;
+        return (((Rules.version * 31 + Prices.version) * 31 + Advice.version) * 31 + inventory) * 31 + language;
     }
 
     /**
@@ -28,6 +35,7 @@ final class Stamp {
      * throw every cached verdict away. A move, a pickup or a sale replaces stacks.
      */
     static void onTick(Minecraft mc) {
+        language = L.code().hashCode();
         if (mc.player == null) {
             inventory = 0;
             return;
