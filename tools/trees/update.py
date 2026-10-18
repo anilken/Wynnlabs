@@ -3,7 +3,7 @@
 Wynncraft's API gives each class's tree as wynncraft.com draws it: every cell, nodes and
 connector pieces, with coordinates (x 1-9 across, y counted down the whole tree from 1). The
 mod only needs where the pieces are and which way their arms point, so this keeps just that,
-one small file per class, in src/main/resources/assets/wynnlabs/trees/<class>.json:
+one small file per class, in common/src/main/resources/assets/wynnlabs/trees/<class>.json:
 
     {"format": 1, "source": "...", "fetched": "2026-10-16", "cells": {"page:row:col": "connector_up_down", ...}}
 
@@ -18,7 +18,7 @@ import urllib.request
 
 CLASSES = ["archer", "assassin", "mage", "shaman", "warrior"]
 URL = "https://api.wynncraft.com/v3/ability/map/"
-OUT = pathlib.Path(__file__).resolve().parents[2] / "src/main/resources/assets/wynnlabs/trees"
+OUT = pathlib.Path(__file__).resolve().parents[2] / "common/src/main/resources/assets/wynnlabs/trees"
 ROWS = 6
 
 

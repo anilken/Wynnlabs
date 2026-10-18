@@ -1,4 +1,4 @@
-"""Builds src/main/resources/assets/wynnlabs/discoveries/en.json from the Wynncraft wiki.
+"""Builds common/src/main/resources/assets/wynnlabs/discoveries/en.json from the Wynncraft wiki.
 
     python -I tools/discoveries/fetch.py            # fetch the pages, then write en.json
     python -I tools/discoveries/fetch.py --offline  # reuse the pages fetched last time
@@ -29,7 +29,7 @@ import urllib.parse
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-OUT = os.path.join(ROOT, "src", "main", "resources", "assets", "wynnlabs", "discoveries", "en.json")
+OUT = os.path.join(ROOT, "common", "src", "main", "resources", "assets", "wynnlabs", "discoveries", "en.json")
 CACHE = os.path.join(ROOT, "build", "discoveries-wiki")
 FIXES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixes.json")
 API = "https://wynncraft.wiki.gg/api.php"

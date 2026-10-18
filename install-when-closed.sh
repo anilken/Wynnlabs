@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Dev helper: waits until Minecraft (javaw.exe) is closed, then copies the freshly built mod jar
-# into the game's mods folder, replacing any older Wynn Labs (or pre-rename wynn-inventory-api)
-# jar. Run it in the background after a build. Does nothing if the installed jar is already the
-# latest build.
+# Dev helper: waits until Minecraft (javaw.exe) is closed, then copies the freshly built Fabric
+# jar (fabric/build/libs/wynnlabs-fabric-<version>.jar) into the game's mods folder, replacing any
+# older Wynn Labs (wynnlabs-<version>.jar from before the loader split, or pre-rename
+# wynn-inventory-api) jar. Run it in the background after a build. Does nothing if the installed
+# jar is already the latest build.
 #
 # The mods folder comes from $WYNNLABS_MODS, or from the first line of .local-mods-path next to
 # this script (git-ignored), e.g. /c/Users/me/curseforge/minecraft/Instances/Wynncraft/mods
@@ -16,9 +17,9 @@ if [ -z "$MODS" ] || [ ! -d "$MODS" ]; then
   echo "set WYNNLABS_MODS or write the mods folder into .local-mods-path" >&2
   exit 1
 fi
-SRC="$(ls -t "$HERE"/build/libs/wynnlabs-*.jar 2>/dev/null | grep -v -- '-sources' | head -n 1)"
+SRC="$(ls -t "$HERE"/fabric/build/libs/wynnlabs-fabric-*.jar 2>/dev/null | grep -v -e '-sources' -e '-dev' | head -n 1)"
 if [ -z "$SRC" ]; then
-  echo "no build/libs/wynnlabs-*.jar: build first" >&2
+  echo "no fabric/build/libs/wynnlabs-fabric-*.jar: build first" >&2
   exit 1
 fi
 DST="$MODS/$(basename "$SRC")"

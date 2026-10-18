@@ -1,8 +1,20 @@
 pluginManagement {
     repositories {
         maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+        maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
+        maven { name = 'NeoForged'; url = 'https://maven.neoforged.net/releases' }
         mavenCentral()
         gradlePluginPortal()
     }
 }
 rootProject.name = 'wynn-labs'
+
+// common: every game class, screen, mixin and asset; fabric and neoforge: entrypoint, loader
+// wiring and metadata only. -Penabled_platforms=fabric leaves the NeoForge module out, so builds
+// that need only the Fabric jar (CI's tests, the Wynntils matrix, "build al") skip NeoForge's setup.
+def platforms = providers.gradleProperty('enabled_platforms').getOrElse('fabric,neoforge').split(',')*.trim()
+include 'common'
+include 'fabric'
+if (platforms.contains('neoforge')) {
+    include 'neoforge'
+}

@@ -1,0 +1,41 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "LGPL-3.0-only"
+issueTrackerURL = "https://github.com/anilken/wynnlabs/issues"
+
+[[mods]]
+modId = "wynnlabs"
+version = "${version}"
+displayName = "Wynn Labs"
+authors = "anilken"
+displayURL = "https://github.com/anilken/wynnlabs"
+logoFile = "assets/wynnlabs/icon.png"
+description = '''An in-game assistant for Wynncraft: what to wear, sell or identify, upgrades for your level, quest guides with waypoints, a searchable bank index and live Trade Market prices. Read-only: it never acts for you. Needs Wynntils.'''
+
+[[dependencies.wynnlabs]]
+modId = "minecraft"
+type = "required"
+versionRange = "[${minecraft_version}]"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.wynnlabs]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge_version},)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.wynnlabs]]
+modId = "wynntils"
+type = "required"
+versionRange = "${wynntils_range}"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies.wynnlabs]]
+modId = "wynnventory"
+type = "optional"
+versionRange = "*"
+ordering = "NONE"
+side = "CLIENT"

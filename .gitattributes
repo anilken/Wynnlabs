@@ -1,2 +1,2 @@
 # recorded test data and its expected files are compared byte for byte: keep LF everywhere
-src/test/resources/fixtures/** text eol=lf
+fabric/src/test/resources/fixtures/** text eol=lf

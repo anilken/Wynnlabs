@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "wynnlabs",
+  "version": "${version}",
+  "name": "Wynn Labs",
+  "description": "An in-game assistant for Wynncraft: what to wear, sell or identify, upgrades for your level, quest guides with waypoints, a searchable bank index and live Trade Market prices. Read-only: it never acts for you. Needs Wynntils.",
+  "authors": [
+    "anilken"
+  ],
+  "contact": {
+    "sources": "https://github.com/anilken/wynnlabs",
+    "issues": "https://github.com/anilken/wynnlabs/issues"
+  },
+  "license": "LGPL-3.0-only",
+  "icon": "assets/wynnlabs/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "io.github.anilken.wynnlabs.fabric.WynnLabsFabric"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*",
+    "wynntils": "${wynntils_range}"
+  },
+  "suggests": {
+    "wynnventory": "*"
+  },
+  "accessWidener": "wynnlabs.accesswidener",
+  "mixins": [
+    "wynnlabs.mixins.json"
+  ]
+}
