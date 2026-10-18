@@ -47,9 +47,6 @@ public class HotSwap {
         }
 
         VirtualMachine vm = attach(port);
-        System.out.println(vm.canAddMethod()
-                ? "Oyun JBR ile açık: yeni metot ve alanlar da yüklenir."
-                : "Oyun normal Java ile açık: yalnız metot içleri yüklenir (JBR için README'ye bak).");
         Map<ReferenceType, byte[]> redefine = new HashMap<>();
         int unchanged = 0;
         int notLoaded = 0;
@@ -88,7 +85,7 @@ public class HotSwap {
                 }
             } catch (UnsupportedOperationException ex) {
                 System.out.println("YENİDEN BAŞLATMA GEREKİR: bu değişiklik oyun açıkken yüklenemiyor ("
-                        + ex.getMessage() + (vm.canAddMethod() ? "" : "; JBR ile yeni metot ve alanlar yüklenir")
+                        + ex.getMessage() + "; yeni metot ve alanlar için oyunu JBR ve -XX:+AllowEnhancedClassRedefinition ile aç"
                         + "). Jar oyun kapanınca kurulur.");
                 System.exit(2);
             }
