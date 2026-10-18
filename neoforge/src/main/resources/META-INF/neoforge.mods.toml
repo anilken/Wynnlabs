@@ -12,6 +12,10 @@ displayURL = "https://github.com/anilken/wynnlabs"
 logoFile = "assets/wynnlabs/icon.png"
 description = '''An in-game assistant for Wynncraft: what to wear, sell or identify, upgrades for your level, quest guides with waypoints, a searchable bank index and live Trade Market prices. Read-only: it never acts for you. Needs Wynntils.'''
 
+# the same mixins as on Fabric (common/src/main/resources); vanilla targets only
+[[mixins]]
+config = "wynnlabs.mixins.json"
+
 [[dependencies.wynnlabs]]
 modId = "minecraft"
 type = "required"
