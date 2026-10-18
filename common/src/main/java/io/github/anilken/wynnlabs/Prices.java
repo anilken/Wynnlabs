@@ -148,7 +148,7 @@ final class Prices {
         if (installed == null) {
             installed = Platform.get().isModLoaded("wynnventory");
             if (!installed) {
-                problem = L.t("wynnlabs.price.problem_missing");
+                problem = Words.of("wynnlabs.price.problem_missing");
                 unavailable = true;
             }
         }
@@ -189,11 +189,11 @@ final class Prices {
                 version++;                      // verdicts that weigh prices rebuild
             }
         } catch (ClassNotFoundException e) {
-            problem = L.t("wynnlabs.price.problem_missing");
+            problem = Words.of("wynnlabs.price.problem_missing");
             keyProblem = false;
             unavailable = true;                 // Wynnventory not installed
         } catch (Throwable t) {
-            problem = L.t("wynnlabs.price.problem_unreadable", t.getClass().getSimpleName());
+            problem = Words.of("wynnlabs.price.problem_unreadable", t.getClass().getSimpleName());
             keyProblem = false;
             unavailable = true;
             System.out.println("[WynnLabs] Wynnventory prices unreadable: " + t);
@@ -263,7 +263,8 @@ final class Prices {
         });
     }
 
-    static volatile String problem;              // null while prices come in; shown in the settings tab
+    /** Null while prices come in; shown in the settings tab, worded there (it follows a language switch). */
+    static volatile Words problem;
     /** True when {@link #problem} is the refused key (cleared when a new key is saved). */
     private static volatile boolean keyProblem;
 
@@ -379,7 +380,7 @@ final class Prices {
     /** A pool endpoint answered 401 or 403: the key is refused, as the listings call does. */
     static void refuseKey(int status) {
         keyInvalid = true;                      // stop asking until the player saves another key
-        problem = L.t("wynnlabs.price.problem_key", status);
+        problem = Words.of("wynnlabs.price.problem_key", status);
         keyProblem = true;
     }
     /**
@@ -550,7 +551,7 @@ final class Prices {
         var res = HTTP.send(req, java.net.http.HttpResponse.BodyHandlers.ofString());
         if (res.statusCode() == 401 || res.statusCode() == 403) {
             keyInvalid = true;                  // stop asking until the player saves another key
-            problem = L.t("wynnlabs.price.problem_key", res.statusCode());
+            problem = Words.of("wynnlabs.price.problem_key", res.statusCode());
             keyProblem = true;
             return;
         }

@@ -856,7 +856,6 @@
   "wynnlabs.wear.prefix": "Wynn Labs ▸ ",
   "wynnlabs.wear.give": "+%s %s (%s total)",
   "wynnlabs.wear.take": "−%s %s (%s left)",
-  "wynnlabs.wear.cannot": "%s does not work: wearing all of it needs %s skill points, your level gives %s. Take a piece off.",
   "wynnlabs.setting.chatSkills": "Chat: skill point help",
   "wynnlabs.setting_desc.chatSkills": "When worn gear lacks skill points, says which skills to move points from and to",
   "wynnlabs.screen.tab_damage": "Damage",

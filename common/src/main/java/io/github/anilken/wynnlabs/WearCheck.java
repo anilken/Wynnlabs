@@ -105,14 +105,17 @@ final class WearCheck {
         List<net.minecraft.network.chat.Component> lines = new ArrayList<>();
         var head = L.c("wynnlabs.wear.prefix").withStyle(ChatFormatting.GOLD)
                 .append(net.minecraft.network.chat.Component.literal(names).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD));
+        // what was said is remembered as its facts, not its words: a language switch alone does
+        // not say it again
         if (sumTarget > earned) {
-            text = L.t("wynnlabs.wear.cannot", names, sumTarget, earned);
+            text = "cannot|" + names + "|" + sumTarget + "|" + earned;
             lines.add(head.append(L.c("wynnlabs.wear.cannot_head").withStyle(ChatFormatting.YELLOW)));
             lines.add(L.c("wynnlabs.wear.cannot_why", sumTarget, earned).withStyle(ChatFormatting.GRAY));
         } else {
             // give: what each skill still needs; take: points above what the worn pieces need,
             // only as many as the free points do not already cover
             List<String> give = new ArrayList<>();
+            StringBuilder facts = new StringBuilder(names);
             int need = 0;
             for (SkillKind s : SkillKind.values()) {
                 int i = s.ordinal();
@@ -120,6 +123,7 @@ final class WearCheck {
                     int add = target[i] - now[i];
                     need += add;
                     give.add(L.t("wynnlabs.wear.give", add, s.displayName(), target[i] + gear[i]));
+                    facts.append("|+").append(add).append(s.name()).append('=').append(target[i] + gear[i]);
                 }
             }
             if (give.isEmpty()) {
@@ -144,9 +148,10 @@ final class WearCheck {
                     int t = Math.min(spare, short_);
                     short_ -= t;
                     take.add(L.t("wynnlabs.wear.take", t, SkillKind.values()[i].displayName(), now[i] - t + gear[i]));
+                    facts.append("|-").append(t).append(SkillKind.values()[i].name()).append('=').append(now[i] - t + gear[i]);
                 }
             }
-            text = names + "|" + take + "|" + give;
+            text = facts.toString();
             lines.add(head.append(L.c("wynnlabs.wear.head").withStyle(ChatFormatting.YELLOW)));
             if (take.isEmpty()) {
                 lines.add(step(L.t("wynnlabs.wear.step_spend", free), give, ChatFormatting.GREEN));

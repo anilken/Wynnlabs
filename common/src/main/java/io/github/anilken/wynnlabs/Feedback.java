@@ -78,7 +78,8 @@ final class Feedback {
             double def = ClassProfiles.mainAttackWeight(Wyn.classType().name(), TreePlanner.chosen());
             nudge(model, "mainAttackWeight", def, nudged, L.t("wynnlabs.feedback.main_attack"));
         }
-        log(slot, chosen.name(), suggested == null ? null : suggested.name(), "override", nudged);
+        // the log keeps the model weights nudged, not their names in the language of the day
+        log(slot, chosen.name(), suggested == null ? null : suggested.name(), "override", new ArrayList<>(model.keySet()));
         if (nudged.isEmpty()) {
             return;
         }

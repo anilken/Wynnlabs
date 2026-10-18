@@ -2548,10 +2548,7 @@ final class RoadmapScreen extends Screen {
                     bigTile(g, x + 3 * (tw + gap), ry, tw, th, L.t("wynnlabs.today.tile_damage", 0), "—", null, 0xFF6E6C78);
                 }
                 ry += th + 4;
-                List<String> tipsOut = new ArrayList<>();
-                for (var t : last.getAsJsonArray("tips")) {
-                    tipsOut.add(t.getAsString());
-                }
+                List<String> tipsOut = Coach.sessionTips(last);
                 if (!tipsOut.isEmpty() && ry < y + h - 10) {
                     ink(g, fit("→ " + String.join(" · ", tipsOut), w), x, ry + 2, Theme.ACCENT);
                 }
@@ -3226,8 +3223,9 @@ final class RoadmapScreen extends Screen {
                             .withStyle(sell ? ChatFormatting.RED : ChatFormatting.GREEN).withStyle(UiFont::bold))
                     .append(Component.literal(st.by() == null ? "" : L.t("wynnlabs.bank.tip_checked_by", AutoAdvice.nice(st.by())))
                             .withStyle(ChatFormatting.DARK_GRAY)));
-            if (st.note() != null) {
-                for (String l : Advice.wrap(st.note(), 40)) {
+            String note = Vault.noteNow(st);
+            if (note != null) {
+                for (String l : Advice.wrap(note, 40)) {
                     tip.add(Component.literal(l).withStyle(ChatFormatting.GRAY));
                 }
             }
@@ -3331,9 +3329,9 @@ final class RoadmapScreen extends Screen {
         Map<String, Integer> causes = new HashMap<>();
         Map<String, Integer> advice = new HashMap<>();
         for (DeathCoach.Death d : week) {
-            places.merge(d.area().isEmpty() ? "?" : d.area(), 1, Integer::sum);
+            places.merge(d.place().isEmpty() ? "?" : d.place(), 1, Integer::sum);
             causes.merge(cause(d), 1, Integer::sum);
-            for (String a : d.advice()) {
+            for (String a : d.adviceText()) {
                 advice.merge(a, 1, Integer::sum);
             }
         }
@@ -3373,7 +3371,7 @@ final class RoadmapScreen extends Screen {
             g.fill(x + 1, ry + 1, x + 4, ry + rowH - 4, causeColour(cause));
             String when = ago(d.time());
             ink(g, when, x + w - 6 - font.width(when), ry + 4, FAINT);
-            ink(g, fit(d.area().isEmpty() ? "?" : d.area(), w - 24 - font.width(when)), x + 9, ry + 4, 0xFFFFFFFF);
+            ink(g, fit(d.place().isEmpty() ? "?" : d.place(), w - 24 - font.width(when)), x + 9, ry + 4, 0xFFFFFFFF);
             // the numbers: zone vs you, how fast, potions
             int cx = x + 9;
             int cy = ry + 15;
@@ -3389,10 +3387,10 @@ final class RoadmapScreen extends Screen {
                 cx = chip(g, cx, cy, L.n("wynnlabs.deaths.chip_potions", d.potions()), d.potions() == 0 ? 0xFFD4537E : 0xFF9C9A92);
             }
             if (!d.advice().isEmpty() && cx < x + w - 60) {
-                ink(g, fit("→ " + d.advice().get(0), x + w - cx - 8), cx + 4, cy + 2, 0xFFAFA9EC);
+                ink(g, fit("→ " + d.adviceText().get(0), x + w - cx - 8), cx + 4, cy + 2, 0xFFAFA9EC);
             }
             List<Component> tip = new ArrayList<>();
-            tip.add(Component.literal(d.area()).withStyle(ChatFormatting.WHITE));
+            tip.add(Component.literal(d.place()).withStyle(ChatFormatting.WHITE));
             tip.add(Component.literal(L.t(cause)).withStyle(ChatFormatting.GRAY));
             if (!d.mobs().isEmpty()) {
                 List<String> mobs = new ArrayList<>();
@@ -3403,14 +3401,14 @@ final class RoadmapScreen extends Screen {
                     tip.add(Component.literal(l).withStyle(ChatFormatting.GRAY));
                 }
             }
-            for (String a : d.advice()) {
+            for (String a : d.adviceText()) {
                 for (String l : Advice.wrap("→ " + a, 46)) {
                     tip.add(Component.literal(l).withStyle(ChatFormatting.LIGHT_PURPLE));
                 }
             }
             tip.add(Component.literal(L.t("wynnlabs.deaths.tip_click")).withStyle(ChatFormatting.DARK_GRAY));
             hits.add(new Hit(x, ry, w, rowH - 3, null, tip,
-                    "#qnear:" + d.x() + " " + d.y() + " " + d.z() + " " + L.t("wynnlabs.deaths.pin", d.area())));
+                    "#qnear:" + d.x() + " " + d.y() + " " + d.z() + " " + L.t("wynnlabs.deaths.pin", d.place())));
             ry += rowH;
         }
         int more = recent.size() - Math.min(recent.size(), fit);
@@ -5501,7 +5499,8 @@ final class RoadmapScreen extends Screen {
 
     /** Prices and data: where the prices come from, then the Wynnventory key box. */
     private void drawKeyRow(GuiGraphics g, int x, int y, int w, int mx, int my) {
-        String pr = Prices.problem;
+        Words problem = Prices.problem;
+        String pr = problem == null ? null : problem.text();
         String an = Vault.annotateProblem;
         String lead = L.t("wynnlabs.settings.sources");
         String prices = pr == null ? L.t("wynnlabs.settings.prices_ok") : "✖ " + pr;

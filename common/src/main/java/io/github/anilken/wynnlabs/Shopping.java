@@ -136,7 +136,8 @@ final class Shopping {
         }
         Klass cls = state.classType();
         int level = state.level();
-        String key = cls + ":" + level + ":" + Rules.version + ":" + System.identityHashCode(Build.plan());
+        // the list says where each piece comes from in words: the language is part of the key
+        String key = cls + ":" + level + ":" + Rules.version + ":" + System.identityHashCode(Build.plan()) + ":" + L.code();
         if (key.equals(builtFor)) {
             return;
         }

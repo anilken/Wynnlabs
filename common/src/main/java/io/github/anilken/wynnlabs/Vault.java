@@ -32,11 +32,12 @@ final class Vault {
 
     /**
      * One stack in a bank page. {@code verdict}/{@code note}: the rules' advice when the page
-     * was last open (null when they have none), {@code by}: the class that judged it.
+     * was last open (null when they have none), {@code noteLang}: the language the note is worded
+     * in (null in files from before it was kept), {@code by}: the class that judged it.
      * {@code prof}: the professions an ingredient or material is for ("COOKING,ALCHEMISM").
      */
     record Stored(String name, int level, String page, long seen, int count, boolean gear, String kind,
-            String verdict, String note, String by, String prof, int slot, String item, String box) {
+            String verdict, String note, String noteLang, String by, String prof, int slot, String item, String box) {
 
         /** Items with one name but different boxes (tier, levels) stay apart: "name|box". */
         String key() {
@@ -156,7 +157,7 @@ final class Vault {
             } catch (Throwable t) {
                 // keep the name at least; a broken item must not stop the page being saved
                 items.add(new Stored(clean(stack.getHoverName().getString()), 0, key, now, stack.getCount(),
-                        false, "unknown", null, null, null, "", index, encode(stack), null));
+                        false, "unknown", null, null, null, null, "", index, encode(stack), null));
             }
         }
         // the page number and the items arrive together; saved as soon as two reads agreed (above,
@@ -204,7 +205,8 @@ final class Vault {
                 ? b.slot().name() + "|" + b.tier().name() + "|" + b.low() + "|"
                         + b.high() : null;
         return new Stored(name, level, key, now, stack.getCount(), gear, kind,
-                e == null ? null : e.verdict().name(), e == null ? null : e.note(), by, prof, slot, encode(stack), box);
+                e == null ? null : e.verdict().name(), e == null ? null : e.note(), e == null || e.note() == null ? null : L.code(),
+                by, prof, slot, encode(stack), box);
     }
 
     /** Each stack's JSON, by identity: a page stays open for many reads, its stacks do not change. */
@@ -455,7 +457,7 @@ final class Vault {
         for (Stored n : now) {
             String item = n.item() == null ? kept.get(n.slot() + "|" + n.name() + "|" + n.count()) : null;
             out.add(item == null ? n : new Stored(n.name(), n.level(), n.page(), n.seen(), n.count(), n.gear(),
-                    n.kind(), n.verdict(), n.note(), n.by(), n.prof(), n.slot(), item, n.box()));
+                    n.kind(), n.verdict(), n.note(), n.noteLang(), n.by(), n.prof(), n.slot(), item, n.box()));
         }
         return out;
     }
@@ -467,7 +469,7 @@ final class Vault {
     private static String sig(Stored s) {
         // the slot and whether the item itself is kept count too: a page saved before icons
         // existed must be saved again when you open it, even if nothing in it moved
-        return s.name() + "x" + s.count() + "@" + s.slot() + (s.item() == null ? "-" : "+") + (s.box() == null ? "" : s.box()) + ":" + s.verdict() + ":" + s.note();
+        return s.name() + "x" + s.count() + "@" + s.slot() + (s.item() == null ? "-" : "+") + (s.box() == null ? "" : s.box()) + ":" + s.verdict() + ":" + s.note() + ":" + s.noteLang();
     }
 
     static int count() {
@@ -674,6 +676,34 @@ final class Vault {
         return s == null ? null : Advice.sellPlace(new Advice.Entry(s.verdict(), s.note()));
     }
 
+    /**
+     * The stack's note to show, in the language the mod speaks now. A note is worded when its
+     * page is read; one worded in another language (or by a version that did not keep the
+     * language) is not shown as it is: the rules judge the kept item again, for display only,
+     * when the class that judged it is the one in play and the verdict comes out the same. Else
+     * none, until the page is opened again and its notes are worded anew.
+     */
+    static String noteNow(Stored s) {
+        if (s.note() == null) {
+            return null;
+        }
+        if (L.code().equals(s.noteLang())) {
+            return s.note();
+        }
+        try {
+            GameState state = GameState.current();
+            if (s.item() != null && s.by() != null && state.inGame() && s.by().equals(state.classType().name())) {
+                Advice.Entry e = AutoAdvice.cached(stackOf(s));
+                if (e != null && e.verdict().name().equals(s.verdict())) {
+                    return e.note();
+                }
+            }
+        } catch (Throwable ignored) {
+            // no game, no item: nothing to judge again
+        }
+        return null;
+    }
+
     /** Lowest Trade Market listing of a group (all of it), or null when unknown. */
     static Double value(Group g) {
         Prices.Price p = Prices.of(g.name());
@@ -791,7 +821,8 @@ final class Vault {
                     l.add(new Stored(clean(j.get("name").getAsString()), j.get("level").getAsInt(), e.getKey(),
                             j.get("seen").getAsLong(), j.has("count") ? j.get("count").getAsInt() : 1, gear,
                             Objects.requireNonNullElse(str(j, "kind"), gear ? "gear" : "unknown"),
-                            str(j, "verdict") == null ? null : Verdict.of(str(j, "verdict")).name(), str(j, "note"), str(j, "by"), Objects.requireNonNullElse(str(j, "prof"), ""),
+                            str(j, "verdict") == null ? null : Verdict.of(str(j, "verdict")).name(), str(j, "note"), str(j, "noteLang"),
+                            str(j, "by"), Objects.requireNonNullElse(str(j, "prof"), ""),
                             j.has("slot") ? j.get("slot").getAsInt() : -1, j.has("item") ? j.get("item").toString() : null,
                             str(j, "box")));
                 });
@@ -827,6 +858,9 @@ final class Vault {
                     if (st.verdict() != null) {
                         j.addProperty("verdict", st.verdict());
                         j.addProperty("note", st.note());
+                        if (st.noteLang() != null) {
+                            j.addProperty("noteLang", st.noteLang());
+                        }
                         j.addProperty("by", st.by());
                     }
                     if (st.prof() != null && !st.prof().isEmpty()) {
