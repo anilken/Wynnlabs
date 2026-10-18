@@ -26,7 +26,41 @@ configurations {
     shadowCommon
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
-    developmentNeoForge.extendsFrom common
+    // not developmentNeoForge: as on Fabric, that runs Architectury's dev-time transformer over
+    // common, which needs Wynntils to recompute stack frames; common uses none of its transforms,
+    // and the mod group below makes common's classes part of this mod in the dev run
+}
+
+// in the dev run, this module's classes and common's jar are one mod (id wynnlabs): NeoForge
+// then finds the mixins, assets and lang files of common next to the entrypoint
+loom {
+    mods {
+        wynnlabs {
+            sourceSet sourceSets.main
+            modFiles.from(configurations.named('common'))
+        }
+    }
+}
+
+// Wynntils for NeoForge in the dev run: libs/wynntils-<wynntils_version>-neoforge*.jar, or
+// -PwynntilsNeoForgeJar=<path>. Absent, the client starts without Wynntils (the game then
+// refuses Wynn Labs' required dependency, so the run is only good for the build wiring).
+def wynntilsNeoForge = rootProject.hasProperty('wynntilsNeoForgeJar')
+        ? files(rootProject.property('wynntilsNeoForgeJar'))
+        : fileTree(dir: rootProject.file('libs'), include: ["wynntils-${rootProject.wynntils_version}-neoforge*.jar"],
+                exclude: ['*-sources.jar'])
+
+// Wynntils' own libraries ride inside its jar (META-INF/jars, NeoForge's Jar-in-Jar), which the
+// dev run does not open: they are unpacked next to the build and put on the run's classpath.
+// MixinExtras is left out, NeoForge brings its own.
+def wynntilsNeoForgeLibs = tasks.register('wynntilsNeoForgeLibs', Sync) {
+    from(wynntilsNeoForge.elements.map { it.collect { zipTree(it.asFile) } }) {
+        include 'META-INF/jars/*.jar'
+        exclude '**/mixinextras-*'
+        eachFile { it.path = it.name }
+    }
+    includeEmptyDirs = false
+    into layout.buildDirectory.dir('wynntils-libs')
 }
 
 dependencies {
@@ -34,7 +68,19 @@ dependencies {
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive = false }
     shadowCommon(project(path: ':common', configuration: 'transformProductionNeoForge')) { transitive = false }
+
+    if (!wynntilsNeoForge.isEmpty()) {
+        modRuntimeOnly wynntilsNeoForge
+        runtimeOnly files(wynntilsNeoForgeLibs.map { fileTree(it.destinationDir).files }).builtBy(wynntilsNeoForgeLibs)
+    }
 }
+
+if (wynntilsNeoForge.isEmpty()) {
+    logger.lifecycle("[neoforge] no libs/wynntils-${rootProject.wynntils_version}-neoforge*.jar: the dev run has no Wynntils")
+}
+
+// gradle :neoforge:runClient: Loom's client run, a dev client (offline name, no account) on the
+// real mod wiring; no -Dwynnlabs.fixtures, so it reads the live game, not a recording
 
 processResources {
     def props = [version          : project.version,
