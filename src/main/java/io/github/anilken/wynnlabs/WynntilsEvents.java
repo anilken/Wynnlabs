@@ -2,6 +2,8 @@ package io.github.anilken.wynnlabs;
 
 import com.wynntils.mc.event.ItemTooltipRenderEvent;
 import com.wynntils.mc.event.SlotRenderEvent;
+import com.wynntils.models.activities.event.ActivityUpdatedEvent;
+import com.wynntils.models.activities.type.ActivityType;
 import com.wynntils.models.characterstats.event.CombatXpGainEvent;
 import com.wynntils.models.combat.type.DamageDealtEvent;
 import com.wynntils.models.containers.event.ValuableFoundEvent;
@@ -102,6 +104,26 @@ public final class WynntilsEvents {
     @SubscribeEvent
     public void onXp(CombatXpGainEvent e) {
         Coach.onXp();
+    }
+
+    /**
+     * Wynntils read a fresh quest or mini-quest list from the content book. Registered under
+     * QUESTS (Wyn.listen), so a change to this event turns off only this. {@link QuestBook} takes
+     * the list in only after the player pressed "read quests with Wynntils".
+     */
+    public static final class Quests {
+
+        @SubscribeEvent
+        public void onActivityUpdated(ActivityUpdatedEvent e) {
+            ActivityType type = Wyn.guard(Wyn.Feature.QUESTS, e::getActivityType, null);
+            if (type == ActivityType.QUEST || type == ActivityType.MINI_QUEST) {
+                try {
+                    QuestBook.fromWynntils();
+                } catch (Throwable t) {
+                    System.out.println("[WynnLabs] quests from Wynntils failed: " + t);
+                }
+            }
+        }
     }
 
     // ---- the Endgame tab: raids, lootruns, reward chest mythics ----
