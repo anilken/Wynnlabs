@@ -4,3 +4,6 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    # PR titles follow Conventional Commits (pr-title.yml): "ci: bump actions/checkout ..."
+    commit-message:
+      prefix: ci

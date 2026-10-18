@@ -1,0 +1,36 @@
+name: PR title
+
+# PRs are squash-merged and the PR title becomes the commit header on main, which the release
+# workflow reads to pick the next version (.github/.config.js). So the title must follow
+# Conventional Commits: "type(scope)!: subject", e.g. "fix(bank): pages save while flipping".
+# Only the title is read: no code from the PR is checked out or run.
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  title:
+    name: Conventional Commits title
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          types: |
+            feat
+            fix
+            perf
+            docs
+            refactor
+            test
+            chore
+            build
+            ci
+            style
+            revert
+          requireScope: false
