@@ -22,11 +22,11 @@ Take the jar for your loader from the release (same mod in both) and put it into
   NeoForge 4.1.0 or newer. Jar: `wynnlabs-neoforge-<version>.jar`.
 - Optional on both: [Wynnventory](https://modrinth.com/mod/wynnventory) for that loader, for item prices.
 
-Press **J** for the menu. The mod follows the game's language (English and Turkish).
+Press **Y** for the menu. The mod follows the game's language (English and Turkish).
 
 ## Settings and privacy
 
-Everything is in the J menu's settings tab. The mod contacts only:
+Everything is in the Wynn Labs menu's settings tab. The mod contacts only:
 
 - `www.wynnventory.com`, with **Live prices** on: listings, and the weekly raid and lootrun pools at most once an hour.
 - `wynncraft.wiki.gg`, with **Quest guides from the wiki** on: quest and discovery pages, cached for a week.
@@ -40,7 +40,7 @@ Everything the mod remembers is under `config/wynnlabs/`. Delete it to start fre
 
 ## AI assistant and local API
 
-Turn on the local API in the J menu's **AI assistant** tab. It serves your game state as JSON on
+Turn on the local API in the Wynn Labs menu's **AI assistant** tab. It serves your game state as JSON on
 `127.0.0.1:47591` (`GET /` lists the endpoints). **Install for Claude Code** copies the skill
 ([`ai/skills/wynnlabs/SKILL.md`](ai/skills/wynnlabs/SKILL.md)); **Copy prompt** works with any other
 assistant. Writing advice or rules (`POST /advice`, `POST /rules`) needs the **AI may write advice
