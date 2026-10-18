@@ -122,6 +122,8 @@ public final class WynnLabs {
         platform.onEndTick(Perf.tick("tick.DeathCoach", DeathCoach::onTick));
         platform.onEndTick(Perf.tick("tick.Today", Today::onTick));
         platform.onEndTick(Perf.tick("tick.WearCheck", WearCheck::onTick));
+        // once per game run, a few seconds into a world: a chat line when GitHub has a newer release
+        platform.onEndTick(Perf.tick("tick.UpdateCheck", UpdateCheck::onTick));
         platform.onEndTick(Perf.tick("tick.DiscoveryBook", DiscoveryBook::onTick));
         platform.onEndTick(Perf.tick("tick.Danger", Danger::onTick));
         platform.onEndTick(Perf.tick("tick.SellSummary", SellSummary::onTick));

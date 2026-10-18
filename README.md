@@ -30,6 +30,7 @@ Everything is in the Wynn Labs menu's settings tab. The mod contacts only:
 
 - `www.wynnventory.com`, with **Live prices** on: listings, and the weekly raid and lootrun pools at most once an hour.
 - `wynncraft.wiki.gg`, with **Quest guides from the wiki** on: quest and discovery pages, cached for a week.
+- `api.github.com`, with **Check for updates** on (the default): once per session, to see whether a newer release is out.
 
 **Wynnventory key.** Paste your key in the settings tab, or build the mod where a key file exists
 (`$WYNNLABS_WYNNVENTORY_KEY_FILE` or the instance's `config/wynnlabs/wynnventory-key.txt`) to embed

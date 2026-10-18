@@ -53,6 +53,7 @@ final class Settings {
         LABELS.put("verdictBadges", "wynnlabs.setting.verdictBadges");
         LABELS.put("miniQuests", "wynnlabs.setting.miniQuests");
         LABELS.put("questGuides", "wynnlabs.setting.questGuides");
+        LABELS.put("updateCheck", "wynnlabs.setting.updateCheck");
         LABELS.put("localApi", "wynnlabs.setting.localApi");
         LABELS.put("apiWrite", "wynnlabs.setting.apiWrite");
         LABELS.put("debug", "wynnlabs.setting.debug");
@@ -131,6 +132,8 @@ final class Settings {
         DESC.put("priceApi", "wynnlabs.setting_desc.priceApi");
         CATEGORY.put("questGuides", "data");
         DESC.put("questGuides", "wynnlabs.setting_desc.questGuides");
+        CATEGORY.put("updateCheck", "data");
+        DESC.put("updateCheck", "wynnlabs.setting_desc.updateCheck");
         CATEGORY.put("localApi", "ai");
         DESC.put("localApi", "wynnlabs.setting_desc.localApi");
         CATEGORY.put("apiWrite", "ai");
