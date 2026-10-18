@@ -369,7 +369,7 @@ final class QuestWiki {
                     int[] pt = {Integer.parseInt(r.group(1)), Integer.parseInt(r.group(2)), Integer.parseInt(r.group(3))};
                     Matcher nm = RENDER_NAME.matcher(l);
                     points.add(pt);
-                    names.add(nm.find() ? clean(nm.group(1)) : L.t("wynnlabs.guide.point"));
+                    names.add(nm.find() ? clean(nm.group(1)) : UNNAMED);
                     if (at == null) {
                         at = pt;
                     }
@@ -441,6 +441,18 @@ final class QuestWiki {
      * coordinates its task and hints name that are not among them (a door, a lever, a room).
      * A hint's place is labelled with the hint, without the coordinates.
      */
+    /**
+     * A map point the page gives no name. Parsed pages are kept per quest in every language
+     * (and their stage hash must match the shipped guide's), so the parse keeps this English
+     * word and {@link #pointName} words it when the point is shown.
+     */
+    static final String UNNAMED = "point";
+
+    /** A point's name for display: an unnamed point in the mod's language, others as the wiki has them. */
+    static String pointName(String name) {
+        return UNNAMED.equals(name) ? L.t("wynnlabs.guide.point") : placeText(name);
+    }
+
     static List<Place> places(Info info, int from) {
         List<Place> out = new ArrayList<>();
         if (info == null) {
@@ -456,7 +468,7 @@ final class QuestWiki {
                 int[] at = st.points().get(k);
                 String line = lineWith(lines, at);
                 String what = line != null ? placeText(line, at)
-                        : st.points().size() > 1 && k < st.names().size() ? placeText(st.names().get(k))
+                        : st.points().size() > 1 && k < st.names().size() ? pointName(st.names().get(k))
                         : st.task().isEmpty() ? stageTitle(st.title()) : placeText(st.task());
                 add(out, new Place(i, at, what));
             }

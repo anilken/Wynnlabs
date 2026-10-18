@@ -5499,7 +5499,8 @@ final class RoadmapScreen extends Screen {
 
     /** Prices and data: where the prices come from, then the Wynnventory key box. */
     private void drawKeyRow(GuiGraphics g, int x, int y, int w, int mx, int my) {
-        String pr = Prices.problem;
+        Words problem = Prices.problem;
+        String pr = problem == null ? null : problem.text();
         String an = Vault.annotateProblem;
         Component src = L.c("wynnlabs.settings.sources").withStyle(ChatFormatting.DARK_GRAY)
                 .append(Component.literal(pr == null ? L.t("wynnlabs.settings.prices_ok") : "✖ " + pr)
