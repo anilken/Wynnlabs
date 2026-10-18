@@ -529,6 +529,9 @@ public class LayoutMatrix implements FabricClientGameTest {
                             .disableCounterPrefix().withDestinationDir(shots));
                 }
             }
+            if (t == 2) {
+                questStates(ctx, where, gui, report, shots);
+            }
             if (t == ENDGAME) {
                 // group 8: the Havuzlar view, both sub-tabs, at every size (its shots are taken in pools())
                 for (int sub : new int[] {EndgameTab.TAB_RAIDS, EndgameTab.TAB_CAMPS}) {
@@ -540,6 +543,55 @@ public class LayoutMatrix implements FabricClientGameTest {
             }
         }
         ctx.runOnClient(mc -> CraftPreview.set(CraftingTab.INSTANCE, "view", 0));
+    }
+
+    /**
+     * The quests tab's "read quests with Wynntils" at this size: the title line's "Yenile" chip
+     * with its tooltip, the chip while a rescan runs, and the empty card (its button, the note
+     * under it) before and while one runs. Shots where {@code shots} is given.
+     */
+    private static void questStates(ClientGameTestContext ctx, String where, int[] gui, Map<String, List<String>> report, Path shots)
+            throws Exception {
+        String file = where.replaceAll("[^0-9a-z@x]", "");
+        Supplier<List<LayoutCheck.Area>> areas = () -> ((RoadmapScreen) net.minecraft.client.Minecraft.getInstance().screen).clickAreas();
+        ctx.runOnClient(mc -> set(mc.screen, "questDetailTab", 0));
+        String[][] states = {{"quests-rescan", "0", "0"}, {"quests-rescanning", "0", "1"}, {"quests-empty", "1", "0"},
+            {"quests-empty-rescanning", "1", "1"}};
+        for (String[] s : states) {
+            boolean hidden = s[1].equals("1");
+            boolean running = s[2].equals("1");
+            ctx.runOnClient(mc -> {
+                QuestBook.previewHidden(hidden);
+                QuestBook.previewRescanning(running);
+            });
+            measure(ctx, where + " " + s[0], gui, report, areas);
+            if (shots == null) {
+                continue;
+            }
+            if (!running) {
+                // the mouse on the chip or the button: its tooltip
+                double[] at = ctx.computeOnClient(mc -> {
+                    for (LayoutCheck.Area a : areas.get()) {
+                        if (a.what().equals("#qrescan:")) {
+                            return onScreen(mc, new int[] {a.x(), a.y(), a.w(), a.h()});
+                        }
+                    }
+                    return null;
+                });
+                if (at == null) {
+                    report.computeIfAbsent(where + " " + s[0], k -> new ArrayList<>()).add("no rescan button to hover");
+                } else {
+                    hoverShot(ctx, at, shots, file + "-" + s[0] + "-tip");
+                }
+            }
+            if (hidden || running) {
+                ctx.takeScreenshot(TestScreenshotOptions.of(file + "-" + s[0]).disableCounterPrefix().withDestinationDir(shots));
+            }
+        }
+        ctx.runOnClient(mc -> {
+            QuestBook.previewHidden(false);
+            QuestBook.previewRescanning(false);
+        });
     }
 
     private static void checkScreen(ClientGameTestContext ctx, String where, int[] gui, Map<String, List<String>> report,

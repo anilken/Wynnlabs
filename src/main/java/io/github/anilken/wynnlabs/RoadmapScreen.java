@@ -502,10 +502,14 @@ final class RoadmapScreen extends Screen {
                 }
             }
             Kit.text(g, font, L.c(TABS[tab]).withStyle(UiFont::bold), cx, cy, Theme.INK);
+            int titleRoom = cw - font.width(L.c(TABS[tab]).withStyle(UiFont::bold)) - 12;
+            // the quests tab: when the list was read and its "Yenile" chip on the right
+            int right = tab == 2 ? questTitleRight(g, cx + cw, cy, titleRoom, mx, my) : 0;
+            int gap = right > 0 ? right + 10 : 0;
             // the page hint where it fits beside the title (none in the compact layout)
             String hint = RAIL_HINT[idx].isEmpty() || tab == 1 || tab == TAB_ENDGAME || layout.compact() ? "" : L.t(RAIL_HINT[idx]);
-            hint = fit(hint, cw - font.width(L.c(TABS[tab]).withStyle(UiFont::bold)) - 12);
-            Kit.text(g, font, hint, cx + cw - font.width(hint), cy, Theme.INK_3);
+            hint = right > 0 && titleRoom - gap < 60 ? "" : fit(hint, titleRoom - gap);
+            Kit.text(g, font, hint, cx + cw - gap - font.width(hint), cy, Theme.INK_3);
             g.fill(cx, cy + 12, cx + cw, cy + 13, Theme.LINE);
             cy += 19;
             ch -= 19;
@@ -703,20 +707,65 @@ final class RoadmapScreen extends Screen {
 
     /** A centred card for a page with nothing yet: what to do, step by step. */
     private void emptyState(GuiGraphics g, int x, int y, int w, int h, ItemStack icon, String title, String... stepsText) {
+        emptyState(g, x, y, w, h, icon, title, null, stepsText);
+    }
+
+    /** A button under an empty card's title, and a faint centred note under it ({@code note} may be null). */
+    private record EmptyButton(String label, int state, List<Component> tip, String action, String note) {}
+
+    /**
+     * A centred card for a page with nothing yet: the icon, the title, an optional button with a
+     * note under it, then numbered steps. Its height follows what is in it, with the card's
+     * padding below the last line at every layout size.
+     */
+    private void emptyState(GuiGraphics g, int x, int y, int w, int h, ItemStack icon, String title, EmptyButton button,
+            String... stepsText) {
+        int pad = 10;
+        int lh = font.lineHeight;
+        int step = lh + 4;
         int cw = Math.min(w - 40, 300);
-        int chh = 54 + stepsText.length * 13;
+        List<FormattedCharSequence> note = button == null || button.note() == null ? List.of()
+                : font.split(Component.literal(button.note()), cw - 2 * pad - 8);
+        int titleY = 44;                            // under the 32 px icon, 8 from the top
+        int chh = titleY + lh;
+        int buttonY = chh + 6;
+        if (button != null) {
+            chh = buttonY + Kit.Ui.BTN_H;
+        }
+        int noteY = chh + 5;
+        if (!note.isEmpty()) {
+            chh = noteY + note.size() * (lh + 2) - 2;
+        }
+        int stepsY = chh + 5;
+        if (stepsText.length > 0) {
+            chh = stepsY + stepsText.length * step - 4;
+        }
+        chh += pad;
         int cx = x + (w - cw) / 2;
-        int cy = y + Math.max(10, (h - chh) / 2 - 10);
+        int cy = y + Math.max(Math.min(10, Math.max(0, h - chh)), (h - chh) / 2 - 10);
         card(g, cx, cy, cw, chh, false, Theme.GOLD_DEEP);
         bigItem(g, icon, cx + (cw - 32) / 2, cy + 8);
-        Component t = Component.literal(title).withStyle(UiFont::bold);
-        ink(g, t, cx + (cw - font.width(t)) / 2, cy + 44, Theme.INK);
-        int sy = cy + 58;
+        Component t = Component.literal(fit(title, cw - 2 * pad)).withStyle(UiFont::bold);
+        ink(g, t, cx + (cw - font.width(t)) / 2, cy + titleY, Theme.INK);
+        if (button != null) {
+            String label = fit(button.label(), cw - 2 * pad - 2 * Kit.Ui.BTN_PAD);
+            int bw = Kit.Ui.btnW(font, label);
+            int bx = cx + (cw - bw) / 2;
+            int by = cy + buttonY;
+            int state = button.state();          // gold when it can run, plain wood while it runs or cannot
+            Kit.button(g, bx, by, bw, Kit.Ui.BTN_H, state);
+            onWood(g, label, bx + Kit.Ui.BTN_PAD, by + 3, state);
+            hits.add(new Hit(bx, by, bw, Kit.Ui.BTN_H, null, button.tip(), button.action()));
+        }
+        for (int i = 0; i < note.size(); i++) {
+            ink(g, note.get(i), cx + (cw - font.width(note.get(i))) / 2, cy + noteY + i * (lh + 2), FAINT);
+        }
+        int sy = cy + stepsY;
         for (int i = 0; i < stepsText.length; i++) {
             Component c = Component.literal((i + 1) + "  ").withStyle(ChatFormatting.DARK_PURPLE)
                     .append(Component.literal(fit(stepsText[i], cw - 30)).withStyle(ChatFormatting.GRAY));
             ink(g, c, cx + 14, sy, Theme.INK);
-            sy += 13;
+            sy += step;
         }
     }
 
@@ -3501,6 +3550,57 @@ final class RoadmapScreen extends Screen {
         return w;
     }
 
+    /** "Read quests with Wynntils" (the empty card) or "Yenile" (the title line's chip); while running, "Reading quests…". */
+    private String rescanLabel(boolean chip) {
+        if (QuestBook.rescanning()) {
+            return L.t("wynnlabs.quests.rescanning");
+        }
+        return L.t(chip ? "wynnlabs.quests.refresh" : "wynnlabs.quests.rescan");
+    }
+
+    /** The rescan's tooltip: what it does and that it runs only on a press, or why it cannot run. */
+    private List<Component> rescanTip() {
+        if (!Wyn.canRescanQuests()) {
+            return List.of(L.c("wynnlabs.quests.rescan_off", Wyn.version()).withStyle(ChatFormatting.GOLD));
+        }
+        return List.of(L.c(QuestBook.rescanning() ? "wynnlabs.quests.rescanning" : "wynnlabs.quests.rescan")
+                        .withStyle(ChatFormatting.GOLD),
+                L.c("wynnlabs.quests.rescan_tip").withStyle(ChatFormatting.GRAY),
+                L.c("wynnlabs.quests.rescan_only_press").withStyle(ChatFormatting.DARK_GRAY));
+    }
+
+    /**
+     * The quests tab's title line, on the right: how long ago the list was read and the "Yenile"
+     * chip (only once quests are known); returns the width used, 0 when nothing is drawn.
+     */
+    private int questTitleRight(GuiGraphics g, int right, int y, int room, int mx, int my) {
+        if (!Wyn.up(Wyn.Feature.QUESTS) || QuestAdvisor.known() == 0) {
+            return 0;
+        }
+        boolean ready = Wyn.canRescanQuests() && !QuestBook.rescanning();
+        String label = rescanLabel(true);
+        int bw = font.width(label) + 22;
+        int bx = right - bw;
+        int by = y - 2;
+        boolean hover = mx >= bx && mx < bx + bw && my >= by && my < by + 13;
+        int state = hover && ready ? Kit.HOVER : Kit.REST;
+        Kit.button(g, bx, by, bw, 13, state);
+        woodIconText(g, "refresh", label, bx + 6, by + 3, state);
+        hits.add(new Hit(bx, by, bw, 13, null, rescanTip(), "#qrescan:"));
+        int used = bw;
+        long at = QuestBook.readAt();
+        if (at > 0) {
+            String read = System.currentTimeMillis() - at < 60_000 ? L.t("wynnlabs.quests.read_now")
+                    : L.t("wynnlabs.quests.read_ago", ago(at));
+            int rw = font.width(read);
+            if (used + 6 + rw <= room) {
+                Kit.text(g, font, read, bx - 6 - rw, y, Theme.INK_3);
+                used += 6 + rw;
+            }
+        }
+        return used;
+    }
+
     private void drawQuests(GuiGraphics g, int x, int y, int w, int h, int mx, int my) {
         if (!Wyn.up(Wyn.Feature.QUESTS)) {
             ink(g, L.c("wynnlabs.wyn.quests_off", Wyn.version()).withStyle(ChatFormatting.GOLD), x, y + 4, 0xFFFFFFFF);
@@ -3508,10 +3608,11 @@ final class RoadmapScreen extends Screen {
         }
         Map<String, List<QuestAdvisor.Suggestion>> lists = questLists();
         if (QuestAdvisor.known() == 0) {
+            // the gold button has Wynntils read the book; the line under it says the manual way
+            boolean ready = Wyn.canRescanQuests() && !QuestBook.rescanning();
             emptyState(g, x, y, w, h, railIcon(2), L.t("wynnlabs.quests.empty_title"),
-                    L.t("wynnlabs.quests.empty_step1"),
-                    L.t("wynnlabs.quests.empty_step2"),
-                    L.t("wynnlabs.quests.empty_step3"));
+                    new EmptyButton(rescanLabel(false), ready ? Kit.ON : Kit.REST, rescanTip(), "#qrescan:",
+                            L.t("wynnlabs.quests.empty_manual")));
             return;
         }
         // 1. the quest you track, and a little map of where things are
@@ -5692,6 +5793,10 @@ final class RoadmapScreen extends Screen {
                                     L.c("wynnlabs.quests.now_tracking", QuestGuides.title(q.name())).withStyle(ChatFormatting.GREEN), false);
                         }
                     }
+                } else if (c.startsWith("#qrescan:")) {
+                    // the player's press, the only thing that starts Wynntils' quest book refresh
+                    // (QuestBook.askWynntils → Wyn.rescanQuests); nothing while it runs or when it cannot
+                    QuestBook.askWynntils();
                 } else if (c.equals("#qclear")) {
                     int n = Waypoints.clearAll();
                     flash = L.t("wynnlabs.quests.pins_cleared", n);

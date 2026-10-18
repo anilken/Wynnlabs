@@ -222,6 +222,12 @@ public final class WynnLabs implements ClientModInitializer {
                     } catch (Throwable t) {
                         System.out.println("[WynnLabs] tooltip hook unavailable: " + t);
                     }
+                    // the quests tab's "read quests with Wynntils": the lists Wynntils posts after the press
+                    try {
+                        Wyn.listen(Wyn.Feature.QUESTS, new WynntilsEvents.Quests());
+                    } catch (Throwable t) {
+                        System.out.println("[WynnLabs] quest list hook unavailable: " + t);
+                    }
                     // the Endgame tab's events, each under its own feature
                     try {
                         Wyn.listen(Wyn.Feature.RAIDS, new WynntilsEvents.Raids());

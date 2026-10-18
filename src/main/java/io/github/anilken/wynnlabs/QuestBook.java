@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.anilken.wynnlabs.model.Activity;
+import io.github.anilken.wynnlabs.model.Quest;
 import io.github.anilken.wynnlabs.model.QuestKind;
 import net.minecraft.client.Minecraft;
 
@@ -36,13 +37,143 @@ final class QuestBook {
 
     static List<Entry> all() {
         load();
-        return new ArrayList<>(ENTRIES.values());
+        return previewHidden ? new ArrayList<>() : new ArrayList<>(ENTRIES.values());
     }
 
     /** For the no-game preview: a quest as if it was read from the book. */
     static void put(Entry e) {
         load();
         ENTRIES.put(e.name(), e);
+        readAt = Math.max(readAt, e.seen());
+    }
+
+    // ---- "read quests with Wynntils" (the quests tab's button and its "Yenile" chip) ----
+
+    /** How long the button says "reading" when no fresh list arrives. */
+    static final long RESCAN_TIMEOUT = 30_000;
+    /** How long after the press Wynntils' lists are taken in (its quest and mini-quest scans come one after the other). */
+    private static final long RESCAN_WINDOW = 120_000;
+    /** When the quest list was last read (the open book, or Wynntils after a press); 0 when never. */
+    private static volatile long readAt;
+    /** When the player last pressed the button; 0 when not this session. */
+    private static volatile long askedAt;
+    private static boolean previewHidden;
+    private static boolean previewRescanning;
+
+    /** When the quest list was last read, in epoch ms; 0 when it never was. */
+    static long readAt() {
+        load();
+        return readAt;
+    }
+
+    /** True from the player's press until the list updates or {@link #RESCAN_TIMEOUT} passes. */
+    static boolean rescanning() {
+        if (previewRescanning) {
+            return true;
+        }
+        long asked = askedAt;
+        return asked > 0 && System.currentTimeMillis() - asked < RESCAN_TIMEOUT && readAt < asked;
+    }
+
+    /**
+     * The player pressed "read quests with Wynntils": Wynntils' own refresh reads the content book
+     * (see {@link Wyn#rescanQuests}). False when it is already running or Wynntils cannot.
+     * Only ever called from that press.
+     */
+    static boolean askWynntils() {
+        load();
+        if (rescanning() || !Wyn.canRescanQuests()) {
+            return false;
+        }
+        if (!Wyn.rescanQuests()) {
+            return false;
+        }
+        askedAt = System.currentTimeMillis();
+        return true;
+    }
+
+    /**
+     * Wynntils posted a fresh quest or mini-quest list. Taken in only after the player's press
+     * (otherwise the open book, read in {@link #onTick}, stays the source): new and changed quests
+     * go in, quests Wynntils did not list stay as they were. Game thread.
+     */
+    static void fromWynntils() {
+        long asked = askedAt;
+        if (asked == 0 || System.currentTimeMillis() - asked > RESCAN_WINDOW) {
+            return;
+        }
+        List<Quest> quests = Wyn.questsAndMiniQuests();
+        if (quests.isEmpty()) {
+            return;                                 // nothing read: the press times out
+        }
+        load();
+        boolean changed = false;
+        long now = System.currentTimeMillis();
+        for (Quest q : quests) {
+            Entry old = ENTRIES.get(q.name());
+            Entry e = entry(q, old, now);
+            if (old == null || !same(old, e)) {
+                ENTRIES.put(e.name(), e);
+                changed = true;
+            }
+        }
+        readAt = now;
+        if (changed) {
+            save();
+        }
+        System.out.println("[WynnLabs] took " + quests.size() + " quests from Wynntils' content book scan");
+    }
+
+    /** A quest from Wynntils' list as a book entry; the book's own kind and distance kept from {@code old}. */
+    private static Entry entry(Quest q, Entry old, long now) {
+        boolean met = true;
+        int level = q.level();
+        if (q.requirements() != null) {
+            Quest.Requirements r = q.requirements();
+            if (r.level() != null) {
+                level = r.level();
+                met = r.levelMet() == null || r.levelMet();
+            }
+            for (Quest.Profession p : r.professions()) {
+                met &= p.met() == null || p.met();
+            }
+            for (Quest.Need n : r.quests()) {
+                met &= n.met() == null || n.met();
+            }
+        }
+        long xp = 0;
+        List<String> xpLines = q.rewards() == null ? null : q.rewards().get("XP");
+        if (xpLines != null) {
+            for (String line : xpLines) {
+                String digits = line.replaceAll("[^0-9]", "");
+                if (!digits.isEmpty() && digits.length() < 12) {
+                    xp = Math.max(xp, Long.parseLong(digits));
+                }
+            }
+        }
+        String task = q.nextTask() == null ? null : ItemJson.clean(q.nextTask());
+        Integer x = null, y = null, z = null;
+        if (task != null) {
+            Matcher m = COORDS.matcher(task);
+            if (m.find()) {
+                x = Integer.parseInt(m.group(1));
+                y = Integer.parseInt(m.group(2));
+                z = Integer.parseInt(m.group(3));
+            }
+        }
+        String type = old != null ? old.type() : q.mini() ? "MINI_QUEST" : "QUEST";
+        return new Entry(q.name(), q.status() == null ? "UNKNOWN" : q.status(), level, q.length(), xp, met, task,
+                x, y, z, x == null && old != null ? old.bookDistance() : null, now, type, q.difficulty());
+    }
+
+    /** For the J menu preview: the tab as if no quest was read yet. */
+    static void previewHidden(boolean on) {
+        previewHidden = on;
+    }
+
+    /** For the J menu preview: the button as if it was pressed a moment ago. */
+    static void previewRescanning(boolean on) {
+        previewRescanning = on;
     }
 
     /**
@@ -111,7 +242,7 @@ final class QuestBook {
 
     static int size() {
         load();
-        return ENTRIES.size();
+        return previewHidden ? 0 : ENTRIES.size();
     }
 
     static void onTick(Minecraft mc) {
@@ -129,6 +260,7 @@ final class QuestBook {
                 if (a.type() == null || !a.quest()) {
                     continue;
                 }
+                readAt = System.currentTimeMillis();    // the book is open on quests: the list is being read
                 Entry e = entry(a);
                 Entry old = ENTRIES.get(e.name());
                 if (old == null || !same(old, e)) {
@@ -212,6 +344,8 @@ final class QuestBook {
         }
         loadedFor = id;
         ENTRIES.clear();
+        readAt = 0;
+        askedAt = 0;
         try {
             if (id.isEmpty() || !Files.exists(file())) {
                 return;
@@ -227,6 +361,7 @@ final class QuestBook {
                         o.has("type") ? o.get("type").getAsString() : "QUEST",
                         o.has("difficulty") ? o.get("difficulty").getAsString() : null);
                 ENTRIES.put(e.name(), e);
+                readAt = Math.max(readAt, e.seen());   // the file keeps no read time: the newest entry's
             }
         } catch (Exception ex) {
             System.out.println("[WynnLabs] could not read quests.json: " + ex);

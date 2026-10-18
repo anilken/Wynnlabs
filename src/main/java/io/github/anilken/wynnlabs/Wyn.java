@@ -11,6 +11,7 @@ import com.wynntils.models.abilitytree.type.AbilityTreeInfo;
 import com.wynntils.models.abilitytree.type.AbilityTreeNodeState;
 import com.wynntils.models.abilitytree.type.AbilityTreeSkillNode;
 import com.wynntils.models.activities.quests.QuestInfo;
+import com.wynntils.models.activities.type.ActivitySortOrder;
 import com.wynntils.models.activities.type.ActivityType;
 import com.wynntils.models.activities.type.DiscoveryType;
 import com.wynntils.models.character.type.ClassType;
@@ -484,6 +485,48 @@ final class Wyn {
             }
             return out;
         }, List.of());
+    }
+
+    /** Quests and mini-quests as Wynntils last read them from the content book, by level. */
+    static List<Quest> questsAndMiniQuests() {
+        return guard(Feature.QUESTS, () -> {
+            List<Quest> out = new ArrayList<>();
+            for (QuestInfo q : Models.Quest.getSortedQuests(ActivitySortOrder.LEVEL, true, true)) {
+                out.add(quest(q));
+            }
+            return out;
+        }, List.of());
+    }
+
+    /**
+     * Whether the quests tab's "read quests with Wynntils" can run: the quest calls work and a
+     * character is selected. The J menu preview (no Wynntils) draws it as in a game.
+     */
+    static boolean canRescanQuests() {
+        if (!up(Feature.QUESTS)) {
+            return false;
+        }
+        if (!GameState.current().running()) {
+            return true;
+        }
+        return hasCharacter();
+    }
+
+    /**
+     * Wynntils' own quest book refresh: it opens the content book for a moment, reads every
+     * quest and mini-quest page, then posts the new lists (taken in by {@link QuestBook#fromWynntils}).
+     * False when unavailable. Same signature in every supported release (4.1.0 to 4.2.14).
+     * <p>
+     * The one place the mod asks Wynntils to open a menu to read it, and only on the player's
+     * press of the quests tab's button or "Yenile" chip ({@link QuestBook#askWynntils}). Never call
+     * it automatically, on a timer or when a tab opens. (Tracking a quest, {@link #startTracking},
+     * also has Wynntils open the book, likewise only on the player's click.)
+     */
+    static boolean rescanQuests() {
+        return guard(Feature.QUESTS, () -> {
+            Models.Quest.rescanQuestBook(true, true);
+            return true;
+        }, false);
     }
 
     private static Quest quest(QuestInfo q) {
