@@ -3380,7 +3380,7 @@ final class RoadmapScreen extends Screen {
                         d.areaLevel() > d.level() + 2 ? 0xFFE24B4A : 0xFF9C9A92);
             }
             if (d.secondsToZero() > 0) {
-                cx = chip(g, cx, cy, L.t("wynnlabs.deaths.chip_seconds", String.format(Locale.ROOT, "%.1f", d.secondsToZero())),
+                cx = chip(g, cx, cy, L.t("wynnlabs.deaths.chip_seconds", dec(d.secondsToZero(), 1)),
                         d.secondsToZero() <= 3 ? 0xFFEF9F27 : 0xFF9C9A92);
             }
             if (d.potions() >= 0) {

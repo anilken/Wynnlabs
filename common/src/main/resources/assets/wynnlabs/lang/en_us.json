@@ -745,7 +745,7 @@
   "wynnlabs.deaths.cause_unknown": "Unknown",
   "wynnlabs.deaths.advice_head": "Coach: ",
   "wynnlabs.deaths.chip_zone": "area Lv. %s · you Lv. %s",
-  "wynnlabs.deaths.chip_seconds": "%s s",
+  "wynnlabs.deaths.chip_seconds": "dead in %s s",
   "wynnlabs.deaths.chip_potions": "%s potion|%s potions",
   "wynnlabs.deaths.tip_mobs": "Nearby: %s",
   "wynnlabs.deaths.tip_click": "Click: mark the spot on your compass",

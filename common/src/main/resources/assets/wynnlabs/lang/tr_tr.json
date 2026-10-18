@@ -745,7 +745,7 @@
   "wynnlabs.deaths.cause_unknown": "Bilinmiyor",
   "wynnlabs.deaths.advice_head": "Koç: ",
   "wynnlabs.deaths.chip_zone": "bölge %s · sen %s",
-  "wynnlabs.deaths.chip_seconds": "%s sn",
+  "wynnlabs.deaths.chip_seconds": "%s sn'de öldün",
   "wynnlabs.deaths.chip_potions": "%s iksir",
   "wynnlabs.deaths.tip_mobs": "Yakındakiler: %s",
   "wynnlabs.deaths.tip_click": "Tıkla: ölüm yerini pusulaya işaretle",
