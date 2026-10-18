@@ -60,6 +60,7 @@
   "wynnlabs.settings.key_saved": "Wynnventory key saved, live prices on",
   "wynnlabs.settings.key_removed": "Wynnventory key removed",
   "wynnlabs.setting.questGuides": "Quest guides · wynncraft.wiki.gg",
+  "wynnlabs.setting.updateCheck": "Check for updates",
   "wynnlabs.setting.localApi": "Local API for tools · 127.0.0.1",
   "wynnlabs.setting.debug": "Debug output",
   "wynnlabs.advice.shop_alternative": "%s alternative (untradable)",
@@ -673,6 +674,7 @@
   "wynnlabs.setting_desc.manaMeter": "Measures your mana and tunes the model",
   "wynnlabs.setting_desc.priceApi": "Refreshes listings of items you see and this week's raid and lootrun pools, hourly",
   "wynnlabs.setting_desc.questGuides": "Downloads quest and secret discovery pages and keeps them a week",
+  "wynnlabs.setting_desc.updateCheck": "Asks GitHub once a session whether a newer release is out",
   "wynnlabs.setting_desc.localApi": "Only programs on this computer can read it",
   "wynnlabs.setting_desc.debug": "For bug reports; leave it off normally",
   "wynnlabs.settings.cat_tips": "Tooltips",
@@ -1466,5 +1468,8 @@
   "wynnlabs.endgame.tip_owned": "Owned: tier %s/%s",
   "wynnlabs.endgame.tip_owned_none": "Not owned",
   "wynnlabs.endgame.tip_owned_unknown": "Owned: unknown",
-  "wynnlabs.endgame.tip_also": "Also this week: %s"
+  "wynnlabs.endgame.tip_also": "Also this week: %s",
+  "wynnlabs.update.newer": "A new version is out: %s (you have %s)",
+  "wynnlabs.update.download": "[Download]",
+  "wynnlabs.update.download_hover": "Opens the release page on GitHub"
 }
