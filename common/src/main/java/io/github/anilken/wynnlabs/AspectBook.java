@@ -111,7 +111,7 @@ final class AspectBook {
         Set<String> unlocked = new HashSet<>(g.unlockedAbilities());
         Set<String> planned = new HashSet<>(g.abilityPlan().keySet());
         String chosen = chosenArchetype();
-        String key = klass + "|" + aspects + "|" + owned + "|" + equipped + "|" + System.identityHashCode(tree)
+        String key = L.code() + "|" + klass + "|" + aspects + "|" + owned + "|" + equipped + "|" + System.identityHashCode(tree)
                 + "|" + new java.util.TreeSet<>(unlocked) + "|" + new java.util.TreeSet<>(planned) + "|" + chosen;
         if (key.equals(inputs)) {
             return;
