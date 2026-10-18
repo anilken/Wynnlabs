@@ -856,7 +856,6 @@
   "wynnlabs.wear.prefix": "Wynn Labs ▸ ",
   "wynnlabs.wear.give": "+%s %s (%s olur)",
   "wynnlabs.wear.take": "−%s %s (%s kalır)",
-  "wynnlabs.wear.cannot": "%s çalışmıyor: hepsini birlikte giymek için %s beceri puanı lazım, seviyen %s veriyor. Bir parçayı çıkar.",
   "wynnlabs.setting.chatSkills": "Sohbet: beceri puanı yardımı",
   "wynnlabs.setting_desc.chatSkills": "Takılı bir eşya beceri puanı yetmediği için çalışmıyorsa hangi beceriden alıp hangisine vereceğini yazar",
   "wynnlabs.screen.tab_damage": "Hasar",

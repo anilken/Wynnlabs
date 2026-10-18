@@ -69,6 +69,11 @@ final class L {
         }
     }
 
+    /** The text of {@code key} as one shipped language file has it ("en_us", "tr_tr"), unfilled; null when missing. */
+    static String template(String code, String key) {
+        return table(code).get(key);
+    }
+
     static MutableComponent c(String key, Object... args) {
         return Component.literal(t(key, args));
     }

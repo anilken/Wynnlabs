@@ -384,8 +384,9 @@ final class TreePlanner {
             if (ch.isEmpty()) {
                 return;
             }
+            // the plan's notes are saved worded (advice.json): a language switch writes them again
             String key = Profile.id() + "|" + ch + "|" + Wyn.level() + "|"
-                    + new java.util.TreeSet<>(GameState.current().unlockedAbilities());
+                    + new java.util.TreeSet<>(GameState.current().unlockedAbilities()) + "|" + L.code();
             if (!key.equals(applied)) {
                 apply(ch);
                 applied = key;

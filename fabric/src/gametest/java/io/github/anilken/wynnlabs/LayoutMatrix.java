@@ -82,12 +82,12 @@ public class LayoutMatrix implements FabricClientGameTest {
                     prof.put(names[i], levels[i]);
                 }
                 DeathCoach.preview(List.of(
-                        new DeathCoach.Death(now - 3_600_000L, 1019, 21, -1991, 44, "Almuj Emerald Labyrinth", 48, 2900, 1927,
-                                3.4, 2, List.of("Guard Golem", "Emerald Sentry"), List.of("Bring 3 more potions", "Health is 30% under the area")),
-                        new DeathCoach.Death(now - 86_400_000L, -1297, 71, -4776, 43, "Leadin Fortress", 45, 3100, 1880,
-                                6.1, 0, List.of("Orc Warrior"), List.of("No potions left: buy them before going in")),
-                        new DeathCoach.Death(now - 3 * 86_400_000L, -760, 79, -666, 41, "Jungle", 42, 3300, 1800,
-                                9.0, 4, List.of("Jungle Spider", "Cobra"), List.of())));
+                        new DeathCoach.Death(now - 3_600_000L, 1019, 21, -1991, 44, "Almuj Emerald Labyrinth", false, 48, 2900, 1927,
+                                3.4, 2, List.of("Guard Golem", "Emerald Sentry"), List.of(Words.literal("Bring 3 more potions"), Words.literal("Health is 30% under the area"))),
+                        new DeathCoach.Death(now - 86_400_000L, -1297, 71, -4776, 43, "Leadin Fortress", false, 45, 3100, 1880,
+                                6.1, 0, List.of("Orc Warrior"), List.of(Words.literal("No potions left: buy them before going in"))),
+                        new DeathCoach.Death(now - 3 * 86_400_000L, -760, 79, -666, 41, "Jungle", false, 42, 3300, 1800,
+                                9.0, 4, List.of("Jungle Spider", "Cobra"), List.<Words>of())));
                 List<Discoveries.Entry> all = Discoveries.all();
                 java.util.Set<String> found = new java.util.HashSet<>();
                 for (int i = 0; i < Math.min(18, all.size()); i += 2) {

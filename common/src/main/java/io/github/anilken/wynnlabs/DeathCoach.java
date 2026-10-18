@@ -29,8 +29,34 @@ import java.util.regex.Pattern;
  */
 final class DeathCoach {
 
-    record Death(long time, int x, int y, int z, int level, String area, int areaLevel, double ehp,
-            int hpMax, double secondsToZero, int potions, List<String> mobs, List<String> advice) {}
+    /**
+     * One death. {@code area}: the territory, or with {@code near} the nearest spot's name ("near
+     * X" is worded when shown). {@code advice}: the coach's lines as language keys, worded when
+     * shown, so they follow the menu's language.
+     */
+    record Death(long time, int x, int y, int z, int level, String area, boolean near, int areaLevel, double ehp,
+            int hpMax, double secondsToZero, int potions, List<String> mobs, List<Words> advice) {
+
+        Words placeWords() {
+            return near ? Words.of("wynnlabs.death.area_near", area) : Words.literal(area);
+        }
+
+        /** The place in the language the mod speaks now ("" when unknown). */
+        String place() {
+            return area.isEmpty() ? "" : placeWords().text();
+        }
+
+        /** The advice lines in the language the mod speaks now. */
+        List<String> adviceText() {
+            List<String> out = new ArrayList<>(advice.size());
+            advice.forEach(a -> out.add(a.text()));
+            return out;
+        }
+    }
+
+    /** Every line the coach gives, for matching advice an older version saved already worded. */
+    private static final List<String> ADVICE_KEYS = List.of("wynnlabs.death.repeat_here", "wynnlabs.death.area_level",
+            "wynnlabs.death.burst", "wynnlabs.death.add_defence", "wynnlabs.death.no_potions", "wynnlabs.death.one_off");
 
     private record Sample(long time, int hp, int max) {}
 
@@ -109,6 +135,7 @@ final class DeathCoach {
         Build.Plan plan = Build.plan();
         double ehp = plan != null && plan.current() != null ? plan.current().ehp() : 0;
         String area = "";
+        boolean near = false;
         try {
             String t = Wyn.territoryAt(mc.player.position());
             if (t != null) {
@@ -122,9 +149,10 @@ final class DeathCoach {
                 .orElse(null);
         int areaLevel = spot != null && Math.hypot(spot.x() - x, spot.z() - z) < 300 ? spot.level() : 0;
         if (area.isEmpty() && spot != null) {
-            area = L.t("wynnlabs.death.area_near", spot.name());
+            area = spot.name();                 // "near X", worded when shown
+            near = true;
         }
-        Death d = new Death(now, x, y, z, level, area, areaLevel, ehp, hpMax, seconds, potions(mc), mobs(mc),
+        Death d = new Death(now, x, y, z, level, area, near, areaLevel, ehp, hpMax, seconds, potions(mc), mobs(mc),
                 new ArrayList<>());
         d.advice().addAll(advise(d, mc));
         DEATHS.add(d);
@@ -135,7 +163,7 @@ final class DeathCoach {
         learn();
         if (!d.advice().isEmpty()) {
             mc.gui.getChat().addMessage(L.c("wynnlabs.death.chat_prefix").withStyle(ChatFormatting.LIGHT_PURPLE)
-                    .append(Component.literal(String.join(" · ", d.advice())).withStyle(ChatFormatting.GRAY)));
+                    .append(Component.literal(String.join(" · ", d.adviceText())).withStyle(ChatFormatting.GRAY)));
         }
     }
 
@@ -173,30 +201,34 @@ final class DeathCoach {
 
     // ---- deciding ----
 
-    private static List<String> advise(Death d, Minecraft mc) {
-        List<String> out = new ArrayList<>();
-        int here = (int) DEATHS.stream()
+    private static List<Words> advise(Death d, Minecraft mc) {
+        return advise(d, DEATHS, MenuWatcher.assigned(io.github.anilken.wynnlabs.model.SkillKind.DEFENCE));
+    }
+
+    /** The coach's lines for a death, given the deaths before it and the Defence points assigned. */
+    static List<Words> advise(Death d, List<Death> before, int defence) {
+        List<Words> out = new ArrayList<>();
+        int here = (int) before.stream()
                 .filter(o -> Math.hypot(o.x() - d.x(), o.z() - d.z()) < 200 && d.time() - o.time() < 3 * 3600_000L)
                 .count() + 1;
         if (here >= 2) {
-            out.add(L.t("wynnlabs.death.repeat_here", here));
+            out.add(Words.of("wynnlabs.death.repeat_here", here));
         }
         if (d.areaLevel() > d.level()) {
-            out.add(L.t("wynnlabs.death.area_level", d.areaLevel(), d.level()));
+            out.add(Words.of("wynnlabs.death.area_level", d.areaLevel(), d.level()));
         }
         if (d.secondsToZero() > 0 && d.secondsToZero() <= 3) {
-            out.add(L.t("wynnlabs.death.burst", String.format(java.util.Locale.ROOT, "%.1f", d.secondsToZero()),
+            out.add(Words.of("wynnlabs.death.burst", String.format(java.util.Locale.ROOT, "%.1f", d.secondsToZero()),
                     Math.round(d.ehp())));
-            int def = MenuWatcher.assigned(io.github.anilken.wynnlabs.model.SkillKind.DEFENCE);
-            if (def < 10) {
-                out.add(L.t("wynnlabs.death.add_defence", def));
+            if (defence < 10) {
+                out.add(Words.of("wynnlabs.death.add_defence", defence));
             }
         }
         if (d.potions() == 0) {
-            out.add(L.t("wynnlabs.death.no_potions"));
+            out.add(Words.of("wynnlabs.death.no_potions"));
         }
         if (out.isEmpty()) {
-            out.add(L.t("wynnlabs.death.one_off"));
+            out.add(Words.of("wynnlabs.death.one_off"));
         }
         return out;
     }
@@ -250,20 +282,88 @@ final class DeathCoach {
             if (id.isEmpty() || !Files.exists(file())) {
                 return;
             }
-            for (var el : JsonParser.parseString(Files.readString(file())).getAsJsonArray()) {
-                var o = el.getAsJsonObject();
-                List<String> mobs = new ArrayList<>();
-                o.getAsJsonArray("mobs").forEach(m -> mobs.add(m.getAsString()));
-                List<String> adv = new ArrayList<>();
-                o.getAsJsonArray("advice").forEach(m -> adv.add(m.getAsString()));
-                DEATHS.add(new Death(o.get("time").getAsLong(), o.get("x").getAsInt(), o.get("y").getAsInt(),
-                        o.get("z").getAsInt(), o.get("level").getAsInt(), o.get("area").getAsString(),
-                        o.get("areaLevel").getAsInt(), o.get("ehp").getAsDouble(), o.get("hpMax").getAsInt(),
-                        o.get("seconds").getAsDouble(), o.get("potions").getAsInt(), mobs, adv));
-            }
+            DEATHS.addAll(read(Files.readString(file())));
         } catch (Exception e) {
             System.out.println("[WynnLabs] could not read deaths.json: " + e);
         }
+    }
+
+    /**
+     * deaths.json's deaths. The advice is read from "notes" (language keys); a file from an older
+     * version has only "advice", already worded in the language of the day: each line is matched
+     * back to its key (in English or Turkish), so it follows the menu's language too. A line no
+     * key matches stays as it was. The same for "near X" in the area.
+     */
+    static List<Death> read(String text) {
+        List<Death> out = new ArrayList<>();
+        for (var el : JsonParser.parseString(text).getAsJsonArray()) {
+            var o = el.getAsJsonObject();
+            List<String> mobs = new ArrayList<>();
+            o.getAsJsonArray("mobs").forEach(m -> mobs.add(m.getAsString()));
+            List<Words> adv = new ArrayList<>();
+            if (o.has("notes")) {
+                o.getAsJsonArray("notes").forEach(m -> {
+                    Words w = Words.fromJson(m);
+                    if (w != null) {
+                        adv.add(w);
+                    }
+                });
+            } else if (o.has("advice")) {
+                o.getAsJsonArray("advice").forEach(m -> {
+                    String line = m.getAsString();
+                    Words w = Words.unword(line, ADVICE_KEYS);
+                    adv.add(w != null ? w : Words.literal(line));
+                });
+            }
+            String area = o.get("area").getAsString();
+            boolean near = o.has("near") && o.get("near").getAsBoolean();
+            if (!o.has("near")) {
+                Words w = Words.unword(area, List.of("wynnlabs.death.area_near"));
+                if (w != null) {
+                    area = String.valueOf(w.args().get(0));
+                    near = true;
+                }
+            }
+            out.add(new Death(o.get("time").getAsLong(), o.get("x").getAsInt(), o.get("y").getAsInt(),
+                    o.get("z").getAsInt(), o.get("level").getAsInt(), area, near,
+                    o.get("areaLevel").getAsInt(), o.get("ehp").getAsDouble(), o.get("hpMax").getAsInt(),
+                    o.get("seconds").getAsDouble(), o.get("potions").getAsInt(), mobs, adv));
+        }
+        return out;
+    }
+
+    /**
+     * deaths.json's text: the advice as language keys ("notes"). "advice" keeps the lines worded
+     * as well, only so an older version of the mod can still read the file.
+     */
+    static String write(List<Death> deaths) {
+        JsonArray arr = new JsonArray();
+        for (Death d : deaths) {
+            JsonObject o = new JsonObject();
+            o.addProperty("time", d.time());
+            o.addProperty("x", d.x());
+            o.addProperty("y", d.y());
+            o.addProperty("z", d.z());
+            o.addProperty("level", d.level());
+            o.addProperty("area", d.area());
+            o.addProperty("near", d.near());
+            o.addProperty("areaLevel", d.areaLevel());
+            o.addProperty("ehp", Math.round(d.ehp()));
+            o.addProperty("hpMax", d.hpMax());
+            o.addProperty("seconds", d.secondsToZero());
+            o.addProperty("potions", d.potions());
+            JsonArray mobs = new JsonArray();
+            d.mobs().forEach(mobs::add);
+            o.add("mobs", mobs);
+            JsonArray notes = new JsonArray();
+            d.advice().forEach(a -> notes.add(a.json()));
+            o.add("notes", notes);
+            JsonArray adv = new JsonArray();
+            d.adviceText().forEach(adv::add);
+            o.add("advice", adv);
+            arr.add(o);
+        }
+        return arr.toString();
     }
 
     private static void save() {
@@ -271,30 +371,8 @@ final class DeathCoach {
             return;
         }
         try {
-            JsonArray arr = new JsonArray();
-            for (Death d : DEATHS) {
-                JsonObject o = new JsonObject();
-                o.addProperty("time", d.time());
-                o.addProperty("x", d.x());
-                o.addProperty("y", d.y());
-                o.addProperty("z", d.z());
-                o.addProperty("level", d.level());
-                o.addProperty("area", d.area());
-                o.addProperty("areaLevel", d.areaLevel());
-                o.addProperty("ehp", Math.round(d.ehp()));
-                o.addProperty("hpMax", d.hpMax());
-                o.addProperty("seconds", d.secondsToZero());
-                o.addProperty("potions", d.potions());
-                JsonArray mobs = new JsonArray();
-                d.mobs().forEach(mobs::add);
-                o.add("mobs", mobs);
-                JsonArray adv = new JsonArray();
-                d.advice().forEach(adv::add);
-                o.add("advice", adv);
-                arr.add(o);
-            }
             Files.createDirectories(file().getParent());
-            Files.writeString(file(), arr.toString());
+            Files.writeString(file(), write(DEATHS));
         } catch (Exception e) {
             System.out.println("[WynnLabs] could not save deaths.json: " + e);
         }
@@ -307,7 +385,7 @@ final class DeathCoach {
             JsonObject j = new JsonObject();
             j.addProperty("time", java.time.Instant.ofEpochMilli(d.time()).toString());
             j.addProperty("at", d.x() + ", " + d.y() + ", " + d.z());
-            j.addProperty("area", d.area());
+            j.addProperty("area", d.place());
             j.addProperty("areaLevel", d.areaLevel());
             j.addProperty("level", d.level());
             j.addProperty("ehp", Math.round(d.ehp()));
@@ -317,7 +395,7 @@ final class DeathCoach {
             d.mobs().forEach(mobs::add);
             j.add("mobs", mobs);
             JsonArray adv = new JsonArray();
-            d.advice().forEach(adv::add);
+            d.adviceText().forEach(adv::add);
             j.add("advice", adv);
             arr.add(j);
         }
