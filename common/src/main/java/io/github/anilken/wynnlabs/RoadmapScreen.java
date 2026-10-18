@@ -5173,7 +5173,7 @@ final class RoadmapScreen extends Screen {
 
         // an example of what it does, in as many lines as the room left takes
         String example = rowExample(r);
-        int lines = Math.min(4, (floor - cy - 18) / 10);
+        int lines = Math.min(4, (floor - cy - 20) / 10);
         if (lines >= 1 && !example.isEmpty()) {
             List<String> ex = new ArrayList<>();
             for (String para : example.split("\n")) {
@@ -5182,7 +5182,7 @@ final class RoadmapScreen extends Screen {
                     break;
                 }
             }
-            int bh = 15 + ex.size() * 10 + 2;
+            int bh = 15 + ex.size() * 10 + 4;           // the last line clear of the frame, as the title is
             g.fill(px, cy, px + pw, cy + bh, Theme.PAPER);
             Kit.outline(g, px, cy, pw, bh, Theme.LINE);
             inkIconText(g, "eye", L.t("wynnlabs.settings.example_title"), px + 6, cy + 4, Theme.INK_3);

@@ -699,7 +699,7 @@
   "wynnlabs.rules.on": "on",
   "wynnlabs.rules.off": "off",
   "wynnlabs.rules.levels": "%s lv",
-  "wynnlabs.rules.reset": "Reset to defaults",
+  "wynnlabs.rules.reset": "Reset all rules",
   "wynnlabs.rules.reset_done": "Rules reset to defaults",
   "wynnlabs.rules.per_character": "Each character has its own rules",
   "wynnlabs.rules.too_low": "Outdated below you by",
