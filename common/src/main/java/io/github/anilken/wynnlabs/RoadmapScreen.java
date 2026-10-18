@@ -3223,8 +3223,9 @@ final class RoadmapScreen extends Screen {
                             .withStyle(sell ? ChatFormatting.RED : ChatFormatting.GREEN).withStyle(UiFont::bold))
                     .append(Component.literal(st.by() == null ? "" : L.t("wynnlabs.bank.tip_checked_by", AutoAdvice.nice(st.by())))
                             .withStyle(ChatFormatting.DARK_GRAY)));
-            if (st.note() != null) {
-                for (String l : Advice.wrap(st.note(), 40)) {
+            String note = Vault.noteNow(st);
+            if (note != null) {
+                for (String l : Advice.wrap(note, 40)) {
                     tip.add(Component.literal(l).withStyle(ChatFormatting.GRAY));
                 }
             }
