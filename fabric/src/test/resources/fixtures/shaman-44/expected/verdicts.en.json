@@ -123,25 +123,25 @@
     "where": "bank acct:Account Bank p. 1#0",
     "name": "Earth Powder I",
     "verdict": "USE",
-    "note": "Apply it to your weapon (drag it in the inventory), your build's Earth damage"
+    "note": "Add it to your weapon (drag it onto the weapon): your build deals Earth damage"
   },
   {
     "where": "bank acct:Account Bank p. 1#1",
     "name": "Earth Powder II",
     "verdict": "USE",
-    "note": "Apply it to your weapon (drag it in the inventory), your build's Earth damage"
+    "note": "Add it to your weapon (drag it onto the weapon): your build deals Earth damage"
   },
   {
     "where": "bank acct:Account Bank p. 1#2",
     "name": "Earth Powder III",
     "verdict": "USE",
-    "note": "Apply it to your weapon (drag it in the inventory), your build's Earth damage"
+    "note": "Add it to your weapon (drag it onto the weapon): your build deals Earth damage"
   },
   {
     "where": "bank acct:Account Bank p. 1#3",
     "name": "Earth Powder IV",
     "verdict": "USE",
-    "note": "Apply it to your weapon (drag it in the inventory), your build's Earth damage"
+    "note": "Add it to your weapon (drag it onto the weapon): your build deals Earth damage"
   },
   {
     "where": "bank acct:Account Bank p. 1#4",
@@ -153,25 +153,25 @@
     "where": "bank acct:Account Bank p. 1#5",
     "name": "Air Powder I",
     "verdict": "USE",
-    "note": "Apply it to your weapon (drag it in the inventory), your build's Air damage"
+    "note": "Add it to your weapon (drag it onto the weapon): your build deals Air damage"
   },
   {
     "where": "bank acct:Account Bank p. 1#6",
     "name": "Air Powder II",
     "verdict": "USE",
-    "note": "Apply it to your weapon (drag it in the inventory), your build's Air damage"
+    "note": "Add it to your weapon (drag it onto the weapon): your build deals Air damage"
   },
   {
     "where": "bank acct:Account Bank p. 1#7",
     "name": "Air Powder III",
     "verdict": "USE",
-    "note": "Apply it to your weapon (drag it in the inventory), your build's Air damage"
+    "note": "Add it to your weapon (drag it onto the weapon): your build deals Air damage"
   },
   {
     "where": "bank acct:Account Bank p. 1#8",
     "name": "Air Powder IV",
     "verdict": "USE",
-    "note": "Apply it to your weapon (drag it in the inventory), your build's Air damage"
+    "note": "Add it to your weapon (drag it onto the weapon): your build deals Air damage"
   },
   {
     "where": "bank acct:Account Bank p. 1#9",
@@ -261,7 +261,7 @@
     "where": "bank acct:Account Bank p. 1#23",
     "name": "Air Powder V",
     "verdict": "USE",
-    "note": "Apply it to your weapon (drag it in the inventory), your build's Air damage"
+    "note": "Add it to your weapon (drag it onto the weapon): your build deals Air damage"
   },
   {
     "where": "bank acct:Account Bank p. 1#24",
@@ -405,7 +405,7 @@
     "where": "bank acct:Account Bank p. 2#18",
     "name": "Infinity",
     "verdict": "SELL",
-    "note": "Archer item, you play Shaman. Sell it to the Blacksmith (price not known yet)"
+    "note": "Archer item; you play Shaman. Sell it to the Blacksmith (no price yet)"
   },
   {
     "where": "bank acct:Account Bank p. 2#36",
@@ -555,19 +555,19 @@
     "where": "bank acct:Account Bank p. 4#1",
     "name": "Unidentified Spear",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Blacksmith: sell it there"
+    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
   },
   {
     "where": "bank acct:Account Bank p. 4#2",
     "name": "Unidentified Boots",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Astral Walkers +0.8%). Blacksmith: sell it there"
+    "note": "No outcome helps your build (best: Astral Walkers +0.8%). Sell it to the Blacksmith"
   },
   {
     "where": "bank acct:Account Bank p. 4#3",
     "name": "Unidentified Bow",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Blacksmith: sell it there"
+    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
   },
   {
     "where": "bank acct:Account Bank p. 5#0",
@@ -699,13 +699,13 @@
     "where": "bank acct:Account Bank p. 6#1",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Blacksmith: sell it there"
+    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
   },
   {
     "where": "bank acct:Account Bank p. 6#2",
     "name": "Unidentified Bow",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Blacksmith: sell it there"
+    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
   },
   {
     "where": "bank acct:Account Bank p. 6#3",
@@ -717,19 +717,19 @@
     "where": "bank acct:Account Bank p. 6#4",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Blacksmith: sell it there"
+    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
   },
   {
     "where": "bank acct:Account Bank p. 6#5",
     "name": "Unidentified Spear",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Blacksmith: sell it there"
+    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
   },
   {
     "where": "bank acct:Account Bank p. 6#6",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Blacksmith: sell it there"
+    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
   },
   {
     "where": "bank acct:Account Bank p. 6#7",
@@ -1143,7 +1143,7 @@
     "where": "bank acct:Account Bank p. 10#4",
     "name": "Unidentified Spear",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Blacksmith: sell it there"
+    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
   },
   {
     "where": "bank acct:Account Bank p. 10#5",
@@ -1161,13 +1161,13 @@
     "where": "bank acct:Account Bank p. 10#7",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Blacksmith: sell it there"
+    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
   },
   {
     "where": "bank acct:Account Bank p. 10#8",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Blacksmith: sell it there"
+    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
   },
   {
     "where": "bank acct:Account Bank p. 10#9",
@@ -1185,7 +1185,7 @@
     "where": "bank acct:Account Bank p. 10#11",
     "name": "Unidentified Dagger",
     "verdict": "SELL",
-    "note": "Lv. 1-5, far below your level. Blacksmith: sell it there"
+    "note": "Lv. 1-5, far below your level. Sell it to the Blacksmith"
   },
   {
     "where": "bank acct:Account Bank p. 10#12",
@@ -1239,7 +1239,7 @@
     "where": "bank char:char0001:Character Bank p. 1#5",
     "name": "Breathing Helmet I",
     "verdict": "KEEP",
-    "note": "Quest item, don't sell it; it's done once the quest is"
+    "note": "Quest item: don't sell it until the quest is done"
   },
   {
     "where": "bank char:char0001:Character Bank p. 1#6",
@@ -1329,7 +1329,7 @@
     "where": "bank char:char0001:Character Bank p. 1#20",
     "name": "Climbing Helmet",
     "verdict": "KEEP",
-    "note": "Quest item, don't sell it; it's done once the quest is"
+    "note": "Quest item: don't sell it until the quest is done"
   },
   {
     "where": "bank char:char0001:Character Bank p. 1#43",
@@ -1377,7 +1377,7 @@
     "where": "bank char:char0001:Character Bank p. 2#5",
     "name": "Sylar",
     "verdict": "SELL",
-    "note": "Archer item, you play Shaman. Sell it on the Trade Market, ~33 EB"
+    "note": "Archer item; you play Shaman. Sell it on the Trade Market, ~33 EB"
   },
   {
     "where": "bank char:char0001:Character Bank p. 2#6",
@@ -1455,19 +1455,19 @@
     "where": "bank char:char0003:Character Bank p. 1#11",
     "name": "Climbing Helmet",
     "verdict": "KEEP",
-    "note": "Quest item, don't sell it; it's done once the quest is"
+    "note": "Quest item: don't sell it until the quest is done"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#12",
     "name": "Sage",
     "verdict": "SELL",
-    "note": "Mage item, you play Shaman. Sell it on the Trade Market, ~1.5 LE"
+    "note": "Mage item; you play Shaman. Sell it on the Trade Market, ~1.5 LE"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#13",
     "name": "Hisel Azetir",
     "verdict": "SELL",
-    "note": "Mage item, you play Shaman. Sell it to the Blacksmith (untradable)"
+    "note": "Mage item; you play Shaman. Sell it to the Blacksmith (untradable)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#14",
@@ -1509,7 +1509,7 @@
     "where": "bank char:char0003:Character Bank p. 1#21",
     "name": "Climbing Helmet",
     "verdict": "KEEP",
-    "note": "Quest item, don't sell it; it's done once the quest is"
+    "note": "Quest item: don't sell it until the quest is done"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#35",
@@ -1581,7 +1581,7 @@
     "where": "bank char:char0003:Character Bank p. 2#4",
     "name": "Hisel Azetir",
     "verdict": "SELL",
-    "note": "Mage item, you play Shaman. Sell it to the Blacksmith (untradable)"
+    "note": "Mage item; you play Shaman. Sell it to the Blacksmith (untradable)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#5",
@@ -1629,13 +1629,13 @@
     "where": "bank char:char0003:Character Bank p. 3#0",
     "name": "Unidentified Boots",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Way Back Home -0.6%). Blacksmith: sell it there"
+    "note": "No outcome helps your build (best: Way Back Home -0.6%). Sell it to the Blacksmith"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#1",
     "name": "Unidentified Leggings",
     "verdict": "SELL",
-    "note": "Lv. 11-15, far below your level. Blacksmith: sell it there"
+    "note": "Lv. 11-15, far below your level. Sell it to the Blacksmith"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#2",
@@ -1647,7 +1647,7 @@
     "where": "bank char:char0003:Character Bank p. 3#3",
     "name": "Unidentified Necklace",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Rycar's Swagger -9.5%). Blacksmith: sell it there"
+    "note": "No outcome helps your build (best: Rycar's Swagger -9.5%). Sell it to the Blacksmith"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#4",
@@ -1659,7 +1659,7 @@
     "where": "bank char:char0003:Character Bank p. 3#5",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Rayshyroth's Knowledge -7.5%). Blacksmith: sell it there"
+    "note": "No outcome helps your build (best: Rayshyroth's Knowledge -7.5%). Sell it to the Blacksmith"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#6",
@@ -1671,7 +1671,7 @@
     "where": "bank char:char0003:Character Bank p. 3#7",
     "name": "Unidentified Necklace",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Charm of the Vampire -10.7%). Blacksmith: sell it there"
+    "note": "No outcome helps your build (best: Charm of the Vampire -10.7%). Sell it to the Blacksmith"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#9",
@@ -1689,13 +1689,13 @@
     "where": "bank char:char0003:Character Bank p. 3#27",
     "name": "Fuse",
     "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (price not known yet)"
+    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (no price yet)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#28",
     "name": "Fuse",
     "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (price not known yet)"
+    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (no price yet)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#36",
@@ -1713,7 +1713,7 @@
     "where": "bank char:char0003:Character Bank p. 4#10",
     "name": "Sparkling Plate",
     "verdict": "SELL",
-    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (price not known yet)"
+    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (no price yet)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#27",
@@ -1755,13 +1755,13 @@
     "where": "bank char:char0003:Character Bank p. 5#0",
     "name": "Hellion",
     "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (price not known yet)"
+    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (no price yet)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#1",
     "name": "Hellion",
     "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (price not known yet)"
+    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (no price yet)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#2",
@@ -1785,7 +1785,7 @@
     "where": "bank char:char0003:Character Bank p. 5#10",
     "name": "September",
     "verdict": "SELL",
-    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (price not known yet)"
+    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (no price yet)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#11",
@@ -1803,7 +1803,7 @@
     "where": "bank char:char0003:Character Bank p. 5#13",
     "name": "Afterimage",
     "verdict": "SELL",
-    "note": "Mage item, you play Shaman. Sell it to the Blacksmith (market ~8 EB)"
+    "note": "Mage item; you play Shaman. Sell it to the Blacksmith (market ~8 EB)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#28",
@@ -1833,7 +1833,7 @@
     "where": "bank char:char0003:Character Bank p. 5#36",
     "name": "Lichclaw",
     "verdict": "SELL",
-    "note": "Mage item, you play Shaman. Sell it on the Trade Market, ~1.0 LE"
+    "note": "Mage item; you play Shaman. Sell it on the Trade Market, ~1.0 LE"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#37",
@@ -1869,25 +1869,25 @@
     "where": "bank char:char0003:Character Bank p. 6#1",
     "name": "Unidentified Spear",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Blacksmith: sell it there"
+    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#2",
     "name": "Unidentified Leggings",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Jera -12.0%). Blacksmith: sell it there"
+    "note": "No outcome helps your build (best: Jera -12.0%). Sell it to the Blacksmith"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#3",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Hailstone -0.8%). Blacksmith: sell it there"
+    "note": "No outcome helps your build (best: Hailstone -0.8%). Sell it to the Blacksmith"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#4",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Rayshyroth's Knowledge -7.5%). Blacksmith: sell it there"
+    "note": "No outcome helps your build (best: Rayshyroth's Knowledge -7.5%). Sell it to the Blacksmith"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#5",
@@ -1899,7 +1899,7 @@
     "where": "bank char:char0003:Character Bank p. 6#6",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Hailstone -0.8%). Blacksmith: sell it there"
+    "note": "No outcome helps your build (best: Hailstone -0.8%). Sell it to the Blacksmith"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#7",
@@ -1911,7 +1911,7 @@
     "where": "bank char:char0003:Character Bank p. 6#8",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Czytash's Compass -6.6%). Blacksmith: sell it there"
+    "note": "No outcome helps your build (best: Czytash's Compass -6.6%). Sell it to the Blacksmith"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#9",
@@ -1953,7 +1953,7 @@
     "where": "bank char:char0003:Character Bank p. 6#15",
     "name": "Tinderbox",
     "verdict": "SELL",
-    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (price not known yet)"
+    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (no price yet)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#44",
