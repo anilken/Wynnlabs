@@ -106,8 +106,12 @@ def embeddedKeySource = { ->
     def instance = new File(line).parentFile
     return instance == null ? null : new File(instance, 'config/wynnlabs/wynnventory-key.txt')
 }
-/** The key's bytes, in memory only; null when there is no key source. */
+/** The key's bytes, in memory only; null when there is no key source or -PnoEmbeddedKey is set. */
 def embeddedKeyBytes = { ->
+    // -PnoEmbeddedKey (CI, public builds): the key source is not even opened
+    if (project.hasProperty('noEmbeddedKey')) {
+        return null
+    }
     def f = embeddedKeySource()
     if (f == null || !f.isFile()) {
         return null
@@ -125,7 +129,7 @@ tasks.register('embedKey') {
         def out = embeddedKeyDir.get().asFile
         project.delete(out)
         out.mkdirs()
-        def key = project.hasProperty('noEmbeddedKey') ? null : embeddedKeyBytes()
+        def key = embeddedKeyBytes()
         if (key == null) {
             logger.lifecycle('embedKey: no key source, the jar has no embedded key')
             return
@@ -163,12 +167,13 @@ tasks.register('embedKey') {
     }
 }
 
-// The loader modules whose jars carry the key and are checked for it (the Fabric jar for now)
-def keyJarProjects = [':fabric']
+// The loader modules whose jars carry the key and are checked for it: both loaders, or only
+// fabric with -Penabled_platforms=fabric (settings.gradle leaves neoforge out then)
+def keyJarProjects = [':fabric', ':neoforge'].findAll { findProject(it) != null }
 def keyJarTasks = ['jar', 'shadowJar', 'remapJar']
 
 // the jars only: tests and dev runs read resources from build/resources, where the key never is.
-// shadowJar is the one that feeds remapJar, the player jar.
+// In each loader, shadowJar is the one that feeds remapJar, the player jar.
 keyJarProjects.each { path ->
     def p = project(path)
     p.pluginManager.withPlugin('com.gradleup.shadow') {
@@ -280,6 +285,10 @@ tasks.register('checkPersonal') {
 }
 check.dependsOn checkPersonal
 
+// The Java sources checkLang and checkWynntilsImports read: the shared code and both loader
+// modules (a missing folder, such as neoforge's before it has classes, is simply empty)
+def sourceRoots = ['common/src/main/java', 'fabric/src/main/java', 'neoforge/src/main/java']
+
 // Language check: every "wynnlabs.*" key the Java code uses must exist in en_us.json and
 // tr_tr.json, both files must have the same keys, and no key may be unused. A literal ending in
 // "." (e.g. "wynnlabs.verdict." + name) marks every key under that prefix as used.
@@ -294,9 +303,18 @@ tasks.register('checkLang') {
         def used = [] as Set
         def prefixes = [] as Set
         def pattern = ~/"((?:key\.(?:category\.)?)?wynnlabs\.[A-Za-z0-9_.]*)"/
-        fileTree('common/src/main/java').include('**/*.java').each { f ->
+        def problems = []
+        // the loader modules may name key-binding keys only (a loader registers the category);
+        // every other text belongs to the shared code in common
+        def javaFiles = sourceRoots.collectMany { root -> fileTree(root).include('**/*.java').files.collect { [root, it] } }
+        javaFiles.each { root, f ->
+            def loader = !root.startsWith('common/')
             (f.getText('UTF-8') =~ pattern).each { m ->
                 def k = m[1]
+                if (loader && !k.startsWith('key.')) {
+                    def rel = projectDir.toPath().relativize(f.toPath()).toString().replace(File.separatorChar, '/' as char)
+                    problems << "text key in a loader module (move it to common): ${k} in ${rel}"
+                }
                 if (k.endsWith('.')) {
                     prefixes << k
                 } else {
@@ -306,12 +324,11 @@ tasks.register('checkLang') {
         }
         // key-binding categories are named from an Identifier: count them as used when present
         def optional = [] as Set
-        fileTree('common/src/main/java').include('**/*.java').each { f ->
+        javaFiles.each { root, f ->
             (f.getText('UTF-8') =~ /fromNamespaceAndPath\("wynnlabs",\s*"([a-z0-9_]+)"\)/).each { m ->
                 optional << "key.category.wynnlabs.${m[1]}".toString()
             }
         }
-        def problems = []
         (used - en).each { problems << "missing in en_us: ${it}" }
         (used - tr).each { problems << "missing in tr_tr: ${it}" }
         (en - tr).each { problems << "only in en_us: ${it}" }
@@ -347,22 +364,26 @@ check.dependsOn checkLang
 // Wynntils boundary: only the bridge (Wyn), the item adapter (WynntilsItems) and the event hooks
 // (WynntilsEvents) may name Wynntils' types, by import or fully qualified. Everything else reads
 // the mod's own model, so a Wynntils change or a second item source touches only these files.
+// The loader modules (fabric, neoforge) may not name Wynntils at all.
 tasks.register('checkWynntilsImports') {
     group = 'verification'
     description = 'Fails when a Java file other than the Wynntils bridge files refers to com.wynntils.'
     doLast {
-        def allowed = ['io/github/anilken/wynnlabs/Wyn.java', 'io/github/anilken/wynnlabs/WynntilsItems.java',
-                       'io/github/anilken/wynnlabs/WynntilsEvents.java'] as Set
-        def root = file('common/src/main/java')
+        // in common only; the loader modules may not name Wynntils at all
+        def allowed = ['common/src/main/java/io/github/anilken/wynnlabs/Wyn.java',
+                       'common/src/main/java/io/github/anilken/wynnlabs/WynntilsItems.java',
+                       'common/src/main/java/io/github/anilken/wynnlabs/WynntilsEvents.java'] as Set
         def hits = []
-        fileTree(root).include('**/*.java').each { f ->
-            def rel = root.toPath().relativize(f.toPath()).toString().replace(File.separatorChar, '/' as char)
-            if (allowed.contains(rel)) {
-                return
-            }
-            f.getText('UTF-8').readLines().eachWithIndex { text, n ->
-                if (text =~ /\bcom\.wynntils\b/) {
-                    hits << "${rel}:${n + 1}: ${text.trim()}"
+        sourceRoots.each { root ->
+            fileTree(root).include('**/*.java').each { f ->
+                def rel = projectDir.toPath().relativize(f.toPath()).toString().replace(File.separatorChar, '/' as char)
+                if (allowed.contains(rel)) {
+                    return
+                }
+                f.getText('UTF-8').readLines().eachWithIndex { text, n ->
+                    if (text =~ /\bcom\.wynntils\b/) {
+                        hits << "${rel}:${n + 1}: ${text.trim()}"
+                    }
                 }
             }
         }
@@ -502,19 +523,194 @@ tasks.register('checkQuests') {
 }
 check.dependsOn checkQuests
 
+// Loader boundary (D6): the shared code in common may not name a loader's API, by import or fully
+// qualified; it goes through Platform, which fabric/ and neoforge/ implement. NeoForge's event bus
+// (net.neoforged.bus) stays allowed: Wynntils' events run on it on both loaders.
+tasks.register('checkCommonPlatform') {
+    group = 'verification'
+    description = 'Fails when a class in common/src/main/java names the Fabric or NeoForge API.'
+    def root = file('common/src/main/java')
+    inputs.files(fileTree(root)).withPropertyName('commonSources')
+    doLast {
+        def loaderApi = ~/\bnet\.fabricmc\b|\bnet\.neoforged\.(neoforge|fml)\b/
+        def hits = []
+        def count = 0
+        fileTree(root).include('**/*.java').each { f ->
+            count++
+            def rel = projectDir.toPath().relativize(f.toPath()).toString().replace(File.separatorChar, '/' as char)
+            f.getText('UTF-8').readLines().eachWithIndex { text, n ->
+                if (text =~ loaderApi) {
+                    hits << "${rel}:${n + 1}: ${text.trim()}"
+                }
+            }
+        }
+        if (hits) {
+            throw new GradleException('Loader API in common (go through Platform, wire it in fabric/ or neoforge/):\n  '
+                    + hits.join('\n  '))
+        }
+        logger.lifecycle("checkCommonPlatform: ${count} files in common, no Fabric or NeoForge API, OK")
+    }
+}
+check.dependsOn checkCommonPlatform
+
+// Metadata check (D4): fabric.mod.json and neoforge.mods.toml must take the Wynntils range from
+// wynntils_range and agree on the mod id, the version, the Wynntils range (required) and
+// Wynnventory (optional). The files are read from the sources and expanded with the properties
+// each module's processResources uses, so the check needs neither loader's setup and runs with
+// -Penabled_platforms=fabric too.
+tasks.register('checkMetadata') {
+    group = 'verification'
+    description = "Fails when the Fabric and the NeoForge metadata disagree or leave wynntils_range."
+    def fabricFile = file('fabric/src/main/resources/fabric.mod.json')
+    def neoFile = file('neoforge/src/main/resources/META-INF/neoforge.mods.toml')
+    doLast {
+        def problems = []
+        // "[4.1.0,5.0.0)" (Maven, NeoForge) and ">=4.1.0 <5.0.0-" (Fabric) both become "[4.1.0,5.0.0)"
+        def interval = { String r ->
+            if (r == null) {
+                return null
+            }
+            def maven = r.trim() =~ /^\[\s*([^,\s]+)\s*,\s*([^)\s]+)\s*\)$/
+            if (maven.matches()) {
+                return "[${maven.group(1)},${maven.group(2)})".toString()
+            }
+            def fabric = r.trim() =~ /^>=\s*(\S+)\s+<\s*(\S+?)-?$/
+            return fabric.matches() ? "[${fabric.group(1)},${fabric.group(2)})".toString() : null
+        }
+        def declared = project.wynntils_range.trim()
+        if (interval(declared) == null) {
+            throw new GradleException("checkMetadata: wynntils_range must look like [4.1.0,5.0.0), not ${declared}")
+        }
+        // the properties each processResources expands; neoforge's own when the module is included
+        def propsOf = { String path, Map fallback ->
+            def p = findProject(path)
+            def m = p == null ? fallback : p.tasks.named('processResources').get().inputs.properties
+            return m.collectEntries { k, v -> [(k.toString()): v.toString()] }
+        }
+        def fabricProps = propsOf(':fabric', [:])
+        def neoProps = propsOf(':neoforge', [version          : project.version, minecraft_version: project.minecraft_version,
+                                             neoforge_version : project.neoforge_version, wynntils_range: declared])
+        def expand = { String text, Map props ->
+            text.replaceAll(/\$\{([A-Za-z0-9_]+)\}/) { all, name -> props.containsKey(name) ? props[name] : all }
+        }
+        // the TOML that neoforge.mods.toml uses: [tables], [[arrays of tables]], key = "value"
+        def parseToml = { String text ->
+            def tables = []
+            def cur = [name: '', values: [:]]
+            tables << cur
+            String multi = null
+            text.readLines().each { raw ->
+                def line = raw.trim()
+                if (multi != null) {
+                    if (line.contains(multi)) {
+                        multi = null
+                    }
+                    return
+                }
+                if (!line || line.startsWith('#')) {
+                    return
+                }
+                def table = line =~ /^\[\[?\s*([^\]]+?)\s*\]\]?/
+                if (table.find()) {
+                    cur = [name: table.group(1), values: [:]]
+                    tables << cur
+                    return
+                }
+                def kv = line =~ /^([A-Za-z0-9_.-]+)\s*=\s*(.*)$/
+                if (!kv.matches()) {
+                    return
+                }
+                def v = kv.group(2).trim()
+                def value
+                if (v.startsWith("'''") || v.startsWith('"""')) {
+                    def quote = v.substring(0, 3)
+                    if (!v.substring(3).contains(quote)) {
+                        multi = quote
+                    }
+                    value = ''
+                } else {
+                    def basic = v =~ /^"((?:[^"\\]|\\.)*)"/
+                    def literal = v =~ /^'([^']*)'/
+                    value = basic.find() ? basic.group(1) : literal.find() ? literal.group(1) : v.replaceFirst(/\s*#.*$/, '')
+                }
+                cur.values[kv.group(1)] = value
+            }
+            return tables
+        }
+
+        // fabric.mod.json
+        def slurper = new groovy.json.JsonSlurper()
+        def fabricRaw = slurper.parseText(fabricFile.getText('UTF-8'))
+        if (fabricRaw.depends?.wynntils != '${wynntils_range}') {
+            problems << "fabric.mod.json: depends.wynntils is \"${fabricRaw.depends?.wynntils}\", not \${wynntils_range}"
+        }
+        def fabric = slurper.parseText(expand(fabricFile.getText('UTF-8'), fabricProps))
+        def fabricRange = fabric.depends?.wynntils
+        def fabricOptional = ['suggests', 'recommends'].any { fabric[it]?.containsKey('wynnventory') }
+                && !['depends', 'breaks', 'conflicts'].any { fabric[it]?.containsKey('wynnventory') }
+
+        // neoforge.mods.toml
+        if (!neoFile.isFile()) {
+            throw new GradleException("checkMetadata: ${projectDir.toPath().relativize(neoFile.toPath())} is missing")
+        }
+        def depsOf = { List tables, String dep -> tables.find { it.name.startsWith('dependencies.') && it.values.modId == dep } }
+        def neoRaw = parseToml(neoFile.getText('UTF-8'))
+        def rawWynntils = depsOf(neoRaw, 'wynntils')
+        if (rawWynntils?.values?.versionRange != '${wynntils_range}') {
+            problems << "neoforge.mods.toml: the wynntils versionRange is \"${rawWynntils?.values?.versionRange}\", not \${wynntils_range}"
+        }
+        def neo = parseToml(expand(neoFile.getText('UTF-8'), neoProps))
+        def neoMod = neo.find { it.name == 'mods' }?.values ?: [:]
+        def neoWynntils = depsOf(neo, 'wynntils')
+        def neoRange = neoWynntils?.values?.versionRange
+        def neoWynnventory = depsOf(neo, 'wynnventory')
+
+        if (fabric.id != neoMod.modId) {
+            problems << "mod id: fabric.mod.json says ${fabric.id}, neoforge.mods.toml says ${neoMod.modId}"
+        }
+        def depTables = neo.findAll { it.name.startsWith('dependencies.') }*.name.unique()
+        if (depTables.any { it != "dependencies.${neoMod.modId}" }) {
+            problems << "neoforge.mods.toml: dependency tables ${depTables.join(', ')} do not all name the mod id ${neoMod.modId}"
+        }
+        if (fabric.version != neoMod.version || fabric.version != project.version.toString()) {
+            problems << "version: fabric.mod.json gives ${fabric.version}, neoforge.mods.toml gives ${neoMod.version}, mod_version is ${project.version}"
+        }
+        if (interval(fabricRange) == null || interval(fabricRange) != interval(neoRange) || interval(neoRange) != interval(declared)) {
+            problems << "Wynntils range: fabric.mod.json declares ${fabricRange}, neoforge.mods.toml declares ${neoRange} (wynntils_range is ${declared})"
+        }
+        if (neoWynntils != null && neoWynntils.values.type != 'required') {
+            problems << "neoforge.mods.toml: wynntils is type=\"${neoWynntils.values.type}\", not required"
+        }
+        if (!fabricOptional) {
+            problems << 'fabric.mod.json: wynnventory is not optional (expected under suggests or recommends only)'
+        }
+        if (neoWynnventory?.values?.type != 'optional') {
+            problems << "neoforge.mods.toml: wynnventory is ${neoWynnventory == null ? 'missing' : "type=\"${neoWynnventory.values.type}\""}, not optional"
+        }
+        if (problems) {
+            throw new GradleException('Mod metadata:\n  ' + problems.join('\n  '))
+        }
+        logger.lifecycle("checkMetadata: fabric.mod.json and neoforge.mods.toml agree (${fabric.id} ${fabric.version}, Wynntils ${declared}, Wynnventory optional)")
+    }
+}
+check.dependsOn checkMetadata
+
 // Wynntils versions: compiles the mod against every Wynntils jar in the git-ignored
 // libs/wynntils-matrix/, one nested build per jar into build/matrix/<version>/, and prints which
 // versions build, with the first compile error of those that do not. Not part of check: each
 // version takes about a minute. Fails only when the minimum wynntils_range declares does not build.
+// The nested builds compile common only (all game code is there) without NeoForge's setup, and
+// each one's module build folders go to build/matrix/<version>/<module> (-PmatrixDir).
+// -PwynntilsMatrix=<folder> reads the jars from another folder (a git worktree has no libs/).
 tasks.register('checkWynntilsVersions') {
     group = 'verification'
     description = 'Compiles the mod against each Wynntils jar in libs/wynntils-matrix/ and reports which build.'
     doLast {
-        def dir = file('libs/wynntils-matrix')
+        def dir = project.hasProperty('wynntilsMatrix') ? file(project.property('wynntilsMatrix')) : file('libs/wynntils-matrix')
         def jars = (dir.isDirectory() ? dir.listFiles().toList() : [])
                 .findAll { it.name ==~ /wynntils-.+\.jar/ && !it.name.endsWith('-sources.jar') }
         if (!jars) {
-            logger.lifecycle('checkWynntilsVersions: no Wynntils jars in libs/wynntils-matrix/, nothing to check')
+            logger.lifecycle("checkWynntilsVersions: no Wynntils jars in ${dir}, nothing to check")
             return
         }
         def versionOf = { File f -> (f.name =~ /wynntils-([0-9][^-+]*)/).with { it.find() ? it.group(1) : f.name } }
@@ -572,4 +768,20 @@ tasks.register('checkWynntilsVersions') {
             throw new GradleException("wynntils_range declares Wynntils ${range}, but ${floor} does not compile")
         }
     }
+}
+
+// Release files (D7): the player jar of each loader (remapJar, no classifier) lands in the root
+// build/libs/ too, so one folder holds wynnlabs-fabric-<v>.jar and wynnlabs-neoforge-<v>.jar.
+// The -dev, -dev-shadow and -sources jars stay in each module's build/libs/.
+tasks.register('collectJars', Copy) {
+    group = 'build'
+    description = "Copies each loader's player jar into build/libs/."
+    keyJarProjects.each { path ->
+        // a closure: the module's tasks do not exist yet while the root is configured
+        from { project(path).tasks.named('remapJar') }
+    }
+    into layout.buildDirectory.dir('libs')
+}
+tasks.named('assemble') {
+    dependsOn 'collectJars'
 }
