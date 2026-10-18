@@ -17,7 +17,6 @@ import io.github.anilken.wynnlabs.model.PoolRegion;
 import io.github.anilken.wynnlabs.model.Tier;
 import io.github.anilken.wynnlabs.model.WeeklyPool;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -236,7 +235,7 @@ final class EndgameTab {
      * @param pt      partial tick
      */
     void draw(GuiGraphics g, int x, int y, int w, int h, int titleY, int[] frame, int screenW, int mx, int my, float pt) {
-        font = Minecraft.getInstance().font;
+        font = UiFont.get();                            // the menu's font, as on every other tab (setting: webFont)
         now = System.currentTimeMillis();
         acts.clear();
         tips.clear();
@@ -1372,8 +1371,8 @@ final class EndgameTab {
                 if (a != null && d.known() || a != null && pinned != null) {
                     int ring = tierColour(a.aspect().rarity());
                     aspectGlyph(g, a.aspect(), tx, y + 3, 12);
-                    ink(g, fit(L.t(pinned != null ? "wynnlabs.endgame.card_selected" : "wynnlabs.endgame.card_next"), tw - 14),
-                            tx + 14, y + 5, Theme.INK_2);
+                    ink(g, fit(L.t(pinned != null ? "wynnlabs.endgame.card_selected" : "wynnlabs.endgame.card_next"), tw - 16),
+                            tx + 16, y + 5, Theme.INK_2);
                     Kit.text(g, font, bold(fit(a.aspect().name(), tw)), tx, y + 17, ring);
                     tip = new ArrayList<>(aspectTip(a));
                 } else {
@@ -2237,7 +2236,7 @@ final class EndgameTab {
             tag(g, tg, rx - tw, y + 2);
             rx -= tw + 4;
         }
-        int nx = x + 29;
+        int nx = x + 31;                                // 3 px clear of the 12 px icon
         Kit.text(g, font, lit ? bold(fit(name, rx - nx)) : Component.literal(fit(name, rx - nx)), nx, ty, colour);
         if (large && h > 14) {
             ink(g, fit(a.reason(), x + w - 2 - nx), nx, y + 13, Theme.INK_3);
