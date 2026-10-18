@@ -36,6 +36,9 @@ public class LayoutMatrix implements FabricClientGameTest {
     private static final String[] TAB_NAMES = {"home", "today", "quests", "deaths", "bank", "settings", "ai", "damage",
         "discoveries", "tree", "craft", "endgame"};
     private static final int ENDGAME = 11;
+    private static final int SETTINGS = 5;
+    /** The settings tab's categories, in its order: each one is measured and shot. */
+    private static final String[] SETTING_CATS = {"look", "tips", "glow", "coach", "quests", "build", "rules", "data"};
     /** The regions of decision 11's drawings, lit in the Havuzlar shots. */
     private static final String TCC = "The Canyon Colossus";
     private static final String COTL = "Canyon of the Lost";
@@ -509,9 +512,10 @@ public class LayoutMatrix implements FabricClientGameTest {
             int t = tab;
             ctx.runOnClient(mc -> set(mc.screen, "tab", t));
             // the crafting tab's calculator and sets; the quests tab's steps and points; the
-            // endgame tab's three compact sections
+            // endgame tab's three compact sections; every settings category
             boolean compact = gui[0] < 560 || gui[1] < 300;
-            int[] views = t == 10 || t == 2 ? new int[] {0, 1} : t == ENDGAME && compact ? new int[] {0, 1, 2} : new int[] {0};
+            int[] views = t == 10 || t == 2 ? new int[] {0, 1} : t == ENDGAME && compact ? new int[] {0, 1, 2}
+                    : t == SETTINGS ? java.util.stream.IntStream.range(0, SETTING_CATS.length).toArray() : new int[] {0};
             for (int view : views) {
                 if (t == ENDGAME) {
                     ctx.runOnClient(mc -> EndgameTab.INSTANCE.previewSection(view));
@@ -522,7 +526,10 @@ public class LayoutMatrix implements FabricClientGameTest {
                 if (t == 2) {
                     ctx.runOnClient(mc -> set(mc.screen, "questDetailTab", view == 0 ? 0 : 3));
                 }
-                String name = TAB_NAMES[t] + (views.length > 1 ? "-" + view : "");
+                if (t == SETTINGS) {
+                    ctx.runOnClient(mc -> set(mc.screen, "settingsCat", view));
+                }
+                String name = TAB_NAMES[t] + (t == SETTINGS ? "-" + SETTING_CATS[view] : views.length > 1 ? "-" + view : "");
                 measure(ctx, where + " " + name, gui, report, () -> ((RoadmapScreen) net.minecraft.client.Minecraft.getInstance().screen).clickAreas());
                 if (shots != null) {
                     ctx.takeScreenshot(TestScreenshotOptions.of(where.replaceAll("[^0-9a-z@x]", "") + "-" + name)
@@ -542,7 +549,10 @@ public class LayoutMatrix implements FabricClientGameTest {
                 ctx.runOnClient(mc -> EndgameTab.INSTANCE.previewPools(-1, null));
             }
         }
-        ctx.runOnClient(mc -> CraftPreview.set(CraftingTab.INSTANCE, "view", 0));
+        ctx.runOnClient(mc -> {
+            CraftPreview.set(CraftingTab.INSTANCE, "view", 0);
+            set(mc.screen, "settingsCat", 0);
+        });
     }
 
     /**

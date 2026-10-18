@@ -5503,12 +5503,23 @@ final class RoadmapScreen extends Screen {
     private void drawKeyRow(GuiGraphics g, int x, int y, int w, int mx, int my) {
         String pr = Prices.problem;
         String an = Vault.annotateProblem;
-        Component src = L.c("wynnlabs.settings.sources").withStyle(ChatFormatting.DARK_GRAY)
-                .append(Component.literal(pr == null ? L.t("wynnlabs.settings.prices_ok") : "✖ " + pr)
-                        .withStyle(pr == null ? ChatFormatting.DARK_GREEN : ChatFormatting.RED))
+        String lead = L.t("wynnlabs.settings.sources");
+        String prices = pr == null ? L.t("wynnlabs.settings.prices_ok") : "✖ " + pr;
+        String bank = an == null ? L.t("wynnlabs.settings.bank_ok") : L.t("wynnlabs.settings.bank_bad", an);
+        // a line too long for the page drops its lead, then the two parts share what is left
+        int sep = font.width(" · ");
+        if (font.width(lead) + font.width(prices) + sep + font.width(bank) > w) {
+            lead = "";
+        }
+        int room = w - sep;
+        if (font.width(prices) + font.width(bank) > room) {
+            prices = fit(prices, Math.max(room / 2, room - font.width(bank)));
+            bank = fit(bank, room - font.width(prices));
+        }
+        Component src = Component.literal(lead).withStyle(ChatFormatting.DARK_GRAY)
+                .append(Component.literal(prices).withStyle(pr == null ? ChatFormatting.DARK_GREEN : ChatFormatting.RED))
                 .append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY))
-                .append(Component.literal(an == null ? L.t("wynnlabs.settings.bank_ok") : L.t("wynnlabs.settings.bank_bad", an))
-                        .withStyle(an == null ? ChatFormatting.DARK_GREEN : ChatFormatting.RED));
+                .append(Component.literal(bank).withStyle(an == null ? ChatFormatting.DARK_GREEN : ChatFormatting.RED));
         ink(g, src, x, y, 0xFFFFFFFF);
         int ky = y + 13;
         keyBoxShown = !(Prices.embeddedKeyInUse() && !Prices.keyInvalid);
