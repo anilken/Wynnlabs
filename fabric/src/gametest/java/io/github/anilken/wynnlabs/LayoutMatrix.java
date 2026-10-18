@@ -38,7 +38,13 @@ public class LayoutMatrix implements FabricClientGameTest {
     private static final int ENDGAME = 11;
     private static final int SETTINGS = 5;
     /** The settings tab's categories, in its order: each one is measured and shot. */
-    private static final String[] SETTING_CATS = {"look", "tips", "glow", "coach", "quests", "build", "rules", "data"};
+    private static final String[] SETTING_CATS = {"about", "look", "tips", "glow", "coach", "quests", "build", "rules", "data"};
+    /**
+     * The settings tab's other views, after its categories: the About page's three update states,
+     * a rule picked (changed from its default) and a switch picked; compact shows each picked
+     * row's own page.
+     */
+    private static final String[] SETTING_EXTRAS = {"about-uptodate", "about-new", "about-failed", "rules-picked", "tips-picked"};
     /** The regions of decision 11's drawings, lit in the Havuzlar shots. */
     private static final String TCC = "The Canyon Colossus";
     private static final String COTL = "Canyon of the Lost";
@@ -515,7 +521,8 @@ public class LayoutMatrix implements FabricClientGameTest {
             // endgame tab's three compact sections; every settings category
             boolean compact = gui[0] < 560 || gui[1] < 300;
             int[] views = t == 10 || t == 2 ? new int[] {0, 1} : t == ENDGAME && compact ? new int[] {0, 1, 2}
-                    : t == SETTINGS ? java.util.stream.IntStream.range(0, SETTING_CATS.length).toArray() : new int[] {0};
+                    : t == SETTINGS ? java.util.stream.IntStream.range(0, SETTING_CATS.length + SETTING_EXTRAS.length).toArray()
+                    : new int[] {0};
             for (int view : views) {
                 if (t == ENDGAME) {
                     ctx.runOnClient(mc -> EndgameTab.INSTANCE.previewSection(view));
@@ -527,13 +534,16 @@ public class LayoutMatrix implements FabricClientGameTest {
                     ctx.runOnClient(mc -> set(mc.screen, "questDetailTab", view == 0 ? 0 : 3));
                 }
                 if (t == SETTINGS) {
-                    ctx.runOnClient(mc -> set(mc.screen, "settingsCat", view));
+                    ctx.runOnClient(mc -> settingsView((RoadmapScreen) mc.screen, view, compact));
                 }
-                String name = TAB_NAMES[t] + (t == SETTINGS ? "-" + SETTING_CATS[view] : views.length > 1 ? "-" + view : "");
+                String name = TAB_NAMES[t] + (t == SETTINGS ? "-" + settingsName(view) : views.length > 1 ? "-" + view : "");
                 measure(ctx, where + " " + name, gui, report, () -> ((RoadmapScreen) net.minecraft.client.Minecraft.getInstance().screen).clickAreas());
                 if (shots != null) {
                     ctx.takeScreenshot(TestScreenshotOptions.of(where.replaceAll("[^0-9a-z@x]", "") + "-" + name)
                             .disableCounterPrefix().withDestinationDir(shots));
+                }
+                if (t == SETTINGS) {
+                    ctx.runOnClient(mc -> settingsViewDone(view));
                 }
             }
             if (t == 2) {
@@ -551,8 +561,58 @@ public class LayoutMatrix implements FabricClientGameTest {
         }
         ctx.runOnClient(mc -> {
             CraftPreview.set(CraftingTab.INSTANCE, "view", 0);
-            set(mc.screen, "settingsCat", 0);
+            ((RoadmapScreen) mc.screen).previewSettings(0, 0, false);
+            UpdateCheck.reset();
         });
+    }
+
+    private static String settingsName(int view) {
+        return view < SETTING_CATS.length ? SETTING_CATS[view] : SETTING_EXTRAS[view - SETTING_CATS.length];
+    }
+
+    /**
+     * A settings view: a category with its first row picked, or one of {@link #SETTING_EXTRAS}
+     * (an About state given by hand; Outdated gear at 6 levels instead of 4; a switch picked).
+     */
+    private static void settingsView(RoadmapScreen screen, int view, boolean compact) {
+        String name = settingsName(view);
+        long now = System.currentTimeMillis();
+        String page = "https://github.com/anilken/wynnlabs/releases/tag/";
+        switch (name) {
+            case "about-uptodate" -> {
+                screen.previewSettings(0, 0, false);
+                UpdateCheck.preview(new UpdateCheck.State(UpdateCheck.Status.UP_TO_DATE, UpdateCheck.Reason.NONE, "0.3.0",
+                        "v0.3.0", page + "v0.3.0", now - 5 * 86_400_000L, now - 4 * 60_000L));
+            }
+            case "about-new" -> {
+                screen.previewSettings(0, 0, false);
+                UpdateCheck.preview(new UpdateCheck.State(UpdateCheck.Status.NEWER, UpdateCheck.Reason.NONE, "0.3.0",
+                        "v0.4.0", page + "v0.4.0", now - 3 * 86_400_000L, now - 2 * 60_000L));
+            }
+            case "about-failed" -> {
+                screen.previewSettings(0, 0, false);
+                UpdateCheck.preview(new UpdateCheck.State(UpdateCheck.Status.FAILED, UpdateCheck.Reason.OFFLINE, "0.3.0",
+                        null, null, 0, now - 60_000L));
+            }
+            case "rules-picked" -> {
+                RuleEditor.Rule tooLow = RuleEditor.RULES.get(0);
+                RuleEditor.step(tooLow, 1);
+                RuleEditor.step(tooLow, 1);
+                screen.previewSettings(7, 1, compact);           // Rules > Selling old gear > Outdated, at 6 lv
+            }
+            case "tips-picked" -> screen.previewSettings(2, 1, compact);   // Tooltips > Keep items for your other characters
+            default -> {
+                UpdateCheck.reset();
+                screen.previewSettings(view, 0, false);
+            }
+        }
+    }
+
+    /** After a settings view's shot: the rule it changed back to its default. */
+    private static void settingsViewDone(int view) {
+        if (settingsName(view).equals("rules-picked")) {
+            RuleEditor.reset(RuleEditor.RULES.get(0));
+        }
     }
 
     /**
