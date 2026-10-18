@@ -3380,7 +3380,7 @@ final class RoadmapScreen extends Screen {
                         d.areaLevel() > d.level() + 2 ? 0xFFE24B4A : 0xFF9C9A92);
             }
             if (d.secondsToZero() > 0) {
-                cx = chip(g, cx, cy, L.t("wynnlabs.deaths.chip_seconds", String.format(Locale.ROOT, "%.1f", d.secondsToZero())),
+                cx = chip(g, cx, cy, L.t("wynnlabs.deaths.chip_seconds", dec(d.secondsToZero(), 1)),
                         d.secondsToZero() <= 3 ? 0xFFEF9F27 : 0xFF9C9A92);
             }
             if (d.potions() >= 0) {
@@ -4648,128 +4648,378 @@ final class RoadmapScreen extends Screen {
         return true;
     }
 
-    // ---- settings tab ----
+    // ---- settings tab: a field guide ----
 
     private int settingsCat;
     private int[] closeRect;
     private final List<int[]> langRects = new ArrayList<>();   // {x, y, w, h, choice}
 
-    private static final String[] SETTING_CATS = {"look", "tips", "glow", "coach", "quests", "build", "rules", "data"};
-    private static final String[] SETTING_CAT_NAMES = {"wynnlabs.settings.cat_look", "wynnlabs.settings.cat_tips", "wynnlabs.settings.cat_glow",
-        "wynnlabs.settings.cat_coach", "wynnlabs.settings.cat_quests", "wynnlabs.settings.cat_build",
-        "wynnlabs.settings.cat_rules", "wynnlabs.settings.cat_data"};
-    private static final String[] SETTING_CAT_DESC = {"wynnlabs.settings.catdesc_look", "wynnlabs.settings.catdesc_tips", "wynnlabs.settings.catdesc_glow",
-        "wynnlabs.settings.catdesc_coach", "wynnlabs.settings.catdesc_quests", "wynnlabs.settings.catdesc_build",
-        "wynnlabs.settings.catdesc_rules", "wynnlabs.settings.catdesc_data"};
+    private static final String[] SETTING_CATS = {"about", "look", "tips", "glow", "coach", "quests", "build", "rules", "data"};
+    private static final String[] SETTING_CAT_NAMES = {"wynnlabs.settings.cat_about", "wynnlabs.settings.cat_look",
+        "wynnlabs.settings.cat_tips", "wynnlabs.settings.cat_glow", "wynnlabs.settings.cat_coach", "wynnlabs.settings.cat_quests",
+        "wynnlabs.settings.cat_build", "wynnlabs.settings.cat_rules", "wynnlabs.settings.cat_data"};
+    private static final String[] SETTING_CAT_DESC = {"wynnlabs.settings.catdesc_about", "wynnlabs.settings.catdesc_look",
+        "wynnlabs.settings.catdesc_tips", "wynnlabs.settings.catdesc_glow", "wynnlabs.settings.catdesc_coach",
+        "wynnlabs.settings.catdesc_quests", "wynnlabs.settings.catdesc_build", "wynnlabs.settings.catdesc_rules",
+        "wynnlabs.settings.catdesc_data"};
+    private static final String[] SETTING_CAT_ICONS = {"info-circle", "eye", "tag", "sparkles", "user", "map-2", "shield",
+        "filter", "world"};
     private static final int SET_ROW = 32;
+    /** A row of the settings list; a section title in it. */
+    private static final int LIST_ROW = 14;
+    private static final int LIST_HEAD = 13;
 
-    /**
-     * Settings: categories on the left (with how many switches are on) and the language picker
-     * under them; on the right the chosen category's switches, each with a one-line description,
-     * and the extras that belong to it (archetype and goal, rule steppers, the key).
-     */
-    private void drawSettings(GuiGraphics g, int x, int y, int w, int h, int mx, int my) {
-        int catW = 112;
-        for (int c = 0; c < SETTING_CATS.length; c++) {
-            String cat = SETTING_CATS[c];
-            int on = 0;
-            int total = 0;
-            for (String k : Settings.LABELS.keySet()) {
-                if (cat.equals(Settings.category(k))) {
-                    total++;
-                    if (Settings.on(k)) {
-                        on++;
-                    }
+    static final String REPO = "https://github.com/anilken/wynnlabs";
+    /** The About page's links: the source, a new issue (its template chooser), the licence. */
+    private static final String[][] ABOUT_LINKS = {
+        {"wynnlabs.about.source", REPO},
+        {"wynnlabs.about.report", REPO + "/issues/new/choose"},
+        {"wynnlabs.about.licence", REPO + "/blob/main/LICENSE"}};
+
+    /** The row picked in each category, an index into its {@link #settingRows}: the first row until one is picked. */
+    private final int[] settingsPick = new int[SETTING_CATS.length];
+    /** Compact: the picked row's page fills the tab ("‹ Back" returns to the list). */
+    private boolean settingsDetail;
+    private int settingsScroll;
+    private int settingsScrollMax;
+    /** The list's box this frame, for the wheel. */
+    private int[] settingsListRect;
+    private int rowPitch = SET_ROW;
+
+    /** One row of a settings category: kind switch, advice, arch, goal, scale, rule or key; "head" is a section title. */
+    private record SetRow(String kind, String id, int rule) {
+
+        boolean head() {
+            return kind.equals("head");
+        }
+
+        RuleEditor.Rule r() {
+            return RuleEditor.RULES.get(rule);
+        }
+    }
+
+    /** A category's rows in the order the list shows them. */
+    private static List<SetRow> settingRows(String cat) {
+        List<SetRow> rows = new ArrayList<>();
+        if (cat.equals("about")) {
+            return rows;
+        }
+        if (cat.equals("rules")) {
+            for (RuleEditor.Section s : RuleEditor.SECTIONS) {
+                rows.add(new SetRow("head", s.title(), -1));
+                for (int i : s.rules()) {
+                    rows.add(new SetRow("rule", RuleEditor.RULES.get(i).key(), i));
                 }
             }
-            int ry = y + c * 18;
-            boolean sel = c == settingsCat;
-            boolean hover = mx >= x && mx < x + catW && my >= ry && my < ry + 16;
-            int state = sel ? Kit.ON : hover ? Kit.HOVER : Kit.REST;
-            Kit.button(g, x, ry, catW, 16, state);
-            String count = total == 0 ? "" : on + "/" + total;
-            onWood(g, fit(L.t(SETTING_CAT_NAMES[c]), catW - 14 - font.width(count)), x + 7, ry + 4, state);
-            onWood(g, count, x + catW - 5 - font.width(count), ry + 4, state);
-            toggles.add(new Object[] {new int[] {x, ry, catW, 16}, "#cat:" + c});
-        }
-        if (settingsCat >= SETTING_CATS.length) {
-            settingsCat = 0;
-        }
-        g.fill(x + catW + 6, y, x + catW + 7, y + h, LINE);
-
-        // right: the chosen category
-        int rx = x + catW + 16;
-        int rw = w - catW - 16;
-        String cat = SETTING_CATS[settingsCat];
-        ink(g, L.c(SETTING_CAT_NAMES[settingsCat]).withStyle(UiFont::bold), rx, y, 0xFFFFFFFF);
-        ink(g, fit(L.t(SETTING_CAT_DESC[settingsCat]), rw), rx, y + 11, FAINT);
-        int top = y + 26;
-        List<Object[]> rows = new ArrayList<>();   // {kind, id}: switch, stars, arch, goal, rule
-        for (String k : Settings.LABELS.keySet()) {
-            if (cat.equals(Settings.category(k))) {
-                rows.add(new Object[] {"switch", k});
-            }
-        }
-        // number settings (− value +) right under the switch they belong to
-        for (String k : Settings.STEPS.keySet()) {
-            if (!cat.equals(Settings.category(k))) {
-                continue;
-            }
-            String parent = Settings.STEP_PARENT.get(k);
-            int at = rows.size();               // after the switch, and after its other numbers
-            for (int i = 0; i < rows.size(); i++) {
-                Object[] r = rows.get(i);
-                if (r[1].equals(parent) || "number".equals(r[0])
-                        && java.util.Objects.equals(parent, Settings.STEP_PARENT.get(r[1]))) {
-                    at = i + 1;
-                }
-            }
-            rows.add(at, new Object[] {"number", k});
+            return rows;
         }
         if (cat.equals("build")) {
-            rows.add(0, new Object[] {"goal", "#goal"});
-            rows.add(0, new Object[] {"arch", "#archetype"});
-            rows.add(0, new Object[] {"advice", "#advicehere"});
-        } else if (cat.equals("rules")) {
-            for (int i = 0; i < RuleEditor.RULES.size(); i++) {
-                rows.add(new Object[] {"rule", i});
+            rows.add(new SetRow("advice", "advice_here", -1));
+            rows.add(new SetRow("arch", "archetype", -1));
+            rows.add(new SetRow("goal", "goal", -1));
+        }
+        for (String k : Settings.LABELS.keySet()) {
+            if (cat.equals(Settings.category(k))) {
+                rows.add(new SetRow("switch", k, -1));
+                if (k.equals("priceApi")) {
+                    rows.add(new SetRow("key", "key", -1));     // the key belongs right under live prices
+                }
             }
         }
-        int extra = cat.equals("data") ? 52 : cat.equals("rules") ? 18 : 0;
-        int avail = y + h - top - extra;
-        rowPitch = cat.equals("rules") ? 22 : SET_ROW;
-        hoverDesc = null;
-        int cols = rows.size() * rowPitch > avail ? 2 : 1;
-        int perCol = (rows.size() + cols - 1) / cols;
-        int gutter = 18;
-        int colW = (rw - (cols - 1) * gutter) / cols;
-        // more rows than two columns hold: the list scrolls with the wheel, clipped to its area
-        int contentH = perCol * rowPitch;
-        int bottomY = top + avail;
+        if (cat.equals("look")) {
+            rows.add(new SetRow("scale", "menu_scale", -1));
+        }
+        return rows;
+    }
+
+    private static boolean isToggle(SetRow r) {
+        return r.kind().equals("switch") || r.kind().equals("advice") || r.kind().equals("rule") && r.r().isSwitch();
+    }
+
+    private static boolean toggleOn(SetRow r) {
+        return switch (r.kind()) {
+            case "switch" -> Settings.on(r.id());
+            case "advice" -> Rules.adviceHere();
+            default -> RuleEditor.value(r.r()) > 0;
+        };
+    }
+
+    private static String rowTitle(SetRow r) {
+        return switch (r.kind()) {
+            case "switch" -> L.t(Settings.LABELS.get(r.id()));
+            case "advice" -> L.t("wynnlabs.settings.advice_here");
+            case "arch" -> L.t("wynnlabs.settings.arch_title");
+            case "goal" -> L.t("wynnlabs.settings.goal_title");
+            case "scale" -> L.t("wynnlabs.settings.menu_scale");
+            case "key" -> L.t("wynnlabs.settings.key_title");
+            case "rule" -> L.t(r.r().title());
+            default -> L.t(r.id());
+        };
+    }
+
+    private static String rowDesc(SetRow r) {
+        return switch (r.kind()) {
+            case "switch" -> L.t(Settings.DESC.get(r.id()));
+            case "advice" -> L.t("wynnlabs.settings.advice_here_desc");
+            case "arch" -> L.t("wynnlabs.settings.arch_desc");
+            case "goal" -> L.t("wynnlabs.settings.goal_desc");
+            case "scale" -> L.t("wynnlabs.settings.menu_scale_desc");
+            case "key" -> L.t("wynnlabs.settings.key_hint");
+            case "rule" -> L.t(r.r().desc());
+            default -> "";
+        };
+    }
+
+    /** What the row's value is in a few characters ("6 lv", "30 EB", "Boltslinger"); "" for a switch. */
+    private static String shortValue(SetRow r) {
+        return switch (r.kind()) {
+            case "rule" -> RuleEditor.display(r.r());
+            case "arch" -> TreePlanner.chosen().isEmpty() ? L.t("wynnlabs.settings.archetype_off") : TreePlanner.chosen();
+            case "goal" -> Setup.goalName(Setup.goal());
+            case "scale" -> MenuScale.setting() == 0 ? L.t("wynnlabs.settings.scale_game") : String.valueOf(MenuScale.setting());
+            case "key" -> L.t(Prices.embeddedKeyInUse() && !Prices.keyInvalid ? "wynnlabs.settings.key_state_builtin"
+                    : Prices.maskedKey() == null ? "wynnlabs.settings.key_state_none"
+                    : Prices.keyInvalid ? "wynnlabs.settings.key_state_invalid" : "wynnlabs.settings.key_state_saved");
+            default -> "";
+        };
+    }
+
+    /** Whether the row has a default to go back to. */
+    private static boolean hasDefault(SetRow r) {
+        return switch (r.kind()) {
+            case "switch", "advice", "scale", "rule" -> true;
+            default -> false;
+        };
+    }
+
+    /** Whether the row differs from its default: a gold dot in the list, a count on its category's chip. */
+    private static boolean rowChanged(SetRow r) {
+        return switch (r.kind()) {
+            case "switch" -> Settings.changed(r.id());
+            case "advice" -> !Rules.adviceHere();
+            case "scale" -> MenuScale.setting() != 0;
+            case "rule" -> RuleEditor.changed(r.r());
+            default -> false;
+        };
+    }
+
+    private static int changedIn(String cat) {
+        int n = 0;
+        for (SetRow r : settingRows(cat)) {
+            if (!r.head() && rowChanged(r)) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    /** "Default: on", "Default 4 lv · from 1 to 20"; null for a row without a default. */
+    private static String rowDefault(SetRow r) {
+        String on = L.t("wynnlabs.settings.state_on");
+        String off = L.t("wynnlabs.settings.state_off");
+        return switch (r.kind()) {
+            case "switch" -> L.t("wynnlabs.settings.default", Settings.byDefault(r.id()) ? on : off);
+            case "advice" -> L.t("wynnlabs.settings.default", on);
+            case "scale" -> {
+                int pick = MenuScale.setting();
+                int used = MenuScale.effective();
+                String d = L.t("wynnlabs.settings.default", L.t("wynnlabs.settings.menu_scale_game"));
+                yield pick > 0 && used != pick ? d + " · " + L.t("wynnlabs.settings.menu_scale_used", used) : d;
+            }
+            case "rule" -> {
+                RuleEditor.Rule rule = r.r();
+                if (rule.isSwitch()) {
+                    yield L.t("wynnlabs.settings.default", on);
+                }
+                double[] range = RuleEditor.range(rule);
+                yield L.t("wynnlabs.settings.default_range", RuleEditor.format(rule, rule.def()),
+                        RuleEditor.format(rule, range[0]), RuleEditor.format(rule, range[1]));
+            }
+            default -> null;
+        };
+    }
+
+    /** The row's example ("wynnlabs.settings.example." + its id), filled with what the value means now. */
+    private static String rowExample(SetRow r) {
+        String id = r.kind().equals("rule") ? RuleEditor.id(r.r()) : r.id();
+        Object[] args = new Object[0];
+        if (r.kind().equals("rule") && !r.r().isSwitch()) {
+            RuleEditor.Rule rule = r.r();
+            long v = Math.round(RuleEditor.value(rule));
+            int lv = 80;                                    // the examples' character is level 80
+            args = switch (id) {
+                case "too_low" -> new Object[] {lv - v - 1, lv - v};
+                case "too_high" -> new Object[] {lv + v + 1};
+                case "old_gear", "quest_margin", "grind_below" -> new Object[] {lv - v};
+                case "ahead", "grind_above" -> new Object[] {lv + v};
+                case "min_gain" -> new Object[] {RuleEditor.format(rule, v), RuleEditor.format(rule, Math.max(0, v - 1))};
+                case "reroll" -> new Object[] {RuleEditor.format(rule, Math.max(0, v - 1)), RuleEditor.format(rule, v)};
+                default -> new Object[] {RuleEditor.format(rule, v)};
+            };
+        }
+        return L.t("wynnlabs.settings.example." + id, args);
+    }
+
+    /** The picked row of the shown category, moved off a section title. */
+    private int pickedRow(List<SetRow> rows) {
+        int p = Math.max(0, Math.min(rows.size() - 1, settingsPick[settingsCat]));
+        while (p < rows.size() - 1 && rows.get(p).head()) {
+            p++;
+        }
+        settingsPick[settingsCat] = p;
+        return p;
+    }
+
+    /**
+     * Settings as a field guide: the categories as chips along the top (each with how many of its
+     * settings differ from their default), a short list of the category's settings on the left
+     * and, on the right, the picked one explained: what it does, an example, its value with its
+     * control, its default and range, and a reset. Compact: the list fills the page and a picked
+     * row opens over it. The About category shows the version, the update check and the links.
+     */
+    private void drawSettings(GuiGraphics g, int x, int y, int w, int h, int mx, int my) {
+        scaleRects.clear();
+        keyBoxShown = false;                    // set again where the key box is drawn
+        ruleBoxRect = null;
+        settingsListRect = null;
+        if (settingsCat < 0 || settingsCat >= SETTING_CATS.length) {
+            settingsCat = 0;
+        }
+        String cat = SETTING_CATS[settingsCat];
+        List<SetRow> rows = settingRows(cat);
+        boolean compact = layout.compact();
+        if (compact && settingsDetail && !rows.isEmpty()) {
+            // the picked row over the whole page; its "‹ Back" line says where you are
+            drawSettingDetail(g, rows.get(pickedRow(rows)), pickedRow(rows), x, y, w, h, mx, my, true);
+            return;
+        }
+        int chipsH = drawSettingChips(g, x, y, w, mx, my);
+        int top = y + chipsH + 5;
+        int bottom = y + h;
+        if (cat.equals("about")) {
+            drawAboutPage(g, x, top, w, bottom - top, mx, my);
+            return;
+        }
+        if (cat.equals("rules")) {
+            bottom -= 18;
+            drawRulesFooter(g, x, bottom + 4, w, mx, my);
+        }
+        int pick = pickedRow(rows);
+        if (compact) {
+            drawSettingList(g, rows, pick, x, top, w, bottom - top, mx, my);
+            return;
+        }
+        int listW = Math.max(180, Math.min(260, w * 38 / 100));
+        drawSettingList(g, rows, pick, x, top, listW, bottom - top, mx, my);
+        drawSettingDetail(g, rows.get(pick), pick, x + listW + 8, top, w - listW - 8, bottom - top, mx, my, false);
+    }
+
+    /** The category chips, wrapped onto a second line when they do not fit; returns their height. */
+    private int drawSettingChips(GuiGraphics g, int x, int y, int w, int mx, int my) {
+        boolean icons = !layout.compact();
+        int cx = x;
+        int cy = y;
+        for (int c = 0; c < SETTING_CATS.length; c++) {
+            String name = L.t(SETTING_CAT_NAMES[c]);
+            int changed = changedIn(SETTING_CATS[c]);
+            String count = String.valueOf(changed);
+            int cw = 12 + (icons ? 11 : 0) + font.width(name) + (changed > 0 ? 10 + font.width(count) : 0);
+            if (cx > x && cx + cw > x + w) {
+                cx = x;
+                cy += 17;
+            }
+            cw = Math.min(cw, w);
+            boolean sel = c == settingsCat;
+            boolean hover = mx >= cx && mx < cx + cw && my >= cy && my < cy + 14;
+            int state = sel ? Kit.ON : hover ? Kit.HOVER : Kit.REST;
+            Kit.button(g, cx, cy, cw, 14, state);
+            int tx = cx + 6;
+            if (icons) {
+                Art.icon(g, SETTING_CAT_ICONS[c], tx, cy + 3, 8, Kit.buttonText(state));
+                tx += 11;
+            }
+            int room = cx + cw - 6 - tx - (changed > 0 ? 10 + font.width(count) : 0);
+            onWood(g, fit(name, room), tx, cy + 3, state);
+            if (changed > 0) {
+                int dx = cx + cw - 6 - font.width(count) - 8;
+                dot(g, dx, cy + 4);
+                onWood(g, count, dx + 8, cy + 3, state);
+            }
+            toggles.add(new Object[] {new int[] {cx, cy, cw, 14}, "#cat:" + c});
+            if (hover) {
+                List<Component> tip = new ArrayList<>();
+                tip.add(Component.literal(name).withStyle(ChatFormatting.WHITE));
+                tip.add(L.c(SETTING_CAT_DESC[c]).withStyle(ChatFormatting.GRAY));
+                if (changed > 0) {
+                    tip.add(L.c("wynnlabs.settings.changed_count", changed).withStyle(ChatFormatting.GOLD));
+                }
+                hits.add(new Hit(cx, cy, cw, 14, null, tip, null));
+            }
+            cx += cw + 3;
+        }
+        return cy + 14 - y;
+    }
+
+    /** The gold dot of a setting changed from its default. */
+    private static void dot(GuiGraphics g, int x, int y) {
+        Art.box(g, x, y, 6, 6, 3, Theme.GOLD_DEEP, Theme.GOLD_EDGE);
+    }
+
+    /** Rules: how many differ from their default, and the reset of this character's rules. */
+    private void drawRulesFooter(GuiGraphics g, int x, int y, int w, int mx, int my) {
+        String reset = L.t("wynnlabs.rules.reset");
+        int bw = font.width(reset) + 24;
+        int bx = x + w - bw;
+        boolean bh = mx >= bx && mx < bx + bw && my >= y && my < y + 14;
+        Kit.button(g, bx, y, bw, 14, bh ? Kit.HOVER : Kit.REST);
+        Art.icon(g, "refresh", bx + 6, y + 3, 8, Kit.buttonText(bh ? Kit.HOVER : Kit.REST));
+        onWood(g, reset, bx + 17, y + 3, bh ? Kit.HOVER : Kit.REST);
+        toggles.add(new Object[] {new int[] {bx, y, bw, 14}, "#rulesreset"});
+        int n = changedIn("rules");
+        String info = n > 0 ? L.t("wynnlabs.settings.changed_in", n, L.t("wynnlabs.settings.cat_rules"))
+                : L.t("wynnlabs.rules.per_character");
+        int tx = x;
+        if (n > 0) {
+            dot(g, x, y + 4);
+            tx += 9;
+        }
+        ink(g, fit(info, bx - tx - 8), tx, y + 3, Theme.INK_3);
+    }
+
+    /** The category's settings: a label and its value, a switch clicked right in the row; the picked row lit. */
+    private void drawSettingList(GuiGraphics g, List<SetRow> rows, int pick, int x, int y, int w, int h, int mx, int my) {
+        Kit.card(g, x, y, w, h, 0);
+        int top = y + 3;
+        int bottomY = y + h - 3;
+        int contentH = 0;
+        for (SetRow r : rows) {
+            contentH += r.head() ? LIST_HEAD : LIST_ROW;
+        }
+        int avail = bottomY - top;
         settingsScrollMax = Math.max(0, contentH - avail);
         settingsScroll = Math.max(0, Math.min(settingsScrollMax, settingsScroll));
-        int sTop = top - settingsScroll;
+        settingsListRect = new int[] {x, y, w, h};
+        int ix = x + 3;
+        int iw = w - 6 - (settingsScrollMax > 0 ? 5 : 0);
+        // − and + right in the row where the list is wide enough (compact's full page, the large menu)
+        boolean steppers = iw >= 236;
         int rowMy = my >= top && my < bottomY ? my : -10000;    // no hover on a row scrolled out
         int t0 = toggles.size();
-        ruleBoxRect = null;                     // set again by the rule row that shows
-        g.enableScissor(rx - 2, top - 2, rx + rw + 2, bottomY);
-        if (cols > 1) {
-            int dx = rx + colW + gutter / 2;
-            g.fill(dx, sTop, dx + 1, sTop + contentH - 4, Theme.LINE);
-        }
+        g.enableScissor(x + 1, top, x + w - 1, bottomY);
+        int ry = top - settingsScroll;
         for (int i = 0; i < rows.size(); i++) {
-            int cx = rx + (i / perCol) * (colW + gutter);
-            int cy = sTop + (i % perCol) * rowPitch;
-            if (cy + rowPitch < top - 2 || cy > bottomY) {
-                continue;
+            SetRow r = rows.get(i);
+            int rh = r.head() ? LIST_HEAD : LIST_ROW;
+            if (ry + rh > top && ry < bottomY) {
+                drawListRow(g, r, i, i == pick, ix, ry, iw, rh, mx, rowMy, steppers);
             }
-            drawSettingRow(g, rows.get(i), cx, cy, colW, mx, rowMy);
+            ry += rh;
         }
         g.disableScissor();
         // click areas: only the part that shows
         for (int i = toggles.size() - 1; i >= t0; i--) {
             if (toggles.get(i)[0] instanceof int[] r) {
-                int y0 = Math.max(r[1], top - 2);
+                int y0 = Math.max(r[1], top);
                 int y1 = Math.min(r[1] + r[3], bottomY);
                 if (y1 <= y0) {
                     toggles.remove(i);
@@ -4778,43 +5028,549 @@ final class RoadmapScreen extends Screen {
                 }
             }
         }
-        if (ruleBoxRect != null && (ruleBoxRect[1] < top - 2 || ruleBoxRect[1] + ruleBoxRect[3] > bottomY)) {
-            ruleBoxRect = null;
-        }
         if (settingsScrollMax > 0) {
             // where in the list you are: a thin bar at the right edge
-            int trackH = avail;
-            int barH = Math.max(12, trackH * avail / contentH);
-            int barY = top + (trackH - barH) * settingsScroll / settingsScrollMax;
-            g.fill(rx + rw + 3, top, rx + rw + 5, top + trackH, 0x22000000);
-            g.fill(rx + rw + 3, barY, rx + rw + 5, barY + barH, 0x88000000);
-        }
-        int below = Math.min(top + contentH, bottomY) + 2;
-        if (cat.equals("look")) {
-            int scaleH = drawMenuScale(g, rx, below + 6, rw, mx, my);
-            drawAbout(g, rx, below + 9 + scaleH, rw, mx, my);
-        }
-        if (cat.equals("rules")) {
-            String reset = L.t("wynnlabs.rules.reset");
-            int bw = font.width(reset) + 14;
-            boolean bh = mx >= rx && mx < rx + bw && my >= below && my < below + 13;
-            card(g, rx, below, bw, 13, bh, 0);
-            g.drawString(font, reset, rx + 7, below + 3, 0xFFFFB0A0, true);       // light red on wood
-            toggles.add(new Object[] {new int[] {rx, below, bw, 13}, "#rulesreset"});
-            String info = hoverDesc != null ? hoverDesc : L.t("wynnlabs.rules.per_character");
-            ink(g, fit(info, rw - bw - 8), rx + bw + 8, below + 3, hoverDesc != null ? 0xFFCECBF6 : FAINT);
-        }
-        if (cat.equals("data")) {
-            drawKeyRow(g, rx, below + 2, rw, mx, my);
+            int barH = Math.max(12, avail * avail / contentH);
+            int barY = top + (avail - barH) * settingsScroll / settingsScrollMax;
+            g.fill(x + w - 6, top, x + w - 4, bottomY, 0x22000000);
+            g.fill(x + w - 6, barY, x + w - 4, barY + barH, 0x88000000);
         }
     }
 
-    private int rowPitch = SET_ROW;
-    private String hoverDesc;
-    private int settingsScroll;
-    private int settingsScrollMax;
+    private void drawListRow(GuiGraphics g, SetRow r, int i, boolean picked, int x, int y, int w, int h, int mx, int my,
+            boolean steppers) {
+        if (r.head()) {
+            section(g, L.t(r.id()), x + 2, y + 3, w - 4);
+            return;
+        }
+        boolean hover = mx >= x && mx < x + w && my >= y && my < y + h;
+        if (picked) {
+            g.fill(x, y, x + w, y + h, Theme.SELECTED);
+        } else if (hover) {
+            g.fill(x, y, x + w, y + h, Theme.CARD_HOVER);
+        }
+        boolean changed = rowChanged(r);
+        int right = x + w - 3;
+        int ctrlX;
+        if (isToggle(r)) {
+            // a switch stays one click: its pill flips it right here
+            int px = right - 19;
+            Kit.toggle(g, px, y + (h - 11) / 2, toggleOn(r));
+            toggles.add(new Object[] {new int[] {px - 3, y, right - px + 3, h}, "#stog:" + i});
+            ctrlX = px - 3;
+        } else if (steppers && r.kind().equals("rule")) {
+            String v = shortValue(r);
+            int vw = Math.max(42, font.width(v) + 8);
+            int bx = right - (vw + 26);
+            int sy = y + (h - 12) / 2;
+            stepButton(g, bx, sy, "−", mx, my, "#rule:" + r.rule() + ":-1");
+            g.fill(bx + 13, sy, bx + 13 + vw, sy + 12, Theme.WELL);
+            ink(g, v, bx + 13 + (vw - font.width(v)) / 2, sy + 2, Theme.INK);
+            stepButton(g, bx + 14 + vw, sy, "+", mx, my, "#rule:" + r.rule() + ":1");
+            ctrlX = bx - 2;
+        } else {
+            String v = fit(shortValue(r), w / 2);
+            ctrlX = right - font.width(v);
+            ink(g, v, ctrlX, y + (h - 8) / 2, changed ? Theme.INK : Theme.INK_3);
+            ctrlX -= 2;
+        }
+        String title = rowTitle(r);
+        int lx = x + 4;
+        String cut = fit(title, ctrlX - lx - (changed ? 12 : 4));
+        ink(g, cut, lx, y + (h - 8) / 2, isToggle(r) && !toggleOn(r) ? Theme.INK_2 : Theme.INK);
+        if (changed) {
+            dot(g, lx + font.width(cut) + 4, y + (h - 6) / 2);
+        }
+        toggles.add(new Object[] {new int[] {x, y, ctrlX - x, h}, "#ssel:" + i});
+        if (hover && mx < ctrlX && !cut.equals(title)) {
+            rowTip(x, y, ctrlX - x, h, title, rowDesc(r));
+        }
+    }
 
-    /** A switch with its description, or a stepper / value row; the whole row is clickable. */
+    /**
+     * The picked setting explained: where it sits, its name (a gold dot when changed), what it
+     * does, its value with its control, the default and range, an example, and the reset.
+     * {@code page}: compact, over the whole tab, with "‹ Back" on top.
+     */
+    private void drawSettingDetail(GuiGraphics g, SetRow r, int index, int x, int y, int w, int h, int mx, int my, boolean page) {
+        Kit.card(g, x, y, w, h, 0);
+        int px = x + 8;
+        int pw = w - 16;
+        int cy = y + 6;
+        int bottom = y + h - 6;
+        String crumb = L.t(SETTING_CAT_NAMES[settingsCat]);
+        if (r.kind().equals("rule")) {
+            for (RuleEditor.Section s : RuleEditor.SECTIONS) {
+                for (int i : s.rules()) {
+                    if (i == r.rule()) {
+                        crumb += " › " + L.t(s.title());
+                    }
+                }
+            }
+        }
+        if (page) {
+            String back = L.t("wynnlabs.settings.back");
+            int bw = font.width(back) + 22;
+            boolean bh = mx >= px && mx < px + bw && my >= cy && my < cy + 14;
+            int st = bh ? Kit.HOVER : Kit.REST;
+            Kit.button(g, px, cy, bw, 14, st);
+            Art.icon(g, "chevron-left", px + 5, cy + 3, 8, Kit.buttonText(st));
+            onWood(g, back, px + 16, cy + 3, st);
+            toggles.add(new Object[] {new int[] {px, cy, bw, 14}, "#sback"});
+            ink(g, fit(crumb, pw - bw - 8), px + bw + 8, cy + 3, Theme.INK_3);
+            cy += 20;
+        } else {
+            ink(g, fit(crumb, pw), px, cy, Theme.INK_3);
+            cy += 12;
+        }
+        // the name, bold, and "changed" with its dot on the right
+        boolean changed = rowChanged(r);
+        String chText = L.t("wynnlabs.settings.changed");
+        int chW = changed ? font.width(chText) + 10 : 0;
+        List<FormattedCharSequence> titleLines = font.split(Component.literal(rowTitle(r)).withStyle(UiFont::bold), pw - chW - 4);
+        for (int i = 0; i < Math.min(2, titleLines.size()); i++) {
+            ink(g, titleLines.get(i), px, cy + i * 10, Theme.INK);
+        }
+        if (changed) {
+            dot(g, px + pw - chW, cy + 1);
+            ink(g, chText, px + pw - chW + 9, cy, Theme.WARN);
+        }
+        cy += 10 * Math.min(2, Math.max(1, titleLines.size())) + 3;
+
+        // what is left once the control, its default and the reset are placed
+        boolean reset = hasDefault(r);
+        int resetY = bottom - 14;
+        int floor = reset ? resetY - 4 : bottom;
+        // what it does: up to three lines (two on a short page)
+        List<String> desc = wrapText(rowDesc(r), pw, 3);
+        int ctrlH = r.kind().equals("key") ? keyDetailHeight(pw) : 14;
+        String def = rowDefault(r);
+        int needBelow = ctrlH + (def != null ? 11 : 0) + 4;
+        while (desc.size() > 1 && cy + desc.size() * 10 + 4 + needBelow > floor) {
+            desc = wrapText(rowDesc(r), pw, desc.size() - 1);
+        }
+        for (String line : desc) {
+            ink(g, line, px, cy, Theme.INK_2);
+            cy += 10;
+        }
+        cy += 4;
+
+        // the value and its control, then the default and range beside it (or under it)
+        int[] used = drawSettingControl(g, r, index, px, cy, pw, mx, my);
+        if (def != null) {
+            int dx = px + used[0] + 10;
+            if (dx + font.width(def) <= px + pw) {
+                ink(g, def, dx, cy + (used[1] - 8) / 2, Theme.INK_3);
+                cy += used[1] + 5;
+            } else {
+                cy += used[1] + 3;
+                ink(g, fit(def, pw), px, cy, Theme.INK_3);
+                cy += 13;
+            }
+        } else {
+            cy += used[1] + 5;
+        }
+
+        // an example of what it does, in as many lines as the room left takes
+        String example = rowExample(r);
+        int lines = Math.min(4, (floor - cy - 20) / 10);
+        if (lines >= 1 && !example.isEmpty()) {
+            List<String> ex = new ArrayList<>();
+            for (String para : example.split("\n")) {
+                ex.addAll(wrapText(para, pw - 12, Math.max(1, lines - ex.size())));
+                if (ex.size() >= lines) {
+                    break;
+                }
+            }
+            int bh = 15 + ex.size() * 10 + 4;           // the last line clear of the frame, as the title is
+            g.fill(px, cy, px + pw, cy + bh, Theme.PAPER);
+            Kit.outline(g, px, cy, pw, bh, Theme.LINE);
+            inkIconText(g, "eye", L.t("wynnlabs.settings.example_title"), px + 6, cy + 4, Theme.INK_3);
+            for (int i = 0; i < ex.size(); i++) {
+                ink(g, ex.get(i), px + 6, cy + 16 + i * 10, Theme.INK);
+            }
+        }
+
+        // back to the default (or a note that it is there)
+        if (reset) {
+            int rx = px;
+            if (changed) {
+                String label = L.t("wynnlabs.settings.reset_one");
+                int bw = font.width(label) + 24;
+                boolean bh = mx >= rx && mx < rx + bw && my >= resetY && my < resetY + 14;
+                int st = bh ? Kit.HOVER : Kit.REST;
+                Kit.button(g, rx, resetY, bw, 14, st);
+                Art.icon(g, "refresh", rx + 6, resetY + 3, 8, Kit.buttonText(st));
+                onWood(g, label, rx + 17, resetY + 3, st);
+                toggles.add(new Object[] {new int[] {rx, resetY, bw, 14}, "#sreset:" + index});
+                rx += bw + 8;
+            } else {
+                String at = L.t("wynnlabs.settings.at_default");
+                ink(g, fit(at, pw), rx, resetY + 3, Theme.INK_3);
+                rx += font.width(at) + 8;
+            }
+            if (r.kind().equals("rule") && rx < px + pw - 40) {
+                ink(g, fit(L.t("wynnlabs.rules.per_character"), px + pw - rx), rx, resetY + 3, Theme.INK_3);
+            }
+        }
+    }
+
+    /** The control of the picked row at x, y; returns the width and height it took. */
+    private int[] drawSettingControl(GuiGraphics g, SetRow r, int index, int x, int y, int w, int mx, int my) {
+        if (isToggle(r)) {
+            boolean on = toggleOn(r);
+            String state = L.t(on ? "wynnlabs.settings.state_on" : "wynnlabs.settings.state_off");
+            int cw = 24 + font.width(state);
+            boolean hover = mx >= x - 2 && mx < x + cw + 2 && my >= y && my < y + 14;
+            if (hover) {
+                g.fill(x - 2, y, x + cw + 2, y + 14, Theme.CARD_HOVER);
+            }
+            Kit.toggle(g, x, y + 1, on);
+            ink(g, state, x + 24, y + 3, on ? Theme.GOOD : Theme.INK_2);
+            toggles.add(new Object[] {new int[] {x - 2, y, cw + 4, 14}, "#stog:" + index});
+            return new int[] {cw, 14};
+        }
+        switch (r.kind()) {
+            case "rule" -> {
+                RuleEditor.Rule rule = r.r();
+                String value = RuleEditor.display(rule);
+                boolean emerald = rule.unit().equals("E");
+                int vw = emerald ? 64 : Math.max(44, font.width(value) + 10);
+                int sy = y + 1;
+                stepButton(g, x, sy, "−", mx, my, "#rule:" + r.rule() + ":-1");
+                if (emerald) {
+                    // the amount typed in the box, the unit on the chip after it (click: E, EB, LE);
+                    // − + still step through the usual amounts
+                    double v = RuleEditor.value(rule);
+                    if (ruleBoxFor != r.rule()) {
+                        ruleUnit = v >= 4096 && v % 4096 == 0 ? 2 : v >= 64 && v % 64 == 0 ? 1 : 0;
+                    }
+                    if (!ruleBox.isFocused()) {
+                        double inUnit = v / UNIT_MULT[ruleUnit];
+                        ruleBox.setValue(inUnit == Math.rint(inUnit) ? String.valueOf((long) inUnit)
+                                : String.valueOf(Math.round(inUnit * 100) / 100.0));
+                    }
+                    ruleBoxFor = r.rule();
+                    int nw = 40;
+                    textBox(g, ruleBox, x + 14, sy, nw, "wynnlabs.rules.type_hint", mx, my, 0f);
+                    ruleBoxRect = new int[] {x + 14, sy, nw, 12};
+                    String u = UNIT_NAMES[ruleUnit];
+                    int ux = x + 15 + nw;
+                    int uw = vw + 2 - nw - 1;
+                    boolean uh = mx >= ux && mx < ux + uw && my >= sy && my < sy + 12;
+                    Kit.button(g, ux, sy, uw, 12, uh ? Kit.HOVER : Kit.REST);
+                    onWood(g, u, ux + (uw - font.width(u)) / 2, sy + 2, uh ? Kit.HOVER : Kit.REST);
+                    toggles.add(new Object[] {new int[] {ux, sy, uw, 12}, "#ruleunit"});
+                } else {
+                    g.fill(x + 14, sy, x + 16 + vw, sy + 12, Theme.WELL);
+                    ink(g, value, x + 15 + (vw - font.width(value)) / 2, sy + 2, Theme.INK);
+                }
+                stepButton(g, x + 16 + vw, sy, "+", mx, my, "#rule:" + r.rule() + ":1");
+                return new int[] {28 + vw, 14};
+            }
+            case "arch", "goal" -> {
+                String chip = shortValue(r) + " ›";
+                int cw = Math.min(w, font.width(chip) + 14);
+                boolean hover = mx >= x && mx < x + cw && my >= y && my < y + 14;
+                Kit.button(g, x, y, cw, 14, hover ? Kit.HOVER : Kit.REST);
+                onWood(g, fit(chip, cw - 14), x + 7, y + 3, hover ? Kit.HOVER : Kit.REST);
+                toggles.add(new Object[] {new int[] {x, y, cw, 14}, r.kind().equals("arch") ? "#archetype" : "#goal"});
+                return new int[] {cw, 14};
+            }
+            case "scale" -> {
+                return new int[] {scaleButtons(g, x, y, w, mx, my), 14};
+            }
+            case "key" -> {
+                return new int[] {w, drawKeyDetail(g, x, y, w, mx, my)};
+            }
+            default -> {
+                return new int[] {0, 14};
+            }
+        }
+    }
+
+    /** Appearance → Menu scale: Same as the game, 2, 3 or 4 (MenuScale); returns the width taken. */
+    private int scaleButtons(GuiGraphics g, int x, int y, int w, int mx, int my) {
+        int pick = MenuScale.setting();
+        String game = L.t("wynnlabs.settings.menu_scale_game");
+        if (font.width(game) + 12 + 3 * 25 > w) {
+            game = L.t("wynnlabs.settings.scale_game");
+        }
+        String[] names = {game, "2", "3", "4"};
+        int[] values = {0, 2, 3, 4};
+        int bx = x;
+        for (int i = 0; i < names.length; i++) {
+            int bw = Math.max(22, font.width(names[i]) + 12);
+            boolean sel = pick == values[i];
+            boolean hover = mx >= bx && mx < bx + bw && my >= y && my < y + 14;
+            int state = sel ? Kit.ON : hover ? Kit.HOVER : Kit.REST;
+            Kit.button(g, bx, y, bw, 14, state);
+            g.drawString(font, names[i], bx + (bw - font.width(names[i])) / 2, y + 3, Kit.buttonText(state), !sel);
+            scaleRects.add(new int[] {bx, y, bw, 14, values[i]});
+            bx += bw + 3;
+        }
+        return bx - 3 - x;
+    }
+
+    /** The settings row for the picked row's switch or reset, by its list index. */
+    private void settingsAction(String id) {
+        List<SetRow> rows = settingRows(SETTING_CATS[settingsCat]);
+        int i = Integer.parseInt(id.substring(id.indexOf(':') + 1));
+        if (i < 0 || i >= rows.size() || rows.get(i).head()) {
+            return;
+        }
+        SetRow r = rows.get(i);
+        if (id.startsWith("#ssel:")) {
+            settingsPick[settingsCat] = i;
+            settingsDetail = layout.compact();
+            return;
+        }
+        if (id.startsWith("#stog:")) {
+            if (!layout.compact()) {
+                settingsPick[settingsCat] = i;      // the panel follows the switch you flipped
+            }
+            switch (r.kind()) {
+                case "switch" -> {
+                    Settings.toggle(r.id());
+                    if ("webFont".equals(r.id())) {
+                        rebuildWidgets();           // init() again: the screen and its boxes take the new font now
+                    }
+                }
+                case "advice" -> adviceHere(!Rules.adviceHere());
+                default -> RuleEditor.step(r.r(), 1);
+            }
+            return;
+        }
+        // #sreset: this one setting back to its default
+        switch (r.kind()) {
+            case "switch" -> {
+                Settings.reset(r.id());
+                if ("webFont".equals(r.id())) {
+                    rebuildWidgets();
+                }
+            }
+            case "advice" -> adviceHere(true);
+            case "scale" -> Settings.resetNumber("menuScale");
+            case "rule" -> RuleEditor.reset(r.r());
+            default -> {
+                return;
+            }
+        }
+        flash = L.t("wynnlabs.settings.reset_done", rowTitle(r));
+        flashUntil = System.currentTimeMillis() + 2500;
+    }
+
+    /** Advice on this character on or off; the road map follows. */
+    private void adviceHere(boolean on) {
+        Rules.setAdviceHere(on);
+        steps = Roadmap.cached();
+        refreshAsked = Rules.adviceHere();
+    }
+
+    /** The preview's shots: this category, this row picked, and (compact) its page open. */
+    void previewSettings(int cat, int row, boolean detail) {
+        settingsCat = cat;
+        settingsPick[cat] = row;
+        settingsDetail = detail;
+        settingsScroll = 0;
+    }
+
+    // ---- settings: About ----
+
+    /** "v0.3.0" for "0.3.0"; "?" when unknown. */
+    private static String vName(String v) {
+        if (v == null || v.isBlank()) {
+            return "?";
+        }
+        return Character.isDigit(v.charAt(0)) ? "v" + v : v;
+    }
+
+    private static String loaderLabel() {
+        try {
+            String l = Platform.get().loaderName();
+            return l.equals("neoforge") ? "NeoForge" : l.equals("fabric") ? "Fabric" : l;
+        } catch (Throwable e) {
+            return "?";
+        }
+    }
+
+    /**
+     * About: whether this is the newest Wynn Labs (up to date, a newer one out, or why it could not
+     * tell) with its button, the links (source, a bug report, the licence), the mod's version and
+     * loader, and which Wynntils features work.
+     */
+    private void drawAboutPage(GuiGraphics g, int x, int y, int w, int h, int mx, int my) {
+        UpdateCheck.State s = UpdateCheck.state();
+        String mine = vName(s.own().isEmpty() ? UpdateCheck.version.get() : s.own());
+        String loader = loaderLabel();
+        String title;
+        String sub;
+        String icon;
+        int iconColour;
+        String button;
+        String action;
+        switch (s.status()) {
+            case UP_TO_DATE -> {
+                title = L.t("wynnlabs.about.uptodate_title");
+                sub = L.t("wynnlabs.about.uptodate_sub", mine, loader, ago(s.checkedAt()));
+                icon = "check";
+                iconColour = Theme.GOOD;
+                button = L.t("wynnlabs.about.check_again");
+                action = "#upd:check";
+            }
+            case NEWER -> {
+                title = L.t("wynnlabs.about.newer_title", s.latest());
+                sub = s.published() > 0 ? L.t("wynnlabs.about.newer_sub", mine, ago(s.published()))
+                        : L.t("wynnlabs.about.newer_sub_nodate", mine);
+                icon = "arrow-up";
+                iconColour = Theme.WARN;
+                button = L.t("wynnlabs.about.open_github");
+                action = "#upd:open";
+            }
+            case FAILED -> {
+                title = L.t("wynnlabs.about.failed_title");
+                sub = L.t(switch (s.reason()) {
+                    case OFFLINE -> "wynnlabs.about.reason_offline";
+                    case OFF -> "wynnlabs.about.reason_off";
+                    case DEV -> "wynnlabs.about.reason_dev";
+                    default -> "wynnlabs.about.reason_no_answer";
+                });
+                icon = "alert-triangle";
+                iconColour = Theme.BAD;
+                button = s.reason() == UpdateCheck.Reason.OFF ? L.t("wynnlabs.about.go_setting")
+                        : s.reason() == UpdateCheck.Reason.DEV ? null : L.t("wynnlabs.about.try_again");
+                action = s.reason() == UpdateCheck.Reason.OFF ? "#upd:setting" : "#upd:check";
+            }
+            case CHECKING -> {
+                title = L.t("wynnlabs.about.checking_title");
+                sub = L.t("wynnlabs.about.idle_sub", mine, loader);
+                icon = "refresh";
+                iconColour = Theme.INK_3;
+                button = null;
+                action = null;
+            }
+            default -> {
+                title = L.t("wynnlabs.about.idle_title");
+                sub = L.t("wynnlabs.about.idle_sub", mine, loader);
+                icon = "clock";
+                iconColour = Theme.INK_3;
+                button = L.t("wynnlabs.about.check_now");
+                action = "#upd:check";
+            }
+        }
+        boolean newer = s.status() == UpdateCheck.Status.NEWER;
+        int cardH = 40;
+        Kit.card(g, x, y, w, cardH, newer ? Theme.GOLD_DEEP : 0, newer);
+        if (newer) {
+            Kit.outline(g, x - 1, y - 1, w + 2, cardH + 2, Theme.GOLD_DEEP);
+        }
+        Art.icon(g, icon, x + 8, y + 9, 12, Theme.paperRgb(iconColour));
+        int tx = x + 26;
+        int bx = x + w - 8;
+        if (button != null) {
+            boolean linkOut = "#upd:open".equals(action);
+            int bw = font.width(button) + 14 + (linkOut ? 11 : 0);
+            bx -= bw;
+            int by = y + (cardH - 14) / 2;
+            boolean bh = mx >= bx && mx < bx + bw && my >= by && my < by + 14;
+            int st = newer ? Kit.ON : bh ? Kit.HOVER : Kit.REST;
+            Kit.button(g, bx, by, bw, 14, st);
+            if (linkOut) {
+                Art.icon(g, "arrow-up-right", bx + 6, by + 3, 8, Kit.buttonText(st));
+            }
+            g.drawString(font, button, bx + 7 + (linkOut ? 11 : 0), by + 3, Kit.buttonText(st), st != Kit.ON);
+            toggles.add(new Object[] {new int[] {bx, by, bw, 14}, action});
+            if (linkOut && s.url() != null) {
+                hits.add(new Hit(bx, by, bw, 14, null, List.of(L.c("wynnlabs.about.link_tip", s.url())), null));
+            }
+        }
+        int room = bx - tx - 8;
+        ink(g, Component.literal(fit(title, room - 6)).withStyle(UiFont::bold), tx, y + 8, Theme.INK);
+        List<String> subLines = wrapText(sub, room, 2);
+        for (int i = 0; i < subLines.size(); i++) {
+            ink(g, subLines.get(i), tx, y + 20 + i * 9, Theme.INK_2);
+        }
+        int cy = y + cardH + 8;
+
+        // the links, each opened in the browser only after the game's "open this link?" prompt
+        section(g, L.t("wynnlabs.about.links"), x, cy, w);
+        cy += 12;
+        int lx = x;
+        for (int i = 0; i < ABOUT_LINKS.length; i++) {
+            String label = L.t(ABOUT_LINKS[i][0]);
+            int bw = font.width(label) + 25;
+            if (lx > x && lx + bw > x + w) {
+                lx = x;
+                cy += 17;
+            }
+            boolean bh = mx >= lx && mx < lx + bw && my >= cy && my < cy + 14;
+            int st = bh ? Kit.HOVER : Kit.REST;
+            Kit.button(g, lx, cy, bw, 14, st);
+            Art.icon(g, "arrow-up-right", lx + 6, cy + 3, 8, Kit.buttonText(st));
+            onWood(g, label, lx + 17, cy + 3, st);
+            toggles.add(new Object[] {new int[] {lx, cy, bw, 14}, "#link:" + i});
+            if (bh) {
+                hits.add(new Hit(lx, cy, bw, 14, null, List.of(L.c("wynnlabs.about.link_tip", ABOUT_LINKS[i][1])), null));
+            }
+            lx += bw + 4;
+        }
+        cy += 19;
+        ink(g, fit(L.t("wynnlabs.about.mod_line", mine, loader), w), x, cy, Theme.INK_3);
+        cy += 14;
+        // which Wynntils features work, when there is room for it
+        if (y + h - cy >= 30) {
+            drawAbout(g, x, cy, w, mx, my);
+        }
+    }
+
+    /** Opens a GitHub page in the browser after the game's "open this link?" prompt; anything else is refused. */
+    private void openLink(String url) {
+        if (url == null || !url.startsWith("https://github.com/")) {
+            return;
+        }
+        net.minecraft.client.gui.screens.ConfirmLinkScreen.confirmLinkNow(this, java.net.URI.create(url), true);
+    }
+
+    /** The About page's buttons: check again, open the release, the setting, a link. */
+    private void aboutClick(String id) {
+        switch (id) {
+            case "#upd:check" -> {
+                if (!UpdateCheck.checkNow()) {
+                    UpdateCheck.State s = UpdateCheck.state();
+                    if (s.status() != UpdateCheck.Status.FAILED) {
+                        flash = L.t("wynnlabs.about.wait");
+                        flashUntil = System.currentTimeMillis() + 2500;
+                    }
+                }
+            }
+            case "#upd:open" -> openLink(UpdateCheck.state().url());
+            case "#upd:setting" -> {
+                // Prices and data, the update check picked
+                for (int c = 0; c < SETTING_CATS.length; c++) {
+                    if (SETTING_CATS[c].equals("data")) {
+                        settingsCat = c;
+                        List<SetRow> rows = settingRows("data");
+                        for (int i = 0; i < rows.size(); i++) {
+                            if (rows.get(i).id().equals("updateCheck")) {
+                                settingsPick[c] = i;
+                            }
+                        }
+                        settingsScroll = 0;
+                        settingsDetail = layout.compact();
+                    }
+                }
+            }
+            default -> {
+                int i = Integer.parseInt(id.substring("#link:".length()));
+                if (i >= 0 && i < ABOUT_LINKS.length) {
+                    openLink(ABOUT_LINKS[i][1]);
+                }
+            }
+        }
+    }
+
+    // ---- the rule box (an emerald rule's amount) and the AI tab's switch rows ----
+
     private net.minecraft.client.gui.components.EditBox ruleBox;
     private int ruleBoxFor = -1;                    // the rule the box shows, an index in RuleEditor.RULES
     private int[] ruleBoxRect;
@@ -4836,152 +5592,24 @@ final class RoadmapScreen extends Screen {
         setFocused(null);
     }
 
+    /** A switch with its description (the AI tab's rows); the whole row is clickable. */
     private void drawSettingRow(GuiGraphics g, Object[] row, int x, int y, int w, int mx, int my) {
-        String kind = (String) row[0];
         boolean hover = mx >= x && mx < x + w && my >= y && my < y + rowPitch - 2;
         if (hover) {
             g.fill(x - 3, y - 1, x + w, y + rowPitch - 3, Theme.CARD_HOVER);
         }
-        String title;
-        String desc;
-        if (kind.equals("switch")) {
-            String k = (String) row[1];
-            boolean on = Settings.on(k);
-            pill(g, x, y + 9, on);
-            title = L.t(Settings.LABELS.get(k));
-            desc = L.t(Settings.DESC.get(k));
-            ink(g, fit(title, w - 26), x + 26, y + 5, on ? 0xFFE8E6DF : MUTED);
-            // a taller row (the AI tab's) has room for the description's second line
-            descWrap(g, desc, x + 26, y + 17, w - 26, rowPitch > SET_ROW ? 2 : 1);
-            toggles.add(new Object[] {new int[] {x, y, w, rowPitch - 2}, k});
-            if (hover) {
-                rowTip(x, y, w, rowPitch - 2, title, desc);
-            }
-            return;
-        }
-        if (kind.equals("advice")) {
-            // the advice on this character, a switch kept in its rules file (off on an alt)
-            boolean on = Rules.adviceHere();
-            pill(g, x, y + 9, on);
-            title = L.t("wynnlabs.settings.advice_here");
-            desc = L.t("wynnlabs.settings.advice_here_desc");
-            ink(g, fit(title, w - 26), x + 26, y + 5, on ? 0xFFE8E6DF : MUTED);
-            desc(g, desc, x + 26, y + 17, w - 26);
-            toggles.add(new Object[] {new int[] {x, y, w, SET_ROW - 2}, "#advicehere"});
-            if (hover) {
-                rowTip(x, y, w, SET_ROW - 2, title, desc);
-            }
-            return;
-        }
-        if (kind.equals("number")) {
-            // a number setting under its switch: title and description indented like the switch
-            // text, − value + on the right; dimmed while its switch is off
-            String k = (String) row[1];
-            String parent = Settings.STEP_PARENT.get(k);
-            boolean live = parent == null || Settings.on(parent);
-            String value = stepDisplay(k);
-            int vw = Math.max(36, font.width(value) + 8);
-            int bx = x + w - (vw + 30);
-            int sy = y + 8;
-            stepButton(g, bx, sy, "−", mx, my, "#num:" + k + ":-1");
-            g.fill(bx + 14, sy, bx + 16 + vw, sy + 12, Theme.WELL);
-            ink(g, value, bx + 15 + (vw - font.width(value)) / 2, sy + 2, live ? 0xFFFAC775 : MUTED);
-            stepButton(g, bx + 16 + vw, sy, "+", mx, my, "#num:" + k + ":1");
-            title = L.t(Settings.STEP_LABELS.get(k));
-            desc = L.t(Settings.DESC.get(k));
-            ink(g, fit(title, bx - x - 32), x + 26, y + 5, live ? 0xFFE8E6DF : MUTED);
-            desc(g, desc, x + 26, y + 17, bx - x - 32);
-            if (hover && !(mx >= bx && my >= sy && my < sy + 12)) {
-                rowTip(x, y, bx - x - 4, SET_ROW - 2, title, desc);
-            }
-            return;
-        }
-        if (kind.equals("rule")) {
-            RuleEditor.Rule r = RuleEditor.RULES.get((Integer) row[1]);
-            if (hover) {
-                hoverDesc = L.t(r.title()) + ": " + L.t(r.desc());
-            }
-            if (r.isSwitch()) {
-                boolean on = RuleEditor.value(r) > 0;
-                pill(g, x, y + 5, on);
-                ink(g, fit(L.t(r.title()), w - 26), x + 26, y + 7, on ? 0xFFE8E6DF : MUTED);
-                toggles.add(new Object[] {new int[] {x, y, w, rowPitch - 2}, "#rule:" + row[1] + ":1"});
-                if (hover) {
-                    rowTip(x, y, w, rowPitch - 2, L.t(r.title()), L.t(r.desc()));
-                }
-                return;
-            }
-            String value = RuleEditor.display(r);
-            // an emerald rule has room for the typed amount (36) and its unit chip (20)
-            int vw = r.unit().equals("E") ? 58 : Math.max(36, font.width(value) + 8);
-            int bx = x + w - (vw + 30);
-            int sy = y + 5;
-            stepButton(g, bx, sy, "−", mx, my, "#rule:" + row[1] + ":-1");
-            if (r.unit().equals("E")) {
-                // the amount typed in the box, the unit on the chip after it (click: E, EB, LE);
-                // − + still step through the usual amounts
-                int idx = (Integer) row[1];
-                double v = RuleEditor.value(r);
-                if (ruleBoxFor != idx) {
-                    ruleUnit = v >= 4096 && v % 4096 == 0 ? 2 : v >= 64 && v % 64 == 0 ? 1 : 0;
-                }
-                if (!ruleBox.isFocused()) {
-                    double inUnit = v / UNIT_MULT[ruleUnit];
-                    ruleBox.setValue(inUnit == Math.rint(inUnit) ? String.valueOf((long) inUnit)
-                            : String.valueOf(Math.round(inUnit * 100) / 100.0));
-                }
-                ruleBoxFor = idx;
-                int nw = 36;
-                textBox(g, ruleBox, bx + 14, sy, nw, "wynnlabs.rules.type_hint", mx, my, 0f);
-                ruleBoxRect = new int[] {bx + 14, sy, nw, 12};
-                String u = UNIT_NAMES[ruleUnit];
-                int ux = bx + 15 + nw;
-                int uw = vw + 2 - nw - 1;
-                boolean uh = mx >= ux && mx < ux + uw && my >= sy && my < sy + 12;
-                Kit.button(g, ux, sy, uw, 12, uh ? Kit.HOVER : Kit.REST);
-                onWood(g, u, ux + (uw - font.width(u)) / 2, sy + 2, uh ? Kit.HOVER : Kit.REST);
-                toggles.add(new Object[] {new int[] {ux, sy, uw, 12}, "#ruleunit"});
-            } else {
-                g.fill(bx + 14, sy, bx + 16 + vw, sy + 12, Theme.WELL);
-                ink(g, value, bx + 15 + (vw - font.width(value)) / 2, sy + 2, 0xFFFAC775);
-            }
-            stepButton(g, bx + 16 + vw, sy, "+", mx, my, "#rule:" + row[1] + ":1");
-            ink(g, fit(L.t(r.title()), bx - x - 8), x, y + 7, 0xFFE8E6DF);
-            if (hover && !(mx >= bx && my >= y + 5 && my < y + 17)) {
-                rowTip(x, y, bx - x - 4, rowPitch - 2, L.t(r.title()), L.t(r.desc()));
-            }
-            return;
-        }
-        String value;
-        switch (kind) {
-            case "arch" -> {
-                String ch = TreePlanner.chosen();
-                title = L.t("wynnlabs.settings.arch_title");
-                desc = L.t("wynnlabs.settings.arch_desc");
-                value = ch.isEmpty() ? L.t("wynnlabs.settings.archetype_off") : ch;
-            }
-            default -> {
-                title = L.t("wynnlabs.settings.goal_title");
-                desc = L.t("wynnlabs.settings.goal_desc");
-                value = Setup.goalName(Setup.goal());
-            }
-        }
-        String chip = value + " ›";
-        int cw = font.width(chip) + 14;
-        int cx = x + w - cw;
-        Kit.button(g, cx, y + 8, cw, Kit.Ui.BTN_H, hover ? Kit.HOVER : Kit.REST);
-        onWood(g, chip, cx + 7, y + 11, hover ? Kit.HOVER : Kit.REST);
-        ink(g, fit(title, cx - x - 8), x, y + 5, 0xFFE8E6DF);
-        desc(g, desc, x, y + 17, cx - x - 8);
-        toggles.add(new Object[] {new int[] {x, y, w, SET_ROW - 2}, row[1]});
+        String k = (String) row[1];
+        boolean on = Settings.on(k);
+        pill(g, x, y + 9, on);
+        String title = L.t(Settings.LABELS.get(k));
+        String desc = L.t(Settings.DESC.get(k));
+        ink(g, fit(title, w - 26), x + 26, y + 5, on ? 0xFFE8E6DF : MUTED);
+        // a taller row (the AI tab's) has room for the description's second line
+        descWrap(g, desc, x + 26, y + 17, w - 26, rowPitch > SET_ROW ? 2 : 1);
+        toggles.add(new Object[] {new int[] {x, y, w, rowPitch - 2}, k});
         if (hover) {
-            rowTip(x, y, w, SET_ROW - 2, title, desc);
+            rowTip(x, y, w, rowPitch - 2, title, desc);
         }
-    }
-
-    /** A number setting's value as its row shows it. */
-    private static String stepDisplay(String key) {
-        return String.valueOf(Settings.stepValue(key));
     }
 
     private static final float DESC_SCALE = 0.85f;
@@ -5156,40 +5784,7 @@ final class RoadmapScreen extends Screen {
 
     private final List<int[]> scaleRects = new ArrayList<>();   // {x, y, w, h, scale}
 
-    /**
-     * Appearance → Menu scale: Same as the game, 2, 3 or 4 (MenuScale). The value in use is shown
-     * when a larger one does not fit the window.
-     */
-    private int drawMenuScale(GuiGraphics g, int x, int y, int w, int mx, int my) {
-        scaleRects.clear();
-        ink(g, Component.literal(L.t("wynnlabs.settings.menu_scale")).withStyle(UiFont::bold), x, y, 0xFFFFFFFF);
-        int pick = MenuScale.setting();
-        int used = MenuScale.effective();
-        String note = pick > 0 && used != pick ? L.t("wynnlabs.settings.menu_scale_used", used)
-                : L.t("wynnlabs.settings.menu_scale_desc");
-        // a narrow page wraps the note to a second line instead of cutting it
-        List<String> noteLines = wrapText(note, w, 2);
-        for (int i = 0; i < noteLines.size(); i++) {
-            ink(g, noteLines.get(i), x, y + 11 + i * 10, FAINT);
-        }
-        String[] names = {L.t("wynnlabs.settings.menu_scale_game"), "2", "3", "4"};
-        int[] values = {0, 2, 3, 4};
-        int sy = y + 13 + 10 * Math.max(1, noteLines.size());
-        int bx = x;
-        for (int i = 0; i < names.length; i++) {
-            int bw = Math.max(22, font.width(names[i]) + 12);
-            boolean sel = pick == values[i];
-            boolean hover = mx >= bx && mx < bx + bw && my >= sy && my < sy + 14;
-            int state = sel ? Kit.ON : hover ? Kit.HOVER : Kit.REST;
-            Kit.button(g, bx, sy, bw, 14, state);
-            g.drawString(font, names[i], bx + (bw - font.width(names[i])) / 2, sy + 3, Kit.buttonText(state), !sel);
-            scaleRects.add(new int[] {bx, sy, bw, 14, values[i]});
-            bx += bw + 3;
-        }
-        return sy + 14 - y;
-    }
-
-    /** Appearance → About: the Wynntils version and which of its features work with it. */
+    /** About: the Wynntils version and which of its features work with it. */
     private void drawAbout(GuiGraphics g, int x, int y, int w, int mx, int my) {
         var down = Wyn.down();
         Component title = Component.literal(L.t("wynnlabs.wyn.about", Wyn.version())).withStyle(UiFont::bold);
@@ -5497,59 +6092,62 @@ final class RoadmapScreen extends Screen {
         }
     }
 
-    /** Prices and data: where the prices come from, then the Wynnventory key box. */
-    private void drawKeyRow(GuiGraphics g, int x, int y, int w, int mx, int my) {
+    /** False while the key built into the mod works: the key row then asks for nothing. */
+    private static boolean keyBoxNeeded() {
+        return !(Prices.embeddedKeyInUse() && !Prices.keyInvalid);
+    }
+
+    /** The height {@link #drawKeyDetail} takes. */
+    private static int keyDetailHeight(int w) {
+        return keyBoxNeeded() ? 50 : 32;
+    }
+
+    /**
+     * Prices and data → Wynnventory key: where the prices and bank notes come from, then the key
+     * (built in, or the box to paste your own with Save and Remove). Returns the height it took.
+     */
+    private int drawKeyDetail(GuiGraphics g, int x, int y, int w, int mx, int my) {
         Words problem = Prices.problem;
         String pr = problem == null ? null : problem.text();
         String an = Vault.annotateProblem;
-        String lead = L.t("wynnlabs.settings.sources");
         String prices = pr == null ? L.t("wynnlabs.settings.prices_ok") : "✖ " + pr;
         String bank = an == null ? L.t("wynnlabs.settings.bank_ok") : L.t("wynnlabs.settings.bank_bad", an);
-        // a line too long for the page drops its lead, then the two parts share what is left
-        int sep = font.width(" · ");
-        if (font.width(lead) + font.width(prices) + sep + font.width(bank) > w) {
-            lead = "";
-        }
-        int room = w - sep;
-        if (font.width(prices) + font.width(bank) > room) {
-            prices = fit(prices, Math.max(room / 2, room - font.width(bank)));
-            bank = fit(bank, room - font.width(prices));
-        }
-        Component src = Component.literal(lead).withStyle(ChatFormatting.DARK_GRAY)
-                .append(Component.literal(prices).withStyle(pr == null ? ChatFormatting.DARK_GREEN : ChatFormatting.RED))
-                .append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY))
-                .append(Component.literal(bank).withStyle(an == null ? ChatFormatting.DARK_GREEN : ChatFormatting.RED));
-        ink(g, src, x, y, 0xFFFFFFFF);
-        int ky = y + 13;
-        keyBoxShown = !(Prices.embeddedKeyInUse() && !Prices.keyInvalid);
+        ink(g, Component.literal(fit(prices, w)).withStyle(pr == null ? ChatFormatting.DARK_GREEN : ChatFormatting.RED), x, y, 0xFFFFFFFF);
+        ink(g, Component.literal(fit(bank, w)).withStyle(an == null ? ChatFormatting.DARK_GREEN : ChatFormatting.RED), x, y + 10, 0xFFFFFFFF);
+        int ky = y + 22;
+        keyBoxShown = keyBoxNeeded();
         if (!keyBoxShown) {
             // the key built into the mod works: nothing to ask for
             ink(g, L.c("wynnlabs.settings.key").withStyle(ChatFormatting.GRAY)
-                    .append(L.c("wynnlabs.settings.key_builtin").withStyle(ChatFormatting.GREEN)), x, ky + 2, 0xFFFFFFFF);
-            return;
+                    .append(L.c("wynnlabs.settings.key_builtin").withStyle(ChatFormatting.GREEN)), x, ky, 0xFFFFFFFF);
+            return 32;
         }
         String masked = Prices.maskedKey();
         Component ks = L.c("wynnlabs.settings.key").withStyle(ChatFormatting.GRAY)
                 .append(masked == null ? L.c("wynnlabs.settings.key_none").withStyle(ChatFormatting.DARK_GRAY)
                         : Prices.keyInvalid ? L.c("wynnlabs.settings.key_invalid", masked).withStyle(ChatFormatting.RED)
                         : Component.literal(masked).withStyle(ChatFormatting.GREEN));
-        ink(g, ks, x, ky + 2, 0xFFFFFFFF);
-        int bx = x + font.width(ks) + 8;
-        int kw = Math.max(80, Math.min(170, x + w - bx - 90));
-        textBox(g, keyBox, bx, ky, kw, "wynnlabs.settings.key_box", mx, my, 0f);
-        int sx = bx + kw + 6;
+        ink(g, ks, x, ky, 0xFFFFFFFF);
+        int by = ky + 12;
         String save = L.t("wynnlabs.settings.save");
         String[][] btns = masked == null ? new String[][] {{save, "#keysave"}}
                 : new String[][] {{save, "#keysave"}, {L.t("wynnlabs.settings.remove"), "#keydel"}};
+        int buttons = 0;
+        for (String[] b : btns) {
+            buttons += font.width(b[0]) + 14 + 4;
+        }
+        int kw = Math.max(60, Math.min(220, w - buttons - 2));
+        textBox(g, keyBox, x, by, kw, "wynnlabs.settings.key_box", mx, my, 0f);
+        int sx = x + kw + 6;
         for (String[] b : btns) {
             int bw = font.width(b[0]) + 14;
-            boolean bh = mx >= sx && mx < sx + bw && my >= ky && my < ky + 12;
-            card(g, sx, ky, bw, 12, bh, 0);
-            g.drawString(font, b[0], sx + 7, ky + 2, b[1].equals("#keydel") ? 0xFFFFB0A0 : 0xFFB8F0A0, true);
-            toggles.add(new Object[] {new int[] {sx, ky, bw, 12}, b[1]});
+            boolean bh = mx >= sx && mx < sx + bw && my >= by && my < by + 12;
+            card(g, sx, by, bw, 12, bh, 0);
+            g.drawString(font, b[0], sx + 7, by + 2, b[1].equals("#keydel") ? 0xFFFFB0A0 : 0xFFB8F0A0, true);
+            toggles.add(new Object[] {new int[] {sx, by, bw, 12}, b[1]});
             sx += bw + 4;
         }
-        ink(g, fit(L.t("wynnlabs.settings.key_hint"), w), x, ky + 16, FAINT);
+        return 50;
     }
 
     // ---- input ----
@@ -5701,13 +6299,15 @@ final class RoadmapScreen extends Screen {
                     if (id.startsWith("#cat:")) {
                         settingsCat = Integer.parseInt(id.substring(5));
                         settingsScroll = 0;
+                        settingsDetail = false;
                         keyBox.setFocused(false);
                         setFocused(null);
-                    } else if (id.startsWith("#lang:")) {
-                        Settings.setNumber("langOverride", Integer.parseInt(id.substring(6)));
-                    } else if (id.startsWith("#num:")) {
-                        String[] p = id.split(":");
-                        Settings.step(p[1], Integer.parseInt(p[2]));
+                    } else if (id.startsWith("#ssel:") || id.startsWith("#stog:") || id.startsWith("#sreset:")) {
+                        settingsAction(id);
+                    } else if ("#sback".equals(id)) {
+                        settingsDetail = false;
+                    } else if (id.startsWith("#upd:") || id.startsWith("#link:")) {
+                        aboutClick(id);
                     } else if (id.startsWith("#rule:")) {
                         String[] p = id.split(":");
                         RuleEditor.step(RuleEditor.RULES.get(Integer.parseInt(p[1])), Integer.parseInt(p[2]));
@@ -5721,10 +6321,6 @@ final class RoadmapScreen extends Screen {
                         Prices.setKey("");
                         flash = L.t("wynnlabs.settings.key_removed");
                         flashUntil = System.currentTimeMillis() + 2500;
-                    } else if ("#advicehere".equals(t[1])) {
-                        Rules.setAdviceHere(!Rules.adviceHere());
-                        steps = Roadmap.cached();
-                        refreshAsked = Rules.adviceHere();
                     } else if ("#archetype".equals(t[1])) {
                         TreePlanner.cycle();
                     } else if ("#goal".equals(t[1])) {
@@ -5997,8 +6593,8 @@ final class RoadmapScreen extends Screen {
         if (tab == TAB_TREE) {
             treeScroll = Math.max(0, Math.min(treeScrollMax, treeScroll - treeCell * (int) Math.signum(v)));
         }
-        if (tab == TAB_SETTINGS) {
-            settingsScroll = Math.max(0, Math.min(settingsScrollMax, settingsScroll - rowPitch * (int) Math.signum(v)));
+        if (tab == TAB_SETTINGS && settingsListRect != null && in(x, y, settingsListRect)) {
+            settingsScroll = Math.max(0, Math.min(settingsScrollMax, settingsScroll - 2 * LIST_ROW * (int) Math.signum(v)));
         }
         if (tab == TAB_CRAFT) {
             CraftingTab.INSTANCE.mouseScrolled(x, y, v);
