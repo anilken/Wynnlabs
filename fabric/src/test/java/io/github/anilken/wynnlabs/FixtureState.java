@@ -179,6 +179,12 @@ final class FixtureState implements GameState {
     /** A level the recorded character is played at instead (0: the recorded one). */
     private int levelAs;
 
+    /** The recorded character at another level (0: the recorded one), everything else as recorded. */
+    FixtureState atLevel(int level) {
+        levelAs = level;
+        return this;
+    }
+
     /**
      * The recorded character as a new one: Lv 1, nothing worn, carried or banked (its rules
      * and the game's data stay), to see what the mod tells a player who just started.

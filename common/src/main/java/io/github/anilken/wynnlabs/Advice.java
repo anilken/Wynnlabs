@@ -394,9 +394,11 @@ final class Advice {
             out.add(Component.literal(TooltipListener.marker()).withStyle(ChatFormatting.LIGHT_PURPLE)
                     .append(L.c("wynnlabs.advice.worn").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD)));
             // the J menu's damage model first (it also knows untradable merchant items), then the shopping list
+            // the road map only when one was built (this session or the last); an old one says so
             String note = road != null && !Double.isNaN(road.gain())
                     ? L.t("wynnlabs.advice.next_target_gain", road.info().name(), road.info().requirements().level(),
                             road.source(), Math.round(road.gain()))
+                            + (Roadmap.stale() != null ? " (" + L.t("wynnlabs.advice.road_stale") + ")" : "")
                     : next == null ? L.t("wynnlabs.advice.nothing_better")
                     : L.t("wynnlabs.advice.next_target", next.info().name(), next.info().requirements().level(),
                             Shopping.where(next.source()));

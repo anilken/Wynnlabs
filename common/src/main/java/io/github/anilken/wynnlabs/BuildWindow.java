@@ -203,6 +203,11 @@ final class BuildWindow {
         return r.around().equals(names(chosen)) && r.tuning().equals(tuning);
     }
 
+    /** The level a set around these items is planned for: yours, or the highest chosen item's. */
+    static int planLevel(List<ItemData> items) {
+        return Math.max(GameState.current().level(), items.stream().mapToInt(ItemData::level).max().orElse(0));
+    }
+
     private static List<String> names(List<ItemData> items) {
         return items.stream().map(ItemData::name).toList();
     }
@@ -308,24 +313,49 @@ final class BuildWindow {
         return upper.charAt(0) + upper.substring(1).toLowerCase(Locale.ROOT);
     }
 
-    /** Every piece the character can use, from the item database (never your bag or bank), highest level first. */
+    /** The level ranges of the list's range button: all, up to your level, 1–50, 51–80, 81–105, 106 and up. */
+    private static final int[][] RANGES = {{1, 999}, {1, -1}, {1, 50}, {51, 80}, {81, 105}, {106, 999}};
+    /** The range picked (0: all levels, the default). */
+    private int range;
+
+    /** A range's label: "All", "≤ Lv 44", "1–50" … */
+    private static String rangeText(int i) {
+        if (i == 0) {
+            return L.t("wynnlabs.pick.range_all");
+        }
+        if (i == 1) {
+            return L.t("wynnlabs.pick.range_mine", GameState.current().level());
+        }
+        int[] r = RANGES[i];
+        return r[1] >= 999 ? r[0] + "+" : r[0] + "–" + r[1];
+    }
+
+    /**
+     * Every piece the class can use at any level, from the item database (never your bag or
+     * bank), highest level first; the type pill, the level range and the search narrow it.
+     */
     private List<ItemData> catalogue() {
         GameState state = GameState.current();
         int level = state.level();
         if (level != catalogueLevel || catalogue.isEmpty()) {
             Klass cls = state.classType();
-            List<ItemData> all = new ArrayList<>(state.allGear().filter(i -> Locks.usable(i, level, cls)).toList());
+            List<ItemData> all = new ArrayList<>(state.allGear().filter(i -> Locks.usable(i, cls)).toList());
             all.sort((a, b) -> a.level() != b.level() ? Integer.compare(b.level(), a.level()) : a.name().compareTo(b.name()));
             catalogue = all;
             catalogueLevel = level;
             shownFor = "\u0000";
         }
-        String key = type + "|" + search.getValue().toLowerCase(Locale.ROOT).strip();
+        String key = type + "|" + range + "|" + search.getValue().toLowerCase(Locale.ROOT).strip();
         if (!key.equals(shownFor)) {
             String q = search.getValue().toLowerCase(Locale.ROOT).strip();
+            int lo = RANGES[range][0];
+            int hi = RANGES[range][1] < 0 ? level : RANGES[range][1];
             List<ItemData> out = new ArrayList<>();
             for (ItemData i : catalogue) {
                 if (type == 1 && !i.slot().isWeapon() || type > 1 && i.slot() != TYPE_SLOTS[type]) {
+                    continue;
+                }
+                if (i.level() < lo || i.level() > hi) {
                     continue;
                 }
                 if (!q.isEmpty() && !i.name().toLowerCase(Locale.ROOT).contains(q)) {
@@ -376,11 +406,30 @@ final class BuildWindow {
         // what the list holds: your level and class
         GameState state = GameState.current();
         Slot wpn = Slot.weaponOf(state.classType());
-        Locks.Problem problem = Locks.problem(chosen, state.level());
+        Locks.Problem problem = Locks.problem(chosen, planLevel(chosen));
+        // the level range on the note's line, right: a button that steps through the ranges
+        String rt = rangeText(range);
+        int rw = font.width(rt) + 23;
+        boolean rh = in(mx, my, x + w - rw, cy - 2, rw, 13);
+        int rs = range > 0 ? Kit.ON : rh ? Kit.HOVER : Kit.REST;
+        Kit.button(g, x + w - rw, cy - 2, rw, 13, rs);
+        Art.icon(g, "filter", x + w - rw + 6, cy + 1, 8, Kit.buttonText(rs));
+        g.drawString(font, rt, x + w - rw + 17, cy + 1, Kit.buttonText(rs), false);
+        btn(x + w - rw, cy - 2, rw, 13, "range", null);
+        List<Component> rtip = new ArrayList<>();
+        rtip.add(L.c("wynnlabs.pick.range_tip").withStyle(ChatFormatting.WHITE));
+        for (int i = 0; i < RANGES.length; i++) {
+            rtip.add(Component.literal((i == range ? "▶ " : "   ") + rangeText(i)).withStyle(i == range ? ChatFormatting.GOLD : ChatFormatting.GRAY));
+        }
+        host.tip(x + w - rw, cy - 2, rw, 13, rtip);
+        int noteW = w - rw - 6;
         String note = problem != null ? L.t("wynnlabs.pick.problem", problem.text())
-                : L.t("wynnlabs.pick.note", state.level(), wpn == null ? "?" : nice(wpn.name()));
-        Kit.text(g, font, fit(note, w, false), x, cy, problem != null ? Theme.BAD : Theme.INK_3);
-        cy += 12;
+                : L.t("wynnlabs.pick.note", wpn == null ? "?" : nice(wpn.name()));
+        if (problem == null && font.width(note) > noteW) {
+            note = L.t("wynnlabs.pick.note_short", wpn == null ? "?" : nice(wpn.name()));
+        }
+        Kit.text(g, font, fit(note, noteW, false), x, cy, problem != null ? Theme.BAD : Theme.INK_3);
+        cy += 13;
         // the bottom: the chips row with Suggest, the strip over it
         int chipsY = bottom - 14;
         int stripH = stripHeight(w);
@@ -439,8 +488,8 @@ final class BuildWindow {
             Kit.text(g, font, Component.literal(fit(it.name(), nameRoom, false)).withStyle(it.tier().colour()), nx, ry + 5, Theme.INK);
             Kit.text(g, font, meta, right - metaW, ry + 5, Theme.INK_3);
             btn(x + 1, ry, rw, ROW_H, "item", it);
-            host.tip(x + 1, ry, rw, ROW_H, List.of(Component.literal(it.name()).withStyle(it.tier().colour()).withStyle(UiFont::bold),
-                    Component.literal(typeOf(it) + " · Lv " + it.level()).withStyle(ChatFormatting.GRAY),
+            // the item's own tooltip (stats, ranges, requirements) with what a click does under it
+            host.item(x + 1, ry, rw, ROW_H, it, icon, List.of(
                     L.c(on ? "wynnlabs.pick.row_off" : "wynnlabs.pick.row_on").withStyle(ChatFormatting.DARK_GRAY)));
         }
         if (max > 0) {
@@ -677,17 +726,27 @@ final class BuildWindow {
                 List.of(L.c("wynnlabs.results.back_tip").withStyle(ChatFormatting.GRAY)), mx, my);
         int n = r == null ? 0 : r.builds().size();
         String around = r == null || r.around().isEmpty() ? null : String.join(", ", r.around());
-        String head = around == null ? L.n("wynnlabs.results.found_plain", n, n) : L.n("wynnlabs.results.found", n, n, around);
+        // planned for a level above yours when a chosen item needs it
+        String planned = r != null && r.level() > GameState.current().level() ? L.t("wynnlabs.results.planned_for", r.level()) : null;
         int headRoom = w - bw - 24;
-        if (width(head, true) > headRoom) {
-            // too long with the items' names: the count alone, the names in the tooltip
-            head = L.n("wynnlabs.results.found_plain", n, n);
-            if (around != null) {
-                host.tip(x + bw + 6, y, Math.min(headRoom, width(head, true)), 9,
-                        List.of(Component.literal(around).withStyle(ChatFormatting.LIGHT_PURPLE)));
+        String plain = L.n("wynnlabs.results.found_plain", n, n);
+        String[] tries = around == null ? new String[] {plain}
+                : new String[] {L.n("wynnlabs.results.found", n, n, around), plain};
+        String head = tries[tries.length - 1];
+        for (String c : tries) {
+            if (width(c, true) + (planned == null ? 0 : 8 + font.width(planned)) <= headRoom) {
+                head = c;
+                break;
             }
         }
+        if (around != null && !head.contains(around)) {
+            host.tip(x + bw + 6, y, Math.min(headRoom, width(head, true)), 9,
+                    List.of(Component.literal(around).withStyle(ChatFormatting.LIGHT_PURPLE)));
+        }
         Kit.text(g, font, Component.literal(fit(head, headRoom, true)).withStyle(UiFont::bold), x + bw + 6, y, Theme.INK);
+        if (planned != null && width(head, true) + 8 + font.width(planned) <= headRoom) {
+            Kit.text(g, font, planned, x + bw + 6 + width(head, true) + 8, y, CHOSEN);
+        }
         int top = y + 16;
         int footY = y + h - 14;
         if (r == null || r.builds().isEmpty()) {
@@ -983,7 +1042,10 @@ final class BuildWindow {
             deltas.add(new Object[] {L.t("wynnlabs.results.d_speed"), (to.speed() - now.speed() >= 0 ? "+" : "−")
                 + Math.round(Math.abs(to.speed() - now.speed())) + "%"});
         }
-        int dx = ix;
+        // the changes are against what you wear now
+        String vs = L.t("wynnlabs.results.vs_now");
+        int dx = ix + font.width(vs) + 6;
+        Kit.text(g, font, vs, ix, ly, Theme.INK_3);
         for (Object[] d : deltas) {
             String v = (String) d[1];
             String part = d[0] + " " + v;
@@ -1448,6 +1510,10 @@ final class BuildWindow {
             case "search" -> search.setFocused(true);
             case "type" -> {
                 type = (int) hit.arg();
+                listScroll = 0;
+            }
+            case "range" -> {
+                range = (range + (button == 1 ? RANGES.length - 1 : 1)) % RANGES.length;
                 listScroll = 0;
             }
             case "item" -> {

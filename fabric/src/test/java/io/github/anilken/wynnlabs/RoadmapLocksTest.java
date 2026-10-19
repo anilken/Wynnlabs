@@ -159,6 +159,36 @@ class RoadmapLocksTest {
     }
 
     @Test
+    void aChosenItemAboveYourLevelPlansForItsLevel() throws Exception {
+        // a Lv 90 relik (Dexterity 70) chosen on a Lv 66 character
+        FixtureState.load(shaman()).atLevel(66).install("en");
+        Roadmap.Computed c = Roadmap.compute(new Roadmap.Inputs(List.of("Loaded Question"), Tuning.Choice.PLAIN, true, Around.BUILDS), null);
+        assertNull(c.problem(), "it can be worn at Lv 90");
+        assertEquals(90, c.level(), "planned for the chosen item's level");
+        assertEquals(90, c.steps().get(0).level());
+        assertFalse(c.builds().isEmpty());
+        int earned90 = (Math.min(90, 101) - 1) * 2;
+        int earned66 = (66 - 1) * 2;
+        for (Roadmap.Candidate b : c.builds()) {
+            assertEquals("Loaded Question", b.set().get("WEAPON").name());
+            int used = java.util.Arrays.stream(b.eval().allocation()).sum();
+            assertTrue(used <= earned90, "within the Lv 90 points: " + used);
+            assertTrue(used > earned66, "more than a Lv 66 character has: " + used);
+            boolean above = false;
+            for (var e : b.set().entrySet()) {
+                if (e.getValue() != null) {
+                    assertTrue(e.getValue().level() <= 90, e.getKey() + " " + e.getValue().name() + " Lv " + e.getValue().level());
+                    above |= !e.getKey().equals("WEAPON") && e.getValue().level() > 66;
+                }
+            }
+            assertTrue(above, "another slot goes above Lv 66");
+        }
+        // the window lists it although it is above the character's level
+        assertTrue(Locks.usable(GameState.current().allGear().filter(i -> i.name().equals("Loaded Question")).findFirst().orElseThrow(),
+                GameState.current().classType()));
+    }
+
+    @Test
     void aChoiceKeepsOnePiecePerSlot() throws Exception {
         FixtureState.load(shaman()).install("en");
         GameState st = GameState.current();

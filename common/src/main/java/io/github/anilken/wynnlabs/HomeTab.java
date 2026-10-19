@@ -68,7 +68,16 @@ final class HomeTab {
      * The applied plan's build line: its name, how many of its pieces you wear, what the rest
      * costs (NaN unknown), and the level a better build was found at (-1 none).
      */
-    record PlanLine(String name, int worn, int total, double left, int better) {}
+    record PlanLine(String name, int worn, int total, double left, int better, int plannedFor) {}
+
+    /**
+     * The road map behind the panel: none yet (the panel offers to calculate it), being built and
+     * how far, and why it is out of date (null when current).
+     */
+    record Road(boolean none, boolean building, double progress, Roadmap.Stale stale) {}
+
+    /** The preview: this road map state instead of the real one; never set in the game. */
+    static volatile Road previewRoad;
 
     /**
      * What the screen hands in each frame: the slots, the build score now and with the selected
@@ -77,10 +86,10 @@ final class HomeTab {
      * are chosen and builds saved, and whether a search for builds is running.
      */
     record In(List<SlotView> slots, double nowScore, double afterScore, QuestAdvisor.Suggestion quest, List<String> places,
-            PlanLine plan, int chosen, int saved, boolean searching) {
+            PlanLine plan, int chosen, int saved, boolean searching, Road road) {
 
         In(List<SlotView> slots, double nowScore, double afterScore, QuestAdvisor.Suggestion quest, List<String> places) {
-            this(slots, nowScore, afterScore, quest, places, null, 0, 0, false);
+            this(slots, nowScore, afterScore, quest, places, null, 0, 0, false, null);
         }
     }
 
@@ -99,7 +108,7 @@ final class HomeTab {
         int levelPills(GuiGraphics g, int y, int right, int room);
 
         /** The small refresh button (or its bar while the map is rebuilt) at x; the width it took. */
-        int refresh(GuiGraphics g, int x, int y, int mx, int my);
+        int refresh(GuiGraphics g, int x, int y, int mx, int my, String staleTip);
     }
 
     // the stand's colours: a light wooden figure on the card, its edge darker
@@ -293,13 +302,25 @@ final class HomeTab {
         Component title = Component.literal(L.t("wynnlabs.homev.gear")).withStyle(UiFont::bold);
         int ty = y + PAD + 1;
         Art.icon(g, "hanger", x + PAD, ty, 8, Theme.INK_2);
-        // compact with a plan (its pill as well): the hanger alone, so the buttons keep their room
-        boolean named = !compact || Plans.current() == null;
+        // compact: the hanger alone, so the buttons, the level pills and a Plan pill keep their room
+        boolean named = !compact;
         if (named) {
             Kit.text(g, font, title, x + PAD + 11, ty, Theme.INK);
         }
         int tx = x + PAD + 11 + (named ? font.width(title) + 5 : 0);
-        tx += host.refresh(g, tx, ty - 3, mx, my);
+        // an out-of-date road map: a strip over the stand where the stand keeps its room, else
+        // (compact, or a short panel) an amber badge on the refresh button, its tooltip saying why
+        Road early = in.road();
+        boolean staleNow = early != null && early.stale() != null && !early.none() && in.plan() == null;
+        int slotNeed = 4 * (large ? 36 : 22) + 9;
+        boolean stripRoom = !compact && (y + h - PAD - 20 - 4) - (ty + 15 + STRIP_H) >= slotNeed;
+        String staleTip = null;
+        if (staleNow && !stripRoom) {
+            String age = age(early.stale().ageMs());
+            staleTip = (early.stale().level() ? L.t("wynnlabs.home.stale_level", early.stale().now()) : L.t("wynnlabs.home.stale_gear"))
+                    + (age.isEmpty() ? "" : " · " + age);
+        }
+        tx += host.refresh(g, tx, ty - 3, mx, my, staleTip);
         // the hanger's drawing starts 1px inside its 8px: the buttons end 1px further in to match
         int right = x + w - PAD - 1;
         int titleRoom = right - tx - 2;
@@ -338,6 +359,17 @@ final class HomeTab {
         // the stand's room between the title and the build bar, 4px clear of each
         int barH = compact ? 9 : 20;
         int top = ty + 11 + 4;
+        Road road = in.road();
+        if (road != null && road.none() && in.plan() == null) {
+            // no road map yet: an offer to calculate it, or its progress, in the stand's place
+            noMap(g, host, x + PAD + 1, top, w - 2 * PAD - 2, y + h - PAD - top, road, compact, mx, my);
+            return;
+        }
+        if (staleNow && stripRoom) {
+            // the strip's height comes off the stand's room before the slots, stand and bar are placed
+            staleStrip(g, host, x + PAD + 1, top, w - 2 * PAD - 2, road.stale(), mx, my);
+            top += STRIP_H;
+        }
         int bottom = y + h - PAD - barH - 4;
         int areaH = bottom - top;
         int s = large ? 36 : compact ? 18 : 22;
@@ -393,6 +425,8 @@ final class HomeTab {
             int wy = standY + 19 * u - s / 2;
             weaponSlot(g, host, weapon, wx, wy, s, x + w - edge - zone - 4, bottom, names, large);
         }
+        // the preview's check: the bar's whole line is one part, which no slot, pill or name may touch
+        LayoutCheck.part(g.pose(), x + PAD + 1, y + h - PAD - barH, w - 2 * PAD - 2, barH, "bar", "the build bar");
         if (in.plan() != null) {
             planBar(g, in, host, x + PAD + 1, y + h - PAD - barH, w - 2 * PAD - 2, compact);
         } else {
@@ -458,6 +492,122 @@ final class HomeTab {
             int c = lit < 0 || i == lit ? colour : (colour & 0xFFFFFF) | 0x66000000;
             g.fill(x + i * 3, y - 1, x + i * 3 + 2, y + 1, c);
         }
+    }
+
+    /**
+     * No road map yet, in the stand's place: a small icon, "Suggestions not calculated yet", the
+     * gold "Calculate suggestions" button and a faint "takes a few seconds" line; while the first
+     * one is built, its bar and percentage with Cancel. Nothing is built until the button is pressed.
+     */
+    private void noMap(GuiGraphics g, Host host, int x, int y, int w, int h, Road road, boolean compact, int mx, int my) {
+        int cx = x + w / 2;
+        if (road.building()) {
+            String title = L.t("wynnlabs.home.loading");
+            String sub = L.t("wynnlabs.home.loading_sub", Math.round(road.progress() * 100));
+            int need = 11 + 10 + 13 + 18;
+            int ty = y + Math.max(0, (h - need) / 2);
+            Component t = Component.literal(fit(title, w, true)).withStyle(UiFont::bold);
+            Kit.text(g, font, t, cx - font.width(t) / 2, ty, Theme.INK);
+            int bw = Math.min(200, w - 16);
+            Kit.tealBar(g, cx - bw / 2, ty + 14, bw, 5, road.progress(), true);
+            String s = fit(sub, w);
+            Kit.text(g, font, s, cx - font.width(s) / 2, ty + 25, Theme.INK_3);
+            int by = ty + 38;
+            boolean hov = mx >= cx - 7 && mx < cx + 7 && my >= by && my < by + 14;
+            Kit.button(g, cx - 7, by, 14, 14, hov ? Kit.HOVER : Kit.REST);
+            Art.icon(g, "x", cx - 4, by + 3, 8, Kit.buttonText(hov ? Kit.HOVER : Kit.REST));
+            host.area(cx - 7, by, 14, 14, null, List.of(L.c("wynnlabs.pick.cancel").withStyle(ChatFormatting.WHITE),
+                    L.c("wynnlabs.home.build_cancel_tip").withStyle(ChatFormatting.GRAY)), "#qcancelbuild:");
+            return;
+        }
+        String title = L.t("wynnlabs.home.none_title");
+        String button = L.t("wynnlabs.home.none_button");
+        String faint = L.t("wynnlabs.home.none_sub");
+        boolean icon = !compact && h >= 80;
+        int need = (icon ? 22 : 0) + 12 + 18 + 12;
+        int ty = y + Math.max(0, (h - need) / 2);
+        if (icon) {
+            Art.icon(g, "sparkles", cx - 8, ty, 16, Theme.INK_3);
+            ty += 22;
+        }
+        Component t = Component.literal(fit(title, w, true)).withStyle(UiFont::bold);
+        Kit.text(g, font, t, cx - font.width(t) / 2, ty, Theme.INK);
+        int bw = Math.min(w, font.width(button) + 23);
+        int bx = cx - bw / 2;
+        int by = ty + 13;
+        boolean hov = mx >= bx && mx < bx + bw && my >= by && my < by + 14;
+        Kit.button(g, bx, by, bw, 14, Kit.ON);
+        if (hov) {
+            Kit.outline(g, bx, by, bw, 14, Theme.GOLD_EDGE);
+        }
+        Art.icon(g, "player-play", bx + 6, by + 3, 8, Kit.buttonText(Kit.ON));
+        g.drawString(font, fit(button, bw - 23), bx + 17, by + 3, Kit.buttonText(Kit.ON), false);
+        host.area(bx, by, bw, 14, null, List.of(L.c("wynnlabs.home.none_button").withStyle(ChatFormatting.WHITE),
+                L.c("wynnlabs.home.none_tip").withStyle(ChatFormatting.GRAY)), "#qbuild:");
+        String f = fit(faint, w);
+        Kit.text(g, font, f, cx - font.width(f) / 2, by + 18, Theme.INK_3);
+    }
+
+    /**
+     * A slim strip at the panel's top when the road map is out of date: "You're Lv 67 now ·
+     * suggestions are out of date" (or "Your gear changed"), with its age when it is old, and
+     * "⟳ Refresh". The longest wording that fits, never cut.
+     */
+    private void staleStrip(GuiGraphics g, Host host, int x, int y, int w, Roadmap.Stale s, int mx, int my) {
+        String what = s.level() ? L.t("wynnlabs.home.stale_level", s.now()) : L.t("wynnlabs.home.stale_gear");
+        String age = age(s.ageMs());
+        String refresh = L.t("wynnlabs.home.stale_refresh");
+        int full = font.width(refresh) + 23;
+        int bw = w - 120 >= full ? full : 16;
+        int room = w - bw - 4 - 16;
+        String[] tries = age.isEmpty() ? new String[] {what, L.t("wynnlabs.home.stale_short")}
+                : new String[] {what + " · " + age, what, L.t("wynnlabs.home.stale_short")};
+        String text = tries[tries.length - 1];
+        for (String c : tries) {
+            if (font.width(c) <= room) {
+                text = c;
+                break;
+            }
+        }
+        LayoutCheck.part(g.pose(), x, y, w, 14, "strip", "the out-of-date strip");
+        Kit.seal(g, x, y, w - bw - 3, 14, 0xFFF0D090);
+        Art.icon(g, "alert-triangle", x + 4, y + 3, 8, Theme.WARN);
+        Kit.text(g, font, fit(text, room), x + 15, y + 3, Theme.WARN);
+        List<Component> tip = new ArrayList<>();
+        tip.add(Component.literal(what + (age.isEmpty() ? "" : " · " + age)).withStyle(ChatFormatting.GOLD));
+        tip.add(L.c("wynnlabs.home.stale_tip").withStyle(ChatFormatting.GRAY));
+        host.area(x, y, w - bw - 3, 14, null, tip, null);
+        int bx = x + w - bw;
+        boolean hov = mx >= bx && mx < bx + bw && my >= y && my < y + 14;
+        int state = hov ? Kit.HOVER : Kit.REST;
+        Kit.button(g, bx, y, bw, 14, state);
+        if (bw == 16) {
+            Art.icon(g, "refresh", bx + 4, y + 3, 8, Kit.buttonText(state));
+        } else {
+            Art.icon(g, "refresh", bx + 6, y + 3, 8, Kit.buttonText(state));
+            g.drawString(font, refresh, bx + 17, y + 3, Kit.buttonText(state), false);
+        }
+        host.area(bx, y, bw, 14, null, List.of(Component.literal(refresh).withStyle(ChatFormatting.WHITE),
+                L.c("wynnlabs.home.refresh_tip").withStyle(ChatFormatting.GRAY)), "#qrefresh:");
+    }
+
+    /** Whose part the next pill is, for the preview's check. */
+    private String partOwner;
+
+    /** The out-of-date strip's height with its gap under it. */
+    private static final int STRIP_H = 17;
+
+    /** "from yesterday", "3 days ago", "5 h ago"; "" under an hour. */
+    static String age(long ms) {
+        long h = ms / 3_600_000L;
+        if (h < 1) {
+            return "";
+        }
+        if (h < 24) {
+            return L.t("wynnlabs.home.stale_age_hours", h);
+        }
+        long d = h / 24;
+        return d == 1 ? L.t("wynnlabs.home.stale_age_yesterday") : L.t("wynnlabs.home.stale_age_days", d);
     }
 
     /** A slot's pill and name block: the pill, then {@code lines} lines of name under it. */
@@ -622,11 +772,13 @@ final class HomeTab {
         name = name.size() > lines ? List.of(fit(String.join(" ", name), zone)) : name;
         int bh = block(name.size());
         int py = sy + (s - bh) / 2;
+        partOwner = "slot" + v.index();
         mark(g, v, show, left ? bx : -1, left ? -1 : bx + zone, py);
         for (int i = 0; i < name.size(); i++) {
             Component c = Component.literal(name.get(i)).withStyle(nameColour(v));
             int nx = left ? bx : bx + zone - font.width(c);
             Kit.text(g, font, c, nx, py + PILL_H + 2 + i * 10, Theme.paperRgb(Theme.INK));
+            LayoutCheck.part(g.pose(), nx, py + PILL_H + 2 + i * 10, font.width(c), 9, partOwner, "the " + v.label() + " slot's name");
         }
         int top = Math.min(sy, py);
         int bot = Math.max(sy + s, py + bh);
@@ -653,6 +805,7 @@ final class HomeTab {
             px = Math.min(sx + (s - pw) / 2, right - pw);
             py = Math.min(sy + s + MARK_GAP + 1, bottom - PILL_H);
         }
+        partOwner = "slot" + v.index();
         mark(g, v, show, px, -1, py);
         int ny = py + PILL_H + 2;
         int lines = names && beside ? Math.min(2, (bottom - ny + 1) / 10) : 0;
@@ -664,6 +817,7 @@ final class HomeTab {
         for (int i = 0; i < name.size(); i++) {
             Component t = Component.literal(name.get(i)).withStyle(nameColour(v));
             Kit.text(g, font, t, px, ny + i * 10, Theme.paperRgb(Theme.INK));
+            LayoutCheck.part(g.pose(), px, ny + i * 10, font.width(t), 9, partOwner, "the weapon's name");
             nw = Math.max(nw, font.width(t));
         }
         int left = Math.min(sx, px);
@@ -677,6 +831,7 @@ final class HomeTab {
     private void box(GuiGraphics g, SlotView v, ItemStack show, int sx, int sy, int s, boolean large, boolean badgeRight) {
         int frame = v.mark() == Mark.CHOSEN ? CHOSEN : v.gear() != null || v.mark() == Mark.GET ? UP : 0;
         slotBox(g, sx, sy, s, frame);
+        LayoutCheck.part(g.pose(), sx - 1, sy - 1, s + 2, s + 2, "slot" + v.index(), "the " + v.label() + " slot");
         if (v.mark() == Mark.CHOSEN || v.mark() == Mark.DONE_CHOSEN) {
             // the lock badge on the corner away from the pill (the item's transparent corner may lie over its edge)
             int bx = badgeRight ? sx + s - 7 : sx - 3;
@@ -760,6 +915,7 @@ final class HomeTab {
         int pw = text != null ? font.width(text) + 8 : 15;
         int px = left >= 0 ? left : right - pw;
         Kit.seal(g, px, y, pw, PILL_H, fill);
+        LayoutCheck.part(g.pose(), px, y, pw, PILL_H, partOwner == null ? "pill" : partOwner, "a pill (" + (text == null ? icon : text) + ")");
         if (text != null) {
             g.drawString(font, text, px + (pw - font.width(text) + 1) / 2, y + 2, ink, true);
         } else {
@@ -860,9 +1016,12 @@ final class HomeTab {
         // the longest forms that fit side by side, never cut: the line with the plan's name, then
         // the count alone; the hint whole, then short (the bar gives way to them when compact)
         String left = p.left() > 0 && !Double.isNaN(p.left()) ? " · " + L.t("wynnlabs.homev.plan_left", Prices.fmt(p.left())) : "";
-        String[] lines = done ? new String[] {L.t("wynnlabs.homev.plan_done")}
-                : new String[] {L.t("wynnlabs.homev.plan_line", p.name(), p.worn(), p.total()) + left,
-                    L.t("wynnlabs.homev.plan_line_short", p.worn(), p.total()) + left,
+        // a plan for a level above yours (a chosen item needs it) says so
+        String pf = p.plannedFor() > 0 ? " · " + L.t("wynnlabs.homev.plan_for", p.plannedFor()) : "";
+        String[] lines = done ? new String[] {L.t("wynnlabs.homev.plan_done") + pf, L.t("wynnlabs.homev.plan_done")}
+                : new String[] {L.t("wynnlabs.homev.plan_line", p.name(), p.worn(), p.total()) + pf + left,
+                    L.t("wynnlabs.homev.plan_line_short", p.worn(), p.total()) + pf + left,
+                    L.t("wynnlabs.homev.plan_line_short", p.worn(), p.total()) + pf,
                     L.t("wynnlabs.homev.plan_line_short", p.worn(), p.total())};
         String[] hints = p.better() <= 0 ? new String[] {null}
                 : new String[] {L.t("wynnlabs.homev.plan_better", p.better()), L.t("wynnlabs.homev.plan_better_short", p.better())};

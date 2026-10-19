@@ -1244,7 +1244,7 @@ final class RoadmapScreen extends Screen {
             flash = L.t("wynnlabs.home.archetype_set", a.isEmpty() ? L.t("wynnlabs.settings.archetype_off") : a);
             flashUntil = System.currentTimeMillis() + 2500;
             treeFocus = "";                         // the view opens on the new plan's next pick
-            steps = Roadmap.cached();               // the build follows the archetype: rebuilt in the background
+            steps = rebuild();                      // the build follows the archetype: rebuilt in the background
             refreshAsked = true;
         } else if (action.startsWith("#tree:page:")) {
             treeScroll = Integer.parseInt(action.substring(11)) * TreeLayout.ROWS * treeCell;
@@ -1434,15 +1434,11 @@ final class RoadmapScreen extends Screen {
             pickChip(g, x + (w - bw) / 2, y + h / 2 + 34, on, false, mx, my, "#qadvice:");
             return;
         }
-        if (error == null && steps.isEmpty() && Roadmap.isBuilding()) {
-            drawLoading(g, x, y, w, h);
+        if (error != null) {
+            ink(g, Component.literal(error).withStyle(ChatFormatting.RED), x, y + 4, 0xFFFFFFFF);
             return;
         }
-        if (error != null || steps.isEmpty()) {
-            ink(g, Component.literal(error != null ? error : L.t("wynnlabs.home.no_data"))
-                    .withStyle(ChatFormatting.RED), x, y + 4, 0xFFFFFFFF);
-            return;
-        }
+        // with no road map yet the gear panel offers to calculate one: nothing is built on its own
         drawHomeHeader(g, x, y, w);
         // the visual home (HomeTab): the gear on a stand between two columns of tiles
         int by = y + HUD_H + 13;                            // 4px under the experience bar and its "%100 XP"
@@ -1463,8 +1459,8 @@ final class RoadmapScreen extends Screen {
         // the build score now, and with the selected milestone's whole set (NaN when it has none)
         Build.Plan plan = Build.plan();
         double now = plan == null || plan.current() == null ? Double.NaN : plan.current().objective();
-        Roadmap.Step s = steps.get(Math.max(0, Math.min(selected, steps.size() - 1)));
-        double after = s.set() == null ? Double.NaN : s.set().result().objective();
+        Roadmap.Step s = steps.isEmpty() ? null : steps.get(Math.max(0, Math.min(selected, steps.size() - 1)));
+        double after = s == null || s.set() == null ? Double.NaN : s.set().result().objective();
         Plans.Build current = Plans.current();
         int chosen = Locks.names().size();
         int saved = Plans.saved().size();
@@ -1472,8 +1468,27 @@ final class RoadmapScreen extends Screen {
         if (planPills.planSelected(current)) {
             return planIn(current, rows, now, after, chosen, saved, searching);
         }
-        return new HomeTab.In(slots, now, after, quests.isEmpty() ? null : quests.get(0), steps.get(0).places(), null, chosen,
-                saved, searching);
+        return new HomeTab.In(slots, now, after, quests.isEmpty() ? null : quests.get(0), places(), null, chosen,
+                saved, searching, road());
+    }
+
+    /** The places to level now, from the road map (none without one). */
+    private List<String> places() {
+        return steps.isEmpty() ? List.of() : steps.get(0).places();
+    }
+
+    /** The road map's state for the gear panel: none yet, being built (and how far), out of date. */
+    private HomeTab.Road road() {
+        HomeTab.Road preview = HomeTab.previewRoad;
+        return preview != null ? preview : new HomeTab.Road(steps.isEmpty(), Roadmap.isBuilding(), Roadmap.progress(), Roadmap.stale());
+    }
+
+    /** An explicit change the road map follows (archetype, goal, powders, language): built again when there is one. */
+    private List<Roadmap.Step> rebuild() {
+        if (Roadmap.hasMap()) {
+            Roadmap.forceRefresh();
+        }
+        return Roadmap.cached();
     }
 
     /** The plan's pieces by name, looked up once per plan. */
@@ -1538,9 +1553,10 @@ final class RoadmapScreen extends Screen {
             slots.add(new HomeTab.SlotView(i, boxLabel(r.box()), r.type(), r.worn(), null, icon(info), Double.NaN, tip, mark, info));
         }
         int better = Plans.HINT.showing();
-        HomeTab.PlanLine line = new HomeTab.PlanLine(plan.name(), worn, plan.items().size(), left, better);
-        return new HomeTab.In(slots, now, after, quests.isEmpty() ? null : quests.get(0), steps.get(0).places(), line, chosen,
-                saved, searching);
+        HomeTab.PlanLine line = new HomeTab.PlanLine(plan.name(), worn, plan.items().size(), left, better,
+                plan.level() > GameState.current().level() ? plan.level() : 0);
+        return new HomeTab.In(slots, now, after, quests.isEmpty() ? null : quests.get(0), places(), line, chosen,
+                saved, searching, road());
     }
 
     /** The build window's way back into the screen. */
@@ -1608,20 +1624,35 @@ final class RoadmapScreen extends Screen {
         }
 
         @Override
-        public int refresh(GuiGraphics g, int x, int y, int mx, int my) {
+        public int refresh(GuiGraphics g, int x, int y, int mx, int my, String staleTip) {
             if (Roadmap.isBuilding()) {
-                if (!refreshAsked) {
-                    return 0;
+                if (steps.isEmpty()) {
+                    return 0;                       // the first map: its progress fills the panel instead
                 }
+                // a new map over the last one: a small bar and Cancel (the last map stays)
                 Kit.tealBar(g, x, y + 5, 24, 4, Roadmap.progress(), false);
                 hits.add(new Hit(x, y, 24, 14, null, List.of(L.c("wynnlabs.home.refreshing").withStyle(ChatFormatting.GRAY)), null));
-                return 28;
+                boolean ch = mx >= x + 27 && mx < x + 41 && my >= y && my < y + 14;
+                Kit.button(g, x + 27, y, 14, 14, ch ? Kit.HOVER : Kit.REST);
+                Art.icon(g, "x", x + 30, y + 3, 8, Kit.buttonText(ch ? Kit.HOVER : Kit.REST));
+                hits.add(new Hit(x + 27, y, 14, 14, null, List.of(L.c("wynnlabs.pick.cancel").withStyle(ChatFormatting.WHITE),
+                        L.c("wynnlabs.home.build_cancel_tip").withStyle(ChatFormatting.GRAY)), "#qcancelbuild:"));
+                return 45;
             }
-            // the road map built again now, past the 30 s the warm-up waits
+            // the road map built again now: only ever on a click
             boolean hover = mx >= x && mx < x + 14 && my >= y && my < y + 14;
             Kit.button(g, x, y, 14, 14, hover ? Kit.HOVER : Kit.REST);
             Art.icon(g, "refresh", x + 3, y + 3, 8, Kit.buttonText(hover ? Kit.HOVER : Kit.REST));
-            hits.add(new Hit(x, y, 14, 14, null, List.of(L.c("wynnlabs.home.refresh_tip").withStyle(ChatFormatting.GRAY)), "#qrefresh:"));
+            List<Component> tip = new ArrayList<>();
+            if (staleTip != null) {
+                // out of date where no strip fits: an amber badge on the button's corner
+                Kit.seal(g, x + 9, y - 2, 7, 7, 0xFFF0B040);
+                tip.add(Component.literal(staleTip).withStyle(ChatFormatting.GOLD));
+                tip.add(L.c("wynnlabs.home.stale_click").withStyle(ChatFormatting.GRAY));
+            } else {
+                tip.add(L.c("wynnlabs.home.refresh_tip").withStyle(ChatFormatting.GRAY));
+            }
+            hits.add(new Hit(x, y, 14, 14, null, tip, "#qrefresh:"));
             return 18;
         }
     };
@@ -1877,17 +1908,6 @@ final class RoadmapScreen extends Screen {
     }
 
     /** The first road map of a character is being built: a bar for how far it is. */
-    private void drawLoading(GuiGraphics g, int x, int y, int w, int h) {
-        double frac = Roadmap.progress();
-        String title = L.t("wynnlabs.home.loading");
-        int bw = Math.min(260, w - 40);
-        int bx = x + (w - bw) / 2;
-        int by = y + h / 2 - 10;
-        ink(g, Component.literal(title).withStyle(UiFont::bold), x + (w - font.width(title)) / 2, by - 18, Theme.INK);
-        Kit.tealBar(g, bx, by, bw, 8, frac, true);
-        String sub = L.t("wynnlabs.home.loading_sub", Math.round(frac * 100));
-        ink(g, sub, x + (w - font.width(sub)) / 2, by + 14, MUTED);
-    }
 
     /** How many milestone buttons the level row shows this frame (LEVEL_WINDOW where they fit). */
     private int levelWindow = LEVEL_WINDOW;
@@ -5320,7 +5340,7 @@ final class RoadmapScreen extends Screen {
     /** Advice on this character on or off; the road map follows. */
     private void adviceHere(boolean on) {
         Rules.setAdviceHere(on);
-        steps = Roadmap.cached();
+        steps = rebuild();
         refreshAsked = Rules.adviceHere();
     }
 
@@ -6150,7 +6170,7 @@ final class RoadmapScreen extends Screen {
                         Setup.setGoal(goal);
                         flash = L.t("wynnlabs.home.goal_set", Setup.goalName(goal));
                         flashUntil = System.currentTimeMillis() + 2500;
-                        steps = Roadmap.cached();       // rebuilt in the background, picked up when ready
+                        steps = rebuild();              // rebuilt in the background, picked up when ready
                         refreshAsked = true;
                     }
                     return true;
@@ -6173,7 +6193,7 @@ final class RoadmapScreen extends Screen {
         for (int[] r : langRects) {
             if (in(ex, ey, r)) {
                 Settings.setNumber("langOverride", r[4]);
-                steps = Roadmap.cached();           // its text is in the old language: rebuilt in the background
+                steps = rebuild();                  // its text is in the old language: rebuilt in the background
                 refreshAsked = true;
                 return true;
             }
@@ -6428,7 +6448,7 @@ final class RoadmapScreen extends Screen {
                     flashUntil = System.currentTimeMillis() + 2500;
                 } else if (c.startsWith("#qadvice:")) {
                     Rules.setAdviceHere(true);
-                    steps = Roadmap.cached();
+                    steps = rebuild();
                     refreshAsked = true;
                 } else if (c.startsWith("#qpick:")) {
                     if (event.button() == 1) {
@@ -6451,9 +6471,12 @@ final class RoadmapScreen extends Screen {
                     }
                 } else if (c.startsWith("#qgoal:")) {
                     goalOpen = true;                    // the list opens; a row picks the goal
-                } else if (c.startsWith("#qrefresh:")) {
+                } else if (c.startsWith("#qrefresh:") || c.startsWith("#qbuild:")) {
                     Roadmap.forceRefresh();
                     refreshAsked = true;
+                } else if (c.startsWith("#qcancelbuild:")) {
+                    Roadmap.cancelBuild();
+                    refreshAsked = false;
                 } else if (c.startsWith("#qpowder:")) {
                     boolean on = Rules.sub("model", "assumePowders", 1) > 0;
                     JsonObject pm = new JsonObject();
@@ -6463,14 +6486,14 @@ final class RoadmapScreen extends Screen {
                     Rules.update(pc);
                     flash = L.t(on ? "wynnlabs.home.powder_off" : "wynnlabs.home.powder_on");
                     flashUntil = System.currentTimeMillis() + 2500;
-                    steps = Roadmap.cached();           // rebuilt in the background, picked up when ready
+                    steps = rebuild();                  // rebuilt in the background, picked up when ready
                     refreshAsked = true;
                 } else if (c.startsWith("#qarch:")) {
                     TreePlanner.cycle();
                     String a = TreePlanner.chosen();
                     flash = L.t("wynnlabs.home.archetype_set", a.isEmpty() ? L.t("wynnlabs.settings.archetype_off") : a);
                     flashUntil = System.currentTimeMillis() + 2500;
-                    steps = Roadmap.cached();           // rebuilt in the background, picked up when ready
+                    steps = rebuild();                  // rebuilt in the background, picked up when ready
                     refreshAsked = true;
                 } else if (c.startsWith("#qgo:")) {
                     tab = TAB_BANK;

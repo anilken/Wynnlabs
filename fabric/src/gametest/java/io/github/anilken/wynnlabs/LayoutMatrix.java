@@ -78,6 +78,8 @@ public class LayoutMatrix implements FabricClientGameTest {
             ctx.setScreen(RoadmapScreen::new);
             ctx.waitForScreen(RoadmapScreen.class);
             ctx.getInput().setCursorPos(1, 1);
+            // the road map is built only when asked: as the panel's button would
+            ctx.runOnClient(mc -> Roadmap.forceRefresh());
             ctx.waitFor(mc -> !Roadmap.cached().isEmpty() && !Roadmap.isBuilding(), 20 * 60);
             // something in every tab: the recorded quest book and bank, professions, deaths, found
             // discoveries; one quest started, a crafted relik, suggestions and sets
@@ -599,6 +601,7 @@ public class LayoutMatrix implements FabricClientGameTest {
 
     /** The recorded Shaman's builds around the Dexterity relik, worked out once for the home's build states. */
     private static Around.Result builds;
+    private static Around.Result buildsHigh;
     private static final List<String> AROUND = List.of("Covetous Thunder", "Tainted Ruby");
 
     /**
@@ -617,10 +620,15 @@ public class LayoutMatrix implements FabricClientGameTest {
             if (builds == null) {
                 Roadmap.Computed c = Roadmap.compute(new Roadmap.Inputs(AROUND, strip, true, Around.BUILDS), null);
                 builds = new Around.Result(1, AROUND, strip, c.level(), c.builds(), c.problem(), !c.budgetCut().isEmpty(), false);
+                // a Lv 90 relik on the Lv 44 character: planned for Lv 90
+                List<String> high = List.of("Loaded Question");
+                Roadmap.Computed h = Roadmap.compute(new Roadmap.Inputs(high, Tuning.Choice.PLAIN, true, Around.BUILDS), null);
+                buildsHigh = new Around.Result(2, high, Tuning.Choice.PLAIN, h.level(), h.builds(), h.problem(), false, false);
             }
             Plans.clearAll();
         });
-        String[] states = {"pick", "loading", "results", "plan", "plan-done", "plan-hint", "saved", "saved-rename", "saved-edit"};
+        String[] states = {"pick", "loading", "results", "results-high", "plan", "plan-done", "plan-hint", "saved", "saved-rename",
+            "saved-edit", "road-none", "road-building", "road-stale", "road-stale-plan", "road-stale-hint"};
         for (String s : states) {
             ctx.runOnClient(mc -> homeState(s));
             measure(ctx, where + " home-" + s, gui, report, areas);
@@ -651,6 +659,7 @@ public class LayoutMatrix implements FabricClientGameTest {
         ctx.runOnClient(mc -> {
             BuildWindow.INSTANCE.close();
             Around.previewLoading = null;
+            HomeTab.previewRoad = null;
             Plans.clearAll();
             Plans.HINT.reset();
             Locks.use(null);
@@ -662,6 +671,7 @@ public class LayoutMatrix implements FabricClientGameTest {
     private static void homeState(String s) {
         BuildWindow w = BuildWindow.INSTANCE;
         Around.previewLoading = null;
+        HomeTab.previewRoad = null;
         Locks.use(AROUND);
         Locks.useTuning(builds.tuning());
         long now = System.currentTimeMillis();
@@ -672,6 +682,7 @@ public class LayoutMatrix implements FabricClientGameTest {
                 Around.previewLoading = new double[] {0.45, 2, 12873, 7621};
             }
             case "results" -> w.previewResults(builds, 1);
+            case "results-high" -> w.previewResults(buildsHigh, 0);
             case "plan", "plan-hint" -> {
                 w.close();
                 Plans.apply(planOf(builds.builds().get(0), "Covetous Thunder build", now));
@@ -708,6 +719,31 @@ public class LayoutMatrix implements FabricClientGameTest {
                 }
                 List<Plans.Build> all = Plans.saved();
                 w.previewSaved(3, s.equals("saved-rename") ? all.get(4).id() : null, s.equals("saved-edit") ? all.get(5).id() : null);
+            }
+            case "road-stale-plan", "road-stale-hint" -> {
+                // out of date with a plan applied (and its better-build hint): the plan's view, nothing over it
+                w.close();
+                Plans.apply(planOf(builds.builds().get(0), "Covetous Thunder build", now));
+                if (s.equals("road-stale-hint")) {
+                    Plans.previewHint(GameState.current().level() + 1);
+                } else {
+                    Plans.HINT.reset();
+                }
+                int lv = GameState.current().level();
+                HomeTab.previewRoad = new HomeTab.Road(false, false, 1, new Roadmap.Stale(true, lv + 1, lv, 26 * 3_600_000L));
+            }
+            case "road-none", "road-building", "road-stale" -> {
+                // the road map on demand: none yet (the button), the first one being built (frozen
+                // at 69 %), and one a day old for Lv 44 now that you are Lv 45
+                w.close();
+                Plans.clearAll();
+                Plans.HINT.reset();
+                int lv = GameState.current().level();
+                HomeTab.previewRoad = switch (s) {
+                    case "road-none" -> new HomeTab.Road(true, false, 0, null);
+                    case "road-building" -> new HomeTab.Road(true, true, 0.69, null);
+                    default -> new HomeTab.Road(false, false, 1, new Roadmap.Stale(true, lv + 1, lv, 26 * 3_600_000L));
+                };
             }
             default -> { }
         }
@@ -839,6 +875,7 @@ public class LayoutMatrix implements FabricClientGameTest {
         ctx.waitTicks(1);
         List<int[]> frames = ctx.computeOnClient(mc -> LayoutCheck.frames());
         List<int[]> surfaces = ctx.computeOnClient(mc -> LayoutCheck.textAreas());
+        List<LayoutCheck.Part> parts = ctx.computeOnClient(mc -> LayoutCheck.parts());
         List<LayoutCheck.Drawn> drawn = ctx.computeOnClient(mc -> LayoutCheck.stop());
         List<LayoutCheck.Area> clicks = ctx.computeOnClient(mc -> areas.get());
         List<String> found = new ArrayList<>(LayoutCheck.outside(drawn, gui[0], gui[1]));
@@ -846,6 +883,7 @@ public class LayoutMatrix implements FabricClientGameTest {
         found.addAll(LayoutCheck.textOverlaps(drawn));
         found.addAll(LayoutCheck.textOffSurface(drawn, surfaces));
         found.addAll(LayoutCheck.overlaps(clicks));
+        found.addAll(LayoutCheck.partOverlaps(parts));         // the home's slots, pills, names and build bar
         if (drawn.isEmpty()) {
             found.add("nothing was drawn");
         }

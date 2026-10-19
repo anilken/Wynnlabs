@@ -207,9 +207,12 @@ final class Locks {
         return info.slot().isWeapon() ? Slot.WEAPON : info.slot();
     }
 
-    /** Whether the character can wear this piece: its level reached, and a weapon of its class. */
-    static boolean usable(ItemData info, int level, Klass cls) {
-        if (info == null || info.requirements().level() > level) {
+    /**
+     * Whether the class can wear this piece at some level: armour and accessories, and weapons
+     * of its class. Any level: a set around a piece above yours is planned for the level it needs.
+     */
+    static boolean usable(ItemData info, Klass cls) {
+        if (info == null) {
             return false;
         }
         Slot t = info.slot();
@@ -264,7 +267,7 @@ final class Locks {
         List<ItemData> out = new ArrayList<>();
         for (String n : chosen) {
             ItemData info = byName.get(n);
-            if (info == null || !usable(info, state.level(), state.classType())) {
+            if (info == null || !usable(info, state.classType())) {
                 continue;
             }
             Slot k = kind(info);

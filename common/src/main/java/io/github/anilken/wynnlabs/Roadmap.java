@@ -1129,15 +1129,21 @@ final class Roadmap {
     private static volatile List<Step> lastSteps = List.of();
     private static volatile long lastBuilt;
     private static volatile String lastFor = "";
+    /** The level the last map was built at, and whether it came from the file (a past session). */
+    private static volatile int lastLevel;
+    private static volatile boolean lastFromFile;
+    /** The character whose saved map was looked for (once per character). */
+    private static volatile String loadedFor;
 
     /**
-     * The upgrade the damage model found for this slot at your level, from the last road map
-     * built (J menu, the API) in the last 15 minutes; null when none or too old. Lets tooltips
-     * agree with the J menu instead of using the simpler shopping-list score.
+     * Every upgrade name in the road map built this session (for keeping their prices fresh); none
+     * for a map read back from a past session, whose prices stay as they were.
      */
-    /** Every upgrade name in the last road map (for keeping their prices fresh). */
     static List<String> lastNames() {
         List<String> out = new ArrayList<>();
+        if (lastFromFile) {
+            return out;
+        }
         for (Step s : lastSteps) {
             for (Gear g : s.gear()) {
                 out.add(g.info().name());
@@ -1151,12 +1157,17 @@ final class Roadmap {
         return out;
     }
 
+    /**
+     * The upgrade the damage model found for this slot at your level, from the character's road
+     * map (built this session or read back from the last one); null when there is none. Lets
+     * tooltips agree with the J menu. Never starts a build.
+     */
     static Gear lastUpgrade(Slot type) {
-        GameState state = GameState.current();
-        if (!state.characterId().equals(lastFor) || state.now() - lastBuilt > 15 * 60_000L || lastSteps.isEmpty()) {
+        List<Step> steps = cached();
+        if (steps.isEmpty()) {
             return null;
         }
-        for (Gear g : lastSteps.get(0).gear()) {
+        for (Gear g : steps.get(0).gear()) {
             if (g.slot().equals(type.name())) {
                 return g;
             }
@@ -1165,34 +1176,98 @@ final class Roadmap {
     }
 
     /**
-     * The road map for the J menu, without making the player wait. When nothing it depends on
-     * changed (same character, level, build plan and rules, under 5 minutes old) it is the last
-     * one; when it is out of date the last one is still returned and a fresh one is built in the
-     * background ({@link #version} moves on when it is ready). With no map yet for the
-     * character it is empty while the first one is built ({@link #progress}). Building one takes
-     * a few seconds with milestones up to Lv 120, which froze the game when it ran on the spot.
+     * The character's road map: the one built last (this session, or read back from the file of
+     * the last one), empty when none was ever built. Never starts a build: the J menu's button,
+     * its refresh and the explicit actions ({@link #forceRefresh}) do.
      */
     static List<Step> cached() {
-        GameState state = GameState.current();
-        String key = key(state);
-        if (key.equals(cachedKey) && state.now() - lastBuilt < 5 * 60_000L && !lastSteps.isEmpty()) {
-            return lastSteps;
-        }
-        if (!lastSteps.isEmpty() && state.characterId().equals(lastFor)) {
-            refresh(key);
-            return lastSteps;
-        }
-        // the first map of a character too: built in the background while the menu shows the
-        // progress (on the spot it froze the game for seconds at the first J)
-        refresh(key);
-        return List.of();
+        String id = GameState.current().characterId();
+        load(id);
+        return id.equals(lastFor) ? lastSteps : List.of();
     }
 
-    /** The J menu's refresh button: a new map now, whatever its age (the beam cache still skips unchanged milestones). */
+    /** The character's saved map, read once when the character is known (a missing or broken file: none). */
+    private static synchronized void load(String id) {
+        if (id == null || id.isEmpty() || id.equals(loadedFor) || id.equals(lastFor) && !lastSteps.isEmpty()) {
+            return;
+        }
+        loadedFor = id;
+        RoadmapStore.Loaded l = RoadmapStore.load(id);
+        if (l == null || !id.equals(GameState.current().characterId())) {
+            return;
+        }
+        lastSteps = l.steps();
+        lastFor = id;
+        lastBuilt = l.builtAt();
+        lastLevel = l.level();
+        cachedKey = l.key();
+        lastFromFile = true;
+        version++;
+    }
+
+    /** Tests: the saved map is looked for again, and nothing is kept in memory. */
+    static synchronized void forget() {
+        lastSteps = List.of();
+        lastFor = "";
+        loadedFor = null;
+        cachedKey = "";
+        lastFromFile = false;
+        staleKey = null;
+    }
+
+    /** Tests: {@link #stale} reads the inputs again at once (it rereads them each half second). */
+    static void recheck() {
+        staleKey = null;
+    }
+
+    /**
+     * The map is out of date: what it was built from (level, gear, skill points, archetype, rules,
+     * language: {@link #key}) is not what it is now. {@code level}: the level changed (to
+     * {@code now}); {@code ageMs}: how long ago it was built.
+     */
+    record Stale(boolean level, int now, int builtLevel, long ageMs) {}
+
+    private static volatile String staleKey;
+    private static volatile long staleAt;
+
+    /** Why the character's map is out of date, or null when it is current or there is none. Read again each half second. */
+    static Stale stale() {
+        GameState state = GameState.current();
+        if (cached().isEmpty()) {
+            return null;
+        }
+        long now = System.currentTimeMillis();
+        String k = staleKey;
+        if (k == null || now - staleAt > 500) {
+            k = key(state);
+            staleKey = k;
+            staleAt = now;
+        }
+        if (k.equals(cachedKey)) {
+            return null;
+        }
+        return new Stale(state.level() != lastLevel, state.level(), lastLevel, Math.max(0, state.now() - lastBuilt));
+    }
+
+    /** Whether the character has a map at all (built or saved): else the gear panel offers to calculate one. */
+    static boolean hasMap() {
+        return !cached().isEmpty();
+    }
+
+    /** The J menu's button and refresh, and the explicit actions: a new map now, in the background. */
     static void forceRefresh() {
         GameState state = GameState.current();
         if (state.inGame()) {
-            refresh(key(state));
+            refresh();
+        }
+    }
+
+    /** Cancel: the map being built is dropped, the last one stays. */
+    static void cancelBuild() {
+        again = false;
+        Job j = buildJob;
+        if (j != null) {
+            j.cancel();
         }
     }
 
@@ -1203,34 +1278,21 @@ final class Roadmap {
 
     /** How far the map being built is, 0 to 1, by milestones done. */
     static double progress() {
+        Job j = buildJob;
+        if (j != null) {
+            return Math.min(1, j.done / (double) Math.max(1, j.total));
+        }
         int total = progressTotal;
         return total <= 0 ? 0 : Math.min(1, progressDone / (double) total);
     }
 
-    /** Builds a fresh map in the background when the last one is out of date (the client tick calls this). */
-    static void warm() {
-        GameState state = GameState.current();
-        if (!state.inGame() || !Rules.adviceHere()) {
-            return;                             // an alt with the advice off: no map built
-        }
-        String key = key(state);
-        // the first minute on a character you switched to: its plan settles over a few
-        // seconds (inventory, level), and a map from the old plan must not stand for 30 s
-        if (!state.characterId().equals(seenFor)) {
-            seenFor = state.characterId();
-            switchedAt = state.now();
-        }
-        boolean settling = state.now() - switchedAt < 60_000L;
-        // on its own at most every 30 s: the J menu's buttons ask through cached() at once
-        long age = state.now() - lastBuilt;
-        if (lastSteps.isEmpty() || !state.characterId().equals(lastFor) || age >= 4 * 60_000L
-                || !key.equals(cachedKey) && (age >= 30_000L || settling)) {
-            refresh(key);
+    /** Tests: waits for the builder to finish what it was given. */
+    static void awaitIdle() throws Exception {
+        BUILDER.submit(() -> { }).get(120, java.util.concurrent.TimeUnit.SECONDS);
+        while (building) {
+            BUILDER.submit(() -> { }).get(120, java.util.concurrent.TimeUnit.SECONDS);
         }
     }
-
-    private static volatile String seenFor = "";
-    private static volatile long switchedAt;
 
     /** Bumped each time a new map is ready, so an open J menu can pick it up. */
     static int version() {
@@ -1238,11 +1300,11 @@ final class Roadmap {
     }
 
     /**
-     * What the map depends on, by content: the plan is rebuilt whenever the inventory changes at
-     * all and the rules on any write (a mana measurement), which rebuilt the map back to back
-     * with nothing changed for it.
+     * What the map depends on, by content: the character, level, language, rules, and the build
+     * plan's pieces, what is worn and the skill points. A map whose key is not today's is out of
+     * date ({@link #stale}); it is never rebuilt for that on its own.
      */
-    private static String key(GameState state) {
+    static String key(GameState state) {
         Build.Plan p = Build.plan();
         StringBuilder plan = new StringBuilder();
         if (p != null) {
@@ -1258,33 +1320,34 @@ final class Roadmap {
                 + plan.toString().hashCode();
     }
 
-    private static void refresh(String key) {
+    private static void refresh() {
         if (building) {
-            again = true;                       // a setting changed mid-build: build once more after it
+            again = true;                       // asked again mid-build (a setting changed): once more after it
             return;
         }
         building = true;
+        Job j = new Job();
+        buildJob = j;
         BUILDER.execute(() -> {
             try {
-                build();
-                cachedKey = key;
+                build(j);
                 version++;
             } catch (Throwable t) {
-                // the game state changed under us (a menu, a world change): the next warm-up tries again
+                // cancelled, or the game state changed under us (a menu, a world change): the last map stays
             } finally {
+                buildJob = null;
                 building = false;
-                if (again) {
+                if (again && !j.cancelled) {
                     again = false;
-                    String now = key(GameState.current());
-                    if (!now.equals(cachedKey)) {
-                        refresh(now);
-                    }
+                    refresh();
                 }
+                again = false;
             }
         });
     }
 
     private static volatile boolean building;
+    private static volatile Job buildJob;
     private static volatile int progressDone;
     private static volatile int progressTotal;
     private static volatile boolean again;
@@ -1297,6 +1360,7 @@ final class Roadmap {
                 return t;
             });
 
+    /** The inputs key the character's map was built for. */
     private static volatile String cachedKey = "";
 
     /**
@@ -1374,9 +1438,16 @@ final class Roadmap {
         }
     }
 
-    /** The road map for the J menu: built as it always was (nothing chosen, no tuning) and kept for the screen. */
+    /** The road map for the J menu: built as it always was (nothing chosen, no tuning), kept and saved for the character. */
     static List<Step> build() {
-        Computed c = compute(Inputs.PLAIN, null);
+        return build(null);
+    }
+
+    /** {@link #build} with a job for its progress and Cancel (the background build). */
+    static List<Step> build(Job job) {
+        GameState state = GameState.current();
+        String key = state.inGame() ? key(state) : "";
+        Computed c = compute(Inputs.PLAIN, job);
         if (c == null) {
             return List.of();
         }
@@ -1386,6 +1457,12 @@ final class Roadmap {
         lastSteps = c.steps();
         lastBuilt = GameState.current().now();
         lastFor = c.forId();
+        lastLevel = c.level();
+        cachedKey = key;
+        lastFromFile = false;
+        loadedFor = c.forId();
+        staleKey = null;
+        RoadmapStore.save(c.forId(), c.steps(), key, c.level(), lastBuilt);
         BeamCache.save();
         return c.steps();
     }
@@ -1415,7 +1492,14 @@ final class Roadmap {
             return null;
         }
         String forId = state.characterId();       // a switch mid-build must not publish this map
-        int level = state.level();
+        // The items you chose (Locks), at any level: a set around a piece above your level is
+        // planned for the level it needs (the highest chosen item's), which then sets the skill
+        // points and the other slots' candidates. Pieces that cannot be worn together there:
+        // the map as without them, and why (problem)
+        List<ItemData> lockedAll = Locks.resolve(state, in.around());
+        int planLevel = Math.max(state.level(), lockedAll.stream().mapToInt(ItemData::level).max().orElse(0));
+        Locks.Problem problem0 = Locks.problem(lockedAll, planLevel);
+        int level = problem0 == null ? planLevel : state.level();
         long budget = in.tuning().budget();
         // what you have (worn, carried, banked): it costs nothing under a budget
         java.util.Set<String> owned = ownedNames(state);
@@ -1488,8 +1572,8 @@ final class Roadmap {
         // rest fitted to them. When they cannot be worn together the map is built as without them
         // and says why (aroundProblem)
         phase(0);
-        List<ItemData> locked = Locks.resolve(state, in.around());
-        Locks.Problem problem = Locks.problem(locked, level);
+        List<ItemData> locked = lockedAll;
+        Locks.Problem problem = problem0;
         if (problem != null) {
             locked = List.of();
         }

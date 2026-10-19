@@ -37,15 +37,19 @@ public class JMenuPreview implements FabricClientGameTest {
             ctx.setScreen(RoadmapScreen::new);
             ctx.waitForScreen(RoadmapScreen.class);
             ctx.getInput().setCursorPos(2, 2);      // the window's corner: no tooltip over the menu
-            // the first road map builds in the background: the menu shows how far it is
+            // nothing is built on its own: the gear panel offers to; the button builds it, with
+            // its progress inside the panel
+            ctx.waitTicks(2);
+            shot(ctx, out, "jmenu-none");
+            ctx.runOnClient(mc -> Roadmap.forceRefresh());
             ctx.waitTicks(2);
             shot(ctx, out, "jmenu-loading");
             ctx.waitFor(mc -> !Roadmap.cached().isEmpty() && !Roadmap.isBuilding(), 20 * 60);
             ctx.waitTicks(20);
-            // a setting changed: the old map stays up while a fresh one is built
+            // a setting changed by a click: the old map stays up while a fresh one is built
             ctx.runOnClient(mc -> {
                 Setup.setGoal("DAMAGE");
-                Roadmap.cached();
+                Roadmap.forceRefresh();
             });
             ctx.waitTicks(2);
             shot(ctx, out, "jmenu-refreshing");
