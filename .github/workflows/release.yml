@@ -238,13 +238,17 @@ jobs:
           java: 21
           environment: client
           dependencies: ${{ matrix.dependencies }}
+          # keep older versions as they are: un-featuring them edits them, which needs the
+          # token's "Write versions" scope (a 401 otherwise, after the upload itself succeeded)
+          modrinth-unfeature-mode: none
 
       - name: CurseForge skipped
         if: env.CURSEFORGE_TOKEN == '' || env.CURSEFORGE_PROJECT_ID == ''
         run: echo "CurseForge - CURSEFORGE_TOKEN or CURSEFORGE_PROJECT_ID is not set, skipping"
 
       - name: CurseForge
-        if: env.CURSEFORGE_TOKEN != '' && env.CURSEFORGE_PROJECT_ID != ''
+        # runs even when the Modrinth step failed: one site's trouble must not hold back the other
+        if: ${{ !cancelled() && env.CURSEFORGE_TOKEN != '' && env.CURSEFORGE_PROJECT_ID != '' }}
         uses: Kir-Antipov/mc-publish@v3.3.1
         with:
           curseforge-id: ${{ env.CURSEFORGE_PROJECT_ID }}
