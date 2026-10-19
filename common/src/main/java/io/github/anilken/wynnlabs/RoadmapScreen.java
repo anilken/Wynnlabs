@@ -89,14 +89,14 @@ final class RoadmapScreen extends Screen {
         "wynnlabs.screen.tab_deaths", "wynnlabs.screen.tab_bank", "wynnlabs.screen.tab_settings", "wynnlabs.screen.tab_ai",
         "wynnlabs.screen.tab_damage", "wynnlabs.screen.tab_discoveries", "wynnlabs.screen.tab_tree", "wynnlabs.screen.tab_craft",
         "wynnlabs.screen.tab_endgame"};
-    private static final int TAB_BANK = 4;
+    static final int TAB_BANK = 4;
     private static final int TAB_SETTINGS = 5;
     private static final int TAB_AI = 6;
     private static final int TAB_DAMAGE = 7;
-    private static final int TAB_DISCOVERIES = 8;
+    static final int TAB_DISCOVERIES = 8;
     private static final int TAB_TREE = 9;
-    private static final int TAB_CRAFT = 10;
-    private static final int TAB_ENDGAME = 11;
+    static final int TAB_CRAFT = 10;
+    static final int TAB_ENDGAME = 11;
     private static final String[] BANK_FILTERS = {"wynnlabs.bank.filter_all", "wynnlabs.bank.filter_sell", "wynnlabs.bank.filter_quest",
         "wynnlabs.bank.filter_prof", "wynnlabs.bank.filter_gear"};
 
@@ -666,17 +666,6 @@ final class RoadmapScreen extends Screen {
             return s;
         }
         return font.plainSubstrByWidth(s, Math.max(0, w - font.width("…"))) + "…";
-    }
-
-    /** A gain pill with a little bar behind it: how big this step is next to the biggest. */
-    private void gainPill(GuiGraphics g, int x, int y, double gain, double max) {
-        String t = Double.isNaN(gain) ? L.t("wynnlabs.screen.pill_set")
-                : (gain < -0.5 ? "−" : "+") + pct(Math.round(Math.abs(gain)));
-        int pw = 34;
-        // the bigger the gain against the best one, the stronger the green
-        double share = Double.isNaN(gain) || max <= 0 ? 0.3 : Math.min(1, gain / max);
-        Kit.seal(g, x, y - 1, pw, 12, Kit.sealFor(share));
-        g.drawString(font, t, x + (pw - font.width(t)) / 2, y + 1, Theme.SEAL_TEXT, true);
     }
 
     /**
@@ -1426,13 +1415,72 @@ final class RoadmapScreen extends Screen {
             return;
         }
         drawHomeHeader(g, x, y, w);
-        int sy = y + HUD_H + (layout.compact() ? 13 : 18);
-        section(g, L.t("wynnlabs.home.do_now"), x, sy, w);
-        int cardsY = sy + 12;
-        drawHeroCards(g, x, cardsY, w, mx, my);
-        int ly = cardsY + HERO_H + 12;
-        drawUpgrades(g, x, ly, w, y + h - ly, mx, my);
+        // the visual home (HomeTab): the gear on a stand between two columns of tiles
+        int by = y + HUD_H + 13;                            // 4px under the experience bar and its "%100 XP"
+        // 4px short of the page's foot: the parchment's corner curls sit there
+        HomeTab.INSTANCE.draw(g, homeIn(), homeHost, x, by, w, y + h - by - 4, layout.compact(), layout.large(), mx, my);
     }
+
+    /** This frame's slots for the home's stand: every gear slot with what you wear and the selected level's upgrade. */
+    private HomeTab.In homeIn() {
+        List<HomeTab.SlotView> slots = new ArrayList<>();
+        List<UpRow> rows = upRows();
+        for (int i = 0; i < rows.size(); i++) {
+            UpRow r = rows.get(i);
+            Roadmap.Gear u = r.gear();
+            slots.add(new HomeTab.SlotView(i, boxLabel(r.box()), r.type(), r.worn(), u, u == null ? ItemStack.EMPTY : icon(u.info()),
+                    u == null ? Double.NaN : rowGain(u), u == null ? null : gearTip(u)));
+        }
+        // the build score now, and with the selected milestone's whole set (NaN when it has none)
+        Build.Plan plan = Build.plan();
+        double now = plan == null || plan.current() == null ? Double.NaN : plan.current().objective();
+        Roadmap.Step s = steps.get(Math.max(0, Math.min(selected, steps.size() - 1)));
+        double after = s.set() == null ? Double.NaN : s.set().result().objective();
+        return new HomeTab.In(slots, now, after, quests.isEmpty() ? null : quests.get(0), steps.get(0).places());
+    }
+
+    /** The home's way back into the screen: its click and hover areas join this frame's hits. */
+    private final HomeTab.Host homeHost = new HomeTab.Host() {
+        @Override
+        public void area(int x, int y, int w, int h, ItemStack stack, List<Component> tip, String action) {
+            hits.add(new Hit(x, y, w, h, stack, tip, action));
+        }
+
+        @Override
+        public void quest(int x, int y, int w, int h, List<Component> tip, QuestBook.Entry q) {
+            hits.add(new Hit(x, y, w, h, null, tip, null, q));
+        }
+
+        @Override
+        public void compare(int[] rect, HomeTab.SlotView s) {
+            if (s.gear() != null && s.gear().options() != null && !s.gear().options().isEmpty()) {
+                slotHits.add(new Object[] {rect, s.gear(), s.label(), s.worn()});
+            }
+        }
+
+        @Override
+        public int levelPills(GuiGraphics g, int y, int right, int room) {
+            return RoadmapScreen.this.levelPills(g, y, right, room);
+        }
+
+        @Override
+        public int refresh(GuiGraphics g, int x, int y, int mx, int my) {
+            if (Roadmap.isBuilding()) {
+                if (!refreshAsked) {
+                    return 0;
+                }
+                Kit.tealBar(g, x, y + 5, 24, 4, Roadmap.progress(), false);
+                hits.add(new Hit(x, y, 24, 14, null, List.of(L.c("wynnlabs.home.refreshing").withStyle(ChatFormatting.GRAY)), null));
+                return 28;
+            }
+            // the road map built again now, past the 30 s the warm-up waits
+            boolean hover = mx >= x && mx < x + 14 && my >= y && my < y + 14;
+            Kit.button(g, x, y, 14, 14, hover ? Kit.HOVER : Kit.REST);
+            Art.icon(g, "refresh", x + 3, y + 3, 8, Kit.buttonText(hover ? Kit.HOVER : Kit.REST));
+            hits.add(new Hit(x, y, 14, 14, null, List.of(L.c("wynnlabs.home.refresh_tip").withStyle(ChatFormatting.GRAY)), "#qrefresh:"));
+            return 18;
+        }
+    };
 
     private static final int HUD_H = 56;
 
@@ -1575,11 +1623,12 @@ final class RoadmapScreen extends Screen {
         // experience: the teal bar with its brass rim and notches under the band, as before
         int ey = y + HUD_H + 5;
         String pct = pct(xp) + " XP";
-        // compact: the % at the bar's end, on its line, to give the rows below that line
-        int xw = layout.compact() ? w - font.width(pct) - 6 : w;
+        // the % at the bar's end, on its line: the home's page starts right under it
+        int xw = w - font.width(pct) - 6;
         Kit.tealBar(g, x, ey, xw, 4, Math.max(0, Math.min(100, xp)) / 100.0, true);
         Kit.notches(g, x, ey, xw, 4);
-        ink(g, pct, x + w - font.width(pct), layout.compact() ? ey - 2 : ey + 6, FAINT);
+        // level with the bar, 1px in from the page's edge
+        ink(g, pct, x + w - font.width(pct) - 1, ey - 2, FAINT);
     }
 
     /** A bar's or the gauge's tooltip: the value, and how it compares with the next milestone's build. */
@@ -1638,149 +1687,6 @@ final class RoadmapScreen extends Screen {
         }
     }
 
-    private static final int HERO_H = 60;
-
-    /** Three big cards: the best upgrade, the best quest, the safest place to level. */
-    private void drawHeroCards(GuiGraphics g, int x, int y, int w, int mx, int my) {
-        int gap = 8;
-        int cw = (w - 2 * gap) / 3;
-        // compact: a 22px slot and a 16px icon, so the text gets the card's width
-        boolean small = layout.compact();
-        int slotS = small ? 22 : 40;
-        int iconS = small ? 16 : 32;
-        int textX = small ? 29 : 46;
-        int level = Wyn.level();
-        // 1. the best upgrade you can wear now
-        Roadmap.Gear best = null;
-        for (Roadmap.Step s : steps) {
-            for (Roadmap.Gear gr : s.gear()) {
-                if (gr.info().requirements().level() <= level && !Double.isNaN(gr.gain())
-                        && (best == null || gr.gain() > best.gain())) {
-                    best = gr;
-                }
-            }
-        }
-        int hx = x;
-        boolean hov = mx >= hx && mx < hx + cw && my >= y && my < y + HERO_H;
-        card(g, hx, y, cw, HERO_H, hov, GOOD);
-        if (best != null) {
-            ItemStack icon = icon(best.info());
-            Kit.slot(g, hx + 3, y + 10, slotS, tierRing(best.info()));
-            if (small) {
-                g.renderItem(icon, hx + 6, y + 13);
-            } else {
-                bigItem(g, icon, hx + 7, y + 14);
-            }
-            int tx = hx + textX;
-            int tw = cw - textX - 6;
-            ink(g, fit(L.t("wynnlabs.home.hero_get", slotTitle(best.slot())), tw - 38), tx, y + 9, MUTED);
-            double bestGain = steps.get(0).vsWorn().getOrDefault(best.slot(), best.gain());
-            gainPill(g, hx + cw - 40, y + 7, bestGain, bestGain);
-            ink(g, Component.literal(fit(best.info().name(), tw)).withStyle(best.info().tier().colour()),
-                    tx, y + 21, 0xFFFFFFFF);
-            String bsrc = best.source() == null ? "" : best.source();
-            // a merchant, event or dungeon piece shows where it is had instead of a price
-            String price = Shopping.kindLabel(Shopping.kind(best.info())) != null ? bsrc
-                    : best.price() == null ? "Lv. " + best.info().requirements().level()
-                    : (best.price().contains(" (") ? best.price().substring(0, best.price().indexOf(" (")) : best.price());
-            ink(g, fit(price, tw), tx, y + 32, Theme.PRICE);
-            heroAction(g, L.t("wynnlabs.home.compare"), hx + cw, y + HERO_H, hov);
-            if (best.options() != null && !best.options().isEmpty()) {
-                slotHits.add(new Object[] {new int[] {hx, y, cw, HERO_H}, best, slotTitle(best.slot()), wornFor(best.slot())});
-            }
-            hits.add(new Hit(small ? hx + 6 : hx + 7, small ? y + 13 : y + 14, iconS, iconS, icon, null, null));
-            boolean panel = best.options() != null && !best.options().isEmpty();
-            hits.add(new Hit(hx, y, cw, HERO_H, null, gearTip(best), panel ? null : best.info().name()));
-        } else {
-            ink(g, L.t("wynnlabs.home.no_upgrade"), hx + 8, y + 14, MUTED);
-            ink(g, L.c("wynnlabs.home.doing_well").withStyle(ChatFormatting.GREEN), hx + 8, y + 28, 0xFFFFFFFF);
-        }
-        // 2. the best quest
-        hx += cw + gap;
-        hov = mx >= hx && mx < hx + cw && my >= y && my < y + HERO_H;
-        card(g, hx, y, cw, HERO_H, hov, 0xFF378ADD);
-        heroIcon(g, hx, y, slotS, iconS, "wynn/gui/content_book/quest_active", railIcon(2));
-        int tx = hx + textX;
-        int tw = cw - textX - 6;
-        if (!quests.isEmpty()) {
-            QuestAdvisor.Suggestion q = quests.get(0);
-            ink(g, fit(L.t("wynnlabs.home.quest_length", QuestAdvisor.lengthName(q.quest())), tw), tx, y + 9, MUTED);
-            ink(g, Component.literal(fit(QuestGuides.title(q.quest().name()), tw)).withStyle(ChatFormatting.AQUA), tx, y + 21, 0xFFFFFFFF);
-            String sub = (q.distance() >= 0 ? dist(q.distance()) + " · " : "") + "Lv. " + q.quest().level();
-            ink(g, fit(sub, tw), tx, y + 32, MUTED);
-            heroAction(g, L.t("wynnlabs.home.track"), hx + cw, y + HERO_H, hov);
-            List<Component> tip = new ArrayList<>();
-            tip.add(Component.literal(QuestGuides.title(q.quest().name())).withStyle(ChatFormatting.AQUA).withStyle(UiFont::bold));
-            for (String r : q.reasons()) {
-                tip.add(Component.literal("• " + r).withStyle(ChatFormatting.GRAY));
-            }
-            tip.add(L.c("wynnlabs.home.click_track").withStyle(ChatFormatting.GREEN));
-            QuestBook.Entry e = q.quest();
-            String copy = e.x() != null ? "/compass at " + e.x() + " " + e.y() + " " + e.z() : e.name();
-            hits.add(new Hit(hx, y, cw, HERO_H, null, tip, copy, e));
-        } else {
-            ink(g, L.t("wynnlabs.home.quest"), tx, y + 9, MUTED);
-            ink(g, fit(QuestAdvisor.known() == 0 ? L.t("wynnlabs.home.open_book") : L.t("wynnlabs.home.no_quest"), tw),
-                    tx, y + 21, 0xFFDDDDDD);
-        }
-        // 3. where to level: the safest of the places for now
-        hx += cw + gap;
-        hov = mx >= hx && mx < hx + cw && my >= y && my < y + HERO_H;
-        String raw = null;
-        for (String p : steps.get(0).places()) {
-            if (raw == null || placeRisk(p) < placeRisk(raw)) {
-                raw = p;
-            }
-        }
-        int risk = raw == null ? 1 : placeRisk(raw);
-        card(g, hx, y, cw, HERO_H, hov, RISK[risk]);
-        heroIcon(g, hx, y, slotS, iconS, "wynn/gui/content_book/cave_active", new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
-        tx = hx + textX;
-        if (raw != null) {
-            String place = shortPlace(raw);
-            String nameOnly = place.contains(" (") ? place.substring(0, place.indexOf(" (")) : place;
-            String lv = place.contains(" (") ? place.substring(place.indexOf(" (") + 2, place.length() - 1) : "";
-            ink(g, L.t("wynnlabs.home.grind"), tx, y + 9, MUTED);
-            ink(g, Component.literal(fit(nameOnly, tw)).withStyle(ChatFormatting.WHITE), tx, y + 21, 0xFFFFFFFF);
-            ink(g, Component.literal("● ").withColor(RISK[risk] & 0xFFFFFF)
-                    .append(Component.literal(fit((risk == 0 ? L.t("wynnlabs.home.risk_safe") : risk == 1 ? L.t("wynnlabs.home.risk_careful") : L.t("wynnlabs.home.risk_risky"))
-                            + (lv.isEmpty() ? "" : " · " + lv), tw - 10)).withStyle(ChatFormatting.GRAY)), tx, y + 32, 0xFFFFFFFF);
-            heroAction(g, L.t("wynnlabs.home.compass"), hx + cw, y + HERO_H, hov);
-            String cmd = compassFor(raw);
-            hits.add(new Hit(hx, y, cw, HERO_H, null,
-                    List.of(Component.literal(place).withStyle(ChatFormatting.WHITE),
-                            Component.literal(cmd != null ? L.t("wynnlabs.screen.click_compass") : L.t("wynnlabs.screen.click_copy_name"))
-                                    .withStyle(ChatFormatting.DARK_GRAY)),
-                    cmd != null ? cmd : nameOnly));
-        } else {
-            ink(g, L.t("wynnlabs.home.grind"), tx, y + 9, MUTED);
-            ink(g, L.t("wynnlabs.home.no_place"), tx, y + 21, 0xFFDDDDDD);
-        }
-    }
-
-    /** A hero card's picture in its slot: the pack's texture, else an item; 32px, or 16 in the compact layout. */
-    private void heroIcon(GuiGraphics g, int hx, int y, int slotS, int iconS, String tex, ItemStack fallback) {
-        Kit.slot(g, hx + 3, y + 10, slotS, 0);
-        int o = (slotS - iconS) / 2;
-        if (!WynnTex.draw(g, tex, hx + 3 + o, y + 10 + o, iconS, iconS)) {
-            if (iconS < 32) {
-                g.renderItem(fallback, hx + 3 + o, y + 10 + o);
-            } else {
-                bigItem(g, fallback, hx + 3 + o, y + 10 + o);
-            }
-        }
-    }
-
-    /** A hero card's action ("compare ›") as a small wooden button in its bottom-right corner; gold on hover. */
-    private void heroAction(GuiGraphics g, String act, int right, int bottom, boolean hover) {
-        // 14px tall, 6px each side of the text and its chevron, 5px in from the card's edges
-        int aw = font.width(act) + 20;
-        int state = hover ? Kit.ON : Kit.REST;
-        Kit.button(g, right - aw - 5, bottom - 19, aw, 14, state);
-        onWood(g, act, right - aw + 1, bottom - 16, state);
-        Art.icon(g, "chevron-right", right - 13, bottom - 16, 8, Kit.buttonText(state));
-    }
-
     /** An item's bright Minecraft tier colour, for the ring inside its slot (0 when it has none). */
     private static int tierRing(ItemData info) {
         try {
@@ -1816,7 +1722,7 @@ final class RoadmapScreen extends Screen {
     }
 
     /** "/compass at x y z" for a grind place line, or null. */
-    private static String compassFor(String raw) {
+    static String compassFor(String raw) {
         for (Grind.Spot s : Grind.spots()) {
             // the place line may carry the kind's id or its shown name
             if (raw.contains(s.name() + " " + Grind.kindName(s)) || raw.contains(s.name() + " " + s.kind())) {
@@ -1825,28 +1731,6 @@ final class RoadmapScreen extends Screen {
         }
         return null;
     }
-
-    /** What you wear in the slot an upgrade is for (the weaker ring for rings). */
-    private ItemStack wornFor(String slot) {
-        for (UpRow r : upRows()) {
-            if (r.type() != null && r.type().name().equals(slot) && r.gear() != null) {
-                return r.worn();
-            }
-        }
-        for (UpRow r : upRows()) {
-            if (r.type() != null && r.type().name().equals(slot)) {
-                return r.worn();
-            }
-        }
-        return ItemStack.EMPTY;
-    }
-
-    private static String slotTitle(String slot) {
-        String s = slotName(slot);
-        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
-    }
-
-    private static final int ROW_H = 20;
 
     /** The first road map of a character is being built: a bar for how far it is. */
     private void drawLoading(GuiGraphics g, int x, int y, int w, int h) {
@@ -1861,28 +1745,15 @@ final class RoadmapScreen extends Screen {
         ink(g, sub, x + (w - font.width(sub)) / 2, by + 14, MUTED);
     }
 
-    /** Only the slots that change, biggest gain first; the level buttons pick how far ahead. */
-    private void drawUpgrades(GuiGraphics g, int x, int y, int w, int h, int mx, int my) {
-        section(g, L.t("wynnlabs.home.upgrades"), x, y, w);
-        // level buttons on the right of the title: şimdi · ‹ · Lv 60 · 70 … · ›; each names the
-        // level its whole set is wearable at, the window follows the selected one
-        int ux = x + font.width(L.t("wynnlabs.home.upgrades")) + 3 + 8 + 6;
-        if (refreshAsked && Roadmap.isBuilding()) {
-            String up = L.t("wynnlabs.home.refreshing");
-            g.fill(ux - 6, y - 2, ux + font.width(up) + 48, y + 10, Theme.PAPER);
-            ink(g, up, ux, y, MUTED);
-            Kit.tealBar(g, ux + font.width(up) + 4, y + 2, 40, 4, Roadmap.progress(), false);
-        } else if (!Roadmap.isBuilding()) {
-            // build the map again now, past the 30 s the warm-up waits
-            String label = L.t("wynnlabs.home.refresh");
-            int bw = font.width(label) + 10;
-            boolean hover = mx >= ux && mx < ux + bw && my >= y - 3 && my < y + 11;
-            g.fill(ux - 6, y - 3, ux + bw + 3, y + 11, Theme.PAPER);
-            Kit.button(g, ux, y - 3, bw, 14, hover ? Kit.HOVER : Kit.REST);
-            onWood(g, label, ux + 5, y, hover ? Kit.HOVER : Kit.REST);
-            hits.add(new Hit(ux, y - 3, bw, 14, null, List.of(
-                    L.c("wynnlabs.home.refresh_tip").withStyle(ChatFormatting.GRAY)), "#qrefresh:"));
-        }
+    /** How many milestone buttons the level row shows this frame (LEVEL_WINDOW where they fit). */
+    private int levelWindow = LEVEL_WINDOW;
+
+    /**
+     * The level buttons (şimdi · ‹ · Lv 60 · 70 … · ›) ending at {@code right}, their text on
+     * line {@code y}; each names the level its whole set is wearable at, the window follows the
+     * selected one and shows as many milestones as {@code room} takes. Returns their left edge.
+     */
+    private int levelPills(GuiGraphics g, int y, int right, int room) {
         List<Integer> shown = shownSteps();
         int pos = shown.indexOf(selected);
         if (selected > 0 && pos < 0 && !shown.isEmpty()) {
@@ -1897,29 +1768,16 @@ final class RoadmapScreen extends Screen {
             selected = to;
             pos = shown.indexOf(selected);
         }
-        if (pos >= 0 && pos < levelOff) {
-            levelOff = pos;
-        } else if (pos >= levelOff + LEVEL_WINDOW) {
-            levelOff = pos - LEVEL_WINDOW + 1;
-        }
-        levelOff = Math.max(0, Math.min(levelOff, Math.max(0, shown.size() - LEVEL_WINDOW)));
-        int bx = x + w;
-        List<int[]> order = new ArrayList<>();      // {step index or -1 ‹ / -2 ›}
-        order.add(new int[] {0});
-        if (levelOff > 0) {
-            order.add(new int[] {-1});
-        }
-        for (int k = levelOff; k < shown.size() && k < levelOff + LEVEL_WINDOW; k++) {
-            order.add(new int[] {shown.get(k)});
-        }
-        if (levelOff + LEVEL_WINDOW < shown.size()) {
-            order.add(new int[] {-2});
+        levelWindow = LEVEL_WINDOW;
+        List<int[]> order = pillOrder(shown, pos, levelWindow);
+        while (levelWindow > 1 && pillsWidth(order, shown) > room) {
+            order = pillOrder(shown, pos, --levelWindow);
         }
         int firstShown = levelOff < shown.size() ? shown.get(levelOff) : -9;
+        int bx = right;
         for (int k = order.size() - 1; k >= 0; k--) {
             int i = order.get(k)[0];
-            String t = i < 0 ? "" : i == 0 ? L.t("wynnlabs.home.now_short")
-                    : (i == firstShown ? "Lv " : "") + wearAt(steps.get(i));
+            String t = pillText(i, firstShown);
             int tw = i < 0 ? 16 : font.width(t) + 12;
             bx -= tw;
             boolean on = i == selected;
@@ -1937,135 +1795,42 @@ final class RoadmapScreen extends Screen {
             }
             bx -= 3;
         }
-        List<UpRow> all = upRows();
-        List<UpRow> change = new ArrayList<>(all.stream().filter(r -> r.gear() != null).toList());
-        change.sort((a, b) -> Double.compare(Double.isNaN(rowGain(b.gear())) ? -1 : rowGain(b.gear()),
-                Double.isNaN(rowGain(a.gear())) ? -1 : rowGain(a.gear())));
-        double max = change.stream().mapToDouble(r -> Double.isNaN(rowGain(r.gear())) ? 0 : rowGain(r.gear())).max().orElse(1);
-        int ry = y + 14;
-        int footer = 24;
-        int fit = Math.max(1, (h - 14 - footer) / ROW_H);
-        int rowH = ROW_H;
-        if (change.size() > fit) {
-            // every slot on screen beats a "+1 more" line: the rows get a little tighter
-            rowH = Math.max(17, (h - 14 - footer) / change.size());
-            fit = Math.max(1, (h - 14 - footer) / rowH);
+        return bx + 3;
+    }
+
+    /** The level row's buttons for a window of {@code window} milestones: {step index, or -1 ‹ / -2 ›}. */
+    private List<int[]> pillOrder(List<Integer> shown, int pos, int window) {
+        if (pos >= 0 && pos < levelOff) {
+            levelOff = pos;
+        } else if (pos >= levelOff + window) {
+            levelOff = pos - window + 1;
         }
-        int dy = (rowH - ROW_H) / 2;                // keeps text and icons centred in a tighter row
-        int slotW = 54;
-        int priceW = 44;
-        int gainW = 38;
-        int nameW = (w - slotW - priceW - gainW - 16 - 12) / 2;
-        for (int i = 0; i < change.size() && i < fit; i++) {
-            UpRow r = change.get(i);
-            Roadmap.Gear u = r.gear();
-            boolean hover = mx >= x && mx < x + w && my >= ry && my < ry + rowH - 1;
-            Kit.row(g, x, ry, w, rowH - 1, i, hover);
-            g.fill(x, ry + rowH - 1, x + w, ry + rowH, 0x669A855C);
-            int tx = x + 6;
-            ink(g, boxLabel(r.box()), tx, ry + 6 + dy, MUTED);
-            tx += slotW;
-            if (!r.worn().isEmpty()) {
-                Kit.slot(g, tx - 1, ry + dy, 18, 0);
-                g.renderItem(r.worn(), tx, ry + 1 + dy);
-                hits.add(new Hit(tx, ry + 1 + dy, 16, 16, r.worn(), null, null));
-                // how far behind your level the worn piece is: red once it is 8+ levels old
-                int wornLv = -1;
-                try {
-                    var wi = WynntilsItems.view(r.worn());
-                    if (wi.isPresent() && wi.get().isGear()) {
-                        wornLv = wi.get().data().requirements().level();
-                    }
-                } catch (Throwable ignored) {
-                }
-                int myLv = Wyn.level();
-                String lvTag = wornLv > 0 ? " " + wornLv : "";
-                int lvW = font.width(lvTag);
-                ink(g, fit(ItemJson.clean(r.worn().getHoverName().getString()), nameW - 22 - lvW), tx + 19, ry + 6 + dy, 0xFF9C9A92);
-                if (wornLv > 0) {
-                    boolean old = myLv - wornLv >= (int) Rules.sub("shopping", "oldGearLevels", 8);
-                    ink(g, lvTag, tx + nameW - 2 - lvW, ry + 6 + dy, old ? 0xFFE24B4A : FAINT);
-                }
-            } else {
-                if (r.type() != null) {
-                    Kit.slot(g, tx - 1, ry + dy, 18, 0);
-                    WynnTex.draw(g, "wynn/gui/slot/" + r.type().name().toLowerCase(Locale.ROOT), tx, ry + 1 + dy, 16, 16);
-                }
-                ink(g, L.t("wynnlabs.screen.empty"), tx + 19, ry + 6 + dy, FAINT);
-            }
-            tx += nameW;
-            ink(g, "→", tx + 2, ry + 6 + dy, FAINT);
-            tx += 14;
-            ItemStack icon = icon(u.info());
-            Kit.slot(g, tx - 1, ry + dy, 18, tierRing(u.info()));
-            g.renderItem(icon, tx, ry + 1 + dy);
-            hits.add(new Hit(tx, ry + 1 + dy, 16, 16, icon, null, null));
-            ink(g, Component.literal(fit(u.info().name(), nameW - 20)).withStyle(u.info().tier().colour()),
-                    tx + 19, ry + 6 + dy, 0xFFFFFFFF);
-            tx += nameW;
-            // the raw source kind, not the shown text: the shown text is in the player's language
-            String kind = Shopping.kind(u.info());
-            String kindWord = Shopping.kindLabel(kind);         // merchant, event or dungeon; else null
-            boolean atMerchant = kind.equals("merchant");
-            String price = kindWord != null ? kindWord
-                    : u.price() == null ? (u.info().requirements().level() > Wyn.level()
-                    ? "Lv " + u.info().requirements().level() : "—")
-                    : u.price().contains(" (") ? u.price().substring(0, u.price().indexOf(" (")) : u.price();
-            Prices.Price rp = Prices.of(u.info().name());
-            boolean shaky = rp != null && rp.doubt() != null && price.contains("EB") || price.contains("LE") && rp != null && rp.doubt() != null;
-            // Trade Market's live listings: none right now means you cannot buy it today
-            boolean none = !atMerchant && rp != null && rp.count() != null && rp.count() == 0 && Shopping.tradable(u.info());
-            price = fit(none ? L.t("wynnlabs.home.no_listings") : price.replace("~", "≈") + (shaky ? "?" : ""), priceW);
-            ink(g, price, tx + priceW - font.width(price), ry + 6 + dy, none ? 0xFFE24B4A : shaky ? 0xFF9C8A60 : 0xFFFAC775);
-            gainPill(g, x + w - gainW + 1, ry + 4 + dy, rowGain(u), max);
-            List<Component> tip = gearTip(u);
-            boolean panel = u.options() != null && !u.options().isEmpty();
-            hits.add(new Hit(x, ry, w, rowH - 1, null, tip, panel ? null : u.info().name()));
-            if (panel) {
-                slotHits.add(new Object[] {new int[] {x, ry, w, rowH - 1}, u, boxLabel(r.box()), r.worn()});
-            }
-            ry += rowH;
+        levelOff = Math.max(0, Math.min(levelOff, Math.max(0, shown.size() - window)));
+        List<int[]> order = new ArrayList<>();
+        order.add(new int[] {0});
+        if (levelOff > 0) {
+            order.add(new int[] {-1});
         }
-        if (change.isEmpty()) {
-            ink(g, L.c("wynnlabs.home.all_good").withStyle(ChatFormatting.GREEN),
-                    x + 6, ry + 4, 0xFFFFFFFF);
-            ry += ROW_H;
+        for (int k = levelOff; k < shown.size() && k < levelOff + window; k++) {
+            order.add(new int[] {shown.get(k)});
         }
-        // the rest in one quiet line
-        List<String> more = new ArrayList<>();
-        for (int i = fit; i < change.size(); i++) {
-            more.add(boxLabel(change.get(i).box()) + " +" + pct(Math.round(rowGain(change.get(i).gear()))));
+        if (levelOff + window < shown.size()) {
+            order.add(new int[] {-2});
         }
-        List<String> good = all.stream().filter(r -> r.gear() == null && !r.worn().isEmpty())
-                .map(r -> ItemJson.clean(r.worn().getHoverName().getString())).toList();
-        int fy = Math.max(ry + 4, y + h - footer + 2);
-        Component line = Component.empty();
-        if (!more.isEmpty()) {
-            line = line.copy().append(Component.literal(L.n("wynnlabs.home.more_slots", more.size(), more.size(), String.join(", ", more)) + "   ")
-                    .withStyle(ChatFormatting.GRAY));
+        return order;
+    }
+
+    private String pillText(int i, int firstShown) {
+        return i < 0 ? "" : i == 0 ? L.t("wynnlabs.home.now_short") : (i == firstShown ? "Lv " : "") + wearAt(steps.get(i));
+    }
+
+    private int pillsWidth(List<int[]> order, List<Integer> shown) {
+        int firstShown = levelOff < shown.size() ? shown.get(levelOff) : -9;
+        int n = 0;
+        for (int[] o : order) {
+            n += (o[0] < 0 ? 16 : font.width(pillText(o[0], firstShown)) + 12) + 3;
         }
-        if (!good.isEmpty()) {
-            line = line.copy().append(L.c("wynnlabs.home.good_list", String.join(", ", good)).withStyle(ChatFormatting.DARK_GREEN));
-        }
-        // the two footer lines while there is room under the rows (a short window drops them)
-        if (fy + 9 <= y + h) {
-            ink(g, font.plainSubstrByWidth(line.getString(), w).equals(line.getString()) ? line
-                    : Component.literal(fit(line.getString(), w)).withStyle(ChatFormatting.GRAY), x, fy, 0xFFFFFFFF);
-        }
-        // what the selected level brings besides gear
-        Roadmap.Step s = steps.get(Math.min(selected, steps.size() - 1));
-        List<String> extra = new ArrayList<>();
-        s.abilities().forEach(a -> extra.add("★ " + a));
-        if (s.skillPoints() > 0) {
-            extra.add(L.n("wynnlabs.home.skill_points", s.skillPoints()));
-        }
-        s.places().forEach(p -> extra.add("● " + shortPlace(p)));
-        if (!extra.isEmpty() && fy + 20 <= y + h) {
-            String head = (selected == 0 ? L.t("wynnlabs.home.extra_now") : L.t("wynnlabs.home.extra_at", s.level())) + ": ";
-            ink(g, Component.literal(head).withStyle(ChatFormatting.DARK_GRAY)
-                    .append(Component.literal(fit(String.join(" · ", extra), w - font.width(head))).withStyle(ChatFormatting.GRAY)),
-                    x, fy + 11, 0xFFFFFFFF);
-        }
+        return n - 3;
     }
 
     /** The full story of an upgrade, for its hover. */
@@ -6382,7 +6147,7 @@ final class RoadmapScreen extends Screen {
                     List<Integer> shown = shownSteps();
                     int pos = shown.indexOf(selected);
                     selected = r[4] == -1 ? shown.get(Math.max(0, Math.min(pos, levelOff) - 1))
-                            : r[4] == -2 ? shown.get(Math.min(shown.size() - 1, Math.max(pos, levelOff + LEVEL_WINDOW - 1) + 1))
+                            : r[4] == -2 ? shown.get(Math.min(shown.size() - 1, Math.max(pos, levelOff + levelWindow - 1) + 1))
                             : r[4];
                     return true;
                 }
@@ -6497,6 +6262,13 @@ final class RoadmapScreen extends Screen {
                     refreshAsked = true;
                 } else if (c.startsWith("#qgo:")) {
                     tab = TAB_BANK;
+                    detail = null;
+                } else if (c.startsWith("#qopen:")) {
+                    tab = Integer.parseInt(c.substring(7));     // a home tile: its tab
+                    detail = null;
+                } else if (c.startsWith("#qdisc:")) {
+                    tab = TAB_DISCOVERIES;                      // the home's nearest discovery, chosen there
+                    discSelected = c.substring(7);
                     detail = null;
                 } else if (c.startsWith("#qnear:")) {
                     String[] f = c.substring(7).split(" ", 4);
@@ -6649,18 +6421,18 @@ final class RoadmapScreen extends Screen {
     }
 
     /** A percentage in the player's language: "%8" in Turkish, "8%" in English. */
-    private static String pct(Object n) {
+    static String pct(Object n) {
         return L.t("wynnlabs.screen.pct", n);
     }
 
-    private static String dist(int blocks) {
+    static String dist(int blocks) {
         return blocks >= 1000 ? Math.round(blocks / 100.0) / 10.0 + " km" : blocks + " m";
     }
 
     /** Safe green, careful amber, risky red (Danger.risk). */
-    private static final int[] RISK = {0xFF5DCAA5, 0xFFFAC775, 0xFFF09595};
+    static final int[] RISK = {0xFF5DCAA5, 0xFFFAC775, 0xFFF09595};
 
-    private static int placeRisk(String p) {
+    static int placeRisk(String p) {
         int bar = p.indexOf('|');
         if (bar <= 0) {
             return 1;
@@ -6672,7 +6444,7 @@ final class RoadmapScreen extends Screen {
         }
     }
 
-    private static String shortPlace(String p) {
+    static String shortPlace(String p) {
         int bar = p.indexOf('|');
         if (bar > 0 && bar < 3) {
             p = p.substring(bar + 1);
@@ -6682,18 +6454,5 @@ final class RoadmapScreen extends Screen {
             p = p.replace(" " + k + " (", " " + Grind.kindName(k) + " (");
         }
         return Grind.shortKind(p);
-    }
-
-    private static String slotName(String slot) {
-        return switch (slot) {
-            case "HELMET" -> L.t("wynnlabs.screen.slot_helmet");
-            case "CHESTPLATE" -> L.t("wynnlabs.screen.slot_chestplate");
-            case "LEGGINGS" -> L.t("wynnlabs.screen.slot_leggings");
-            case "BOOTS" -> L.t("wynnlabs.screen.slot_boots");
-            case "RING" -> L.t("wynnlabs.screen.slot_ring");
-            case "BRACELET" -> L.t("wynnlabs.screen.slot_bracelet");
-            case "NECKLACE" -> L.t("wynnlabs.screen.slot_necklace");
-            default -> L.t("wynnlabs.screen.slot_weapon");
-        };
     }
 }

@@ -91,6 +91,10 @@ loom.runs.matching { it.name == 'clientGameTest' }.configureEach {
     if (rootProject.hasProperty('previewTab')) {
         vmArg "-Dwynnlabs.previewTab=${rootProject.property('previewTab')}"
     }
+    // -PpreviewFont=vanilla: the shots in the game's own font (webFont off), named "...-vanilla"
+    if (rootProject.hasProperty('previewFont')) {
+        vmArg "-Dwynnlabs.previewFont=${rootProject.property('previewFont')}"
+    }
     if (rootProject.hasProperty('layoutStrict')) {
         vmArg "-Dwynnlabs.layoutStrict=true"
     }

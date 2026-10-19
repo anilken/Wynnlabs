@@ -51,6 +51,8 @@ public class LayoutMatrix implements FabricClientGameTest {
 
     /** -PpreviewTab=today: only that tab (a one-tab change is checked on its tab alone). */
     private static final String ONLY = System.getProperty("wynnlabs.previewTab", "");
+    /** -PpreviewFont=vanilla: the game's own font instead of the web font (setting webFont off); its shots end in "-vanilla". */
+    private static final boolean VANILLA = "vanilla".equals(System.getProperty("wynnlabs.previewFont", ""));
 
     @Override
     public void runTest(ClientGameTestContext ctx) {
@@ -68,6 +70,9 @@ public class LayoutMatrix implements FabricClientGameTest {
             FixtureState fx = FixtureState.load(fixture);
             ctx.runOnClient(mc -> {
                 fx.install(System.getProperty("wynnlabs.previewLang", "tr"));
+                if (VANILLA) {
+                    Settings.set("webFont", false);
+                }
                 Wyn.clearDown();
             });
             ctx.setScreen(RoadmapScreen::new);
@@ -188,6 +193,9 @@ public class LayoutMatrix implements FabricClientGameTest {
             throw new RuntimeException(e);
         } finally {
             FixtureState.uninstall();
+            if (VANILLA) {
+                Settings.reset("webFont");
+            }
         }
         if (Boolean.getBoolean("wynnlabs.layoutStrict")) {
             int n = report.entrySet().stream().filter(e -> !e.getKey().equals("skipped")).mapToInt(e -> e.getValue().size()).sum();
@@ -539,7 +547,7 @@ public class LayoutMatrix implements FabricClientGameTest {
                 String name = TAB_NAMES[t] + (t == SETTINGS ? "-" + settingsName(view) : views.length > 1 ? "-" + view : "");
                 measure(ctx, where + " " + name, gui, report, () -> ((RoadmapScreen) net.minecraft.client.Minecraft.getInstance().screen).clickAreas());
                 if (shots != null) {
-                    ctx.takeScreenshot(TestScreenshotOptions.of(where.replaceAll("[^0-9a-z@x]", "") + "-" + name)
+                    ctx.takeScreenshot(TestScreenshotOptions.of(where.replaceAll("[^0-9a-z@x]", "") + "-" + name + (VANILLA ? "-vanilla" : ""))
                             .disableCounterPrefix().withDestinationDir(shots));
                 }
                 if (t == SETTINGS) {

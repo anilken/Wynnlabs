@@ -327,6 +327,7 @@ final class Vault {
             }
             PAGES.put(e.getKey(), list);
         }
+        version++;                              // a screen open before the pages came reads them again
     }
 
     static List<String> pageKeys() {

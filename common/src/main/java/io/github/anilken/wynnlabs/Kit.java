@@ -291,11 +291,6 @@ final class Kit {
         nine(g, "pill_line", x, y, w, h, colour);
     }
 
-    /** The gain seal's colour for a share of the best gain (0..1). */
-    static int sealFor(double share) {
-        return share > 0.66 ? Theme.SEAL_3 : share > 0.33 ? Theme.SEAL_2 : Theme.SEAL_1;
-    }
-
     /**
      * A bar: dark rim, three-row fill (light, mid, dark) up to {@code frac}. {@code rim} adds
      * the brass ring the XP bar has.
