@@ -41,6 +41,7 @@ public final class LayoutCheck {
         SCISSOR.clear();
         FRAMES.clear();
         TEXT_AREAS.clear();
+        PARTS.clear();
         on = true;
     }
 
@@ -72,6 +73,56 @@ public final class LayoutCheck {
         Vector2f b = pose.transformPosition(x + w, y + h, new Vector2f());
         return new int[] {Math.round(Math.min(a.x, b.x)), Math.round(Math.min(a.y, b.y)),
             Math.round(Math.max(a.x, b.x)), Math.round(Math.max(a.y, b.y))};
+    }
+
+    /** A part of a panel that must not overlap another owner's part (a slot, a pill, a name, the build bar). */
+    record Part(int x0, int y0, int x1, int y1, String owner, String what) {}
+
+    private static final List<Part> PARTS = new ArrayList<>();
+
+    /** Registers a part under this pose for {@link #partOverlaps}; parts of one owner may overlap each other. */
+    public static synchronized void part(Matrix3x2f pose, int x, int y, int w, int h, String owner, String what) {
+        if (on && w > 0 && h > 0) {
+            int[] b = box(pose, x, y, w, h);
+            PARTS.add(new Part(b[0], b[1], b[2], b[3], owner, what));
+        }
+    }
+
+    static synchronized List<Part> parts() {
+        return new ArrayList<>(PARTS);
+    }
+
+    /** Parts of different owners drawn over each other (more than a pixel each way). */
+    static List<String> partOverlaps(List<Part> parts) {
+        List<String> out = new ArrayList<>();
+        for (int i = 0; i < parts.size(); i++) {
+            Part a = parts.get(i);
+            for (int j = i + 1; j < parts.size(); j++) {
+                Part b = parts.get(j);
+                if (a.owner().equals(b.owner())) {
+                    continue;
+                }
+                int ox = Math.min(a.x1(), b.x1()) - Math.max(a.x0(), b.x0());
+                int oy = Math.min(a.y1(), b.y1()) - Math.max(a.y0(), b.y0());
+                if (ox > 1 && oy > 1) {
+                    out.add(a.what() + " and " + b.what() + " overlap at " + Math.max(a.x0(), b.x0()) + "," + Math.max(a.y0(), b.y0()));
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
+     * A window drawn over everything under this box (a modal over the menu): what was recorded
+     * there so far is hidden under it and left out, so the window's text is not read as lying
+     * over the menu's.
+     */
+    public static synchronized void cover(Matrix3x2f pose, int x, int y, int w, int h) {
+        if (on) {
+            int[] b = box(pose, x, y, w, h);
+            DRAWN.removeIf(d -> d.x0() < b[2] && d.x1() > b[0] && d.y0() < b[3] && d.y1() > b[1]);
+            PARTS.removeIf(p -> p.x0() < b[2] && p.x1() > b[0] && p.y0() < b[3] && p.y1() > b[1]);
+        }
     }
 
     /** A surface text may be drawn on (parchment, planks), in GUI pixels; called while drawing. */

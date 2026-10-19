@@ -148,6 +148,11 @@ export function renderKit(out, density) {
   add('gold', B, B, button(B, B, ['#fff0a0', '#ffe071', '#d9a93a'], '#8a6a1c', '#ffffffa0', '#a8781e'), 3);
   add('ledger_wood', B, B, button(B, B, ['#7d5f47', '#6e5440', '#644b37'], '#3b2a1d', '#ffffff3d', '', true), [3, 3, 3, 1]);
   add('ledger_gold', B, B, button(B, B, ['#fff0a0', '#ffe071', '#e8c050'], '#8a6a1c', '#ffffffa0', '', true), [3, 3, 3, 1]);
+  // the archetype's purple: the primary action and the items you chose (Choose items, Suggest
+  // build, Apply, the Plan pill), the same bevel as wood and gold with a purple ramp
+  add('purple', B, B, button(B, B, ['#9a7cc8', '#7a58ae', '#5a3a8a'], '#2f1c4e', '#ffffff50', '#00000040'), 3);
+  add('purple_hover', B, B, button(B, B, ['#ab8ed6', '#8a68bd', '#694799'], '#2f1c4e', '#ffffff60', '#00000040'), 3);
+  add('ledger_purple', B, B, button(B, B, ['#9a7cc8', '#7a58ae', '#6a4a9a'], '#2f1c4e', '#ffffff50', '', true), [3, 3, 3, 1]);
 
   // the active tab's tip: a gold arrow that reaches into the page
   add('tip', 6, 20,

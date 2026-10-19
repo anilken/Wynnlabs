@@ -98,10 +98,11 @@ public final class WynnLabs {
         platform.onEndTick(Perf.tick("tick.Wyn", Wyn::onTick));
         platform.onEndTick(Perf.tick("tick.Prices", Prices::onTick));
         platform.onEndTick(Perf.tick("tick.Build", Build::onTick));
-        // the menu's road map, rebuilt in the background before it runs out, so the menu opens at once
+        // the road map is built only when asked (the J menu's button, its refresh, a setting you
+        // change there); in the background only the applied plan's level-up check runs
         platform.onEndTick(Perf.tick("tick.Roadmap", client -> {
             if (client.player != null && client.player.tickCount % 40 == 0) {
-                Roadmap.warm();
+                Around.watch();                     // only with a plan: the better-build check after a level-up
             }
             // model weights brought back under their cap at load: say so once
             java.util.List<String> clamped = Rules.clamped;

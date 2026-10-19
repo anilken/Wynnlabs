@@ -142,12 +142,97 @@ final class Roadmap {
     }
 
     /**
+     * Puts the items you chose (Locks) into the set before the first milestone: each into its
+     * slot (a ring into the hand that holds it already, else a free one), recorded in
+     * {@code fixed} so nothing later swaps it out. When the set's skill points no longer add up,
+     * the other pieces make room ({@link Build#fitAround}) and the milestones fill those slots
+     * again. A row for each chosen piece you do not wear yet: its gain is NaN (chosen, not
+     * picked), its comparison the piece against the set before. {@code baseline} null (no build
+     * plan): only the rows.
+     */
+    private static List<Gear> lockIn(List<ItemData> locked, Map<String, Damage.Piece> baseline, Map<String, String> placed,
+            java.util.Set<String> fixed, int level) {
+        int earned = Math.max(0, (Math.min(level, 101) - 1) * 2);
+        long rings = locked.stream().filter(i -> Locks.kind(i) == Slot.RING).count();
+        Map<ItemData, String> slotOf = new LinkedHashMap<>();
+        // the rings first into the hand that holds them already
+        for (ItemData info : locked) {
+            if (Locks.kind(info) == Slot.RING && baseline != null) {
+                for (String s : new String[] {"RING1", "RING2"}) {
+                    Damage.Piece p = baseline.get(s);
+                    if (!slotOf.containsValue(s) && p != null && p.name().equals(info.name())) {
+                        slotOf.put(info, s);
+                        break;
+                    }
+                }
+            }
+        }
+        for (ItemData info : locked) {
+            if (slotOf.containsKey(info)) {
+                continue;
+            }
+            Slot k = Locks.kind(info);
+            String s = k == Slot.WEAPON ? "WEAPON" : k == Slot.RING ? (slotOf.containsValue("RING1") ? "RING2" : "RING1")
+                    : Build.slotOf(k, 0);
+            if (s != null) {
+                slotOf.put(info, s);
+            }
+        }
+        Map<String, Damage.Piece> start = baseline == null ? null : new LinkedHashMap<>(baseline);
+        Build.Eval before = start == null ? null : Build.allocate(start, level, earned);
+        List<Object[]> made = new ArrayList<>();        // {info, build slot, row name}
+        int ringRow = 0;
+        for (var e : slotOf.entrySet()) {
+            ItemData info = e.getKey();
+            String slot = e.getValue();
+            fixed.add(slot);
+            Slot k = Locks.kind(info);
+            // the second hand's row name when one ring is chosen: the milestones' ring pick is "RING"
+            String row = k == Slot.RING ? (rings == 1 || ringRow++ > 0 ? RING2 : Slot.RING.name()) : info.slot().name();
+            if (baseline != null) {
+                baseline.put(slot, Damage.piece(info));
+            }
+            boolean worn = false;
+            for (ItemStack w : AutoAdvice.worn(info.slot())) {
+                worn |= !w.isEmpty() && ItemJson.clean(w.getHoverName().getString()).trim().equalsIgnoreCase(info.name());
+            }
+            if (!worn) {
+                made.add(new Object[] {info, slot, row});
+            }
+        }
+        if (baseline != null) {
+            List<String> out = Build.fitAround(baseline, fixed, earned);
+            TriConsumer tc = trace;
+            if (tc != null && !out.isEmpty()) {
+                tc.accept(level, Slot.UNKNOWN, "chosen items: " + out + " taken out to fit the skill points");
+            }
+        }
+        Build.Eval after = baseline == null ? null : Build.allocate(baseline, level, earned);
+        List<Gear> rows = new ArrayList<>();
+        for (Object[] r : made) {
+            ItemData info = (ItemData) r[0];
+            String slot = (String) r[1];
+            String row = (String) r[2];
+            List<String> detail = new ArrayList<>();
+            if (before != null && after != null) {
+                detail.addAll(explain(before, after));
+            }
+            Option first = before == null ? null : option(info, slot, start, before, level, earned);
+            String src = Shopping.sourceOf(info);
+            rows.add(new Gear(row, info, Double.NaN, src == null ? "?" : Shopping.where(src), Prices.text(info.name(), false),
+                    null, null, detail, List.of(), first == null ? List.of() : List.of(first)));
+            place(placed, row, slot);
+        }
+        return rows;
+    }
+
+    /**
      * The best ring for the hand the milestone's ring pick did not take: a second copy of a ring
      * in the build, or one of this milestone's best rings. Put into {@code baseline} when it clears
      * the same bar as any pick; null when nothing does.
      */
     private static Gear otherRing(Map<String, Damage.Piece> baseline, Map<String, String> placed, List<ItemData> pool,
-            int m, int earned, double baseObj, List<String> badSources) {
+            int m, int earned, double baseObj, List<String> badSources, java.util.function.Predicate<ItemData> affordable) {
         if (baseObj <= 0) {
             return null;
         }
@@ -171,7 +256,7 @@ final class Roadmap {
             Damage.Piece there = baseline.get(slot);
             for (ItemData info : cands) {
                 Damage.Piece cand = Damage.piece(info);
-                if (info.requirements().level() > m || there != null && there.key().equals(cand.key())) {
+                if (info.requirements().level() > m || there != null && there.key().equals(cand.key()) || !affordable.test(info)) {
                     continue;
                 }
                 String src = Shopping.sourceOf(info);
@@ -206,6 +291,7 @@ final class Roadmap {
     }
 
     private static Build.Eval fullEval(Map<String, Damage.Piece> build, String slot, Damage.Piece cand, int m, int earned) {
+        tick();
         Map<String, Damage.Piece> trial = new LinkedHashMap<>(build);
         trial.put(slot, cand);
         return Build.allocate(trial, m, earned);
@@ -262,7 +348,7 @@ final class Roadmap {
      * taken, for up to rules.roadmap.jointPasses rounds. A swapped slot's row is made anew.
      */
     private static void refine(Map<String, Damage.Piece> build, Map<String, String> placed, Map<Slot, List<ItemData>> pools,
-            List<Gear> gear, int m, int earned, int[] prev) {
+            List<Gear> gear, int m, int earned, int[] prev, java.util.Set<String> fixed) {
         Build.Eval cur = Build.allocate(build, m, earned);
         if (cur == null) {
             return;
@@ -274,8 +360,8 @@ final class Roadmap {
             for (var e : pools.entrySet()) {
                 Slot t = e.getKey();
                 for (String slot : t == Slot.RING ? new String[] {"RING1", "RING2"} : new String[] {Build.slotOf(t, 0)}) {
-                    if (slot == null) {
-                        continue;
+                    if (slot == null || fixed.contains(slot)) {
+                        continue;                       // a chosen item stays
                     }
                     Damage.Piece there = build.get(slot);
                     ItemData pick = null;
@@ -387,7 +473,7 @@ final class Roadmap {
      * slot-by-slot set, its slots replace the picks.
      */
     private static void beamSearch(Map<String, Damage.Piece> start, Map<String, Damage.Piece> build, Map<String, String> placed,
-            Map<Slot, List<ItemData>> pools, List<Gear> gear, int m, int earned, int[] prev) {
+            Map<Slot, List<ItemData>> pools, List<Gear> gear, int m, int earned, int[] prev, java.util.Set<String> fixed) {
         Build.Eval s0 = Build.allocate(start, m, earned);
         Build.Eval cur = Build.allocate(build, m, earned);
         if (s0 == null || cur == null) {
@@ -395,16 +481,16 @@ final class Roadmap {
         }
         // the same inputs give the same set: kept on disk per character, so a map that
         // nothing changed for comes back in seconds after a restart instead of 20 s
-        String ck = beamKey(start, build, pools, m, earned, prev);
+        String ck = beamKey(start, build, pools, m, earned, prev, fixed);
         Map<String, Damage.Piece> chosen;
         if (BeamCache.has(ck)) {
             chosen = BeamCache.get(ck, start, build);
             if (chosen == null && !BeamCache.isNone(ck)) {
-                chosen = beamBest(start, build, pools, m, earned, prev, s0, cur);
+                chosen = beamBest(start, build, pools, m, earned, prev, s0, cur, fixed);
                 BeamCache.put(ck, chosen);
             }
         } else {
-            chosen = beamBest(start, build, pools, m, earned, prev, s0, cur);
+            chosen = beamBest(start, build, pools, m, earned, prev, s0, cur, fixed);
             BeamCache.put(ck, chosen);
         }
         if (chosen == null) {
@@ -415,7 +501,7 @@ final class Roadmap {
 
     /** What a milestone's beam depends on: the sets it starts from, the pools, the points before and the rules. */
     private static String beamKey(Map<String, Damage.Piece> start, Map<String, Damage.Piece> build,
-            Map<Slot, List<ItemData>> pools, int m, int earned, int[] prev) {
+            Map<Slot, List<ItemData>> pools, int m, int earned, int[] prev, java.util.Set<String> fixed) {
         StringBuilder k = new StringBuilder();
         k.append(m).append('|').append(earned).append('|').append(java.util.Arrays.toString(prev)).append('|');
         k.append(setKey(start)).append('|').append(setKey(build)).append('|');
@@ -424,12 +510,20 @@ final class Roadmap {
             l.forEach(i -> k.append(i.name()).append(','));
         });
         k.append('|').append(Rules.hash());
+        if (!fixed.isEmpty()) {
+            k.append("|fixed:").append(fixed);      // the chosen items' slots; without any the key is as it was
+        }
+        Tuning.Choice tuned = Tuning.active();
+        if (tuned != null) {
+            k.append("|tuned:").append(tuned.key());   // the strip's weights score the sets otherwise
+        }
         return Integer.toHexString(k.toString().hashCode()) + Integer.toHexString(k.reverse().toString().hashCode());
     }
 
     /** The beam itself: the best set it finds, or null when none beats the slot picks. */
     private static Map<String, Damage.Piece> beamBest(Map<String, Damage.Piece> start, Map<String, Damage.Piece> build,
-            Map<Slot, List<ItemData>> pools, int m, int earned, int[] prev, Build.Eval s0, Build.Eval cur) {
+            Map<Slot, List<ItemData>> pools, int m, int earned, int[] prev, Build.Eval s0, Build.Eval cur,
+            java.util.Set<String> fixed) {
         int width = (int) Rules.sub("roadmap", "beamWidth", 200);
         Map<String, Damage.Piece> pieces = new HashMap<>();
         List<BeamState> beam = new ArrayList<>(List.of(new BeamState(new LinkedHashMap<>(start), s0.allocation(),
@@ -437,8 +531,8 @@ final class Roadmap {
         for (String slot : BEAM_ORDER) {
             Slot t = slot.startsWith("RING") ? Slot.RING : slot.equals("WEAPON") ? null : Slot.valueOf(slot);
             List<ItemData> pool = t == null ? weaponPool(pools) : pools.get(t);
-            if (pool == null || pool.isEmpty()) {
-                continue;
+            if (pool == null || pool.isEmpty() || fixed.contains(slot)) {
+                continue;                                           // a chosen item stays
             }
             List<BeamState> next = new ArrayList<>(beam);          // keeping the slot as it is
             for (BeamState st : beam) {
@@ -452,6 +546,7 @@ final class Roadmap {
                             || Exclusive.clash(st.build(), slot, Exclusive.group(info)) != null) {
                         continue;
                     }
+                    tick();
                     Build.Eval ev = t == null ? fullEval(st.build(), slot, cand, m, earned)
                             : Build.tryEval(st.build(), st.alloc(), slot, cand, m, earned);
                     if (ev == null) {
@@ -649,7 +744,8 @@ final class Roadmap {
         }, null, false);
         List<Map<String, Damage.Piece>> all = sets;
         try {
-            fj.submit(() -> all.parallelStream().forEach(b -> {
+            Tuning.Choice tuned = Tuning.active();             // the workers score with the same tuning
+            fj.submit(() -> all.parallelStream().forEach(b -> Tuning.with(tuned, () -> {
                 for (Damage.Piece[] rp : rings) {
                     Map<String, Damage.Piece> c = new LinkedHashMap<>(b);
                     c.put("RING1", rp[0]);
@@ -669,7 +765,8 @@ final class Roadmap {
                         }
                     }
                 }
-            })).get();
+                return null;
+            }))).get();
         } catch (Exception e) {
             if (tr != null) {
                 tr.accept(m, Slot.RING, "exact failed: " + e);
@@ -1032,15 +1129,21 @@ final class Roadmap {
     private static volatile List<Step> lastSteps = List.of();
     private static volatile long lastBuilt;
     private static volatile String lastFor = "";
+    /** The level the last map was built at, and whether it came from the file (a past session). */
+    private static volatile int lastLevel;
+    private static volatile boolean lastFromFile;
+    /** The character whose saved map was looked for (once per character). */
+    private static volatile String loadedFor;
 
     /**
-     * The upgrade the damage model found for this slot at your level, from the last road map
-     * built (J menu, the API) in the last 15 minutes; null when none or too old. Lets tooltips
-     * agree with the J menu instead of using the simpler shopping-list score.
+     * Every upgrade name in the road map built this session (for keeping their prices fresh); none
+     * for a map read back from a past session, whose prices stay as they were.
      */
-    /** Every upgrade name in the last road map (for keeping their prices fresh). */
     static List<String> lastNames() {
         List<String> out = new ArrayList<>();
+        if (lastFromFile) {
+            return out;
+        }
         for (Step s : lastSteps) {
             for (Gear g : s.gear()) {
                 out.add(g.info().name());
@@ -1054,12 +1157,17 @@ final class Roadmap {
         return out;
     }
 
+    /**
+     * The upgrade the damage model found for this slot at your level, from the character's road
+     * map (built this session or read back from the last one); null when there is none. Lets
+     * tooltips agree with the J menu. Never starts a build.
+     */
     static Gear lastUpgrade(Slot type) {
-        GameState state = GameState.current();
-        if (!state.characterId().equals(lastFor) || state.now() - lastBuilt > 15 * 60_000L || lastSteps.isEmpty()) {
+        List<Step> steps = cached();
+        if (steps.isEmpty()) {
             return null;
         }
-        for (Gear g : lastSteps.get(0).gear()) {
+        for (Gear g : steps.get(0).gear()) {
             if (g.slot().equals(type.name())) {
                 return g;
             }
@@ -1068,34 +1176,98 @@ final class Roadmap {
     }
 
     /**
-     * The road map for the J menu, without making the player wait. When nothing it depends on
-     * changed (same character, level, build plan and rules, under 5 minutes old) it is the last
-     * one; when it is out of date the last one is still returned and a fresh one is built in the
-     * background ({@link #version} moves on when it is ready). With no map yet for the
-     * character it is empty while the first one is built ({@link #progress}). Building one takes
-     * a few seconds with milestones up to Lv 120, which froze the game when it ran on the spot.
+     * The character's road map: the one built last (this session, or read back from the file of
+     * the last one), empty when none was ever built. Never starts a build: the J menu's button,
+     * its refresh and the explicit actions ({@link #forceRefresh}) do.
      */
     static List<Step> cached() {
-        GameState state = GameState.current();
-        String key = key(state);
-        if (key.equals(cachedKey) && state.now() - lastBuilt < 5 * 60_000L && !lastSteps.isEmpty()) {
-            return lastSteps;
-        }
-        if (!lastSteps.isEmpty() && state.characterId().equals(lastFor)) {
-            refresh(key);
-            return lastSteps;
-        }
-        // the first map of a character too: built in the background while the menu shows the
-        // progress (on the spot it froze the game for seconds at the first J)
-        refresh(key);
-        return List.of();
+        String id = GameState.current().characterId();
+        load(id);
+        return id.equals(lastFor) ? lastSteps : List.of();
     }
 
-    /** The J menu's refresh button: a new map now, whatever its age (the beam cache still skips unchanged milestones). */
+    /** The character's saved map, read once when the character is known (a missing or broken file: none). */
+    private static synchronized void load(String id) {
+        if (id == null || id.isEmpty() || id.equals(loadedFor) || id.equals(lastFor) && !lastSteps.isEmpty()) {
+            return;
+        }
+        loadedFor = id;
+        RoadmapStore.Loaded l = RoadmapStore.load(id);
+        if (l == null || !id.equals(GameState.current().characterId())) {
+            return;
+        }
+        lastSteps = l.steps();
+        lastFor = id;
+        lastBuilt = l.builtAt();
+        lastLevel = l.level();
+        cachedKey = l.key();
+        lastFromFile = true;
+        version++;
+    }
+
+    /** Tests: the saved map is looked for again, and nothing is kept in memory. */
+    static synchronized void forget() {
+        lastSteps = List.of();
+        lastFor = "";
+        loadedFor = null;
+        cachedKey = "";
+        lastFromFile = false;
+        staleKey = null;
+    }
+
+    /** Tests: {@link #stale} reads the inputs again at once (it rereads them each half second). */
+    static void recheck() {
+        staleKey = null;
+    }
+
+    /**
+     * The map is out of date: what it was built from (level, gear, skill points, archetype, rules,
+     * language: {@link #key}) is not what it is now. {@code level}: the level changed (to
+     * {@code now}); {@code ageMs}: how long ago it was built.
+     */
+    record Stale(boolean level, int now, int builtLevel, long ageMs) {}
+
+    private static volatile String staleKey;
+    private static volatile long staleAt;
+
+    /** Why the character's map is out of date, or null when it is current or there is none. Read again each half second. */
+    static Stale stale() {
+        GameState state = GameState.current();
+        if (cached().isEmpty()) {
+            return null;
+        }
+        long now = System.currentTimeMillis();
+        String k = staleKey;
+        if (k == null || now - staleAt > 500) {
+            k = key(state);
+            staleKey = k;
+            staleAt = now;
+        }
+        if (k.equals(cachedKey)) {
+            return null;
+        }
+        return new Stale(state.level() != lastLevel, state.level(), lastLevel, Math.max(0, state.now() - lastBuilt));
+    }
+
+    /** Whether the character has a map at all (built or saved): else the gear panel offers to calculate one. */
+    static boolean hasMap() {
+        return !cached().isEmpty();
+    }
+
+    /** The J menu's button and refresh, and the explicit actions: a new map now, in the background. */
     static void forceRefresh() {
         GameState state = GameState.current();
         if (state.inGame()) {
-            refresh(key(state));
+            refresh();
+        }
+    }
+
+    /** Cancel: the map being built is dropped, the last one stays. */
+    static void cancelBuild() {
+        again = false;
+        Job j = buildJob;
+        if (j != null) {
+            j.cancel();
         }
     }
 
@@ -1106,34 +1278,21 @@ final class Roadmap {
 
     /** How far the map being built is, 0 to 1, by milestones done. */
     static double progress() {
+        Job j = buildJob;
+        if (j != null) {
+            return Math.min(1, j.done / (double) Math.max(1, j.total));
+        }
         int total = progressTotal;
         return total <= 0 ? 0 : Math.min(1, progressDone / (double) total);
     }
 
-    /** Builds a fresh map in the background when the last one is out of date (the client tick calls this). */
-    static void warm() {
-        GameState state = GameState.current();
-        if (!state.inGame() || !Rules.adviceHere()) {
-            return;                             // an alt with the advice off: no map built
-        }
-        String key = key(state);
-        // the first minute on a character you switched to: its plan settles over a few
-        // seconds (inventory, level), and a map from the old plan must not stand for 30 s
-        if (!state.characterId().equals(seenFor)) {
-            seenFor = state.characterId();
-            switchedAt = state.now();
-        }
-        boolean settling = state.now() - switchedAt < 60_000L;
-        // on its own at most every 30 s: the J menu's buttons ask through cached() at once
-        long age = state.now() - lastBuilt;
-        if (lastSteps.isEmpty() || !state.characterId().equals(lastFor) || age >= 4 * 60_000L
-                || !key.equals(cachedKey) && (age >= 30_000L || settling)) {
-            refresh(key);
+    /** Tests: waits for the builder to finish what it was given. */
+    static void awaitIdle() throws Exception {
+        BUILDER.submit(() -> { }).get(120, java.util.concurrent.TimeUnit.SECONDS);
+        while (building) {
+            BUILDER.submit(() -> { }).get(120, java.util.concurrent.TimeUnit.SECONDS);
         }
     }
-
-    private static volatile String seenFor = "";
-    private static volatile long switchedAt;
 
     /** Bumped each time a new map is ready, so an open J menu can pick it up. */
     static int version() {
@@ -1141,11 +1300,11 @@ final class Roadmap {
     }
 
     /**
-     * What the map depends on, by content: the plan is rebuilt whenever the inventory changes at
-     * all and the rules on any write (a mana measurement), which rebuilt the map back to back
-     * with nothing changed for it.
+     * What the map depends on, by content: the character, level, language, rules, and the build
+     * plan's pieces, what is worn and the skill points. A map whose key is not today's is out of
+     * date ({@link #stale}); it is never rebuilt for that on its own.
      */
-    private static String key(GameState state) {
+    static String key(GameState state) {
         Build.Plan p = Build.plan();
         StringBuilder plan = new StringBuilder();
         if (p != null) {
@@ -1161,33 +1320,34 @@ final class Roadmap {
                 + plan.toString().hashCode();
     }
 
-    private static void refresh(String key) {
+    private static void refresh() {
         if (building) {
-            again = true;                       // a setting changed mid-build: build once more after it
+            again = true;                       // asked again mid-build (a setting changed): once more after it
             return;
         }
         building = true;
+        Job j = new Job();
+        buildJob = j;
         BUILDER.execute(() -> {
             try {
-                build();
-                cachedKey = key;
+                build(j);
                 version++;
             } catch (Throwable t) {
-                // the game state changed under us (a menu, a world change): the next warm-up tries again
+                // cancelled, or the game state changed under us (a menu, a world change): the last map stays
             } finally {
+                buildJob = null;
                 building = false;
-                if (again) {
+                if (again && !j.cancelled) {
                     again = false;
-                    String now = key(GameState.current());
-                    if (!now.equals(cachedKey)) {
-                        refresh(now);
-                    }
+                    refresh();
                 }
+                again = false;
             }
         });
     }
 
     private static volatile boolean building;
+    private static volatile Job buildJob;
     private static volatile int progressDone;
     private static volatile int progressTotal;
     private static volatile boolean again;
@@ -1200,15 +1360,153 @@ final class Roadmap {
                 return t;
             });
 
+    /** The inputs key the character's map was built for. */
     private static volatile String cachedKey = "";
 
+    /**
+     * What one computation takes: the items to build around (Locks), the tuning strip, your level
+     * only or every milestone, and how many whole builds at your level to rank (0: none).
+     */
+    record Inputs(List<String> around, Tuning.Choice tuning, boolean nowOnly, int builds) {
+        /** The road map as it always was: nothing chosen, Balanced, no budget, every milestone. */
+        static final Inputs PLAIN = new Inputs(List.of(), Tuning.Choice.PLAIN, false, 0);
+    }
+
+    /**
+     * A computation's result: the milestones, the ranked builds at your level ({@link #rank}),
+     * the chosen items it held, why it held none ({@code problem}: they cannot be worn
+     * together), the milestones where the budget left a pick out, and whom it was for.
+     */
+    record Computed(List<Step> steps, List<Candidate> builds, List<String> around, Locks.Problem problem,
+            java.util.Set<Integer> budgetCut, String forId, int level) {}
+
+    /**
+     * One whole build at your level, for the window's result list: the set by build slot, its
+     * skill points and result, its score (the tuned, judged objective), what its buys cost on the
+     * Trade Market (chosen items and what you own count nothing), its labels ("best", "cheap",
+     * "tanky", "fast") and the slots the chosen items hold.
+     */
+    record Candidate(Map<String, Damage.Piece> set, Build.Eval eval, double score, double price, List<String> labels,
+            java.util.Set<String> fixed) {}
+
+    /**
+     * A computation's progress and its stop: the window's loading view reads it, its Cancel and a
+     * newer request set {@link #cancel}; the next check ({@link #tick}) then ends the run.
+     */
+    static final class Job {
+        /** 0 preparing the items, 1 filling the slots, 2 trying whole sets, 3 checking skill points, 4 checking the budget, 5 ranking builds. */
+        volatile int phase;
+        volatile int done;
+        volatile int total = 1;
+        final java.util.concurrent.atomic.AtomicLong tried = new java.util.concurrent.atomic.AtomicLong();
+        /** The best set's score so far (NaN before the first). */
+        volatile double best = Double.NaN;
+        volatile boolean cancelled;
+
+        void cancel() {
+            cancelled = true;
+        }
+    }
+
+    /** A run stopped by its Job: nothing it found is kept. */
+    static final class Cancelled extends RuntimeException {
+        Cancelled() {
+            super("cancelled", null, false, false);
+        }
+    }
+
+    private static final ThreadLocal<Job> JOB = new ThreadLocal<>();
+
+    /** A set tried: counted for the loading view, and the run ends here when it was cancelled. */
+    private static void tick() {
+        Job j = JOB.get();
+        if (j != null) {
+            j.tried.incrementAndGet();
+            if (j.cancelled) {
+                throw new Cancelled();
+            }
+        }
+    }
+
+    private static void phase(int p) {
+        Job j = JOB.get();
+        if (j != null) {
+            j.phase = p;
+            if (j.cancelled) {
+                throw new Cancelled();
+            }
+        }
+    }
+
+    /** The road map for the J menu: built as it always was (nothing chosen, no tuning), kept and saved for the character. */
     static List<Step> build() {
+        return build(null);
+    }
+
+    /** {@link #build} with a job for its progress and Cancel (the background build). */
+    static List<Step> build(Job job) {
         GameState state = GameState.current();
-        if (!state.inGame()) {
+        String key = state.inGame() ? key(state) : "";
+        Computed c = compute(Inputs.PLAIN, job);
+        if (c == null) {
             return List.of();
         }
+        if (!c.forId().equals(GameState.current().characterId())) {
+            return c.steps();                       // built for the character you just left
+        }
+        lastSteps = c.steps();
+        lastBuilt = GameState.current().now();
+        lastFor = c.forId();
+        lastLevel = c.level();
+        cachedKey = key;
+        lastFromFile = false;
+        loadedFor = c.forId();
+        staleKey = null;
+        RoadmapStore.save(c.forId(), c.steps(), key, c.level(), lastBuilt);
+        BeamCache.save();
+        return c.steps();
+    }
+
+    /**
+     * Works a road map out from {@code in} with its tuning in force ({@link Tuning#with}); null
+     * outside the game. {@code job} (null for the J menu's map) gets the progress and can stop
+     * the run ({@link Cancelled}). Safe off the game thread, as {@link #build} always was.
+     */
+    static Computed compute(Inputs in, Job job) {
+        Job before = JOB.get();
+        JOB.set(job);
+        try {
+            return Tuning.with(in.tuning(), () -> computeTuned(in, job));
+        } finally {
+            if (before == null) {
+                JOB.remove();
+            } else {
+                JOB.set(before);
+            }
+        }
+    }
+
+    private static Computed computeTuned(Inputs in, Job job) {
+        GameState state = GameState.current();
+        if (!state.inGame()) {
+            return null;
+        }
         String forId = state.characterId();       // a switch mid-build must not publish this map
-        int level = state.level();
+        // The items you chose (Locks), at any level: a set around a piece above your level is
+        // planned for the level it needs (the highest chosen item's), which then sets the skill
+        // points and the other slots' candidates. Pieces that cannot be worn together there:
+        // the map as without them, and why (problem)
+        List<ItemData> lockedAll = Locks.resolve(state, in.around());
+        int planLevel = Math.max(state.level(), lockedAll.stream().mapToInt(ItemData::level).max().orElse(0));
+        Locks.Problem problem0 = Locks.problem(lockedAll, planLevel);
+        int level = problem0 == null ? planLevel : state.level();
+        long budget = in.tuning().budget();
+        // what you have (worn, carried, banked): it costs nothing under a budget
+        java.util.Set<String> owned = ownedNames(state);
+        // (a ring by name is no proof: the second hand's copy is a buy)
+        java.util.function.Predicate<ItemData> affordable = info -> budget <= 0
+                || info.slot() != Slot.RING && owned.contains(info.name())
+                || cost(state, info) >= 0 && cost(state, info) <= budget;
         Klass cls = state.classType();
         Slot weapon = Slot.weaponOf(cls);
         List<Slot> slots = new ArrayList<>(List.of(SLOTS));
@@ -1228,7 +1526,7 @@ final class Roadmap {
         }
 
         List<String> preferred = Rules.list("shopping", "preferredSkills");
-        List<Integer> levels = milestones(level);
+        List<Integer> levels = in.nowOnly() ? List.of(level) : milestones(level);
         int last = levels.get(levels.size() - 1);
         // the off-skill limit, tiers and sources go by each milestone's level (maxOff, badTiers,
         // badSources): the pool holds what the last milestone allows, each milestone filters again
@@ -1270,19 +1568,52 @@ final class Roadmap {
         // piece key → its row number and reasons from the milestone that first picked it
         Map<String, Double> firstGain = new HashMap<>();
         Map<String, List<String>> firstWhy = new HashMap<>();
-        progressTotal = levels.size();
-        progressDone = 0;
+        // The items you chose to build around (Locks): held in their slots on every milestone, the
+        // rest fitted to them. When they cannot be worn together the map is built as without them
+        // and says why (aroundProblem)
+        phase(0);
+        List<ItemData> locked = lockedAll;
+        Locks.Problem problem = problem0;
+        if (problem != null) {
+            locked = List.of();
+        }
+        java.util.Set<String> fixed = new java.util.LinkedHashSet<>();     // build slots the chosen items hold
+        java.util.Set<Slot> lockedKinds = java.util.EnumSet.noneOf(Slot.class);   // slot kinds with nothing left to pick
+        long lockedRings = locked.stream().filter(i -> Locks.kind(i) == Slot.RING).count();
+        for (ItemData info : locked) {
+            Slot k = Locks.kind(info);
+            if (k != Slot.RING || lockedRings >= Locks.RINGS) {
+                lockedKinds.add(k);
+            }
+        }
+        if (!locked.isEmpty()) {
+            phase(3);
+        }
+        List<Gear> lockRows = locked.isEmpty() ? List.of() : lockIn(locked, baseline, placed, fixed, level);
+        boolean ringFixed = fixed.contains("RING1") || fixed.contains("RING2");
+        java.util.Set<String> lockNames = new java.util.HashSet<>();
+        locked.forEach(i -> lockNames.add(i.name()));
+        java.util.Set<Integer> budgetCut = new java.util.TreeSet<>();
+        List<Candidate> ranked0 = List.of();
+        if (job == null) {
+            progressTotal = levels.size();
+            progressDone = 0;
+        } else {
+            job.total = levels.size() + (in.builds() > 0 ? 1 : 0);
+            job.done = 0;
+        }
         for (int m : levels) {
             if (m <= prev) {
                 continue;
             }
+            phase(1);
             int earnedThen = Math.max(0, (Math.min(m, 101) - 1) * 2);
             int maxOff = maxOff(m);
             List<String> badTiers = badTiers(m);
             List<String> badSources = badSources(m);
             // today's Trade Market listings only matter for what you would buy soon, not 70 levels on
             boolean listingsMatter = m - level <= (int) Rules.sub("shopping", "aheadLevels", 5);
-            List<Gear> gear = new ArrayList<>();
+            List<Gear> gear = new ArrayList<>(steps.isEmpty() ? lockRows : List.of());   // the chosen items: rows of the first milestone
             boolean preferMarket = Rules.sub("shopping", "preferTradeMarket", 1) > 0;
             // With a build plan, everything is judged by the damage model: the % the build gains
             // with the piece in, starting from the best build you own and adding each pick
@@ -1299,10 +1630,14 @@ final class Roadmap {
             }
             Map<Slot, List<ItemData>> pools = new java.util.EnumMap<>(Slot.class);   // the best few per slot type
             Map<String, Damage.Piece> startSet = baseline == null ? null : new LinkedHashMap<>(baseline);
+            Map<String, String> placedStart = new LinkedHashMap<>(placed);
             List<ItemData> ringPool = new ArrayList<>();     // this milestone's best rings, for the other hand
             for (Slot t : slots) {
+                if (lockedKinds.contains(t.isWeapon() ? Slot.WEAPON : t)) {
+                    continue;                               // a chosen item holds it
+                }
                 ItemData top = null;
-                boolean emptyBuild = false;                 // the pick fills an empty hand (no score to compare)
+                boolean emptyBuild = false;                // the pick fills an empty hand (no score to compare)
                 double topScore = allocM != null ? 0 : best.getOrDefault(t, 0.0) + 0.5;
                 double topReal = Double.NaN;            // the pick's own gain (topScore may be lowered for availability)
                 String topSlot = null;
@@ -1328,6 +1663,12 @@ final class Roadmap {
                         trace(m, t, info, "skip: worn / below window / tier / off-skill " + offPoints(info, preferred) + ">" + maxOff);
                         continue;
                     }
+                    if (!affordable.test(info)) {
+                        // over the budget, or a tradable piece with no known price: never suggested under one
+                        trace(m, t, info, "skip: over the budget");
+                        budgetCut.add(m);
+                        continue;
+                    }
                     // a few levels ahead only for the comparison panel's alternatives
                     boolean future = info.requirements().level() > m;
                     if (info.requirements().level() > m + peek || future && allocM == null) {
@@ -1349,7 +1690,7 @@ final class Roadmap {
                             // the piece an earlier milestone already put in this slot is no new pick:
                             // its only "gain" would be the community nudge
                             Damage.Piece there = slot == null ? null : baseline.get(slot);
-                            if (slot == null || there != null && there.key().equals(cand.key())) {
+                            if (slot == null || fixed.contains(slot) || there != null && there.key().equals(cand.key())) {
                                 continue;
                             }
                             // Wynncraft refuses a second piece of an exclusive group (Ornate Shadow, the Hives …)
@@ -1360,6 +1701,7 @@ final class Roadmap {
                             }
                             // a weapon sets the element, so the points must be spread anew for it:
                             // with the old spread every weapon unlike the one in the build ranked low
+                                    tick();
                             double v = t.isWeapon() ? full(baseline, slot, cand, m, earnedThen)
                                     : Build.trySlot(baseline, allocM, slot, cand, m, earnedThen);
                             if (!Double.isNaN(v) && (Double.isNaN(sc) || v > sc)) {
@@ -1624,9 +1966,12 @@ final class Roadmap {
             // Slot by slot, an early pick never sees the later ones: the best few of every slot
             // are tried again against the whole set, until no swap helps
             if (allocM != null && baseline != null) {
-                beamSearch(startSet, baseline, placed, pools, gear, m, earnedThen, prevAlloc);
-                exactSearch(baseline, placed, pools, gear, m, earnedThen, prevAlloc);
-                refine(baseline, placed, pools, gear, m, earnedThen, prevAlloc);
+                phase(2);
+                beamSearch(startSet, baseline, placed, pools, gear, m, earnedThen, prevAlloc, fixed);
+                if (fixed.isEmpty()) {
+                    exactSearch(baseline, placed, pools, gear, m, earnedThen, prevAlloc);   // its ring pairs know no chosen hand
+                }
+                refine(baseline, placed, pools, gear, m, earnedThen, prevAlloc, fixed);
                 Build.Eval be = Build.allocate(baseline, m, earnedThen);
                 if (be != null) {
                     baseObj = be.result().objective();
@@ -1636,8 +1981,8 @@ final class Roadmap {
             }
             // The other hand: Wynncraft takes the same ring twice, and one pick per slot type left
             // the second ring at what you wear now all the way to Lv 120
-            if (allocM != null && baseline != null) {
-                Gear second = otherRing(baseline, placed, ringPool, m, earnedThen, baseObj, badSources);
+            if (allocM != null && baseline != null && !ringFixed) {         // a chosen ring holds the other hand
+                Gear second = otherRing(baseline, placed, ringPool, m, earnedThen, baseObj, badSources, affordable);
                 if (second != null) {
                     gear.add(second);
                     Build.Eval be = Build.allocate(baseline, m, earnedThen);
@@ -1654,8 +1999,9 @@ final class Roadmap {
                     continue;
                 }
                 int lv = info.requirements().level();
-                if (lv <= prev || lv > m) {
-                    continue;
+                if (lv <= prev || lv > m || lockedKinds.contains(Locks.kind(info)) || fixed.contains(Build.slotOf(info.slot(), 0))
+                        || !affordable.test(info)) {
+                    continue;                           // a chosen item holds the slot, or over the budget
                 }
                 String slotName = info.slot().name();
                 gear.removeIf(x -> x.slot().equals(slotName));
@@ -1675,6 +2021,23 @@ final class Roadmap {
                         place(placed, slotName, slot);
                     }
                 }
+            }
+            // The budget: the buys this milestone's set holds (what you own and the chosen items
+            // cost nothing) stay within it, else its own picks go back to what it started with
+            if (budget > 0 && baseline != null && startSet != null) {
+                phase(4);
+                if (spend(state, baseline, fixed, owned) > budget) {
+                    baseline.clear();
+                    baseline.putAll(startSet);
+                    gear.removeIf(g -> !lockRows.contains(g));
+                    placed.clear();
+                    placed.putAll(placedStart);
+                    budgetCut.add(m);
+                }
+            }
+            if (m == level && in.builds() > 0 && baseline != null && startSet != null) {
+                phase(5);
+                ranked0 = rank(startSet, baseline, pools, fixed, level, earnedThen, in.builds(), budget, state, owned);
             }
             List<String> abil = new ArrayList<>();
             for (var e : abilities.entrySet()) {
@@ -1719,16 +2082,254 @@ final class Roadmap {
                     baseline == null ? Map.of() : java.util.Collections.unmodifiableMap(new LinkedHashMap<>(baseline)),
                     set));
             prev = m;
-            progressDone++;
+            if (job == null) {
+                progressDone++;
+            } else {
+                job.done++;
+                if (set != null && Double.isNaN(job.best)) {
+                    job.best = judged(set, null, m);
+                }
+            }
         }
-        if (!forId.equals(GameState.current().characterId())) {
-            return steps;                           // built for the character you just left
+        return new Computed(steps, ranked0, locked.stream().map(ItemData::name).toList(), problem, budgetCut, forId, level);
+    }
+
+    /** The names of what you have: worn, carried and banked (a buy you need not make). */
+    private static java.util.Set<String> ownedNames(GameState state) {
+        java.util.Set<String> out = new java.util.HashSet<>();
+        try {
+            for (Slot t : Slot.values()) {
+                if (t.isArmour() || t.isAccessory() || t.klass() != null) {
+                    for (ItemStack w : AutoAdvice.worn(t)) {
+                        if (!w.isEmpty()) {
+                            out.add(ItemJson.clean(w.getHoverName().getString()).trim());
+                        }
+                    }
+                }
+            }
+            for (ItemStack s : state.inventory()) {
+                if (!s.isEmpty()) {
+                    out.add(ItemJson.clean(s.getHoverName().getString()).trim());
+                }
+            }
+            for (Vault.Group g : Vault.groups()) {
+                out.add(g.name());
+            }
+        } catch (Throwable t) {
+            // a menu changed under us: what was read so far
         }
-        lastSteps = steps;
-        lastBuilt = state.now();
-        lastFor = forId;
-        BeamCache.save();
-        return steps;
+        return out;
+    }
+
+    /**
+     * What a piece costs on the Trade Market under a budget: its typical price, 0 for one that
+     * cannot be traded and has none (a quest reward), -1 for a tradable piece with no known price
+     * (never suggested under a budget).
+     */
+    static double cost(GameState state, ItemData info) {
+        Prices.Price p = state.price(info.name());
+        Double v = p == null ? null : p.typical();
+        if (v != null) {
+            return v;
+        }
+        return Shopping.tradable(info) ? -1 : 0;
+    }
+
+    /** What the buys in {@code set} cost: every piece outside {@code fixed} that you do not have. */
+    static double spend(GameState state, Map<String, Damage.Piece> set, java.util.Set<String> fixed, java.util.Set<String> owned) {
+        double sum = 0;
+        for (var e : set.entrySet()) {
+            Damage.Piece p = e.getValue();
+            if (p == null || fixed.contains(e.getKey()) || p.stack() != null
+                    || !e.getKey().startsWith("RING") && owned.contains(p.name())) {
+                continue;
+            }
+            ItemData info = findGear(p.name());
+            double c = info == null ? 0 : cost(state, info);
+            sum += c < 0 ? Double.POSITIVE_INFINITY : c;
+        }
+        return sum;
+    }
+
+    /** How many slots outside {@code fixed} two sets hold different pieces in, the two rings as a pair either way round. */
+    static int distance(Map<String, Damage.Piece> a, Map<String, Damage.Piece> b, java.util.Set<String> fixed) {
+        int d = 0;
+        for (String slot : BEAM_ORDER) {
+            if (slot.startsWith("RING") || fixed.contains(slot)) {
+                continue;
+            }
+            if (!nameOf(a.get(slot)).equals(nameOf(b.get(slot)))) {
+                d++;
+            }
+        }
+        List<String> ra = new ArrayList<>();
+        List<String> rb = new ArrayList<>();
+        for (String slot : new String[] {"RING1", "RING2"}) {
+            if (!fixed.contains(slot)) {
+                ra.add(nameOf(a.get(slot)));
+                rb.add(nameOf(b.get(slot)));
+            }
+        }
+        for (String r : ra) {
+            if (!rb.remove(r)) {
+                d++;
+            }
+        }
+        return d;
+    }
+
+    private static String nameOf(Damage.Piece p) {
+        return p == null ? "-" : p.name();
+    }
+
+    /** How far two builds must differ, in slots outside the chosen ones, to be listed apart. */
+    static final int MIN_DISTANCE = 2;
+    /** Builds within this share of the best count as "as good" for the Cheapest label. */
+    static final double CHEAP_WITHIN = 0.03;
+
+    /**
+     * Whole builds at your level for the window, best first: the set the milestone found, the
+     * sets one or two swaps from it (each slot's best three from the milestone's pools), each
+     * worn whole (skill points spread anew) and within the budget, the chosen slots never
+     * touched. Diversity: going down by score, a build is kept only when it differs from every
+     * build kept before in at least {@link #MIN_DISTANCE} slots outside the chosen ones (the two
+     * rings as a pair), so the list never holds near-copies that swap one ring. At most
+     * {@code n}; labelled by {@link #label}.
+     */
+    private static List<Candidate> rank(Map<String, Damage.Piece> start, Map<String, Damage.Piece> best,
+            Map<Slot, List<ItemData>> pools, java.util.Set<String> fixed, int level, int earned, int n, long budget,
+            GameState state, java.util.Set<String> owned) {
+        Map<String, List<Damage.Piece>> options = new LinkedHashMap<>();
+        for (String slot : BEAM_ORDER) {
+            if (fixed.contains(slot)) {
+                continue;
+            }
+            Slot t = slot.startsWith("RING") ? Slot.RING : slot.equals("WEAPON") ? null : Slot.valueOf(slot);
+            List<ItemData> pool = t == null ? weaponPool(pools) : pools.get(t);
+            List<Damage.Piece> top = new ArrayList<>();
+            if (start.get(slot) != null && !nameOf(start.get(slot)).equals(nameOf(best.get(slot)))) {
+                top.add(start.get(slot));                       // what the slot held before: often a cheaper way
+            }
+            for (ItemData info : pool == null ? List.<ItemData>of() : pool) {
+                if (top.size() >= 3) {
+                    break;
+                }
+                if (info.requirements().level() <= level && !info.name().equals(nameOf(best.get(slot)))) {
+                    top.add(Damage.piece(info));
+                }
+            }
+            options.put(slot, top);
+        }
+        List<Map<String, Damage.Piece>> sets = new ArrayList<>();
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        java.util.function.Consumer<Map<String, Damage.Piece>> add = s -> {
+            if (seen.add(setKey(s)) && !clashes(s)) {
+                sets.add(s);
+            }
+        };
+        add.accept(new LinkedHashMap<>(best));
+        List<String> slots = new ArrayList<>(options.keySet());
+        for (int i = 0; i < slots.size(); i++) {
+            for (Damage.Piece a : options.get(slots.get(i))) {
+                Map<String, Damage.Piece> one = new LinkedHashMap<>(best);
+                one.put(slots.get(i), a);
+                add.accept(one);
+                for (int j = i + 1; j < slots.size(); j++) {
+                    for (Damage.Piece b : options.get(slots.get(j))) {
+                        Map<String, Damage.Piece> two = new LinkedHashMap<>(one);
+                        two.put(slots.get(j), b);
+                        add.accept(two);
+                    }
+                }
+            }
+        }
+        List<Candidate> all = new ArrayList<>();
+        for (Map<String, Damage.Piece> s : sets) {
+            tick();
+            double price = spend(state, s, fixed, owned);
+            if (budget > 0 && price > budget || Double.isInfinite(price) && budget > 0) {
+                continue;
+            }
+            Build.Eval e = Build.allocate(s, level, earned);
+            if (e == null) {
+                continue;
+            }
+            all.add(new Candidate(s, e, judged(e, null, level), Double.isInfinite(price) ? Double.NaN : price, List.of(), fixed));
+        }
+        all.sort((x, y) -> Double.compare(y.score(), x.score()));
+        List<Candidate> out = new ArrayList<>();
+        for (Candidate c : all) {
+            if (out.size() >= n) {
+                break;
+            }
+            boolean apart = true;
+            for (Candidate k : out) {
+                apart &= distance(c.set(), k.set(), fixed) >= MIN_DISTANCE;
+            }
+            if (apart) {
+                out.add(c);
+                Job j = JOB.get();
+                if (j != null && (Double.isNaN(j.best) || c.score() > j.best)) {
+                    j.best = c.score();
+                }
+            }
+        }
+        return label(out);
+    }
+
+    /**
+     * The labels, each on one build only and only where it sets that build apart: "best" on the
+     * first; "cheap" on the build with the strictly lowest price among those within
+     * {@link #CHEAP_WITHIN} of the best score; "tanky" on the strictly highest effective health;
+     * "fast" on the strictly highest walk speed (above 0). A build keeps one label, the first
+     * of that order it earns; a tie gives none.
+     */
+    static List<Candidate> label(List<Candidate> builds) {
+        if (builds.isEmpty()) {
+            return builds;
+        }
+        String[] labels = new String[builds.size()];
+        labels[0] = "best";
+        double top = builds.get(0).score();
+        int cheap = unique(builds, c -> c.score() >= top * (1 - CHEAP_WITHIN) && !Double.isNaN(c.price()) ? -c.price() : Double.NaN);
+        if (cheap > 0 && labels[cheap] == null && builds.get(cheap).price() < builds.get(0).price()) {
+            labels[cheap] = "cheap";
+        }
+        int tanky = unique(builds, c -> c.eval().result().ehp());
+        if (tanky > 0 && labels[tanky] == null) {
+            labels[tanky] = "tanky";
+        }
+        int fast = unique(builds, c -> c.eval().result().speed() > 0 ? c.eval().result().speed() : Double.NaN);
+        if (fast > 0 && labels[fast] == null) {
+            labels[fast] = "fast";
+        }
+        List<Candidate> out = new ArrayList<>();
+        for (int i = 0; i < builds.size(); i++) {
+            Candidate c = builds.get(i);
+            out.add(new Candidate(c.set(), c.eval(), c.score(), c.price(), labels[i] == null ? List.of() : List.of(labels[i]), c.fixed()));
+        }
+        return out;
+    }
+
+    /** The one build with the highest value (NaN: left out); -1 when none or two share it. */
+    private static int unique(List<Candidate> builds, java.util.function.ToDoubleFunction<Candidate> value) {
+        int at = -1;
+        double best = Double.NEGATIVE_INFINITY;
+        boolean tie = false;
+        for (int i = 0; i < builds.size(); i++) {
+            double v = value.applyAsDouble(builds.get(i));
+            if (Double.isNaN(v)) {
+                continue;
+            }
+            if (v > best + 1e-9) {
+                best = v;
+                at = i;
+                tie = false;
+            } else if (Math.abs(v - best) <= 1e-9) {
+                tie = true;
+            }
+        }
+        return tie ? -1 : at;
     }
 
     static JsonObject json() {

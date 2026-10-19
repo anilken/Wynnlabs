@@ -78,6 +78,8 @@ public class LayoutMatrix implements FabricClientGameTest {
             ctx.setScreen(RoadmapScreen::new);
             ctx.waitForScreen(RoadmapScreen.class);
             ctx.getInput().setCursorPos(1, 1);
+            // the road map is built only when asked: as the panel's button would
+            ctx.runOnClient(mc -> Roadmap.forceRefresh());
             ctx.waitFor(mc -> !Roadmap.cached().isEmpty() && !Roadmap.isBuilding(), 20 * 60);
             // something in every tab: the recorded quest book and bank, professions, deaths, found
             // discoveries; one quest started, a crafted relik, suggestions and sets
@@ -575,6 +577,7 @@ public class LayoutMatrix implements FabricClientGameTest {
                     report.computeIfAbsent(where + " home-long", k -> new ArrayList<>()).add("the figure moved with long names");
                 }
                 STANDS.add(line);
+                homeStates(ctx, where, gui, report, shots);
             }
             if (t == 2) {
                 questStates(ctx, where, gui, report, shots);
@@ -594,6 +597,317 @@ public class LayoutMatrix implements FabricClientGameTest {
             ((RoadmapScreen) mc.screen).previewSettings(0, 0, false);
             UpdateCheck.reset();
         });
+    }
+
+    /** The recorded Shaman's builds around the Dexterity relik, worked out once for the home's build states. */
+    private static Around.Result builds;
+    private static Around.Result buildsHigh;
+    private static final List<String> AROUND = List.of("Covetous Thunder", "Tainted Ruby");
+
+    /**
+     * The home's build states at this size, measured and shot (at every size: the smallest one
+     * too): the Choose-items window with a search typed, two items chosen and the strip set; its
+     * loading view frozen; the result view; the plan applied part worn; the plan complete; the
+     * better-build hint; the saved builds scrolled, one being renamed, one being edited.
+     */
+    private static void homeStates(ClientGameTestContext ctx, String where, int[] gui, Map<String, List<String>> report, Path shots)
+            throws Exception {
+        Path dir = shots != null ? shots : Path.of(System.getProperty("wynnlabs.preview", "preview")).resolve("layout");
+        String file = where.replaceAll("[^0-9a-z@x]", "");
+        Supplier<List<LayoutCheck.Area>> areas = () -> ((RoadmapScreen) net.minecraft.client.Minecraft.getInstance().screen).clickAreas();
+        Tuning.Choice strip = new Tuning.Choice(Tuning.BALANCED, true, false, 640);
+        ctx.runOnClient(mc -> {
+            if (builds == null) {
+                Roadmap.Computed c = Roadmap.compute(new Roadmap.Inputs(AROUND, strip, true, Around.BUILDS), null);
+                builds = new Around.Result(1, AROUND, strip, c.level(), c.builds(), c.problem(), !c.budgetCut().isEmpty(), false);
+                // a Lv 90 relik on the Lv 44 character: planned for Lv 90
+                List<String> high = List.of("Loaded Question");
+                Roadmap.Computed h = Roadmap.compute(new Roadmap.Inputs(high, Tuning.Choice.PLAIN, true, Around.BUILDS), null);
+                buildsHigh = new Around.Result(2, high, Tuning.Choice.PLAIN, h.level(), h.builds(), h.problem(), false, false);
+            }
+            Plans.clearAll();
+        });
+        String[] states = {"pick", "loading", "results", "results-high", "plan", "plan-removed", "plan-done", "plan-hint", "saved", "saved-rename",
+            "saved-edit", "road-none", "road-building", "road-stale", "road-stale-plan", "road-stale-hint"};
+        for (String s : states) {
+            ctx.runOnClient(mc -> homeState(s));
+            measure(ctx, where + " home-" + s, gui, report, areas);
+            ctx.takeScreenshot(TestScreenshotOptions.of(file + "-home-" + s + (VANILLA ? "-vanilla" : ""))
+                    .disableCounterPrefix().withDestinationDir(dir));
+            if (s.equals("plan")) {
+                // the mouse on the plan's first slot: the item's full tooltip, the plan's lines under it
+                ctx.waitTicks(1);
+                double[] at = ctx.computeOnClient(mc -> {
+                    int[] r = HomeTab.INSTANCE.firstSlot;
+                    return r == null ? null : onScreen(mc, r);
+                });
+                if (at == null) {
+                    report.computeIfAbsent(where + " home-plan", k -> new ArrayList<>()).add("no plan slot to hover");
+                } else {
+                    hoverShot(ctx, at, dir, file + "-home-plan-tip" + (VANILLA ? "-vanilla" : ""));
+                }
+                // the mouse on a missing piece's pill: the same tooltip, "Missing · …" first; the pill,
+                // and the gaps beside it, hover as the slot does
+                ctx.waitTicks(1);
+                String gap = ctx.computeOnClient(mc -> {
+                    int[] p = HomeTab.INSTANCE.firstPill;
+                    if (p == null || !(mc.screen instanceof RoadmapScreen rs)) {
+                        return "no missing piece's pill to hover";
+                    }
+                    int cy = p[1] + p[3] / 2;
+                    // the pill's middle, and the gap between it and its slot's square
+                    int gapX = p[4] == 1 ? p[0] - 2 : p[0] + p[2] + 2;
+                    for (int px : new int[] {p[0] + p[2] / 2, gapX}) {
+                        if (!rs.tooltipAt(px, cy)) {
+                            return "no tooltip at " + px + "," + cy + " by the pill at " + p[0] + "," + p[1] + " " + p[2] + "x" + p[3];
+                        }
+                    }
+                    return null;
+                });
+                double[] pill = ctx.computeOnClient(mc -> {
+                    int[] p = HomeTab.INSTANCE.firstPill;
+                    return p == null ? null : onScreen(mc, new int[] {p[0] + p[2] / 6, p[1], p[2], p[3]});
+                });
+                if (gap != null) {
+                    report.computeIfAbsent(where + " home-plan", k -> new ArrayList<>()).add(gap);
+                }
+                if (pill != null) {
+                    hoverShot(ctx, pill, dir, file + "-home-pill-tip" + (VANILLA ? "-vanilla" : ""));
+                }
+            }
+            if (s.equals("results")) {
+                // the mouse on a chosen item's icon: its tooltip over the window
+                ctx.waitTicks(1);
+                double[] at = ctx.computeOnClient(mc -> {
+                    int[] r = BuildWindow.INSTANCE.firstIcon;
+                    return r == null ? null : onScreen(mc, r);
+                });
+                if (at == null) {
+                    report.computeIfAbsent(where + " home-results", k -> new ArrayList<>()).add("no chosen item's icon to hover");
+                } else {
+                    hoverShot(ctx, at, dir, file + "-home-results-tip" + (VANILLA ? "-vanilla" : ""));
+                }
+            }
+            if (s.equals("results") && where.startsWith("1920x1080@3")) {
+                // one in English
+                ctx.runOnClient(mc -> Settings.setNumber("langOverride", 1));
+                ctx.waitTicks(2);
+                ctx.takeScreenshot(TestScreenshotOptions.of(file + "-home-results-en" + (VANILLA ? "-vanilla" : ""))
+                        .disableCounterPrefix().withDestinationDir(dir));
+                ctx.runOnClient(mc -> Settings.setNumber("langOverride", 2));
+            }
+        }
+        if (where.startsWith("1920x1080@3")) {
+            scrollDrag(ctx, where, report);
+            cancelReopens(ctx, where, report);
+        }
+        ctx.runOnClient(mc -> {
+            BuildWindow.INSTANCE.close();
+            Around.previewLoading = null;
+            HomeTab.previewRoad = null;
+            Plans.clearAll();
+            Plans.HINT.reset();
+            Locks.use(null);
+            Locks.useTuning(null);
+        });
+    }
+
+    /** One of {@link #homeStates}. */
+    private static void homeState(String s) {
+        BuildWindow w = BuildWindow.INSTANCE;
+        Around.previewLoading = null;
+        HomeTab.previewRoad = null;
+        Locks.use(AROUND);
+        Locks.useTuning(builds.tuning());
+        long now = System.currentTimeMillis();
+        switch (s) {
+            case "pick" -> w.previewPick("thunder", AROUND, builds.tuning());
+            case "loading" -> {
+                w.previewPick("thunder", AROUND, builds.tuning());
+                Around.previewLoading = new double[] {0.45, 2, 12873, 7621};
+            }
+            case "results" -> w.previewResults(builds, 1);
+            case "results-high" -> w.previewResults(buildsHigh, 0);
+            case "plan", "plan-hint" -> {
+                w.close();
+                Plans.apply(planOf(builds.builds().get(0), "Covetous Thunder build", now));
+                if (s.equals("plan-hint")) {
+                    Plans.previewHint(GameState.current().level() + 1);
+                } else {
+                    Plans.HINT.reset();
+                }
+            }
+            case "plan-removed" -> {
+                // the plan's ✕ pressed: the suggestions again, "Plan removed · Undo" on the build line
+                w.close();
+                Plans.HINT.reset();
+                Plans.apply(planOf(builds.builds().get(0), "Covetous Thunder build", now));
+                Plans.remove(now);
+            }
+            case "plan-done" -> {
+                w.close();
+                Plans.HINT.reset();
+                // a plan of what is worn now, one of its pieces chosen: every slot ticked
+                Map<String, String> items = new java.util.LinkedHashMap<>();
+                Build.Plan p = Build.plan();
+                p.worn().forEach((slot, piece) -> {
+                    if (piece != null) {
+                        items.put(slot, piece.name());
+                    }
+                });
+                String weapon = items.get("WEAPON");
+                Plans.apply(new Plans.Build("pdone", "Heavensent build", weapon == null ? List.of() : List.of(weapon), Tuning.Choice.PLAIN,
+                        items, 7475, GameState.current().level(), now, now));
+            }
+            case "saved", "saved-rename", "saved-edit" -> {
+                if (Plans.saved().size() < 14) {
+                    Plans.clearAll();
+                    for (int i = 0; i < 14; i++) {
+                        Roadmap.Candidate c = builds.builds().get(i % builds.builds().size());
+                        Plans.save(planOf(c, i == 2 ? "Thunder relik with the long name for the list" : i % 3 == 0 ? "" : "Build " + (i + 1), now + i),
+                                now + i);
+                    }
+                    Plans.apply(Plans.saved().get(4));
+                }
+                List<Plans.Build> all = Plans.saved();
+                w.previewSaved(3, s.equals("saved-rename") ? all.get(4).id() : null, s.equals("saved-edit") ? all.get(5).id() : null);
+            }
+            case "road-stale-plan", "road-stale-hint" -> {
+                // out of date with a plan applied (and its better-build hint): the plan's view, nothing over it
+                w.close();
+                Plans.apply(planOf(builds.builds().get(0), "Covetous Thunder build", now));
+                if (s.equals("road-stale-hint")) {
+                    Plans.previewHint(GameState.current().level() + 1);
+                } else {
+                    Plans.HINT.reset();
+                }
+                int lv = GameState.current().level();
+                HomeTab.previewRoad = new HomeTab.Road(false, false, 1, new Roadmap.Stale(true, lv + 1, lv, 26 * 3_600_000L));
+            }
+            case "road-none", "road-building", "road-stale" -> {
+                // the road map on demand: none yet (the button), the first one being built (frozen
+                // at 69 %), and one a day old for Lv 44 now that you are Lv 45
+                w.close();
+                Plans.clearAll();
+                Plans.HINT.reset();
+                int lv = GameState.current().level();
+                HomeTab.previewRoad = switch (s) {
+                    case "road-none" -> new HomeTab.Road(true, false, 0, null);
+                    case "road-building" -> new HomeTab.Road(true, true, 0.69, null);
+                    default -> new HomeTab.Road(false, false, 1, new Roadmap.Stale(true, lv + 1, lv, 26 * 3_600_000L));
+                };
+            }
+            default -> { }
+        }
+    }
+
+    /**
+     * The Choose-items list's scrollbar with the mouse, as the player would: a press on the
+     * thumb, a drag 60px down (and past the bar), the release; then a click on the track below
+     * the thumb pages on. Reported when the list does not follow.
+     */
+    private static void scrollDrag(ClientGameTestContext ctx, String where, Map<String, List<String>> report) {
+        ctx.runOnClient(mc -> {
+            Locks.use(List.of());
+            BuildWindow.INSTANCE.previewPick("", List.of(), Tuning.Choice.PLAIN);
+        });
+        ctx.waitTicks(3);
+        String problem = ctx.computeOnClient(mc -> {
+            BuildWindow w = BuildWindow.INSTANCE;
+            int[] t = w.listBar().thumb();
+            if (!w.listBar().shown()) {
+                return "the list has no scrollbar to drag";
+            }
+            double f = MenuScale.factor();
+            var info = new net.minecraft.client.input.MouseButtonInfo(0, 0);
+            double cx = t[0] + t[2] / 2.0;
+            double cy = t[1] + t[3] / 2.0;
+            mc.screen.mouseClicked(new net.minecraft.client.input.MouseButtonEvent(cx / f, cy / f, info), false);
+            if (!w.listBar().dragging()) {
+                return "a press on the thumb did not start a drag";
+            }
+            mc.screen.mouseDragged(new net.minecraft.client.input.MouseButtonEvent((cx + 40) / f, (cy + 60) / f, info), 40 / f, 60 / f);
+            int afterDrag = w.listScroll();
+            mc.screen.mouseReleased(new net.minecraft.client.input.MouseButtonEvent((cx + 40) / f, (cy + 60) / f, info));
+            if (afterDrag <= 0) {
+                return "dragging the thumb 60px did not scroll the list";
+            }
+            if (w.listBar().dragging()) {
+                return "the release did not end the drag";
+            }
+            int[] t2 = w.listBar().thumb();
+            int[] track = w.listBar().track();
+            double below = Math.min(track[1] + track[3] - 1, t2[1] + t2[3] + 4);
+            if (below <= t2[1] + t2[3]) {
+                return null;                            // the thumb sits at the bottom: no track below it
+            }
+            mc.screen.mouseClicked(new net.minecraft.client.input.MouseButtonEvent(cx / f, below / f, info), false);
+            mc.screen.mouseReleased(new net.minecraft.client.input.MouseButtonEvent(cx / f, below / f, info));
+            System.out.println("[WynnLabs] preview scrollbar: drag to row " + afterDrag + ", page to row " + w.listScroll());
+            return w.listScroll() > afterDrag ? null : "a click on the track below the thumb did not page";
+        });
+        if (problem != null) {
+            report.computeIfAbsent(where + " pick scrollbar", k -> new ArrayList<>()).add(problem);
+        }
+    }
+
+    /**
+     * The result view's Cancel (the footer's ✕) and its title ✕, clicked as the player would:
+     * the next "Choose items" opens the picker, the list gone, the chosen items kept. Reported
+     * when the results come back.
+     */
+    private static void cancelReopens(ClientGameTestContext ctx, String where, Map<String, List<String>> report) {
+        for (boolean footer : new boolean[] {true, false}) {
+            ctx.runOnClient(mc -> {
+                Locks.use(AROUND);
+                Locks.useTuning(builds.tuning());
+                Around.use(builds);
+                BuildWindow.INSTANCE.previewResults(builds, 1);
+            });
+            ctx.waitTicks(3);
+            String problem = ctx.computeOnClient(mc -> {
+                BuildWindow w = BuildWindow.INSTANCE;
+                LayoutCheck.Area close = null;
+                for (LayoutCheck.Area a : w.clickAreas()) {
+                    if (a.what().equals("close") && (close == null || (footer ? a.y() > close.y() : a.y() < close.y()))) {
+                        close = a;
+                    }
+                }
+                if (close == null) {
+                    return "no close button on the result view";
+                }
+                double f = MenuScale.factor();
+                var info = new net.minecraft.client.input.MouseButtonInfo(0, 0);
+                var ev = new net.minecraft.client.input.MouseButtonEvent((close.x() + close.w() / 2.0) / f,
+                        (close.y() + close.h() / 2.0) / f, info);
+                mc.screen.mouseClicked(ev, false);
+                mc.screen.mouseReleased(ev);
+                if (w.isOpen()) {
+                    return "the " + (footer ? "Cancel" : "title ✕") + " did not close the window";
+                }
+                w.openPick();                               // "Choose items" again
+                String bad = w.view() != BuildWindow.View.PICK ? "after " + (footer ? "Cancel" : "the title ✕")
+                        + ", Choose items opened " + w.view() + " instead of the picker"
+                        : w.hasResults() || Around.result() != null ? "the cancelled results were kept" : null;
+                w.close();
+                System.out.println("[WynnLabs] preview results cancel (" + (footer ? "footer" : "title") + "): reopened on "
+                        + (bad == null ? "the picker" : bad));
+                return bad;
+            });
+            if (problem != null) {
+                report.computeIfAbsent(where + " results cancel", k -> new ArrayList<>()).add(problem);
+            }
+        }
+    }
+
+    private static Plans.Build planOf(Roadmap.Candidate c, String name, long now) {
+        Map<String, String> items = new java.util.LinkedHashMap<>();
+        for (String slot : Plans.SLOTS) {
+            if (c.set().get(slot) != null) {
+                items.put(slot, c.set().get(slot).name());
+            }
+        }
+        return new Plans.Build("p" + now, name, AROUND, builds.tuning(), items, c.score(), GameState.current().level(), now, now);
     }
 
     /** The home figure's box at each size, written to build/preview/layout/home-stand.txt. */
@@ -712,6 +1026,7 @@ public class LayoutMatrix implements FabricClientGameTest {
         ctx.waitTicks(1);
         List<int[]> frames = ctx.computeOnClient(mc -> LayoutCheck.frames());
         List<int[]> surfaces = ctx.computeOnClient(mc -> LayoutCheck.textAreas());
+        List<LayoutCheck.Part> parts = ctx.computeOnClient(mc -> LayoutCheck.parts());
         List<LayoutCheck.Drawn> drawn = ctx.computeOnClient(mc -> LayoutCheck.stop());
         List<LayoutCheck.Area> clicks = ctx.computeOnClient(mc -> areas.get());
         List<String> found = new ArrayList<>(LayoutCheck.outside(drawn, gui[0], gui[1]));
@@ -719,6 +1034,7 @@ public class LayoutMatrix implements FabricClientGameTest {
         found.addAll(LayoutCheck.textOverlaps(drawn));
         found.addAll(LayoutCheck.textOffSurface(drawn, surfaces));
         found.addAll(LayoutCheck.overlaps(clicks));
+        found.addAll(LayoutCheck.partOverlaps(parts));         // the home's slots, pills, names and build bar
         if (drawn.isEmpty()) {
             found.add("nothing was drawn");
         }
