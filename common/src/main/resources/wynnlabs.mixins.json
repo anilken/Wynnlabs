@@ -10,7 +10,6 @@
     "ScreenFontAccessor",
     "GuiGraphicsBoundsMixin",
     "GuiGraphicsScaleMixin",
-    "GuiGraphicsShotsMixin",
     "GuiGraphicsAccessor"
   ],
   "injectors": {

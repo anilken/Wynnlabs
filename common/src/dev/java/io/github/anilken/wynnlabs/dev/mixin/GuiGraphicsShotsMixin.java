@@ -1,4 +1,4 @@
-package io.github.anilken.wynnlabs.mixin;
+package io.github.anilken.wynnlabs.dev.mixin;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.FormattedCharSequence;
@@ -7,9 +7,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 /**
- * The screenshot tool's {@code hidename}: while it captures, the player's own name in any string
- * drawn reads "Player". Every drawString (String, Component, sequence) ends in this one. Does
- * nothing otherwise.
+ * Dev builds only (wynnlabs.dev.mixins.json): the screenshot tool's {@code hidename}. While it
+ * captures, the player's own name in any string drawn reads "Player". Every drawString (String,
+ * Component, sequence) ends in this one. Does nothing otherwise.
  */
 @Mixin(GuiGraphics.class)
 public abstract class GuiGraphicsShotsMixin {

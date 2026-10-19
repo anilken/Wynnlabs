@@ -1762,7 +1762,7 @@
   "wynnlabs.shots.no_world": "Join a world first: the screenshots show your character.",
   "wynnlabs.shots.busy": "Screenshots are being taken already. Press Esc in the menu to stop them.",
   "wynnlabs.shots.unknown": "Unknown option: %s. The options are: %s",
-  "wynnlabs.shots.started": "Taking %s screenshot of the menu. Press Esc to stop.|Taking %s screenshots of the menu. Press Esc to stop.",
+  "wynnlabs.shots.started": "Taking up to %s screenshot of the menu. Press Esc to stop.|Taking up to %s screenshots of the menu. Press Esc to stop.",
   "wynnlabs.shots.saved": "Saved %s menu screenshot in|Saved %s menu screenshots in",
   "wynnlabs.shots.stopped": "Screenshots stopped, the menu and its language are back as they were. Saved: %s",
   "wynnlabs.shots.failed": "Screenshots stopped on an error (%s). The menu and its language are back as they were."

@@ -217,38 +217,6 @@ final class BuildWindow {
         return tuning;
     }
 
-    /** The screenshot tool: what opening "Choose items" may change, to put back after its picture. */
-    record Saved(boolean open, View view, String editingPlan, String overwriteId, int unseenGen, int awaitGen,
-            Around.Result result, int card, boolean fromHint, List<ItemData> chosen, Tuning.Choice tuning, int listScroll,
-            boolean searchFocused) {}
-
-    Saved save() {
-        return new Saved(open, view, editingPlan, overwriteId, unseenGen, awaitGen, result, card, fromHint,
-                new ArrayList<>(chosen), tuning, listScroll, search != null && search.isFocused());
-    }
-
-    void restore(Saved s) {
-        open = s.open();
-        view = s.view();
-        editingPlan = s.editingPlan();
-        overwriteId = s.overwriteId();
-        unseenGen = s.unseenGen();
-        awaitGen = s.awaitGen();
-        result = s.result();
-        card = s.card();
-        fromHint = s.fromHint();
-        chosen = new ArrayList<>(s.chosen());
-        tuning = s.tuning();
-        listScroll = s.listScroll();
-        renameId = null;
-        focusSearch(open && s.searchFocused());
-    }
-
-    /** The screenshot tool: the picker without the blinking cursor in its search box. */
-    void shotUnfocus() {
-        focusSearch(false);
-    }
-
     /** "My builds". */
     void openSaved() {
         editingPlan = null;
@@ -378,7 +346,10 @@ final class BuildWindow {
         }
         g.nextStratum();                                // over the menu's text and items
         LayoutCheck.cover(g.pose(), menu[0] - 5, menu[1] - 5, menu[2] + 10, menu[3] + 10);
-        Kit.shade(g, menu[0] - 5, menu[1] - 5, menu[2] + 10, menu[3] + 10, 0xA0000000);   // the menu's frame shape: its corners stay clear
+        // (the dev screenshot tool, while it runs: the dim in the frame's own shape, its corners clear)
+        if (!DevHooks.ON || !DevHooks.dim(g, menu[0] - 5, menu[1] - 5, menu[2] + 10, menu[3] + 10, 0xA0000000)) {
+            g.fill(menu[0] - 5, menu[1] - 5, menu[0] + menu[2] + 5, menu[1] + menu[3] + 5, 0xA0000000);
+        }
         int ww = Math.min(menu[2] - 16, large ? 600 : 460);
         int wh = Math.min(menu[3] - 14, large ? 420 : 320);
         int wx = menu[0] + (menu[2] - ww) / 2;
@@ -597,6 +568,9 @@ final class BuildWindow {
             Kit.text(g, font, Component.literal(fit(it.name(), nameRoom, false)).withStyle(it.tier().colour()), nx, ry + 5, Theme.INK);
             Kit.text(g, font, meta, right - metaW, ry + 5, Theme.INK_3);
             btn(x + 1, ry, rw, ROW_H, "item", it);
+            if (DevHooks.ON) {
+                DevHooks.part("pickrow", g.pose(), x + 1, ry, rw, ROW_H);
+            }
             // the item's own tooltip (stats, ranges, requirements) with what a click does under it
             host.item(x + 1, ry, rw, ROW_H, it, icon, List.of(
                     L.c(on ? "wynnlabs.pick.row_off" : "wynnlabs.pick.row_on").withStyle(ChatFormatting.DARK_GRAY)));
@@ -830,6 +804,9 @@ final class BuildWindow {
     private static final int CHOSEN_TEXT = HomeTab.CHOSEN_TEXT;
 
     private void drawResults(GuiGraphics g, Host host, int x, int y, int w, int h, int mx, int my) {
+        if (DevHooks.ON) {
+            DevHooks.part("results", g.pose(), x, y - 3, w, h + 3);
+        }
         Around.Result r = result;
         // the header: back to the items, the count found around them
         int bw = control(g, host, x, y - 3, 14, "arrow-left", L.t("wynnlabs.results.back"), WOOD, false, 0, "back", null,

@@ -378,16 +378,6 @@ final class EndgameTab {
     /** One line of a pool list. */
     private record PLine(int type, PoolView.Group.Kind kind, int count, PoolView.Row row, boolean dim) {}
 
-    /** The screenshot tool: whether the Pools view is up. */
-    boolean shotPools() {
-        return view == VIEW_POOLS;
-    }
-
-    /** The screenshot tool: the Pools view or the summary (the sub-tab and the lit regions stay). */
-    void shotPools(boolean on) {
-        view = on ? VIEW_POOLS : VIEW_SUMMARY;
-    }
-
     /** Opens Havuzlar on this sub-tab at this region (the links from Özet). */
     private void openPools(int tab, String region) {
         view = VIEW_POOLS;
@@ -434,6 +424,9 @@ final class EndgameTab {
 
     /** Havuzlar: the sub-tabs, then the region list and the pane (standard, large) or the ‹ › line and one list (compact). */
     private void drawPools(GuiGraphics g, int x, int y, int w, int h, boolean compact, boolean large, int mx, int my) {
+        if (DevHooks.ON) {
+            DevHooks.part("pools", g.pose(), x, y, w, h);
+        }
         boolean raid = poolTab == TAB_RAIDS;
         List<PoolView.Region> regs = d.v().regions(raid);
         subTabs(g, x, y, w, compact, mx, my);

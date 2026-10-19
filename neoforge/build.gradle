@@ -88,8 +88,16 @@ processResources {
                  neoforge_version : rootProject.neoforge_version,
                  wynntils_range   : rootProject.wynntils_range]
     inputs.properties props
+    def dev = rootProject.devTools
+    inputs.property 'devTools', dev
     filesMatching('META-INF/neoforge.mods.toml') {
         expand props
+        // a dev build also loads the developer tools' mixins (common/src/dev); a release never names them
+        if (dev) {
+            filter { String line ->
+                line == 'config = "wynnlabs.mixins.json"' ? line + '\n\n[[mixins]]\nconfig = "wynnlabs.dev.mixins.json"' : line
+            }
+        }
     }
 }
 

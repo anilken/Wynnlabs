@@ -128,7 +128,8 @@ jobs:
           fi
 
       - name: Build both jars
-        run: gradle :fabric:remapJar :neoforge:remapJar checkEmbeddedKey "-Pmod_version=$VERSION" $KEY_ARGS
+        # checkDevTools: the release jars carry no developer tools (common/src/dev)
+        run: gradle :fabric:remapJar :neoforge:remapJar checkEmbeddedKey checkDevTools "-Pmod_version=$VERSION" $KEY_ARGS
 
       - name: Remove the key file
         if: always()

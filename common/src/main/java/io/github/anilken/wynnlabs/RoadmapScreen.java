@@ -468,85 +468,26 @@ final class RoadmapScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
-        if (!Shots.capturing()) {
-            // at the menu scale (MenuScale): a logical size, a scaled pose, logical mouse positions
-            MenuScale.render(this, g, mx, my, (x, y) -> draw(g, x, y, pt));
-            return;
+        if (DevHooks.ON && DevHooks.driving()) {
+            // the dev screenshot tool: its own mouse (off the window, or over the element whose
+            // tooltip it takes), and the frame's boxes noted afresh
+            DevHooks.beginFrame();
+            mx = DevHooks.mouseX();
+            my = DevHooks.mouseY();
         }
-        // the screenshot tool: no hover and no tooltip in the pictures, and the window's boxes noted to crop to
-        Shots.beginFrame();
-        MenuScale.render(this, g, -10000, -10000, (x, y) -> draw(g, x, y, pt));
-        Shots.endFrame();
+        // at the menu scale (MenuScale): a logical size, a scaled pose, logical mouse positions
+        MenuScale.render(this, g, mx, my, (x, y) -> draw(g, x, y, pt));
     }
 
-    /** The screenshot tool: a flat backdrop instead of the blurred world (black, then white: ShotCrop). */
     @Override
     public void renderBackground(GuiGraphics g, int mx, int my, float pt) {
-        if (Shots.capturing()) {
+        if (DevHooks.ON && DevHooks.driving()) {
+            // the dev screenshot tool: a flat backdrop instead of the blurred world (black, then white)
             var w = Minecraft.getInstance().getWindow();
-            g.fill(0, 0, w.getGuiScaledWidth() + 1, w.getGuiScaledHeight() + 1, Shots.backdrop());
+            g.fill(0, 0, w.getGuiScaledWidth() + 1, w.getGuiScaledHeight() + 1, DevHooks.backdrop());
             return;
         }
         super.renderBackground(g, mx, my, pt);
-    }
-
-    // ---- the screenshot tool (Shots): the tabs by name, and a tab or a view inside it selected ----
-
-    /** The tabs' numbers in rail order. */
-    static int[] railOrder() {
-        return RAIL.clone();
-    }
-
-    static int tabCount() {
-        return TABS.length;
-    }
-
-    /** A tab's name in commands and file names: "home", "craft", "endgame" … (its language key's end). */
-    static String tabName(int tab) {
-        String key = TABS[tab];
-        return key.substring(key.lastIndexOf("tab_") + 4);
-    }
-
-    /**
-     * Selects {@code t} as a click on its rail entry does (without focusing a text box), and the
-     * view {@code state} inside it: "about" (Settings), "pools" (Endgame), "picker" (Home's Choose
-     * items window) or "plan" (Home's plan pill); null for the tab as it opens (Settings on its
-     * Look page, Home on the level view). Nothing here starts a build or a search.
-     */
-    void shotSelect(int t, String state) {
-        tab = t;
-        detail = null;
-        goalOpen = false;
-        search.setFocused(false);
-        treeSearch.setFocused(false);
-        setFocused(null);
-        if (BuildWindow.INSTANCE.isOpen() && !"picker".equals(state)) {
-            BuildWindow.INSTANCE.close();
-        }
-        EndgameTab.INSTANCE.shotPools("pools".equals(state));
-        if (t == TAB_SETTINGS) {
-            settingsCat = "about".equals(state) ? 0 : Math.max(0, java.util.Arrays.asList(SETTING_CATS).indexOf("look"));
-        }
-        if (t == 0) {
-            if ("plan".equals(state)) {
-                planPills.pickPlan();
-            } else {
-                planPills.pickLevel();
-            }
-            if ("picker".equals(state)) {
-                BuildWindow.INSTANCE.openPick();
-                BuildWindow.INSTANCE.shotUnfocus();
-            }
-        }
-    }
-
-    /** Whether a level pill was picked over the plan's (kept across openings): read and put back around the screenshots. */
-    static boolean shotPlanPicked() {
-        return planPills.picked();
-    }
-
-    static void shotPlanPicked(boolean picked) {
-        planPills.picked(picked);
     }
 
     /** The mouse this frame (logical pixels), for the drawing helpers that are not handed it. */
@@ -2890,9 +2831,9 @@ final class RoadmapScreen extends Screen {
     @Override
     public boolean keyPressed(net.minecraft.client.input.KeyEvent event) {
         // the screenshot tool drives the menu: Esc stops it (and puts everything back), other keys wait
-        if (Shots.capturing()) {
+        if (DevHooks.ON && DevHooks.driving()) {
             if (event.key() == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
-                Shots.escape();
+                DevHooks.escape();
             }
             return true;
         }
@@ -3053,6 +2994,9 @@ final class RoadmapScreen extends Screen {
         // the grid
         int gy = py + 19;
         int bottom = y + h - 12;
+        if (DevHooks.ON) {
+            DevHooks.part("banklist", g.pose(), x, gy, w, bottom - gy);
+        }
         String q = search.getValue().trim().toLowerCase(Locale.ROOT);
         g.enableScissor(x, gy, x + w, bottom);
         int contentH;
@@ -3098,6 +3042,9 @@ final class RoadmapScreen extends Screen {
     /** One slot: a sunken square, the item, its count, a coloured frame for the verdict, dimmed if filtered out. */
     private void slot(GuiGraphics g, int x, int y, ItemStack stack, String count, int mark, boolean dim, boolean hover) {
         Kit.slot(g, x, y, SLOT, 0);
+        if (DevHooks.ON && stack != null && !dim && tab == TAB_BANK) {
+            DevHooks.part("bankitem", g.pose(), x, y, SLOT, SLOT);
+        }
         if (stack != null) {
             g.renderItem(stack, x + 1, y + 1);
             // the bar and such without the game's count, which sits low enough to spill out of the slot
@@ -4049,6 +3996,9 @@ final class RoadmapScreen extends Screen {
                     .withStyle(ChatFormatting.RED)));
             tip.add(L.c("wynnlabs.quests.click_detail").withStyle(ChatFormatting.DARK_GRAY));
             hits.add(new Hit(x, ry, listW, rowH - 1, null, tip, "#qsel:" + q.name()));
+            if (DevHooks.ON) {
+                DevHooks.part("quest", g.pose(), x, ry, listW, rowH - 1);
+            }
         }
         if (list.isEmpty()) {
             ink(g, L.c("wynnlabs.quests.none_in_filter").withStyle(ChatFormatting.GRAY), x + 6, cy + 6, 0xFFFFFFFF);
@@ -4636,6 +4586,9 @@ final class RoadmapScreen extends Screen {
             }
             tip.add(L.c("wynnlabs.quests.click_detail").withStyle(ChatFormatting.DARK_GRAY));
             hits.add(new Hit(x, ry, listW - 20, rowH - 1, null, tip, "#discsel:" + e.id()));
+            if (DevHooks.ON) {
+                DevHooks.part("disc", g.pose(), x, ry, listW - 20, rowH - 1);
+            }
         }
         if (list.isEmpty()) {
             ink(g, L.c("wynnlabs.discoveries.none_shown").withStyle(ChatFormatting.GRAY), x + 6, cy + 6, 0xFFFFFFFF);
@@ -6327,7 +6280,7 @@ final class RoadmapScreen extends Screen {
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
-        if (Shots.capturing()) {
+        if (DevHooks.ON && DevHooks.driving()) {
             return true;
         }
         double f = MenuScale.factor();
@@ -6350,7 +6303,7 @@ final class RoadmapScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (Shots.capturing()) {
+        if (DevHooks.ON && DevHooks.driving()) {
             return true;                                // the screenshot tool drives the menu
         }
         event = MenuScale.event(event);                 // logical pixels, as drawn
@@ -6805,7 +6758,7 @@ final class RoadmapScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double x, double y, double h, double v) {
-        if (Shots.capturing()) {
+        if (DevHooks.ON && DevHooks.driving()) {
             return true;                                // the screenshot tool drives the menu
         }
         x = MenuScale.at(x);

@@ -27,6 +27,13 @@ dependencies {
     }
 }
 
+// the developer tools (the screenshot command, its mixin config): in dev builds only, never in a
+// release jar (root build.gradle: devTools, checkDevTools)
+if (rootProject.devTools) {
+    sourceSets.main.java.srcDir 'src/dev/java'
+    sourceSets.main.resources.srcDir 'src/dev/resources'
+}
+
 processResources {
     // the AI assistant skill: one source in ai/, shipped in the jar for the in-game export
     from(rootProject.file('ai/skills/wynnlabs')) {

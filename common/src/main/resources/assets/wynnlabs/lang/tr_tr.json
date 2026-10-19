@@ -1762,7 +1762,7 @@
   "wynnlabs.shots.no_world": "Önce bir dünyaya gir: ekran görüntüleri karakterini gösterir.",
   "wynnlabs.shots.busy": "Ekran görüntüleri zaten alınıyor. Durdurmak için menüde Esc'ye bas.",
   "wynnlabs.shots.unknown": "Bilinmeyen seçenek: %s. Seçenekler: %s",
-  "wynnlabs.shots.started": "Menünün %s ekran görüntüsü alınıyor. Durdurmak için Esc'ye bas.",
+  "wynnlabs.shots.started": "Menünün en çok %s ekran görüntüsü alınıyor. Durdurmak için Esc'ye bas.",
   "wynnlabs.shots.saved": "%s menü ekran görüntüsü şu klasöre kaydedildi:",
   "wynnlabs.shots.stopped": "Ekran görüntüleri durdu, menü ve dili eski haline döndü. Kaydedilen: %s",
   "wynnlabs.shots.failed": "Ekran görüntüleri bir hata yüzünden durdu (%s). Menü ve dili eski haline döndü."
