@@ -2261,7 +2261,7 @@ final class RoadmapScreen extends Screen {
             g.renderItem(detailWorn, x + 3, ry + 2);
             hits.add(new Hit(x + 3, ry + 2, 16, 16, detailWorn, null, null));
         }
-        String wn = detailWorn.isEmpty() ? L.t("wynnlabs.screen.empty") : ItemJson.clean(detailWorn.getHoverName().getString());
+        String wn = detailWorn.isEmpty() ? L.cap(L.t("wynnlabs.screen.empty")) : ItemJson.clean(detailWorn.getHoverName().getString());
         String nowLabel = L.t("wynnlabs.home.card_now");
         ink(g, nowLabel, x + 24, ry + 6, FAINT);
         ink(g, Component.literal(wn).withStyle(ChatFormatting.WHITE).withStyle(UiFont::bold),
@@ -2319,7 +2319,7 @@ final class RoadmapScreen extends Screen {
         int tw = rx - tx - 8;
         ChatFormatting tc = o.info().tier().colour();
         String where = o.price() != null ? o.price()
-                : Shopping.tradable(o.info()) ? o.source() : L.t("wynnlabs.home.card_untradable", o.source());
+                : Shopping.tradable(o.info()) ? L.cap(o.source()) : L.t("wynnlabs.home.card_untradable", L.cap(o.source()));
         Component name = Component.literal((rank + 1) + ". ").withStyle(ChatFormatting.DARK_GRAY)
                 .append(Component.literal(o.info().name()).withStyle(tc).withStyle(UiFont::bold))
                 .append(Component.literal("  Lv. " + o.info().requirements().level()).withStyle(ChatFormatting.GRAY));
@@ -3418,7 +3418,7 @@ final class RoadmapScreen extends Screen {
         Map<String, Integer> causes = new HashMap<>();
         Map<String, Integer> advice = new HashMap<>();
         for (DeathCoach.Death d : week) {
-            places.merge(d.place().isEmpty() ? "?" : d.place(), 1, Integer::sum);
+            places.merge(d.place().isEmpty() ? "?" : L.cap(d.place()), 1, Integer::sum);
             causes.merge(cause(d), 1, Integer::sum);
             for (String a : d.adviceText()) {
                 advice.merge(a, 1, Integer::sum);
@@ -3460,7 +3460,7 @@ final class RoadmapScreen extends Screen {
             g.fill(x + 1, ry + 1, x + 4, ry + rowH - 4, causeColour(cause));
             String when = ago(d.time());
             ink(g, when, x + w - 6 - font.width(when), ry + 4, FAINT);
-            ink(g, fit(d.place().isEmpty() ? "?" : d.place(), w - 24 - font.width(when)), x + 9, ry + 4, 0xFFFFFFFF);
+            ink(g, fit(d.place().isEmpty() ? "?" : L.cap(d.place()), w - 24 - font.width(when)), x + 9, ry + 4, 0xFFFFFFFF);
             // the numbers: zone vs you, how fast, potions
             int cx = x + 9;
             int cy = ry + 15;
@@ -3479,7 +3479,7 @@ final class RoadmapScreen extends Screen {
                 ink(g, fit("→ " + d.adviceText().get(0), x + w - cx - 8), cx + 4, cy + 2, 0xFFAFA9EC);
             }
             List<Component> tip = new ArrayList<>();
-            tip.add(Component.literal(d.place()).withStyle(ChatFormatting.WHITE));
+            tip.add(Component.literal(L.cap(d.place())).withStyle(ChatFormatting.WHITE));
             tip.add(Component.literal(L.t(cause)).withStyle(ChatFormatting.GRAY));
             if (!d.mobs().isEmpty()) {
                 List<String> mobs = new ArrayList<>();
@@ -3956,7 +3956,7 @@ final class RoadmapScreen extends Screen {
             List<Component> tip = new ArrayList<>();
             tip.add(Component.literal(QuestGuides.title(q.name())).withStyle(ChatFormatting.AQUA).withStyle(UiFont::bold));
             for (String r : s.reasons()) {
-                tip.add(Component.literal("• " + r).withStyle(ChatFormatting.GRAY));
+                tip.add(Component.literal("• " + L.cap(r)).withStyle(ChatFormatting.GRAY));
             }
             if (q.xp() > 0) {
                 tip.add(L.c("wynnlabs.quests.tip_level_share", q.xp() * 100 / lvXp).withStyle(ChatFormatting.DARK_GRAY));
@@ -4862,7 +4862,7 @@ final class RoadmapScreen extends Screen {
     /** What the row's value is in a few characters ("6 lv", "30 EB", "Boltslinger"); "" for a switch. */
     private static String shortValue(SetRow r) {
         return switch (r.kind()) {
-            case "rule" -> RuleEditor.display(r.r());
+            case "rule" -> L.cap(RuleEditor.display(r.r()));
             case "arch" -> TreePlanner.chosen().isEmpty() ? L.t("wynnlabs.settings.archetype_off") : TreePlanner.chosen();
             case "goal" -> Setup.goalName(Setup.goal());
             case "scale" -> MenuScale.setting() == 0 ? L.t("wynnlabs.settings.scale_game") : String.valueOf(MenuScale.setting());
@@ -5322,7 +5322,7 @@ final class RoadmapScreen extends Screen {
         switch (r.kind()) {
             case "rule" -> {
                 RuleEditor.Rule rule = r.r();
-                String value = RuleEditor.display(rule);
+                String value = L.cap(RuleEditor.display(rule));
                 boolean emerald = rule.unit().equals("E");
                 int vw = emerald ? 64 : Math.max(44, font.width(value) + 10);
                 int sy = y + 1;

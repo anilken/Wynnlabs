@@ -196,8 +196,8 @@ class TextFollowsLanguageTest {
         language(TR);
         QuestWiki.Info info = QuestWiki.parse(page);
         assertEquals(List.of("point", "point"), info.stages().get(0).names(), "the parse is the same in every language");
-        assertEquals("nokta", QuestWiki.places(info, 0).get(0).what());
+        assertEquals("Nokta", QuestWiki.places(info, 0).get(0).what());
         language(EN);
-        assertEquals("point", QuestWiki.places(info, 0).get(0).what());
+        assertEquals("Point", QuestWiki.places(info, 0).get(0).what());
     }
 }

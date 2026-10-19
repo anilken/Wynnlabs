@@ -1,0 +1,74 @@
+# Texts that may start with a small letter (checkLang): every other value in en_us.json and
+# tr_tr.json starts with a capital, and so does each part after " · ". Each one here is a
+# fragment the code puts inside a longer line; one line each: the key, then why.
+# "L.cap" marks a fragment that also starts a line somewhere: that call site capitalises it.
+# Not shipped in the jar (common/build.gradle).
+
+wynnlabs.discoveries.lang               a language code ("en" / "tr"), never shown
+wynnlabs.advice.cost_have               " (have)" after an ingredient in a price line
+wynnlabs.advice.cost_missing            " (missing)" after an ingredient in a price line
+wynnlabs.advice.cost_in_bank            " (not in your bag; …)" after an ingredient in a price line
+wynnlabs.advice.road_stale              inside "( )" after the next target
+wynnlabs.advice.sell_place_later        "SELL → then Trade Market": goes on after the arrow
+wynnlabs.advice.shop_wear_at            ", wearable at Lv. 50" at the end of a shopping note
+wynnlabs.auto.best_stats                ", standouts: …" at the end of a note
+wynnlabs.auto.build_gain                " (build +12%)" inside a note
+wynnlabs.auto.class_archer_gen          "your Archer" inside a note
+wynnlabs.auto.class_assassin_gen        "your Assassin" inside a note
+wynnlabs.auto.class_mage_gen            "your Mage" inside a note
+wynnlabs.auto.class_other_gen           "your %s" inside a note
+wynnlabs.auto.class_shaman_gen          "your Shaman" inside a note
+wynnlabs.auto.class_warrior_gen         "your Warrior" inside a note
+wynnlabs.auto.other_character_gen       "your other character" inside a note
+wynnlabs.auto.craft_or_use              "; or use it for …" at the end of a note
+wynnlabs.auto.craft_sell_all            " (all of them)" inside a note
+wynnlabs.auto.dungeon_entrance          " (entrance x, z)" after a dungeon's name
+wynnlabs.auto.next_upgrade              after "Old (Lv. 20): " in a note
+wynnlabs.auto.next_upgrade_none         after "Old (Lv. 20): " in a note
+wynnlabs.auto.then_wear_empty           "…, then wear it" at the end of a note
+wynnlabs.auto.then_wear_instead         "…, then wear it instead of …" at the end of a note
+wynnlabs.around.problem_points          after "These cannot be equipped together: "
+wynnlabs.around.problem_skill           after "These cannot be equipped together: "
+wynnlabs.aspect.planned                 inside "( )" after an ability's name
+wynnlabs.aspect.unlocked                inside "( )" after an ability's name
+wynnlabs.endgame.m_none                 inside "( )" after an ability's name
+wynnlabs.endgame.m_planned              inside "( )" after an ability's name
+wynnlabs.endgame.m_unlocked             inside "( )" after an ability's name
+wynnlabs.bank.page_empty                " (empty)" after a page's stack count
+wynnlabs.craft.old                      inside "( )" after a price
+wynnlabs.daily.alt_slot_empty           inside "( )" after a character's level
+wynnlabs.daily.alt_worn                 inside "( )" after a character's level
+wynnlabs.feedback.main_attack           listed after "priority ↑: "
+wynnlabs.feedback.speed                 listed after "priority ↑: "
+wynnlabs.feedback.survival              listed after "priority ↑: "
+wynnlabs.grind.altar_short              " (boss)" after a place's name
+wynnlabs.home.chip_respec               " (respec)" inside a pill
+wynnlabs.pick.budget_none               after "Budget: " and inside "( )"
+wynnlabs.profile.levelup_build_skills   after "+3 skill points → "
+wynnlabs.quests.reward_at_level         after a reward's name
+wynnlabs.quests.reward_gain             after a reward's name
+wynnlabs.quests.reward_level_share      inside "( )" after the XP
+wynnlabs.quests.reward_no_gain          inside "( )" after a reward's name
+wynnlabs.results.before                 after "Equip order: "
+wynnlabs.settings.key_builtin           after "Wynnventory key: "
+wynnlabs.settings.key_none              after "Wynnventory key: "
+wynnlabs.vault.status_unknown           inside "The open menu is not a bank: …"
+wynnlabs.wear.cannot_head               " does not work: …" after the items' names
+wynnlabs.wear.head                      " does not work: …" after the items' names
+wynnlabs.death.area_near                inside "Most deaths were at …"; L.cap as a death's place
+wynnlabs.raid.pool_age_now              after "seen "; L.cap after " · " in the pool line
+wynnlabs.rules.off                      after "Default "; L.cap as a setting's value
+wynnlabs.rules.on                       after "Default "; L.cap as a setting's value
+wynnlabs.screen.empty                   after "Helmet: "; L.cap as a slot's name
+wynnlabs.shop.where_cave_chest          inside "Next target: … (Lv. 50, cave chest)"; L.cap as a source line
+wynnlabs.shop.where_dropped_by          inside "Next target: … (Lv. 50, dropped by …)"; L.cap as a source line
+wynnlabs.shop.where_loot_chest          inside "Next target: … (Lv. 50, loot chest)"; L.cap as a source line
+wynnlabs.shop.where_mob_drop            inside "Next target: … (Lv. 50, dropped by mobs)"; L.cap as a source line
+wynnlabs.questadv.reason_at_level       joined with ", " after the XP; L.cap as a bullet
+wynnlabs.questadv.reason_comfortable    joined with ", " after the XP; L.cap as a bullet
+wynnlabs.questadv.reason_hard           joined with ", " after the XP; L.cap as a bullet
+wynnlabs.questadv.reason_hard_underlevel joined with ", " after the XP; L.cap as a bullet
+wynnlabs.questadv.reason_levels_later   joined with ", " after the XP; L.cap as a bullet
+wynnlabs.questadv.reason_near_level     joined with ", " after the XP; L.cap as a bullet
+wynnlabs.questadv.reason_started        joined with ", " after the XP; L.cap as a bullet
+wynnlabs.questadv.reason_unlocks        joined with ", " after the XP; L.cap as a bullet

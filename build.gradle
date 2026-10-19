@@ -376,6 +376,40 @@ tasks.register('checkLang') {
                 }
             }
         }
+        // sentence case: a text starts with a capital letter (after spaces and symbols such as
+        // "• " or "("; one that starts with a number or a %s is left alone), and so does each part
+        // after " · " ("Missing · Dropped by mobs"), in both languages. A fragment the code puts
+        // inside a longer line is listed in lang/fragments.txt with its reason.
+        def fragments = [] as Set
+        new File(langDir, 'fragments.txt').eachLine('UTF-8') { line ->
+            def t = line.trim()
+            if (t && !t.startsWith('#')) {
+                fragments << t.split(/\s+/, 2)[0]
+            }
+        }
+        def startsSmall = { String v ->
+            v.split('\\|', -1).any { form ->
+                def c = form.find { ch -> ch == '%' || Character.isLetterOrDigit(ch as char) }
+                c != null && Character.isLowerCase(c as char)
+            }
+        }
+        // "· word", not a web address ("· wynnventory.com")
+        def smallPart = java.util.regex.Pattern.compile('·\\s*\\p{Ll}[\\p{L}\\d\'-]*+(?!\\.\\p{L})')
+        def small = { String v -> startsSmall(v) || smallPart.matcher(v).find() }
+        [en: enMap, tr: trMap].each { lang, map ->
+            map.each { k, v ->
+                if (!fragments.contains(k) && small(v)) {
+                    problems << "starts with a small letter in ${lang} (capitalise it, or list it in fragments.txt): ${k}"
+                }
+            }
+        }
+        fragments.each { k ->
+            if (!enMap.containsKey(k)) {
+                problems << "fragments.txt names a key the language files do not have: ${k}"
+            } else if (!small(enMap[k]) && !small(trMap[k] ?: '')) {
+                problems << "fragments.txt names a key that starts with a capital now (remove it): ${k}"
+            }
+        }
         (en + tr).findAll { k -> !used.contains(k) && !optional.contains(k) && !prefixes.any { p -> k.startsWith(p) } }
                 .each { problems << "unused: ${it}" }
         if (problems) {

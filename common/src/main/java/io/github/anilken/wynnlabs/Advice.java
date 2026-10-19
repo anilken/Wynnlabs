@@ -442,7 +442,7 @@ final class Advice {
             out.add(Component.literal(TooltipListener.marker()).withStyle(ChatFormatting.LIGHT_PURPLE)
                     .append(L.c("wynnlabs.advice.quest_rank", quest + 1).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD))
                     .append(L.c("wynnlabs.advice.tag_suggestion").withStyle(ChatFormatting.DARK_GRAY)));
-            for (String line : wrap(String.join(", ", q.reasons()), 38)) {
+            for (String line : wrap(L.cap(String.join(", ", q.reasons())), 38)) {
                 out.add(Component.literal(line).withStyle(ChatFormatting.GRAY));
             }
         }

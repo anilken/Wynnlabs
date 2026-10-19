@@ -33,4 +33,6 @@ processResources {
         include 'SKILL.md'
         into 'assets/wynnlabs/ai'
     }
+    // checkLang's list of lower-case fragments: for the build, not the player
+    exclude 'assets/wynnlabs/lang/fragments.txt'
 }

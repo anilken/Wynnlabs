@@ -98,7 +98,7 @@ class AspectRankTest {
         assertEquals(1, damnation.rank());
         assertEquals(3, damnation.score());
         assertEquals(0, damnation.ownedTier());
-        assertEquals("boosts Malediction (Ritualist, unlocked)", damnation.reason());
+        assertEquals("Boosts Malediction (Ritualist, unlocked)", damnation.reason());
         assertEquals(List.of(new RankedAspect.Match("Malediction", RIT, true, false, 3)), damnation.matches());
         assertTrue(rows.indexOf(damnation) < rows.indexOf(legion));
         assertEquals(0, legion.score());
@@ -113,7 +113,7 @@ class AspectRankTest {
         assertEquals(List.of(DAMNATION, EMBODIMENT, DANCE, MONOLITH), names(rows).subList(0, 4));
         assertEquals(List.of(1, 2, 3, 4), rows.subList(0, 4).stream().map(RankedAspect::rank).toList());
         assertEquals(2, row(rows, DANCE).score());
-        assertEquals("boosts Ritual Circle (Ritualist, planned)", row(rows, DANCE).reason());
+        assertEquals("Boosts Ritual Circle (Ritualist, planned)", row(rows, DANCE).reason());
     }
 
     @Test
@@ -121,14 +121,14 @@ class AspectRankTest {
         RankedAspect monolith = row(rank(Map.of(), Set.of(), Set.of(), RIT), MONOLITH);
         assertEquals(1, monolith.score());
         assertEquals(List.of(new RankedAspect.Match("Totem", null, false, false, 1)), monolith.matches());
-        assertEquals("boosts Totem", monolith.reason());
+        assertEquals("Boosts Totem", monolith.reason());
     }
 
     @Test
     void anotherArchetypeUnlockedScoresOne() {
         RankedAspect legion = row(rank(Map.of(), Set.of("Puppet Master"), Set.of(), RIT), LEGION);
         assertEquals(1, legion.score());
-        assertEquals("boosts Puppet Master (Summoner, unlocked)", legion.reason());
+        assertEquals("Boosts Puppet Master (Summoner, unlocked)", legion.reason());
     }
 
     @Test
@@ -138,7 +138,7 @@ class AspectRankTest {
         List<RankedAspect> rows = AspectRank.rank(List.of(aspect(EMBODIMENT, Tier.MYTHIC, 3, "Ritual Circle")), Map.of(),
                 Set.of(), tree, Set.of("Ritual Circle"), Set.of(), RIT);
         assertEquals(3, rows.get(0).score());
-        assertEquals("boosts Ritual Circle (Ritualist, unlocked)", rows.get(0).reason());
+        assertEquals("Boosts Ritual Circle (Ritualist, unlocked)", rows.get(0).reason());
     }
 
     @Test
@@ -149,7 +149,7 @@ class AspectRankTest {
         assertEquals(List.of(DAMNATION, EMBODIMENT, DANCE, LEGION, EXSANGUINATION, ACCELERATION, MONOLITH), names(rows));
         RankedAspect acceleration = row(rows, ACCELERATION);
         assertEquals(0, acceleration.rank());
-        assertEquals("not tied to an ability", acceleration.reason());
+        assertEquals("Not tied to an ability", acceleration.reason());
         assertTrue(acceleration.unfinished());
         RankedAspect monolith = row(rows, MONOLITH);
         assertTrue(monolith.maxed());

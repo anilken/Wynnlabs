@@ -771,7 +771,7 @@ final class HomeTab {
             return v.planned().name();
         }
         return v.gear() != null ? v.gear().info().name()
-                : v.worn().isEmpty() ? L.t("wynnlabs.screen.empty") : ItemJson.clean(v.worn().getHoverName().getString());
+                : v.worn().isEmpty() ? L.cap(L.t("wynnlabs.screen.empty")) : ItemJson.clean(v.worn().getHoverName().getString());
     }
 
     /**
@@ -1484,12 +1484,12 @@ final class HomeTab {
         // why this one, where the tile has room under the dial
         int ry = y + 22 + ds;
         for (String r : q.reasons()) {
-            ry = lines(g, "• " + r, x + 6, ry, w - 12, y + h - 5, Theme.INK_3);
+            ry = lines(g, "• " + L.cap(r), x + 6, ry, w - 12, y + h - 5, Theme.INK_3);
         }
         List<Component> tip = new ArrayList<>();
         tip.add(Component.literal(QuestGuides.title(q.quest().name())).withStyle(ChatFormatting.AQUA).withStyle(UiFont::bold));
         for (String r : q.reasons()) {
-            tip.add(Component.literal("• " + r).withStyle(ChatFormatting.GRAY));
+            tip.add(Component.literal("• " + L.cap(r)).withStyle(ChatFormatting.GRAY));
         }
         tip.add(L.c("wynnlabs.home.click_track").withStyle(ChatFormatting.GREEN));
         host.quest(x, y, w, h, tip, q.quest());

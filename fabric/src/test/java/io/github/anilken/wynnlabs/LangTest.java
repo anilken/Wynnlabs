@@ -48,7 +48,7 @@ class LangTest {
         assertEquals("3 days ago", L.n("wynnlabs.screen.ago_days", 3));
         assertEquals("0 deaths", L.n("wynnlabs.deaths.tile_count", 0));
         assertEquals("Hunt over: Wybel Fluff (1 kill)", L.n("wynnlabs.coach.hunt_ended", 1, "Wybel Fluff", 1));
-        assertEquals("area Lv. 34 · you Lv. 60", L.t("wynnlabs.deaths.chip_zone", 34, 60));
+        assertEquals("Area Lv. 34 · You Lv. 60", L.t("wynnlabs.deaths.chip_zone", 34, 60));
     }
 
     @Test
@@ -62,5 +62,26 @@ class LangTest {
     void unknownKeyStaysAKey() {
         language(1);
         assertEquals("wynnlabs.no.such.key", L.t("wynnlabs.no.such.key"));
+    }
+
+    @Test
+    void capUpperCasesOnlyTheFirstLetter() {
+        assertEquals("Dropped by mobs", L.cap("dropped by mobs", "en_us"));
+        assertEquals("• Already started", L.cap("• already started", "en_us"));
+        assertEquals("(Slot empty)", L.cap("(slot empty)", "en_us"));
+        assertEquals("Lootrun", L.cap("Lootrun", "en_us"));
+        assertEquals("3 days ago", L.cap("3 days ago", "en_us"));
+        assertEquals("+10 Strength", L.cap("+10 Strength", "en_us"));
+        assertEquals("", L.cap("", "en_us"));
+    }
+
+    @Test
+    void capIsTurkishInTurkish() {
+        assertEquals("İlk raid'den sonra", L.cap("ilk raid'den sonra", "tr_tr"));
+        assertEquals("Ilık", L.cap("ılık", "tr_tr"));
+        assertEquals("Mob'lardan düşer", L.cap("mob'lardan düşer", "tr_tr"));
+        assertEquals("Initial", L.cap("initial", "en_us"));
+        language(2);
+        assertEquals("İçerik", L.cap("içerik"));
     }
 }

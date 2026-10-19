@@ -74,6 +74,39 @@ final class L {
         return table(code).get(key);
     }
 
+    /**
+     * {@code text} with its first letter upper-cased in the mod's language (Turkish: i → İ,
+     * ı → I), the rest kept: for a text that is a fragment inside a sentence in one place and
+     * starts a line in another ("dropped by mobs" / "Missing · Dropped by mobs"). Leading
+     * spaces and symbols ("• ", "(", "· ") are skipped; a text that starts with a number
+     * ("3 days ago", "+10 Strength") stays as it is.
+     */
+    static String cap(String text) {
+        return cap(text, code());
+    }
+
+    /** {@link #cap} in a given language ("en_us", "tr_tr"). */
+    static String cap(String text, String code) {
+        if (text == null) {
+            return null;
+        }
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            if (Character.isDigit(ch)) {
+                return text;
+            }
+            if (Character.isLetter(ch)) {
+                if (!Character.isLowerCase(ch)) {
+                    return text;
+                }
+                java.util.Locale locale = code != null && code.startsWith("tr")
+                        ? java.util.Locale.forLanguageTag("tr") : java.util.Locale.ROOT;
+                return text.substring(0, i) + String.valueOf(ch).toUpperCase(locale) + text.substring(i + 1);
+            }
+        }
+        return text;
+    }
+
     static MutableComponent c(String key, Object... args) {
         return Component.literal(t(key, args));
     }
