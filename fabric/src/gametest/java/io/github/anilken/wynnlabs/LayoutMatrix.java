@@ -56,7 +56,8 @@ public class LayoutMatrix implements FabricClientGameTest {
 
     @Override
     public void runTest(ClientGameTestContext ctx) {
-        if ("jmenu".equals(System.getProperty("wynnlabs.previewOnly"))) {
+        String only = System.getProperty("wynnlabs.previewOnly");
+        if (only != null && !only.equals("layout")) {
             return;
         }
         Path out = Path.of(System.getProperty("wynnlabs.preview", "preview"));

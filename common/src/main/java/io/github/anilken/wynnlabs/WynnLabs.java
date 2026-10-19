@@ -163,6 +163,9 @@ public final class WynnLabs {
         });
         // /av <item>: a hunt (client-side command, never sent to the server)
         platform.registerClientCommand(WynnLabs::huntCommand);
+        // /wynnlabs shots: pictures of the mod's own menu for its pages (Debug on only; Shots)
+        platform.registerClientCommand(Shots::command);
+        platform.onEndTick(Perf.tick("tick.Shots", Shots::onTick));
         // Y opens the road map (rebindable in Controls; J clashed with Wynntils)
         var category = platform.keyCategory(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath("wynnlabs", "main"));

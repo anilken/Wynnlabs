@@ -378,6 +378,16 @@ final class EndgameTab {
     /** One line of a pool list. */
     private record PLine(int type, PoolView.Group.Kind kind, int count, PoolView.Row row, boolean dim) {}
 
+    /** The screenshot tool: whether the Pools view is up. */
+    boolean shotPools() {
+        return view == VIEW_POOLS;
+    }
+
+    /** The screenshot tool: the Pools view or the summary (the sub-tab and the lit regions stay). */
+    void shotPools(boolean on) {
+        view = on ? VIEW_POOLS : VIEW_SUMMARY;
+    }
+
     /** Opens Havuzlar on this sub-tab at this region (the links from Özet). */
     private void openPools(int tab, String region) {
         view = VIEW_POOLS;

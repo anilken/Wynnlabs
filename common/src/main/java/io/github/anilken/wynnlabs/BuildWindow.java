@@ -217,6 +217,38 @@ final class BuildWindow {
         return tuning;
     }
 
+    /** The screenshot tool: what opening "Choose items" may change, to put back after its picture. */
+    record Saved(boolean open, View view, String editingPlan, String overwriteId, int unseenGen, int awaitGen,
+            Around.Result result, int card, boolean fromHint, List<ItemData> chosen, Tuning.Choice tuning, int listScroll,
+            boolean searchFocused) {}
+
+    Saved save() {
+        return new Saved(open, view, editingPlan, overwriteId, unseenGen, awaitGen, result, card, fromHint,
+                new ArrayList<>(chosen), tuning, listScroll, search != null && search.isFocused());
+    }
+
+    void restore(Saved s) {
+        open = s.open();
+        view = s.view();
+        editingPlan = s.editingPlan();
+        overwriteId = s.overwriteId();
+        unseenGen = s.unseenGen();
+        awaitGen = s.awaitGen();
+        result = s.result();
+        card = s.card();
+        fromHint = s.fromHint();
+        chosen = new ArrayList<>(s.chosen());
+        tuning = s.tuning();
+        listScroll = s.listScroll();
+        renameId = null;
+        focusSearch(open && s.searchFocused());
+    }
+
+    /** The screenshot tool: the picker without the blinking cursor in its search box. */
+    void shotUnfocus() {
+        focusSearch(false);
+    }
+
     /** "My builds". */
     void openSaved() {
         editingPlan = null;

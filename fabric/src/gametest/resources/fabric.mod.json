@@ -7,7 +7,8 @@
   "entrypoints": {
     "fabric-client-gametest": [
       "io.github.anilken.wynnlabs.JMenuPreview",
-      "io.github.anilken.wynnlabs.LayoutMatrix"
+      "io.github.anilken.wynnlabs.LayoutMatrix",
+      "io.github.anilken.wynnlabs.ShotsPreview"
     ]
   },
   "depends": {

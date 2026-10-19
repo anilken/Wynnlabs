@@ -398,6 +398,15 @@ final class Plans {
         void pickPlan() {
             picked = false;
         }
+
+        /** The screenshot tool: the pick as it is, and put back. */
+        boolean picked() {
+            return picked;
+        }
+
+        void picked(boolean p) {
+            picked = p;
+        }
     }
 
     // ---- the file ----
