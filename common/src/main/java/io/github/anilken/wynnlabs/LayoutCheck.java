@@ -74,6 +74,18 @@ public final class LayoutCheck {
             Math.round(Math.max(a.x, b.x)), Math.round(Math.max(a.y, b.y))};
     }
 
+    /**
+     * A window drawn over everything under this box (a modal over the menu): what was recorded
+     * there so far is hidden under it and left out, so the window's text is not read as lying
+     * over the menu's.
+     */
+    public static synchronized void cover(Matrix3x2f pose, int x, int y, int w, int h) {
+        if (on) {
+            int[] b = box(pose, x, y, w, h);
+            DRAWN.removeIf(d -> d.x0() < b[2] && d.x1() > b[0] && d.y0() < b[3] && d.y1() > b[1]);
+        }
+    }
+
     /** A surface text may be drawn on (parchment, planks), in GUI pixels; called while drawing. */
     public static synchronized void textArea(Matrix3x2f pose, int x, int y, int w, int h) {
         if (on) {

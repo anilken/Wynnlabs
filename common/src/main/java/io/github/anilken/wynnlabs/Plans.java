@@ -348,6 +348,20 @@ final class Plans {
         return root.resolve(id).resolve(FILE);
     }
 
+    /** The preview: no plan and no saved builds (written so). */
+    static synchronized void clearAll() {
+        load();
+        book = new Book();
+        deleted = null;
+        save();
+    }
+
+    /** The preview: the hint showing for {@code level}. */
+    static void previewHint(int level) {
+        HINT.reset();
+        HINT.offer(level, 1, 2);
+    }
+
     /** Tests: the next read takes the file again. */
     static synchronized void forget() {
         loadedFor = null;

@@ -575,6 +575,7 @@ public class LayoutMatrix implements FabricClientGameTest {
                     report.computeIfAbsent(where + " home-long", k -> new ArrayList<>()).add("the figure moved with long names");
                 }
                 STANDS.add(line);
+                homeStates(ctx, where, gui, report, shots);
             }
             if (t == 2) {
                 questStates(ctx, where, gui, report, shots);
@@ -594,6 +595,119 @@ public class LayoutMatrix implements FabricClientGameTest {
             ((RoadmapScreen) mc.screen).previewSettings(0, 0, false);
             UpdateCheck.reset();
         });
+    }
+
+    /** The recorded Shaman's builds around the Dexterity relik, worked out once for the home's build states. */
+    private static Around.Result builds;
+    private static final List<String> AROUND = List.of("Covetous Thunder", "Morph-Emerald");
+
+    /**
+     * The home's build states at this size, measured and shot (at every size: the smallest one
+     * too): the Choose-items window with a search typed, two items chosen and the strip set; its
+     * loading view frozen; the result view; the plan applied part worn; the plan complete; the
+     * better-build hint; the saved builds scrolled, one being renamed, one being edited.
+     */
+    private static void homeStates(ClientGameTestContext ctx, String where, int[] gui, Map<String, List<String>> report, Path shots)
+            throws Exception {
+        Path dir = shots != null ? shots : Path.of(System.getProperty("wynnlabs.preview", "preview")).resolve("layout");
+        String file = where.replaceAll("[^0-9a-z@x]", "");
+        Supplier<List<LayoutCheck.Area>> areas = () -> ((RoadmapScreen) net.minecraft.client.Minecraft.getInstance().screen).clickAreas();
+        Tuning.Choice strip = new Tuning.Choice(Tuning.BALANCED, true, false, 640);
+        ctx.runOnClient(mc -> {
+            if (builds == null) {
+                Roadmap.Computed c = Roadmap.compute(new Roadmap.Inputs(AROUND, strip, true, Around.BUILDS), null);
+                builds = new Around.Result(1, AROUND, strip, c.level(), c.builds(), c.problem(), !c.budgetCut().isEmpty(), false);
+            }
+            Plans.clearAll();
+        });
+        String[] states = {"pick", "loading", "results", "plan", "plan-done", "plan-hint", "saved", "saved-rename", "saved-edit"};
+        for (String s : states) {
+            ctx.runOnClient(mc -> homeState(s));
+            measure(ctx, where + " home-" + s, gui, report, areas);
+            ctx.takeScreenshot(TestScreenshotOptions.of(file + "-home-" + s + (VANILLA ? "-vanilla" : ""))
+                    .disableCounterPrefix().withDestinationDir(dir));
+            if (s.equals("results") && where.startsWith("1920x1080@3")) {
+                // one in English
+                ctx.runOnClient(mc -> Settings.setNumber("langOverride", 1));
+                ctx.waitTicks(2);
+                ctx.takeScreenshot(TestScreenshotOptions.of(file + "-home-results-en" + (VANILLA ? "-vanilla" : ""))
+                        .disableCounterPrefix().withDestinationDir(dir));
+                ctx.runOnClient(mc -> Settings.setNumber("langOverride", 2));
+            }
+        }
+        ctx.runOnClient(mc -> {
+            BuildWindow.INSTANCE.close();
+            Around.previewLoading = null;
+            Plans.clearAll();
+            Plans.HINT.reset();
+            Locks.use(null);
+            Locks.useTuning(null);
+        });
+    }
+
+    /** One of {@link #homeStates}. */
+    private static void homeState(String s) {
+        BuildWindow w = BuildWindow.INSTANCE;
+        Around.previewLoading = null;
+        Locks.use(AROUND);
+        Locks.useTuning(builds.tuning());
+        long now = System.currentTimeMillis();
+        switch (s) {
+            case "pick" -> w.previewPick("thunder", AROUND, builds.tuning());
+            case "loading" -> {
+                w.previewPick("thunder", AROUND, builds.tuning());
+                Around.previewLoading = new double[] {0.45, 2, 12873, 7621};
+            }
+            case "results" -> w.previewResults(builds, 1);
+            case "plan", "plan-hint" -> {
+                w.close();
+                Plans.apply(planOf(builds.builds().get(0), "Covetous Thunder build", now));
+                if (s.equals("plan-hint")) {
+                    Plans.previewHint(GameState.current().level() + 1);
+                } else {
+                    Plans.HINT.reset();
+                }
+            }
+            case "plan-done" -> {
+                w.close();
+                Plans.HINT.reset();
+                // a plan of what is worn now, one of its pieces chosen: every slot ticked
+                Map<String, String> items = new java.util.LinkedHashMap<>();
+                Build.Plan p = Build.plan();
+                p.worn().forEach((slot, piece) -> {
+                    if (piece != null) {
+                        items.put(slot, piece.name());
+                    }
+                });
+                String weapon = items.get("WEAPON");
+                Plans.apply(new Plans.Build("pdone", "Heavensent build", weapon == null ? List.of() : List.of(weapon), Tuning.Choice.PLAIN,
+                        items, 7475, GameState.current().level(), now, now));
+            }
+            case "saved", "saved-rename", "saved-edit" -> {
+                if (Plans.saved().size() < 14) {
+                    Plans.clearAll();
+                    for (int i = 0; i < 14; i++) {
+                        Roadmap.Candidate c = builds.builds().get(i % builds.builds().size());
+                        Plans.save(planOf(c, i == 2 ? "Thunder relik with the long name for the list" : i % 3 == 0 ? "" : "Build " + (i + 1), now + i),
+                                now + i);
+                    }
+                    Plans.apply(Plans.saved().get(4));
+                }
+                List<Plans.Build> all = Plans.saved();
+                w.previewSaved(3, s.equals("saved-rename") ? all.get(4).id() : null, s.equals("saved-edit") ? all.get(5).id() : null);
+            }
+            default -> { }
+        }
+    }
+
+    private static Plans.Build planOf(Roadmap.Candidate c, String name, long now) {
+        Map<String, String> items = new java.util.LinkedHashMap<>();
+        for (String slot : Plans.SLOTS) {
+            if (c.set().get(slot) != null) {
+                items.put(slot, c.set().get(slot).name());
+            }
+        }
+        return new Plans.Build("p" + now, name, AROUND, builds.tuning(), items, c.score(), GameState.current().level(), now, now);
     }
 
     /** The home figure's box at each size, written to build/preview/layout/home-stand.txt. */

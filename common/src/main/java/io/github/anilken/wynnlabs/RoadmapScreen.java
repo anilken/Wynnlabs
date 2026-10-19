@@ -172,6 +172,10 @@ final class RoadmapScreen extends Screen {
         })) {
             addWidget(b);
         }
+        for (net.minecraft.client.gui.components.EditBox b : BuildWindow.INSTANCE.init(font)) {
+            addWidget(b);
+        }
+        BuildWindow.INSTANCE.host(windowHost);
         try {
             steps = Roadmap.cached();
             stepsVersion = Roadmap.version();
@@ -418,6 +422,9 @@ final class RoadmapScreen extends Screen {
         if (tab == TAB_ENDGAME) {
             out.addAll(EndgameTab.INSTANCE.clickAreas());
         }
+        if (tab == 0 && BuildWindow.INSTANCE.isOpen()) {
+            return BuildWindow.INSTANCE.clickAreas();       // the window covers the rest
+        }
         return out;
     }
 
@@ -536,6 +543,19 @@ final class RoadmapScreen extends Screen {
         }
         if (goalOpen && goalAnchor != null && tab == 0) {
             drawGoalList(g, mx, my);
+        }
+        // the build window over the home: what is under it neither shows a tooltip nor takes a click
+        if (tab == 0 && BuildWindow.INSTANCE.isOpen()) {
+            hits.clear();
+            slotHits.clear();
+            levelRows.clear();
+            BuildWindow.INSTANCE.draw(g, new int[] {x0, y0, w, h}, layout.large(), windowHost, mx, my, pt);
+            net.minecraft.client.gui.components.EditBox f = BuildWindow.INSTANCE.focused();
+            if (f != null && getFocused() != f) {
+                setFocused(f);
+            }
+        } else if (BuildWindow.INSTANCE.isOpen()) {
+            BuildWindow.INSTANCE.close();
         }
         // close (drawn last, so the crafting tab's saved panel beside it never covers it): a red seal just outside the window's top-right corner (Esc does the same)
         int[] cr = closeRect;
@@ -1436,8 +1456,109 @@ final class RoadmapScreen extends Screen {
         double now = plan == null || plan.current() == null ? Double.NaN : plan.current().objective();
         Roadmap.Step s = steps.get(Math.max(0, Math.min(selected, steps.size() - 1)));
         double after = s.set() == null ? Double.NaN : s.set().result().objective();
-        return new HomeTab.In(slots, now, after, quests.isEmpty() ? null : quests.get(0), steps.get(0).places());
+        Plans.Build current = Plans.current();
+        int chosen = Locks.names().size();
+        int saved = Plans.saved().size();
+        boolean searching = Around.running();
+        if (planPills.planSelected(current)) {
+            return planIn(current, rows, now, after, chosen, saved, searching);
+        }
+        return new HomeTab.In(slots, now, after, quests.isEmpty() ? null : quests.get(0), steps.get(0).places(), null, chosen,
+                saved, searching);
     }
+
+    /** The plan's pieces by name, looked up once per plan. */
+    private final Map<String, ItemData> planInfo = new HashMap<>();
+    private String planInfoFor = "";
+
+    /**
+     * The Plan pill's view: each slot the plan's piece, a tick where you wear it already (by
+     * name), purple for the items you chose; the line under the stand counts what you wear.
+     */
+    private HomeTab.In planIn(Plans.Build plan, List<UpRow> rows, double now, double after, int chosen, int saved, boolean searching) {
+        if (!planInfoFor.equals(plan.id() + plan.updated())) {
+            planInfo.clear();
+            java.util.Set<String> want = new java.util.HashSet<>(plan.items().values());
+            GameState.current().allGear().filter(i -> want.contains(i.name())).forEach(i -> planInfo.putIfAbsent(i.name(), i));
+            planInfoFor = plan.id() + plan.updated();
+        }
+        Map<String, String> wornNames = new LinkedHashMap<>();
+        for (int i = 0; i < rows.size() && i < Plans.SLOTS.length; i++) {
+            ItemStack w = rows.get(i).worn();
+            if (!w.isEmpty()) {
+                wornNames.put(Plans.SLOTS[i], ItemJson.clean(w.getHoverName().getString()).trim());
+            }
+        }
+        // the plan's rings in the hands that wear them, so a ring worn in the other hand shows there
+        Map<String, String> items = new LinkedHashMap<>(plan.items());
+        String r1 = items.get("RING1");
+        String r2 = items.get("RING2");
+        if (r1 != null && r2 != null && !r1.equals(wornNames.get("RING1"))
+                && (r2.equals(wornNames.get("RING1")) || r1.equals(wornNames.get("RING2")))) {
+            items.put("RING1", r2);
+            items.put("RING2", r1);
+        }
+        boolean[] on = Plans.wornSlots(items, wornNames);
+        List<HomeTab.SlotView> slots = new ArrayList<>();
+        int worn = 0;
+        double left = 0;
+        for (int i = 0; i < rows.size(); i++) {
+            UpRow r = rows.get(i);
+            String name = i < Plans.SLOTS.length ? items.get(Plans.SLOTS[i]) : null;
+            ItemData info = name == null ? null : planInfo.get(name);
+            if (name == null || info == null) {
+                slots.add(new HomeTab.SlotView(i, boxLabel(r.box()), r.type(), r.worn(), null, ItemStack.EMPTY, Double.NaN, null));
+                continue;
+            }
+            boolean locked = plan.locked(name);
+            boolean has = on[i];
+            worn += has ? 1 : 0;
+            HomeTab.Mark mark = has ? locked ? HomeTab.Mark.DONE_CHOSEN : HomeTab.Mark.DONE : locked ? HomeTab.Mark.CHOSEN : HomeTab.Mark.GET;
+            List<Component> tip = new ArrayList<>();
+            tip.add(Component.literal(name).withStyle(info.tier().colour()).withStyle(UiFont::bold));
+            tip.add(L.c(locked ? "wynnlabs.homev.slot_chosen" : "wynnlabs.homev.slot_planned").withStyle(ChatFormatting.LIGHT_PURPLE));
+            if (has) {
+                tip.add(L.c("wynnlabs.homev.slot_worn").withStyle(ChatFormatting.GREEN));
+            } else {
+                tip.add(Component.literal(BuildWindow.sourceText(name)).withStyle(ChatFormatting.DARK_AQUA));
+                Prices.Price p = Prices.of(name);
+                if (p != null && p.typical() != null && Shopping.tradable(info)) {
+                    left += p.typical();
+                }
+            }
+            slots.add(new HomeTab.SlotView(i, boxLabel(r.box()), r.type(), r.worn(), null, icon(info), Double.NaN, tip, mark, info));
+        }
+        int better = Plans.HINT.showing();
+        HomeTab.PlanLine line = new HomeTab.PlanLine(plan.name(), worn, plan.items().size(), left, better);
+        return new HomeTab.In(slots, now, after, quests.isEmpty() ? null : quests.get(0), steps.get(0).places(), line, chosen,
+                saved, searching);
+    }
+
+    /** The build window's way back into the screen. */
+    private final BuildWindow.Host windowHost = new BuildWindow.Host() {
+        @Override
+        public void tip(int x, int y, int w, int h, List<Component> tip) {
+            hits.add(new Hit(x, y, w, h, null, tip, null));
+        }
+
+        @Override
+        public ItemStack icon(ItemData info) {
+            return RoadmapScreen.this.icon(info);
+        }
+
+        @Override
+        public void flash(String text) {
+            flash = text;
+            flashUntil = System.currentTimeMillis() + 2500;
+        }
+
+        @Override
+        public void applied() {
+            planPills.pickPlan();
+            flash = L.t("wynnlabs.homev.plan_applied");
+            flashUntil = System.currentTimeMillis() + 2500;
+        }
+    };
 
     /** The home's way back into the screen: its click and hover areas join this frame's hits. */
     private final HomeTab.Host homeHost = new HomeTab.Host() {
@@ -1769,6 +1890,12 @@ final class RoadmapScreen extends Screen {
             pos = shown.indexOf(selected);
         }
         levelWindow = LEVEL_WINDOW;
+        // with a plan, its pill first: "Plan · Now · Lv 68 · 80 …"
+        Plans.Build plan = Plans.current();
+        boolean planOn = planPills.planSelected(plan);
+        String planText = L.t("wynnlabs.homev.plan_pill");
+        int planW = plan == null ? 0 : font.width(planText) + 12;
+        room -= plan == null ? 0 : planW + 3;
         List<int[]> order = pillOrder(shown, pos, levelWindow);
         while (levelWindow > 1 && pillsWidth(order, shown) > room) {
             order = pillOrder(shown, pos, --levelWindow);
@@ -1780,7 +1907,7 @@ final class RoadmapScreen extends Screen {
             String t = pillText(i, firstShown);
             int tw = i < 0 ? 16 : font.width(t) + 12;
             bx -= tw;
-            boolean on = i == selected;
+            boolean on = !planOn && i == selected;
             Kit.ledger(g, bx, y - 3, tw, 14, on);
             if (i < 0) {
                 Art.icon(g, i == -1 ? "chevron-left" : "chevron-right", bx + 4, y, 8, Kit.buttonText(Kit.REST));
@@ -1795,8 +1922,31 @@ final class RoadmapScreen extends Screen {
             }
             bx -= 3;
         }
+        if (plan != null) {
+            bx -= planW;
+            // purple when selected, like the chosen items on the panel
+            if (planOn) {
+                Art.box(g, bx, y - 3, planW, 14, 3, HomeTab.CHOSEN, 0xFF3E2766);
+            } else {
+                Kit.ledger(g, bx, y - 3, planW, 14, false);
+            }
+            if (planOn) {
+                g.drawString(font, planText, bx + 6, y, HomeTab.CHOSEN_TEXT, false);
+            } else {
+                onWood(g, planText, bx + 6, y, Kit.REST);
+            }
+            levelRows.add(new int[] {bx, y - 3, planW, 14, PLAN_PILL});
+            hits.add(new Hit(bx, y - 3, planW, 14, null, List.of(Component.literal(plan.name()).withStyle(ChatFormatting.LIGHT_PURPLE),
+                    L.c("wynnlabs.homev.plan_pill_tip").withStyle(ChatFormatting.GRAY)), null));
+            bx -= 3;
+        }
         return bx + 3;
     }
+
+    /** The Plan pill's place in levelRows (the milestones are 0 and up, ‹ and › -1 and -2). */
+    private static final int PLAN_PILL = -3;
+    /** Whether the Plan pill or a level pill is selected (kept across menu openings). */
+    private static final Plans.Pills planPills = new Plans.Pills();
 
     /** The level row's buttons for a window of {@code window} milestones: {step index, or -1 ‹ / -2 ›}. */
     private List<int[]> pillOrder(List<Integer> shown, int pos, int window) {
@@ -2507,6 +2657,10 @@ final class RoadmapScreen extends Screen {
 
     @Override
     public boolean keyPressed(net.minecraft.client.input.KeyEvent event) {
+        // the build window first: Esc closes a rename or the window, never the menu
+        if (tab == 0 && BuildWindow.INSTANCE.keyPressed(event.key())) {
+            return true;
+        }
         if (tab == TAB_CRAFT && CraftingTab.INSTANCE.keyPressed(event.key())) {
             return true;
         }
@@ -5953,6 +6107,17 @@ final class RoadmapScreen extends Screen {
         event = MenuScale.event(event);                 // logical pixels, as drawn
         double ex = event.x();
         double ey = event.y();
+        if (tab == 0 && BuildWindow.INSTANCE.isOpen()) {
+            if (closeRect != null && in(ex, ey, closeRect)) {
+                onClose();
+                return true;
+            }
+            net.minecraft.client.gui.components.EditBox f = BuildWindow.INSTANCE.focused();
+            if (f != null && f.mouseClicked(event, doubleClick)) {
+                return true;
+            }
+            return BuildWindow.INSTANCE.mouseClicked(ex, ey, event.button());
+        }
         if (goalOpen) {
             goalOpen = false;
             for (int[] r : goalRows) {
@@ -6142,7 +6307,12 @@ final class RoadmapScreen extends Screen {
                 }
             }
             for (int[] r : levelRows) {
+                if (in(ex, ey, r) && r[4] == PLAN_PILL) {
+                    planPills.pickPlan();
+                    return true;
+                }
                 if (in(ex, ey, r)) {
+                    planPills.pickLevel();
                     // ‹ and › step the selection; the window follows it
                     List<Integer> shown = shownSteps();
                     int pos = shown.indexOf(selected);
@@ -6237,6 +6407,25 @@ final class RoadmapScreen extends Screen {
                     Rules.setAdviceHere(true);
                     steps = Roadmap.cached();
                     refreshAsked = true;
+                } else if (c.startsWith("#qpick:")) {
+                    if (event.button() == 1) {
+                        // right-click: the chosen items and the plan cleared
+                        Locks.clear();
+                        Plans.apply(null);
+                        Around.forget();
+                        flash = L.t("wynnlabs.homev.pick_cleared");
+                        flashUntil = System.currentTimeMillis() + 2500;
+                    } else {
+                        BuildWindow.INSTANCE.openPick();
+                    }
+                } else if (c.startsWith("#qsaved:")) {
+                    BuildWindow.INSTANCE.openSaved();
+                } else if (c.startsWith("#qhint:")) {
+                    if (event.button() == 1) {
+                        Plans.HINT.dismiss();
+                    } else {
+                        BuildWindow.INSTANCE.openResults(Around.checkResult());
+                    }
                 } else if (c.startsWith("#qgoal:")) {
                     goalOpen = true;                    // the list opens; a row picks the goal
                 } else if (c.startsWith("#qrefresh:")) {
@@ -6351,7 +6540,11 @@ final class RoadmapScreen extends Screen {
     public boolean mouseScrolled(double x, double y, double h, double v) {
         x = MenuScale.at(x);
         y = MenuScale.at(y);
+        if (tab == 0 && BuildWindow.INSTANCE.isOpen()) {
+            return BuildWindow.INSTANCE.mouseScrolled(x, y, v);
+        }
         if (tab == 0 && !steps.isEmpty()) {
+            planPills.pickLevel();
             // the wheel walks the tabs: şimdi, then the shown milestones
             List<Integer> order = new ArrayList<>();
             order.add(0);
