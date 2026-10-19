@@ -289,6 +289,11 @@ final class CraftingTab {
         return l > 0 ? l : 200;
     }
 
+    /** The profession of the recipe on the calculator ("WOODWORKING"), or null before the tab was opened. */
+    String profession() {
+        return type == null ? null : recipe().profession().toUpperCase(Locale.ROOT);
+    }
+
     private CraftData.Recipe recipe() {
         CraftData.Recipe r = CraftData.find(type, minLevel);
         return r != null ? r : CraftData.ofType(type).get(0);

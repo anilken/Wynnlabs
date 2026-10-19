@@ -73,7 +73,6 @@ final class Theme {
     static final int GREEN_LO = 0xFF3F7A34;
     static final int SEAL_3 = 0xFF3F7A4A;           // the strongest gain
     static final int SEAL_2 = 0xFF5A8A54;
-    static final int SEAL_1 = 0xFF6A8A58;
     static final int SEAL_TEXT = 0xFFEAF7D8;
     static final int NEAR = 0xFF3D5A46;             // the nearest bank / Trade Market pill
     static final int NEAR_TEXT = 0xFFE0F0D0;
