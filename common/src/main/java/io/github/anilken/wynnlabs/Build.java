@@ -814,6 +814,57 @@ final class Build {
     }
 
     /**
+     * How far a build is from wearable: the points past 100 in any skill plus the points it needs
+     * beyond those earned; 0 when {@link #allocate} can spread them.
+     */
+    static int shortfall(Map<String, Damage.Piece> build, int earned) {
+        int[] min = minPoints(build.values());
+        int over = 0;
+        int used = 0;
+        for (int v : min) {
+            over += Math.max(0, v - 100);
+            used += v;
+        }
+        return over + Math.max(0, used - earned);
+    }
+
+    /**
+     * Makes room for the pieces in {@code fixed} (build slots the player chose): while the skill
+     * points cannot be met, the piece outside them whose leaving brings the build closest to
+     * wearable comes out (on a tie the lowest level). The slots emptied, in order; the build is
+     * changed in place. Stops with what is left when only the fixed pieces remain.
+     */
+    static List<String> fitAround(Map<String, Damage.Piece> build, java.util.Set<String> fixed, int earned) {
+        List<String> dropped = new ArrayList<>();
+        int now = shortfall(build, earned);
+        while (now > 0) {
+            String pick = null;
+            int best = Integer.MAX_VALUE;
+            int bestLevel = Integer.MAX_VALUE;
+            for (var e : build.entrySet()) {
+                if (fixed.contains(e.getKey()) || e.getValue() == null) {
+                    continue;
+                }
+                Map<String, Damage.Piece> trial = new LinkedHashMap<>(build);
+                trial.remove(e.getKey());
+                int s = shortfall(trial, earned);
+                if (s < best || s == best && e.getValue().level() < bestLevel) {
+                    best = s;
+                    bestLevel = e.getValue().level();
+                    pick = e.getKey();
+                }
+            }
+            if (pick == null) {
+                break;
+            }
+            build.remove(pick);
+            dropped.add(pick);
+            now = best;
+        }
+        return dropped;
+    }
+
+    /**
      * Skill points for a build: the least that meets every requirement (counting the skill
      * points the gear gives), then the rest one step at a time to the skill that helps most.
      * Null when the requirements need more points than you have.

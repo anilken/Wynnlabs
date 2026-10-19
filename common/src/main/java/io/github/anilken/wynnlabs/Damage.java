@@ -455,7 +455,8 @@ final class Damage {
     }
 
     private static double model(String key, double fallback) {
-        return Rules.sub("model", key, fallback);
+        // the road map's tuning strip (Tuning) leans a few weights; 1 everywhere else
+        return Rules.sub("model", key, fallback) * Tuning.weight(key);
     }
 
     /**

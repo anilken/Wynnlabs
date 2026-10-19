@@ -1585,5 +1585,9 @@
   "wynnlabs.homev.profs_none": "Open Character Info once",
   "wynnlabs.homev.profs_none_tip": "Your profession levels show once Character Info has been opened on this character",
   "wynnlabs.homev.profs_xp": "%s of the way to the next level",
-  "wynnlabs.homev.profs_cap": "Bars: level / %s (the highest level)"
+  "wynnlabs.homev.profs_cap": "Bars: level / %s (the highest level)",
+  "wynnlabs.around.problem_points": "they need %s skill points, %s earned",
+  "wynnlabs.around.problem_skill": "they need %s %s, 100 is the most",
+  "wynnlabs.plans.default": "Build %s",
+  "wynnlabs.plans.default_named": "%s build"
 }

@@ -1585,5 +1585,9 @@
   "wynnlabs.homev.profs_none": "Karakter Bilgisi'ni bir kez aç",
   "wynnlabs.homev.profs_none_tip": "Meslek seviyelerin bu karakterde Karakter Bilgisi açılınca görünür",
   "wynnlabs.homev.profs_xp": "sonraki seviyeye %s",
-  "wynnlabs.homev.profs_cap": "Çubuklar: seviye / %s (en yüksek seviye)"
+  "wynnlabs.homev.profs_cap": "Çubuklar: seviye / %s (en yüksek seviye)",
+  "wynnlabs.around.problem_points": "%s beceri puanı istiyorlar, %s kazandın",
+  "wynnlabs.around.problem_skill": "%s %s istiyorlar, en fazla 100 olur",
+  "wynnlabs.plans.default": "Build %s",
+  "wynnlabs.plans.default_named": "%s build'i"
 }

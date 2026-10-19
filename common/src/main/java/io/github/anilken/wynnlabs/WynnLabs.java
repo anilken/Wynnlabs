@@ -102,6 +102,7 @@ public final class WynnLabs {
         platform.onEndTick(Perf.tick("tick.Roadmap", client -> {
             if (client.player != null && client.player.tickCount % 40 == 0) {
                 Roadmap.warm();
+                Around.watch();                     // the plan's search again after a level-up, in the background
             }
             // model weights brought back under their cap at load: say so once
             java.util.List<String> clamped = Rules.clamped;
