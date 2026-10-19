@@ -279,12 +279,16 @@ final class UpdateCheck {
         return e != null && e.isJsonPrimitive() && e.getAsJsonPrimitive().isBoolean() && e.getAsBoolean();
     }
 
-    /** Whether this jar's version is worth comparing: a release number, not a dev build or 0.0.0. */
+    /**
+     * Whether this jar's version is worth comparing: a release number, not a dev build or 0.0.0.
+     * A local build after a release ("0.2.1+dev", build metadata) compares as that release.
+     */
     static boolean checkable(String version) {
-        if (version == null) {
+        String core = core(version);
+        if (core == null) {
             return false;
         }
-        String v = version.toLowerCase(Locale.ROOT);
+        String v = core.toLowerCase(Locale.ROOT);
         if (v.contains("dev") || v.contains("snapshot")) {
             return false;
         }
