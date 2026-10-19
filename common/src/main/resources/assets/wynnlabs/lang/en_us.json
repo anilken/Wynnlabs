@@ -1738,5 +1738,7 @@
   "wynnlabs.pick.note_short": "%s weapons only",
   "wynnlabs.results.planned_for": "Planned for Lv %s",
   "wynnlabs.results.vs_now": "vs your gear now:",
-  "wynnlabs.home.stale_click": "Click: refresh"
+  "wynnlabs.home.stale_click": "Click: refresh",
+  "wynnlabs.results.quest_reward": "quest reward",
+  "wynnlabs.results.untradable": "untradable"
 }

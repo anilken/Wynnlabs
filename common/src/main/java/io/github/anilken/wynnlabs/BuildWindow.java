@@ -131,19 +131,55 @@ final class BuildWindow {
     }
 
     /** "Choose items": the last results while they are for the same choice, else the list. */
+    /**
+     * "Choose items": the picker with the chosen items and the strip as they were. The results
+     * only when a search finished while the window was closed and they were not seen yet; a
+     * result list once seen and cancelled is gone (Suggest build again shows new ones).
+     */
     void openPick() {
         loadChoice();
         open = true;
         overwriteId = null;
         Around.Result r = Around.result();
-        if (r != null && matches(r)) {
+        if (unseenGen >= 0 && r != null && r.gen() == unseenGen) {
             result = r;
-            card = Math.min(card, Math.max(0, r.builds().size() - 1));
+            card = 0;
+            fromHint = false;
             view = View.RESULTS;
         } else {
             view = View.PICK;
         }
+        unseenGen = -1;
         focusSearch(view == View.PICK);
+    }
+
+    /** A finished search not shown yet (it finished while the window was closed); -1 none. */
+    private int unseenGen = -1;
+    /** The result list on show came from the better-build hint. */
+    private boolean fromHint;
+
+    /**
+     * The result list is done with (Cancel, ✕, Esc, back, Apply): dropped, so the next
+     * "Choose items" opens the picker. The hint's own list goes with its hint.
+     */
+    private void discardResults() {
+        if (result == null) {
+            return;
+        }
+        if (fromHint) {
+            Around.forgetCheck();
+            Plans.HINT.dismiss();
+        } else {
+            Around.forget();
+        }
+        result = null;
+        fromHint = false;
+        unseenGen = -1;
+    }
+
+    /** Tests and the preview: whether a result list is held. */
+    boolean hasResults() {
+        return result != null;
     }
 
     /** "My builds". */
@@ -163,6 +199,7 @@ final class BuildWindow {
         result = r;
         card = 0;
         overwriteId = null;
+        fromHint = r.check();
         chosen = new ArrayList<>(Locks.resolve(GameState.current(), r.around()));
         tuning = r.tuning();
         view = View.RESULTS;
@@ -231,6 +268,7 @@ final class BuildWindow {
         Around.Result r = Around.result();
         if (!open && awaitGen >= 0 && r != null && r.gen() == awaitGen) {
             awaitGen = -1;
+            unseenGen = r.gen();                    // shown once when the window opens again
             host.flash(L.n("wynnlabs.pick.ready", r.builds().size(), r.builds().size()));
         }
     }
@@ -1221,7 +1259,9 @@ final class BuildWindow {
 
     /**
      * Where a piece comes from: {text, Trade Market price (null when none)}: this week's raid
-     * pool, else its Trade Market price, a quest, its merchant, chest or drop.
+     * pool, else its Trade Market price, a quest, its merchant, chest or drop; with no known
+     * source, a quest item as a quest reward, an untradable piece as such, a tradable one as
+     * the Trade Market with no price; "price unknown" only when nothing is known.
      */
     static Object[] source(String name) {
         String pool = poolOf(name);
@@ -1230,20 +1270,30 @@ final class BuildWindow {
         }
         ItemData info = itemOf(name);
         if (info == null) {
-            return new Object[] {"?", null};
+            return new Object[] {L.t("wynnlabs.results.price_unknown"), null};
         }
         String src = Shopping.sourceOf(info);
-        if (Shopping.tradable(info)) {
+        boolean tradable = Shopping.tradable(info);
+        if (tradable) {
             Prices.Price p = GameState.current().price(name);
             if (p != null && p.typical() != null) {
                 return new Object[] {"", p.typical()};
             }
         }
-        if (src != null && src.startsWith("QUEST")) {
+        boolean known = src != null && !src.isBlank() && !src.toUpperCase(Locale.ROOT).startsWith("UNKNOWN");
+        if (known && src.startsWith("QUEST")) {
             return new Object[] {L.t("wynnlabs.results.quest", Shopping.where(src)), null};
         }
-        return new Object[] {src == null ? (Shopping.tradable(info) ? L.t("wynnlabs.results.market_unknown") : "?")
-            : Shopping.where(src), null};
+        if (known) {
+            return new Object[] {Shopping.where(src), null};
+        }
+        if ("QUEST_ITEM".equals(info.restriction())) {
+            return new Object[] {L.t("wynnlabs.results.quest_reward"), null};
+        }
+        if (!tradable) {
+            return new Object[] {L.t("wynnlabs.results.untradable"), null};
+        }
+        return new Object[] {L.t("wynnlabs.results.market_unknown"), null};
     }
 
     private static Map<String, String> pools;
@@ -1513,7 +1563,12 @@ final class BuildWindow {
         long now = System.currentTimeMillis();
         GameState state = GameState.current();
         switch (hit.act()) {
-            case "close" -> close();
+            case "close" -> {
+                if (view == View.RESULTS) {
+                    discardResults();               // Cancel and ✕ drop the list: the picker next time
+                }
+                close();
+            }
             case "search" -> search.setFocused(true);
             case "type" -> {
                 type = (int) hit.arg();
@@ -1567,6 +1622,7 @@ final class BuildWindow {
                 }
             }
             case "back" -> {
+                discardResults();
                 view = View.PICK;
                 if (overwriteId != null) {
                     view = View.SAVED;
@@ -1679,6 +1735,7 @@ final class BuildWindow {
             Plans.overwrite(overwriteId, fresh, now);
             overwriteId = null;
             editId = null;
+            discardResults();
             view = View.SAVED;
             if (lastHost != null) {
                 lastHost.applied();
@@ -1686,6 +1743,7 @@ final class BuildWindow {
             return;
         }
         Plans.apply(fresh.named(Plans.defaultName(fresh)));
+        discardResults();                           // applied: the plan holds it now
         hostApplied();
     }
 
@@ -1761,6 +1819,9 @@ final class BuildWindow {
                 renameId = null;
                 rename.setFocused(false);
             } else {
+                if (view == View.RESULTS) {
+                    discardResults();
+                }
                 close();
             }
             return true;

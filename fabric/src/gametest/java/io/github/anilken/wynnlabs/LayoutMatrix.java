@@ -658,6 +658,7 @@ public class LayoutMatrix implements FabricClientGameTest {
         }
         if (where.startsWith("1920x1080@3")) {
             scrollDrag(ctx, where, report);
+            cancelReopens(ctx, where, report);
         }
         ctx.runOnClient(mc -> {
             BuildWindow.INSTANCE.close();
@@ -799,6 +800,55 @@ public class LayoutMatrix implements FabricClientGameTest {
         });
         if (problem != null) {
             report.computeIfAbsent(where + " pick scrollbar", k -> new ArrayList<>()).add(problem);
+        }
+    }
+
+    /**
+     * The result view's Cancel (the footer's ✕) and its title ✕, clicked as the player would:
+     * the next "Choose items" opens the picker, the list gone, the chosen items kept. Reported
+     * when the results come back.
+     */
+    private static void cancelReopens(ClientGameTestContext ctx, String where, Map<String, List<String>> report) {
+        for (boolean footer : new boolean[] {true, false}) {
+            ctx.runOnClient(mc -> {
+                Locks.use(AROUND);
+                Locks.useTuning(builds.tuning());
+                Around.use(builds);
+                BuildWindow.INSTANCE.previewResults(builds, 1);
+            });
+            ctx.waitTicks(3);
+            String problem = ctx.computeOnClient(mc -> {
+                BuildWindow w = BuildWindow.INSTANCE;
+                LayoutCheck.Area close = null;
+                for (LayoutCheck.Area a : w.clickAreas()) {
+                    if (a.what().equals("close") && (close == null || (footer ? a.y() > close.y() : a.y() < close.y()))) {
+                        close = a;
+                    }
+                }
+                if (close == null) {
+                    return "no close button on the result view";
+                }
+                double f = MenuScale.factor();
+                var info = new net.minecraft.client.input.MouseButtonInfo(0, 0);
+                var ev = new net.minecraft.client.input.MouseButtonEvent((close.x() + close.w() / 2.0) / f,
+                        (close.y() + close.h() / 2.0) / f, info);
+                mc.screen.mouseClicked(ev, false);
+                mc.screen.mouseReleased(ev);
+                if (w.isOpen()) {
+                    return "the " + (footer ? "Cancel" : "title ✕") + " did not close the window";
+                }
+                w.openPick();                               // "Choose items" again
+                String bad = w.view() != BuildWindow.View.PICK ? "after " + (footer ? "Cancel" : "the title ✕")
+                        + ", Choose items opened " + w.view() + " instead of the picker"
+                        : w.hasResults() || Around.result() != null ? "the cancelled results were kept" : null;
+                w.close();
+                System.out.println("[WynnLabs] preview results cancel (" + (footer ? "footer" : "title") + "): reopened on "
+                        + (bad == null ? "the picker" : bad));
+                return bad;
+            });
+            if (problem != null) {
+                report.computeIfAbsent(where + " results cancel", k -> new ArrayList<>()).add(problem);
+            }
         }
     }
 

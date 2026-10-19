@@ -145,9 +145,14 @@ final class Around {
         return checkResult;
     }
 
-    /** The result list is for another choice now: dropped. */
+    /** The result list is for another choice now, or was cancelled: dropped. */
     static void forget() {
         result = null;
+    }
+
+    /** The level-up check's list was cancelled: dropped. */
+    static void forgetCheck() {
+        checkResult = null;
     }
 
     /** Tests and the preview: this result as the newest. */

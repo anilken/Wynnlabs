@@ -1738,5 +1738,7 @@
   "wynnlabs.pick.note_short": "yalnız %s silahları",
   "wynnlabs.results.planned_for": "Lv %s için planlandı",
   "wynnlabs.results.vs_now": "Şu anki ekipmanına göre:",
-  "wynnlabs.home.stale_click": "Tık: yenile"
+  "wynnlabs.home.stale_click": "Tık: yenile",
+  "wynnlabs.results.quest_reward": "görev ödülü",
+  "wynnlabs.results.untradable": "takas edilemez"
 }
