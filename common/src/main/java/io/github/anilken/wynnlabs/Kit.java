@@ -186,6 +186,19 @@ final class Kit {
         nine(g, state == ON ? "gold" : state == HOVER ? "wood_hover" : "wood", x, y, w, h);
     }
 
+    /**
+     * A purple button (the primary action, the items you chose): wood's bevel in the archetype's
+     * purple, lighter on hover; its text is {@link Theme#CREAM}.
+     */
+    static void primary(GuiGraphics g, int x, int y, int w, int h, boolean hover) {
+        nine(g, hover ? "purple_hover" : "purple", x, y, w, h);
+    }
+
+    /** A purple ledger tab (the selected Plan pill). */
+    static void ledgerPrimary(GuiGraphics g, int x, int y, int w, int h) {
+        nine(g, "ledger_purple", x, y, w, h);
+    }
+
     /** A button's text colour for its state: cream on wood, ink on gold. */
     static int buttonText(int state) {
         return state == ON ? Theme.INK : Theme.CREAM;

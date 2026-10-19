@@ -1669,7 +1669,7 @@
   "wynnlabs.results.label_cheap_tip": "En iyiye %%3 yakın build'ler içinde en düşük fiyat",
   "wynnlabs.results.label_tanky_tip": "En yüksek etkin can",
   "wynnlabs.results.label_fast_tip": "En yüksek yürüme hızı",
-  "wynnlabs.results.squares_tip": "Kareler: mor seçtiğin, yeşil taktığından farklı",
+  "wynnlabs.results.squares_tip": "Çerçeveler: mor seçtiğin, yeşil taktığından farklı",
   "wynnlabs.results.price_unknown": "fiyat bilinmiyor",
   "wynnlabs.results.price_free": "alınacak bir şey yok",
   "wynnlabs.results.d_damage": "Hasar",
@@ -1682,7 +1682,7 @@
   "wynnlabs.results.to_get": "Alınacaklar",
   "wynnlabs.results.have": "sende var",
   "wynnlabs.results.in_pool": "bu haftanın %s havuzunda",
-  "wynnlabs.results.market": "Trade Market ≈%s",
+  "wynnlabs.results.market": "Trade Market · %s",
   "wynnlabs.results.market_unknown": "Trade Market, fiyat bilinmiyor",
   "wynnlabs.results.quest": "görev ödülü (%s)",
   "wynnlabs.results.nothing_to_get": "Her parça sende var",
@@ -1712,5 +1712,10 @@
   "wynnlabs.saved.recompute_tip": "Bu eşyalarla yeniden ara; seçtiğin sonuç bu build'in yerine geçer, adı kalır",
   "wynnlabs.saved.save_new": "Yeni build olarak kaydet",
   "wynnlabs.saved.save_new_tip": "Bu eşyalar ve ayarlarla bir kopya sakla",
-  "wynnlabs.saved.edit_cancel_tip": "Düzenlemeyi değişiklik yapmadan kapat"
+  "wynnlabs.saved.edit_cancel_tip": "Düzenlemeyi değişiklik yapmadan kapat",
+  "wynnlabs.pick.ready": "%s build bulundu: Eşya seç'i aç",
+  "wynnlabs.results.chosen_by_you": "Senin seçtiğin",
+  "wynnlabs.homev.plan_line_short": "%s/%s takılı",
+  "wynnlabs.homev.plan_better_short": "Lv %s: daha iyisi var ›",
+  "wynnlabs.results.back_tip": "Eşyalara ve ayarlara dön"
 }

@@ -1669,7 +1669,7 @@
   "wynnlabs.results.label_cheap_tip": "The lowest price among the builds within 3%% of the best",
   "wynnlabs.results.label_tanky_tip": "The most effective health",
   "wynnlabs.results.label_fast_tip": "The highest walk speed",
-  "wynnlabs.results.squares_tip": "Squares: purple chosen, green changes from what you wear",
+  "wynnlabs.results.squares_tip": "Frames: purple chosen by you, green a change from what you wear",
   "wynnlabs.results.price_unknown": "price unknown",
   "wynnlabs.results.price_free": "nothing to buy",
   "wynnlabs.results.d_damage": "Damage",
@@ -1682,7 +1682,7 @@
   "wynnlabs.results.to_get": "To get",
   "wynnlabs.results.have": "you have it",
   "wynnlabs.results.in_pool": "in this week's %s pool",
-  "wynnlabs.results.market": "Trade Market ≈%s",
+  "wynnlabs.results.market": "Trade Market · %s",
   "wynnlabs.results.market_unknown": "Trade Market, price unknown",
   "wynnlabs.results.quest": "quest reward (%s)",
   "wynnlabs.results.nothing_to_get": "You have every piece",
@@ -1712,5 +1712,10 @@
   "wynnlabs.saved.recompute_tip": "Search again with these items; the result you pick replaces this build, its name kept",
   "wynnlabs.saved.save_new": "Save as new build",
   "wynnlabs.saved.save_new_tip": "Keep a copy with these items and strip",
-  "wynnlabs.saved.edit_cancel_tip": "Close the edit area without changes"
+  "wynnlabs.saved.edit_cancel_tip": "Close the edit area without changes",
+  "wynnlabs.pick.ready": "%s build found: open Choose items|%s builds found: open Choose items",
+  "wynnlabs.results.chosen_by_you": "Chosen by you",
+  "wynnlabs.homev.plan_line_short": "%s/%s worn",
+  "wynnlabs.homev.plan_better_short": "Better at Lv %s ›",
+  "wynnlabs.results.back_tip": "Back to the items and the strip"
 }

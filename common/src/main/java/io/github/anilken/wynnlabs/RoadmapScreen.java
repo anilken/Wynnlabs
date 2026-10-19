@@ -549,7 +549,7 @@ final class RoadmapScreen extends Screen {
             hits.clear();
             slotHits.clear();
             levelRows.clear();
-            BuildWindow.INSTANCE.draw(g, new int[] {x0, y0, w, h}, layout.large(), windowHost, mx, my, pt);
+            BuildWindow.INSTANCE.draw(g, new int[] {x0, y0, w, h}, layout.large(), layout.compact(), windowHost, mx, my, pt);
             net.minecraft.client.gui.components.EditBox f = BuildWindow.INSTANCE.focused();
             if (f != null && getFocused() != f) {
                 setFocused(f);
@@ -557,6 +557,7 @@ final class RoadmapScreen extends Screen {
         } else if (BuildWindow.INSTANCE.isOpen()) {
             BuildWindow.INSTANCE.close();
         }
+        BuildWindow.INSTANCE.poll(windowHost);
         // close (drawn last, so the crafting tab's saved panel beside it never covers it): a red seal just outside the window's top-right corner (Esc does the same)
         int[] cr = closeRect;
         boolean closeHover = cr != null && mx >= cr[0] && mx < cr[0] + cr[2] && my >= cr[1] && my < cr[1] + cr[3];
@@ -578,7 +579,15 @@ final class RoadmapScreen extends Screen {
         for (Hit hit : hits) {
             if (mx >= hit.x() && mx < hit.x() + hit.w() && my >= hit.y() && my < hit.y() + hit.h()) {
                 List<Component> marked = hit.stack() == null ? null : requirementTooltip(hit.stack());
-                if (marked != null) {
+                if (hit.stack() != null && hit.tip() != null && !hit.tip().isEmpty()) {
+                    // an item's own tooltip with lines under it (the build window: where it comes from)
+                    List<Component> lines = new ArrayList<>(marked != null ? marked
+                            : Screen.getTooltipFromItem(Minecraft.getInstance(), hit.stack()));
+                    lines.add(Component.empty());
+                    lines.addAll(hit.tip());
+                    g.setTooltipForNextFrame(font, lines, hit.stack().getTooltipImage(), mx, my,
+                            hit.stack().get(net.minecraft.core.component.DataComponents.TOOLTIP_STYLE));
+                } else if (marked != null) {
                     g.setTooltipForNextFrame(font, marked, hit.stack().getTooltipImage(), mx, my,
                             hit.stack().get(net.minecraft.core.component.DataComponents.TOOLTIP_STYLE));
                 } else if (hit.stack() != null) {
@@ -1542,6 +1551,20 @@ final class RoadmapScreen extends Screen {
         }
 
         @Override
+        public void item(int x, int y, int w, int h, ItemData info, ItemStack stack, List<Component> extra) {
+            // first in the list: an icon lies over its card, and the first hit under the mouse shows.
+            // Wynntils' own tooltip for its guide stack; without one, the item data's
+            if (iconInfo.containsKey(stack)) {
+                hits.add(0, new Hit(x, y, w, h, stack, extra, null));
+            } else {
+                List<Component> tip = new ArrayList<>(BuildWindow.itemTooltip(info));
+                tip.add(Component.empty());
+                tip.addAll(extra);
+                hits.add(0, new Hit(x, y, w, h, null, tip, null));
+            }
+        }
+
+        @Override
         public ItemStack icon(ItemData info) {
             return RoadmapScreen.this.icon(info);
         }
@@ -1926,12 +1949,12 @@ final class RoadmapScreen extends Screen {
             bx -= planW;
             // purple when selected, like the chosen items on the panel
             if (planOn) {
-                Art.box(g, bx, y - 3, planW, 14, 3, HomeTab.CHOSEN, 0xFF3E2766);
+                Kit.ledgerPrimary(g, bx, y - 3, planW, 14);
             } else {
                 Kit.ledger(g, bx, y - 3, planW, 14, false);
             }
             if (planOn) {
-                g.drawString(font, planText, bx + 6, y, HomeTab.CHOSEN_TEXT, false);
+                g.drawString(font, planText, bx + 6, y, Theme.CREAM, false);
             } else {
                 onWood(g, planText, bx + 6, y, Kit.REST);
             }

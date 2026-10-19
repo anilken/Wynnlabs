@@ -293,27 +293,27 @@ final class HomeTab {
         Component title = Component.literal(L.t("wynnlabs.homev.gear")).withStyle(UiFont::bold);
         int ty = y + PAD + 1;
         Art.icon(g, "hanger", x + PAD, ty, 8, Theme.INK_2);
-        Kit.text(g, font, title, x + PAD + 11, ty, Theme.INK);
-        int tx = x + PAD + 11 + font.width(title) + 5;
+        // compact with a plan (its pill as well): the hanger alone, so the buttons keep their room
+        boolean named = !compact || Plans.current() == null;
+        if (named) {
+            Kit.text(g, font, title, x + PAD + 11, ty, Theme.INK);
+        }
+        int tx = x + PAD + 11 + (named ? font.width(title) + 5 : 0);
         tx += host.refresh(g, tx, ty - 3, mx, my);
         // the hanger's drawing starts 1px inside its 8px: the buttons end 1px further in to match
         int right = x + w - PAD - 1;
         int titleRoom = right - tx - 2;
         // "My builds" and "Choose items" left of the level buttons; only their icons when the row is tight
-        String pick = in.chosen() > 0 ? L.t("wynnlabs.homev.pick_n", in.chosen()) : L.t("wynnlabs.homev.pick");
-        String saved = L.t("wynnlabs.homev.saved_n", in.saved());
-        int pickFull = font.width(pick) + 17;
-        int savedFull = font.width(saved) + 17;
-        boolean words = titleRoom - pickFull - savedFull - 8 >= (compact ? 96 : 140);
-        int pickW = words ? pickFull : 16;
-        int savedW = words ? savedFull : 16;
+        // "My builds" and "Choose items" as icons with their counts, left of the level buttons
+        int pickW = countW(in.chosen());
+        int savedW = countW(in.saved());
         int pills = host.levelPills(g, ty, right, titleRoom - pickW - savedW - 8);
         int bx = pills - 4 - pickW;
         if (bx >= tx) {
-            pickButton(g, host, bx, ty - 3, pickW, words ? pick : null, in, mx, my);
+            pickButton(g, host, bx, ty - 3, pickW, in, mx, my);
             bx -= 3 + savedW;
             if (bx >= tx) {
-                savedButton(g, host, bx, ty - 3, savedW, words ? saved : null, in, mx, my);
+                savedButton(g, host, bx, ty - 3, savedW, in, mx, my);
             }
         }
 
@@ -400,23 +400,30 @@ final class HomeTab {
         }
     }
 
+    /** An icon button's width with its count beside the icon (none for 0). */
+    private int countW(int n) {
+        return n > 0 ? 16 + font.width(String.valueOf(n)) + 2 : 16;
+    }
+
     /**
-     * "Choose items (2)" in purple: opens the window that builds around the items you pick; a
-     * right-click clears them. Three cycling dots instead of its icon while a search runs.
-     * {@code text} null: the icon alone.
+     * "Choose items" as a purple button with a plus and the count of chosen items: opens the
+     * window that builds around the items you pick; a right-click clears them. Three cycling
+     * dots instead of the plus while a search runs. Its name and use are in the tooltip.
      */
-    private void pickButton(GuiGraphics g, Host host, int x, int y, int w, String text, In in, int mx, int my) {
+    private void pickButton(GuiGraphics g, Host host, int x, int y, int w, In in, int mx, int my) {
         boolean hover = mx >= x && mx < x + w && my >= y && my < y + 14;
-        Art.box(g, x, y, w, 14, 3, hover ? 0xFF6E4CA6 : CHOSEN, 0xFF3E2766);
+        Kit.primary(g, x, y, w, 14, hover);
         if (in.searching()) {
-            dots(g, x + 4, y + 6, CHOSEN_TEXT);
+            dots(g, x + 4, y + 7, Theme.CREAM);
         } else {
-            Art.icon(g, in.chosen() > 0 ? "lock" : "target", x + 4, y + 3, 8, CHOSEN_TEXT);
+            Art.icon(g, "plus", x + 4, y + 3, 8, Theme.CREAM);
         }
-        if (text != null) {
-            g.drawString(font, text, x + 14, y + 3, CHOSEN_TEXT, false);
+        if (in.chosen() > 0) {
+            g.drawString(font, String.valueOf(in.chosen()), x + 13, y + 3, Theme.CREAM, false);
         }
         List<Component> tip = new ArrayList<>();
+        tip.add(Component.literal(in.chosen() > 0 ? L.t("wynnlabs.homev.pick_n", in.chosen()) : L.t("wynnlabs.homev.pick"))
+                .withStyle(ChatFormatting.WHITE));
         tip.add(L.c("wynnlabs.homev.pick_tip").withStyle(ChatFormatting.LIGHT_PURPLE));
         for (String n : Locks.names()) {
             tip.add(Component.literal("  " + n).withStyle(ChatFormatting.GRAY));
@@ -428,16 +435,17 @@ final class HomeTab {
         host.area(x, y, w, 14, null, tip, "#qpick:");
     }
 
-    /** "My builds (3)" on wood: the saved builds' window. {@code text} null: the bookmark alone. */
-    private void savedButton(GuiGraphics g, Host host, int x, int y, int w, String text, In in, int mx, int my) {
+    /** "My builds" as a wood button with a bookmark and the count of saved builds. */
+    private void savedButton(GuiGraphics g, Host host, int x, int y, int w, In in, int mx, int my) {
         boolean hover = mx >= x && mx < x + w && my >= y && my < y + 14;
         int state = hover ? Kit.HOVER : Kit.REST;
         Kit.button(g, x, y, w, 14, state);
         Art.icon(g, "bookmark", x + 4, y + 3, 8, Kit.buttonText(state));
-        if (text != null) {
-            g.drawString(font, text, x + 14, y + 3, Kit.buttonText(state), false);
+        if (in.saved() > 0) {
+            g.drawString(font, String.valueOf(in.saved()), x + 13, y + 3, Kit.buttonText(state), false);
         }
-        host.area(x, y, w, 14, null, List.of(L.c("wynnlabs.homev.saved_tip").withStyle(ChatFormatting.LIGHT_PURPLE)), "#qsaved:");
+        host.area(x, y, w, 14, null, List.of(Component.literal(L.t("wynnlabs.homev.saved_n", in.saved())).withStyle(ChatFormatting.WHITE),
+                L.c("wynnlabs.homev.saved_tip").withStyle(ChatFormatting.LIGHT_PURPLE)), "#qsaved:");
     }
 
     /**
@@ -607,7 +615,7 @@ final class HomeTab {
      */
     private void slot(GuiGraphics g, Host host, SlotView v, int sx, int sy, int s, boolean left, int zone, int lines, boolean large) {
         ItemStack show = showOf(v);
-        box(g, v, show, sx, sy, s, large);
+        box(g, v, show, sx, sy, s, large, !left);
         // the frame of an upgrade reaches 1px out: its pill starts the same gap from the frame as a tick's from the square
         int bx = left ? sx + s + MARK_GAP + 1 : sx - MARK_GAP - 1 - zone;
         List<String> name = lines == 0 ? List.of() : wrap2(nameOf(v), zone);
@@ -636,7 +644,7 @@ final class HomeTab {
     private void weaponSlot(GuiGraphics g, Host host, SlotView v, int sx, int sy, int s, int right, int bottom, boolean names,
             boolean large) {
         ItemStack show = showOf(v);
-        box(g, v, show, sx, sy, s, large);
+        box(g, v, show, sx, sy, s, large, false);
         int pw = markW(v);
         int px = sx + s + MARK_GAP + 1;
         int py = sy + (s - PILL_H) / 2;
@@ -666,13 +674,14 @@ final class HomeTab {
     }
 
     /** A slot's square and its item (or the game's empty-slot picture). */
-    private void box(GuiGraphics g, SlotView v, ItemStack show, int sx, int sy, int s, boolean large) {
+    private void box(GuiGraphics g, SlotView v, ItemStack show, int sx, int sy, int s, boolean large, boolean badgeRight) {
         int frame = v.mark() == Mark.CHOSEN ? CHOSEN : v.gear() != null || v.mark() == Mark.GET ? UP : 0;
         slotBox(g, sx, sy, s, frame);
         if (v.mark() == Mark.CHOSEN || v.mark() == Mark.DONE_CHOSEN) {
-            // the lock badge on the frame's top-left corner (the item's transparent corner may lie over its edge)
-            g.fill(sx - 3, sy - 3, sx + 7, sy + 7, CHOSEN);
-            Art.icon(g, "lock", sx - 2, sy - 2, 8, CHOSEN_TEXT);
+            // the lock badge on the corner away from the pill (the item's transparent corner may lie over its edge)
+            int bx = badgeRight ? sx + s - 7 : sx - 3;
+            Kit.seal(g, bx, sy - 3, 10, 10, CHOSEN);
+            Art.icon(g, "lock", bx + 1, sy - 2, 8, CHOSEN_TEXT);
         }
         int is = large ? 32 : 16;
         int o = (s - is) / 2;
@@ -848,27 +857,41 @@ final class HomeTab {
     private void planBar(GuiGraphics g, In in, Host host, int x, int y, int w, boolean compact) {
         PlanLine p = in.plan();
         boolean done = p.total() > 0 && p.worn() >= p.total();
-        String line = done ? L.t("wynnlabs.homev.plan_done")
-                : L.t("wynnlabs.homev.plan_line", p.name(), p.worn(), p.total())
-                        + (p.left() > 0 && !Double.isNaN(p.left()) ? " · " + L.t("wynnlabs.homev.plan_left", Prices.fmt(p.left())) : "");
-        String hint = p.better() > 0 ? L.t("wynnlabs.homev.plan_better", p.better()) : null;
+        // the longest forms that fit side by side, never cut: the line with the plan's name, then
+        // the count alone; the hint whole, then short (the bar gives way to them when compact)
+        String left = p.left() > 0 && !Double.isNaN(p.left()) ? " · " + L.t("wynnlabs.homev.plan_left", Prices.fmt(p.left())) : "";
+        String[] lines = done ? new String[] {L.t("wynnlabs.homev.plan_done")}
+                : new String[] {L.t("wynnlabs.homev.plan_line", p.name(), p.worn(), p.total()) + left,
+                    L.t("wynnlabs.homev.plan_line_short", p.worn(), p.total()) + left,
+                    L.t("wynnlabs.homev.plan_line_short", p.worn(), p.total())};
+        String[] hints = p.better() <= 0 ? new String[] {null}
+                : new String[] {L.t("wynnlabs.homev.plan_better", p.better()), L.t("wynnlabs.homev.plan_better_short", p.better())};
         List<Component> tip = new ArrayList<>();
         tip.add(Component.literal(p.name()).withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(UiFont::bold));
         tip.add(L.c("wynnlabs.homev.plan_tip", p.worn(), p.total()).withStyle(ChatFormatting.GRAY));
         tip.add(L.c("wynnlabs.homev.plan_fixed_tip").withStyle(ChatFormatting.DARK_GRAY));
         int ty = compact ? y : y + 11;
-        int hw = hint == null ? 0 : Math.min(font.width(hint), w / 2);
-        String h = hint == null ? null : fit(hint, hw);
-        int room = w - (h == null ? 0 : hw + 8);
-        if (compact) {
-            room = h == null ? w * 2 / 3 : room;
+        int icon = done ? 10 : 0;
+        String line = lines[lines.length - 1];
+        String h = hints[hints.length - 1];
+        search:
+        for (String hc : hints) {
+            for (String lc : lines) {
+                int need = icon + font.width(lc) + (hc == null ? 0 : 8 + font.width(hc)) + (compact && hc == null ? 30 : 0);
+                if (need <= w) {
+                    line = lc;
+                    h = hc;
+                    break search;
+                }
+            }
         }
+        int hw = h == null ? 0 : font.width(h);
+        int room = w - (h == null ? 0 : hw + 8) - icon;
         line = fit(line, room);
-        int lx = compact || h != null ? x : x + (w - font.width(line)) / 2;
+        int lx = compact || h != null ? x : x + (w - font.width(line) - icon) / 2;
         if (done) {
             Art.icon(g, "check", lx, ty, 8, Theme.GOOD);
             lx += 10;
-            line = fit(line, room - 10);
         }
         Kit.text(g, font, line, lx, ty, done ? Theme.GOOD : CHOSEN);
         int lineEnd = lx + font.width(line);
@@ -896,9 +919,12 @@ final class HomeTab {
             bh = 6;
         }
         if (bw > 8) {
-            int fw = (int) Math.round(bw * frac);
-            g.fill(bx, by, bx + bw, by + bh, Theme.WELL);
-            g.fill(bx, by, bx + fw, by + bh, done ? UP : CHOSEN_BODY);
+            // the kit's bar: green when complete, else the chosen items' purple
+            if (done) {
+                Kit.bar(g, bx, by, bw, bh, frac, Theme.GREEN_HI, Theme.GREEN, Theme.GREEN_LO, false);
+            } else {
+                Kit.bar(g, bx, by, bw, bh, frac, 0xFFB79FE0, 0xFF8A6CC0, 0xFF5A3A8A, false);
+            }
         }
         host.area(x, y, h == null ? w : Math.max(1, x + w - hw - 8 - x), compact ? 9 : 20, null, tip, null);
     }

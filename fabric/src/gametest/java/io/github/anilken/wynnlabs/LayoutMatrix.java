@@ -599,7 +599,7 @@ public class LayoutMatrix implements FabricClientGameTest {
 
     /** The recorded Shaman's builds around the Dexterity relik, worked out once for the home's build states. */
     private static Around.Result builds;
-    private static final List<String> AROUND = List.of("Covetous Thunder", "Morph-Emerald");
+    private static final List<String> AROUND = List.of("Covetous Thunder", "Tainted Ruby");
 
     /**
      * The home's build states at this size, measured and shot (at every size: the smallest one
@@ -626,6 +626,19 @@ public class LayoutMatrix implements FabricClientGameTest {
             measure(ctx, where + " home-" + s, gui, report, areas);
             ctx.takeScreenshot(TestScreenshotOptions.of(file + "-home-" + s + (VANILLA ? "-vanilla" : ""))
                     .disableCounterPrefix().withDestinationDir(dir));
+            if (s.equals("results")) {
+                // the mouse on a chosen item's icon: its tooltip over the window
+                ctx.waitTicks(1);
+                double[] at = ctx.computeOnClient(mc -> {
+                    int[] r = BuildWindow.INSTANCE.firstIcon;
+                    return r == null ? null : onScreen(mc, r);
+                });
+                if (at == null) {
+                    report.computeIfAbsent(where + " home-results", k -> new ArrayList<>()).add("no chosen item's icon to hover");
+                } else {
+                    hoverShot(ctx, at, dir, file + "-home-results-tip" + (VANILLA ? "-vanilla" : ""));
+                }
+            }
             if (s.equals("results") && where.startsWith("1920x1080@3")) {
                 // one in English
                 ctx.runOnClient(mc -> Settings.setNumber("langOverride", 1));

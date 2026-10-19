@@ -34,6 +34,12 @@ final class BuildWindow {
     interface Host {
         void tip(int x, int y, int w, int h, List<Component> tip);
 
+        /**
+         * An item icon's hover: the item's own tooltip (Wynntils' for its guide stack, else
+         * {@link #itemTooltip}) with {@code extra} lines under it.
+         */
+        void item(int x, int y, int w, int h, ItemData info, ItemStack stack, List<Component> extra);
+
         ItemStack icon(ItemData info);
 
         void flash(String text);
@@ -53,6 +59,10 @@ final class BuildWindow {
 
     private Font font;
     private boolean open;
+    /** The compact menu this frame: the result view in one column. */
+    private boolean compact;
+    /** The preview: the first chosen item's icon drawn this frame (x, y, w, h), for a hover shot. */
+    int[] firstIcon;
     private View view = View.PICK;
     private final List<Btn> btns = new ArrayList<>();
     private EditBox search;
@@ -208,6 +218,18 @@ final class BuildWindow {
         awaitGen = -1;
     }
 
+    /**
+     * Each frame while the window is closed: a search it started has finished, so say so; the
+     * results wait for the window to open again.
+     */
+    void poll(Host host) {
+        Around.Result r = Around.result();
+        if (!open && awaitGen >= 0 && r != null && r.gen() == awaitGen) {
+            awaitGen = -1;
+            host.flash(L.n("wynnlabs.pick.ready", r.builds().size(), r.builds().size()));
+        }
+    }
+
     /** The click areas drawn this frame, for the preview's layout check. */
     List<LayoutCheck.Area> clickAreas() {
         List<LayoutCheck.Area> out = new ArrayList<>();
@@ -223,7 +245,9 @@ final class BuildWindow {
     /**
      * Draws the window over the menu {@code menu} (x, y, w, h), {@code large} for the large menu.
      */
-    void draw(GuiGraphics g, int[] menu, boolean large, Host host, int mx, int my, float pt) {
+    void draw(GuiGraphics g, int[] menu, boolean large, boolean compact, Host host, int mx, int my, float pt) {
+        this.compact = compact;
+        firstIcon = null;
         btns.clear();
         if (!open) {
             return;
@@ -457,30 +481,40 @@ final class BuildWindow {
         List<String> forNames = pv != null ? names(chosen) : Around.runningFor();
         String who = forNames.isEmpty() ? L.t("wynnlabs.pick.loading_none") : L.t("wynnlabs.pick.loading", String.join(", ", forNames));
         int cx = x + w / 2;
-        int ty = y + Math.max(6, (h - 74) / 2);
+        // the lines that fit, top to bottom: the title, the phase, the bar, the count, the best, Cancel
+        boolean hasBest = !Double.isNaN(best) && best > 0;
+        boolean showPhase = h >= 50;
+        boolean showCount = h >= 62;
+        boolean showBest = hasBest && h >= 74;
+        int need = 14 + (showPhase ? 14 : 0) + 9 + (showCount ? 11 : 0) + (showBest ? 11 : 0) + 15;
+        int ty = y + Math.max(3, (h - need) / 2);
         Component t = Component.literal(fit(who, w - 40, true)).withStyle(UiFont::bold);
         int tw = font.width(t);
-        spinner(g, cx - (tw + 14) / 2, ty + 4, pv != null);
+        spinner(g, cx - (tw + 14) / 2 + 4, ty + 4, pv != null);
         Kit.text(g, font, t, cx - (tw + 14) / 2 + 14, ty, CHOSEN);
-        String ph = L.t(PHASES[Math.max(0, Math.min(PHASES.length - 1, phase))]);
-        Kit.text(g, font, fit(ph, w - 16, false), cx - Math.min(font.width(ph), w - 16) / 2, ty + 14, Theme.INK_2);
+        int ly = ty + 14;
+        if (showPhase) {
+            String ph = L.t(PHASES[Math.max(0, Math.min(PHASES.length - 1, phase))]);
+            Kit.text(g, font, fit(ph, w - 16, false), cx - Math.min(font.width(ph), w - 16) / 2, ly, Theme.INK_2);
+            ly += 14;
+        }
         int bw = Math.min(220, w - 24);
         int bx = cx - bw / 2;
-        Kit.bar(g, bx, ty + 28, bw, 5, Math.max(0, Math.min(1, frac)), 0xFFB79FE0, 0xFF8A6CC0, 0xFF5A3A8A, false);
-        String count = L.n("wynnlabs.pick.tried", tried, String.format(Locale.ROOT, "%,d", tried));
-        Kit.text(g, font, fit(count, w - 16, false), cx - Math.min(font.width(count), w - 16) / 2, ty + 37, Theme.INK_3);
-        if (!Double.isNaN(best) && best > 0) {
-            String b = L.t("wynnlabs.pick.best_so_far", String.format(Locale.ROOT, "%,d", Math.round(best)));
-            Kit.text(g, font, fit(b, w - 16, false), cx - Math.min(font.width(b), w - 16) / 2, ty + 48, Theme.INK_3);
+        Kit.bar(g, bx, ly, bw, 5, Math.max(0, Math.min(1, frac)), 0xFFB79FE0, 0xFF8A6CC0, 0xFF5A3A8A, false);
+        ly += 9;
+        if (showCount) {
+            String count = L.n("wynnlabs.pick.tried", tried, String.format(Locale.ROOT, "%,d", tried));
+            Kit.text(g, font, fit(count, w - 16, false), cx - Math.min(font.width(count), w - 16) / 2, ly, Theme.INK_3);
+            ly += 11;
         }
-        String c = L.t("wynnlabs.pick.cancel");
-        int cw = font.width(c) + 14;
-        int cby = Math.min(y + h - 16, ty + 60);
-        boolean hov = in(mx, my, cx - cw / 2, cby, cw, 13);
-        Kit.button(g, cx - cw / 2, cby, cw, 13, hov ? Kit.HOVER : Kit.REST);
-        g.drawString(font, c, cx - cw / 2 + 7, cby + 3, Kit.buttonText(Kit.REST), false);
-        btn(cx - cw / 2, cby, cw, 13, "cancelRun", null);
-        host.tip(cx - cw / 2, cby, cw, 13, List.of(L.c("wynnlabs.pick.cancel_tip").withStyle(ChatFormatting.GRAY)));
+        if (showBest) {
+            String b = L.t("wynnlabs.pick.best_so_far", String.format(Locale.ROOT, "%,d", Math.round(best)));
+            Kit.text(g, font, fit(b, w - 16, false), cx - Math.min(font.width(b), w - 16) / 2, ly, Theme.INK_3);
+            ly += 11;
+        }
+        int cby = Math.min(y + h - 15, ly + 2);
+        control(g, host, cx - ICON_W / 2, cby, 14, "x", L.t("wynnlabs.pick.cancel"), WOOD, false, 0, "cancelRun", null,
+                List.of(L.c("wynnlabs.pick.cancel_tip").withStyle(ChatFormatting.GRAY)), mx, my);
     }
 
     /**
@@ -517,18 +551,23 @@ final class BuildWindow {
 
     // ---- the tuning strip ----
 
-    /** The strip's parts as {label, tooltip key, action, arg}: the three foci, Mana, Speed, the budget. */
+    /**
+     * The strip's parts as {icon, label, tooltip key, action, arg, on, text}: the three foci as
+     * icons (sword, scale, shield), Mana (a drop), Speed (a shoe), and the budget (a coin with
+     * its amount, "∞" for no limit). Only the budget shows text.
+     */
     private List<Object[]> stripParts(Tuning.Choice t) {
         List<Object[]> out = new ArrayList<>();
         String[] foci = {"wynnlabs.pick.focus_damage", "wynnlabs.pick.focus_balanced", "wynnlabs.pick.focus_tanky"};
+        String[] icons = {"sword", "scale", "shield"};
         int[] order = {Tuning.DAMAGE, Tuning.BALANCED, Tuning.TANKY};
         for (int i = 0; i < 3; i++) {
-            out.add(new Object[] {L.t(foci[i]), FOCUS_TIPS[i], "focus", order[i], t.focus() == order[i]});
+            out.add(new Object[] {icons[i], L.t(foci[i]), FOCUS_TIPS[i], "focus", order[i], t.focus() == order[i], null});
         }
-        out.add(new Object[] {L.t("wynnlabs.pick.mana"), "wynnlabs.pick.mana_tip", "mana", null, t.mana()});
-        out.add(new Object[] {L.t("wynnlabs.pick.speed"), "wynnlabs.pick.speed_tip", "speed", null, t.speed()});
-        out.add(new Object[] {L.t("wynnlabs.pick.budget", budgetText(t.budget())), "wynnlabs.pick.budget_tip", "budget", null,
-            t.budget() > 0});
+        out.add(new Object[] {"droplet", L.t("wynnlabs.pick.mana"), "wynnlabs.pick.mana_tip", "mana", null, t.mana(), null});
+        out.add(new Object[] {"shoe", L.t("wynnlabs.pick.speed"), "wynnlabs.pick.speed_tip", "speed", null, t.speed(), null});
+        out.add(new Object[] {"coin", L.t("wynnlabs.pick.budget", budgetText(t.budget())), "wynnlabs.pick.budget_tip", "budget", null,
+            t.budget() > 0, t.budget() <= 0 ? "∞" : Prices.fmt(t.budget())});
         return out;
     }
 
@@ -536,72 +575,67 @@ final class BuildWindow {
         return budget <= 0 ? L.t("wynnlabs.pick.budget_none") : Prices.fmt(budget);
     }
 
-    /** The strip's height at width {@code w}: one row of 12, or two when it does not fit. */
+    /** The strip's height: one row of buttons. */
     private int stripHeight(int w) {
-        return stripRows(w) == 1 ? 12 : 26;
-    }
-
-    private int stripRows(int w) {
-        int total = 0;
-        for (Object[] p : stripParts(tuning)) {
-            total += font.width((String) p[0]) + 10 + 3;
-        }
-        return total + 6 <= w ? 1 : 2;
+        return 14;
     }
 
     /**
-     * One row (two when narrow: the foci on the first): Damage / Balanced / Tanky as one
-     * segmented control, then Mana and Speed, then the budget. {@code live}: clickable.
+     * One row: Damage / Balanced / Tanky as one segmented control of icons, then Mana and Speed,
+     * then the budget; each a wood button (gold when on) whose tooltip names it. {@code live}: clickable.
      */
     private void strip(GuiGraphics g, Host host, int x, int y, int w, int mx, int my, boolean live) {
         List<Object[]> parts = stripParts(tuning);
-        boolean two = stripRows(w) == 2;
         int px = x;
-        int py = y;
         for (int i = 0; i < parts.size(); i++) {
             Object[] p = parts.get(i);
-            if (two && i == 3) {
-                px = x;
-                py += 14;
-            } else if (i == 3) {
-                px += 6;                                    // a little space after the segmented control
+            if (i == 3 || i == 5) {
+                px += 5;                                    // apart from the segmented control and the toggles
             }
-            String label = (String) p[0];
-            int tw = font.width(label) + 10;
-            boolean on = (boolean) p[4];
-            boolean hov = live && in(mx, my, px, py, tw, 12);
-            Kit.button(g, px, py, tw, 12, on ? Kit.ON : hov ? Kit.HOVER : Kit.REST);
-            g.drawString(font, label, px + 5, py + 2, Kit.buttonText(on ? Kit.ON : Kit.REST), false);
+            String icon = (String) p[0];
+            String text = (String) p[6];
+            boolean on = (boolean) p[5];
+            int bw = text == null ? ICON_W : 11 + font.width(text) + 12;
+            boolean hov = live && in(mx, my, px, y, bw, 14);
+            int state = on ? Kit.ON : hov ? Kit.HOVER : Kit.REST;
+            Kit.button(g, px, y, bw, 14, state);
+            if (text == null) {
+                Art.icon(g, icon, px + (bw - 8) / 2, y + 3, 8, Kit.buttonText(state));
+            } else {
+                Art.icon(g, icon, px + 6, y + 3, 8, Kit.buttonText(state));
+                g.drawString(font, text, px + 17, y + 3, Kit.buttonText(state), false);
+            }
             if (live) {
-                btn(px, py, tw, 12, (String) p[2], p[3]);
-                host.tip(px, py, tw, 12, List.of(L.c((String) p[1]).withStyle(ChatFormatting.GRAY)));
+                btn(px, y, bw, 14, (String) p[3], p[4]);
+                host.tip(px, y, bw, 14, List.of(Component.literal((String) p[1]).withStyle(ChatFormatting.WHITE),
+                        L.c((String) p[2]).withStyle(ChatFormatting.GRAY)));
             }
-            px += tw + (i < 2 ? 1 : 3);
+            px += bw + (i < 2 ? 1 : 3);
         }
     }
 
-    /** The chosen items as chips (✕ takes one out), "Clear", and "Suggest build" on the right. */
+    /**
+     * The chosen items as chips (a click takes one out), Clear (an eraser), and the purple
+     * "Suggest build" on the right (its sparkles alone when the row is tight).
+     */
     private void drawChips(GuiGraphics g, Host host, int x, int y, int w, Locks.Problem problem, int mx, int my) {
-        String sug = L.t("wynnlabs.pick.suggest");
-        int sw = font.width(sug) + 18;
-        int sx = x + w - sw;
         boolean can = !chosen.isEmpty() && problem == null || chosen.isEmpty();
-        boolean hov = can && in(mx, my, sx, y, sw, 14);
-        Art.box(g, sx, y, sw, 14, 3, !can ? 0xFF9C8FB0 : hov ? 0xFF6E4CA6 : CHOSEN, 0xFF3E2766);
-        Art.icon(g, "sparkles", sx + 4, y + 3, 8, CHOSEN_TEXT);
-        g.drawString(font, sug, sx + 14, y + 3, CHOSEN_TEXT, false);
+        String sug = L.t("wynnlabs.pick.suggest");
+        int sw = controlW("sparkles", sug, w / 3);
+        int sx = x + w - sw;
+        List<Component> sugTip = List.of(L.c(can ? "wynnlabs.pick.suggest_tip" : "wynnlabs.pick.suggest_off").withStyle(ChatFormatting.GRAY));
         if (can) {
-            btn(sx, y, sw, 14, "suggest", null);
+            control(g, host, sx, y, 14, "sparkles", sug, PRIMARY, false, w / 3, "suggest", null, sugTip, mx, my);
+        } else {
+            control(g, host, sx, y, 14, "sparkles", sug, WOOD, false, w / 3, null, null, sugTip, mx, my);
         }
-        host.tip(sx, y, sw, 14, List.of(L.c(can ? "wynnlabs.pick.suggest_tip" : "wynnlabs.pick.suggest_off").withStyle(ChatFormatting.GRAY)));
         int cx = x;
         int room = sx - 6;
         if (chosen.isEmpty()) {
             Kit.text(g, font, fit(L.t("wynnlabs.pick.chips_none"), room - x, false), x, y + 3, Theme.INK_3);
             return;
         }
-        String clear = L.t("wynnlabs.pick.clear");
-        int clearW = font.width(clear) + 10;
+        int clearW = ICON_W;
         for (int i = 0; i < chosen.size(); i++) {
             ItemData it = chosen.get(i);
             int left = chosen.size() - i;
@@ -613,19 +647,22 @@ final class BuildWindow {
                 cx += moreW;
                 break;
             }
-            Art.box(g, cx, y, cw, 14, 3, 0xFFE4D8F2, CHOSEN);
-            Kit.text(g, font, Component.literal(fit(it.name(), cw - 18, false)).withStyle(it.tier().colour()), cx + 4, y + 3, Theme.INK);
+            chip(g, cx, y, cw, 14, in(mx, my, cx, y, cw, 14));
+            Kit.text(g, font, Component.literal(fit(it.name(), cw - 18, false)).withStyle(it.tier().colour()), cx + 5, y + 3, Theme.INK);
             Art.icon(g, "x", cx + cw - 11, y + 3, 8, CHOSEN);
             btn(cx, y, cw, 14, "unchoose", it);
             host.tip(cx, y, cw, 14, List.of(Component.literal(it.name()).withStyle(it.tier().colour()),
                     L.c("wynnlabs.pick.chip_tip").withStyle(ChatFormatting.DARK_GRAY)));
             cx += cw + 3;
         }
-        boolean ch = in(mx, my, cx, y, clearW, 14);
-        Kit.button(g, cx, y, clearW, 14, ch ? Kit.HOVER : Kit.REST);
-        g.drawString(font, clear, cx + 5, y + 3, Kit.buttonText(Kit.REST), false);
-        btn(cx, y, clearW, 14, "clear", null);
-        host.tip(cx, y, clearW, 14, List.of(L.c("wynnlabs.pick.clear_tip").withStyle(ChatFormatting.GRAY)));
+        control(g, host, cx, y, 14, "eraser", L.t("wynnlabs.pick.clear"), WOOD, false, 0, "clear", null,
+                List.of(L.c("wynnlabs.pick.clear_tip").withStyle(ChatFormatting.GRAY)), mx, my);
+    }
+
+    /** A chosen item's chip: the kit's pill, washed purple, with its purple outline (lighter on hover). */
+    private static void chip(GuiGraphics g, int x, int y, int w, int h, boolean hover) {
+        Kit.seal(g, x, y, w, h, hover ? 0xFFEFE6FA : 0xFFE4D8F2);
+        Kit.pillLine(g, x, y, w, h, CHOSEN);
     }
 
     // ---- RESULTS ----
@@ -636,16 +673,21 @@ final class BuildWindow {
     private void drawResults(GuiGraphics g, Host host, int x, int y, int w, int h, int mx, int my) {
         Around.Result r = result;
         // the header: back to the items, the count found around them
-        String back = "‹ " + L.t("wynnlabs.results.back");
-        int bw = font.width(back) + 10;
-        boolean bh = in(mx, my, x, y - 2, bw, 13);
-        Kit.button(g, x, y - 2, bw, 13, bh ? Kit.HOVER : Kit.REST);
-        g.drawString(font, back, x + 5, y + 1, Kit.buttonText(Kit.REST), false);
-        btn(x, y - 2, bw, 13, "back", null);
+        int bw = control(g, host, x, y - 3, 14, "arrow-left", L.t("wynnlabs.results.back"), WOOD, false, 0, "back", null,
+                List.of(L.c("wynnlabs.results.back_tip").withStyle(ChatFormatting.GRAY)), mx, my);
         int n = r == null ? 0 : r.builds().size();
         String around = r == null || r.around().isEmpty() ? null : String.join(", ", r.around());
         String head = around == null ? L.n("wynnlabs.results.found_plain", n, n) : L.n("wynnlabs.results.found", n, n, around);
-        Kit.text(g, font, Component.literal(fit(head, w - bw - 24, true)).withStyle(UiFont::bold), x + bw + 6, y, Theme.INK);
+        int headRoom = w - bw - 24;
+        if (width(head, true) > headRoom) {
+            // too long with the items' names: the count alone, the names in the tooltip
+            head = L.n("wynnlabs.results.found_plain", n, n);
+            if (around != null) {
+                host.tip(x + bw + 6, y, Math.min(headRoom, width(head, true)), 9,
+                        List.of(Component.literal(around).withStyle(ChatFormatting.LIGHT_PURPLE)));
+            }
+        }
+        Kit.text(g, font, Component.literal(fit(head, headRoom, true)).withStyle(UiFont::bold), x + bw + 6, y, Theme.INK);
         int top = y + 16;
         int footY = y + h - 14;
         if (r == null || r.builds().isEmpty()) {
@@ -657,28 +699,45 @@ final class BuildWindow {
             return;
         }
         card = Math.max(0, Math.min(card, n - 1));
+        if (r.problem() != null) {
+            // the chosen items could not be held: these are the builds without them
+            Kit.text(g, font, fit(L.t("wynnlabs.pick.problem", r.problem().text()), w, false), x, top, Theme.BAD);
+            top += 12;
+        }
         int bodyH = footY - 4 - top;
-        boolean two = w >= 380;
+        boolean two = !compact && w >= 380;             // the compact menu: one column, the cards on top
         if (two) {
-            int lw = Math.max(150, Math.min(220, w * 40 / 100));
-            int ch = Math.min(46, (bodyH - (n - 1) * 3) / n);
+            int lw = Math.max(176, Math.min(220, w * 40 / 100));
+            int ch = Math.min(CARD_H, (bodyH - (n - 1) * 3) / n);
             for (int i = 0; i < n; i++) {
                 cardBox(g, host, r.builds().get(i), i, x, top + i * (ch + 3), lw, ch, mx, my, false);
             }
-            details(g, host, r.builds().get(card), x + lw + 8, top, w - lw - 8, bodyH);
+            details(g, host, r.builds().get(card), x + lw + 8, top, w - lw - 8, bodyH, 16);
         } else {
-            // narrow: the cards side by side on top, the details under them
-            int cw = (w - (n - 1) * 3) / n;
-            int ch = 30;
+            // narrow: the cards two by two on top, the details under them
+            int cols = Math.min(2, n);
+            int rowsN = (n + cols - 1) / cols;
+            int cw = (w - (cols - 1) * 3) / cols;
+            int ch = SMALL_CARD_H;
             for (int i = 0; i < n; i++) {
-                cardBox(g, host, r.builds().get(i), i, x + i * (cw + 3), top, cw, ch, mx, my, true);
+                cardBox(g, host, r.builds().get(i), i, x + (i % cols) * (cw + 3), top + (i / cols) * (ch + 3), cw, ch, mx, my, true);
             }
-            details(g, host, r.builds().get(card), x, top + ch + 5, w, bodyH - ch - 5);
+            int used = rowsN * (ch + 3) + 2;
+            details(g, host, r.builds().get(card), x, top + used, w, bodyH - used, 12);
         }
         footer(g, host, x, footY, w, mx, my, true);
     }
 
-    /** One build's card: rank and score with its label, the price, the nine slot squares. */
+    /** A card's height: its score line, its price line and the row of item icons. */
+    private static final int CARD_H = 47;
+    /** A compact card's: the score line, then the 12px icons with the price beside them. */
+    private static final int SMALL_CARD_H = 34;
+
+    /**
+     * One build's card: rank and score with its label, the price (coin and amount), and its nine
+     * pieces as item icons in the panel's slot order, each framed by what it is (purple a chosen
+     * item, green a change from what you wear, plain unchanged); an icon's hover is the item's tooltip.
+     */
     private void cardBox(GuiGraphics g, Host host, Roadmap.Candidate c, int i, int x, int y, int w, int h, int mx, int my, boolean small) {
         boolean on = i == card;
         boolean hov = in(mx, my, x, y, w, h);
@@ -686,29 +745,27 @@ final class BuildWindow {
         if (on) {
             Kit.outline(g, x, y, w, h, CHOSEN);
         }
-        String score = "#" + (i + 1) + " · " + (small ? shortNum(c.score()) : String.format(Locale.ROOT, "%,d", Math.round(c.score())));
+        String score = "#" + (i + 1) + " · " + String.format(Locale.ROOT, "%,d", Math.round(c.score()));
+        if (small && width(score, true) > w / 2) {
+            score = "#" + (i + 1) + " · " + shortNum(c.score());
+        }
         Kit.text(g, font, Component.literal(score).withStyle(UiFont::bold), x + 5, y + 4, Theme.INK);
         int sw = width(score, true);
         if (!c.labels().isEmpty()) {
-            String lab = L.t(labelKey(c.labels().get(0), false));
-            int lw = font.width(lab) + 8;
-            if (x + 5 + sw + 4 + lw <= x + w - 4) {
-                Kit.seal(g, x + w - 4 - lw, y + 3, lw, 11, labelColour(c.labels().get(0)));
-                g.drawString(font, lab, x + w - 4 - lw + 4, y + 5, 0xFFFFFFFF, false);
-            } else if (small) {
-                g.fill(x + w - 6, y + 3, x + w - 3, y + 6, labelColour(c.labels().get(0)));
-            }
+            // the label as a small icon on a seal of its colour (star, coin, shield, shoe); its name in the tooltip
+            String l = c.labels().get(0);
+            Kit.seal(g, x + w - 4 - 14, y + 3, 14, 11, labelColour(l));
+            Art.icon(g, labelIcon(l), x + w - 4 - 11, y + 4, 8, 0xFFFFFFFF);
+            host.tip(x + w - 18, y + 3, 14, 11, List.of(L.c(labelKey(l, false)).withStyle(ChatFormatting.WHITE),
+                    L.c(labelKey(l, true)).withStyle(ChatFormatting.GRAY)));
         }
-        int sy;
-        if (!small) {
-            String price = Double.isNaN(c.price()) ? L.t("wynnlabs.results.price_unknown")
-                    : c.price() <= 0 ? L.t("wynnlabs.results.price_free") : "≈ " + Prices.fmt(c.price());
-            Kit.text(g, font, fit(price, w - 10, false), x + 5, y + 15, Theme.PRICE);
-            sy = y + h - 10;
-        } else {
-            sy = y + h - 10;
-        }
-        squares(g, x + 5, sy, w - 10, c.set(), c.fixed(), worn());
+        int s = small ? 12 : 16;
+        int iy = small ? y + 17 : y + h - s - 5;
+        int iconsW = icons(g, host, x + 5, iy, s, c.set(), c.fixed(), worn(), w - 10);
+        // the price: beside the icons on a compact card, on its own line otherwise
+        int px = small ? x + 5 + iconsW + 4 : x + 5;
+        int py = small ? iy + (s - 8) / 2 : y + 16;
+        price(g, c.price(), px, py, x + w - 4 - px);
         btn(x, y, w, h, "card", i);
         List<Component> tip = new ArrayList<>();
         tip.add(Component.literal(score).withStyle(ChatFormatting.WHITE));
@@ -716,7 +773,31 @@ final class BuildWindow {
             tip.add(L.c(labelKey(l, true)).withStyle(ChatFormatting.LIGHT_PURPLE));
         }
         tip.add(L.c("wynnlabs.results.squares_tip").withStyle(ChatFormatting.DARK_GRAY));
-        host.tip(x, y, w, h, tip);
+        // the card's own tooltip on its text only: the icons have the items'
+        host.tip(x, y, w, iy - y - 1, tip);
+    }
+
+    /** "1.2 LE" after the coin, "nothing to buy", or "price unknown", within {@code room}. */
+    private void price(GuiGraphics g, double price, int x, int y, int room) {
+        if (Double.isNaN(price) || price <= 0) {
+            String t = L.t(Double.isNaN(price) ? "wynnlabs.results.price_unknown" : "wynnlabs.results.price_free");
+            Kit.text(g, font, fit(t, room, false), x, y, Theme.INK_3);
+            return;
+        }
+        if (room < 20) {
+            return;
+        }
+        Art.icon(g, "coin", x, y, 8, Theme.PRICE);
+        Kit.text(g, font, fit(Prices.fmt(price), room - 10, false), x + 10, y, Theme.PRICE);
+    }
+
+    private static String labelIcon(String l) {
+        return switch (l) {
+            case "best" -> "star-filled";
+            case "cheap" -> "coin";
+            case "tanky" -> "shield";
+            default -> "shoe";
+        };
     }
 
     private static int labelColour(String l) {
@@ -732,8 +813,15 @@ final class BuildWindow {
         return v >= 10_000 ? Math.round(v / 1000) + "k" : String.valueOf(Math.round(v));
     }
 
-    /** What you wear now, by build slot (names). */
+    private static Map<String, String> wornCache = Map.of();
+    private static long wornAt;
+
+    /** What you wear now, by build slot (names); read again each second. */
     private static Map<String, String> worn() {
+        long now = System.currentTimeMillis();
+        if (now - wornAt < 1000) {
+            return wornCache;
+        }
         Map<String, String> out = new LinkedHashMap<>();
         Build.Plan p = Build.plan();
         if (p != null && p.worn() != null) {
@@ -743,34 +831,138 @@ final class BuildWindow {
                 }
             });
         }
+        wornCache = out;
+        wornAt = now;
         return out;
     }
 
+    /** The item database's piece of this name (looked up once). */
+    private static final Map<String, java.util.Optional<ItemData>> INFO = new java.util.concurrent.ConcurrentHashMap<>();
+
+    static ItemData itemOf(String name) {
+        return INFO.computeIfAbsent(name, n -> GameState.current().allGear().filter(i -> i.name().equals(n)).findFirst()).orElse(null);
+    }
+
     /**
-     * Nine small squares in the panel's slot order: purple a chosen item, green a slot that
-     * changes from what you wear, plain one that stays.
+     * The nine pieces as item icons of {@code s} pixels in the panel's slot order, each in a 1px
+     * frame: purple a chosen item, green a change from what you wear, the slot's edge colour when
+     * it stays; an empty slot is its frame alone. Each icon's hover is the item's own tooltip
+     * with where it comes from. Returns the width drawn; fewer gaps when {@code room} is tight.
      */
-    private static void squares(GuiGraphics g, int x, int y, int w, Map<String, Damage.Piece> set, java.util.Set<String> fixed,
-            Map<String, String> worn) {
-        int s = Math.max(3, Math.min(7, (w - 8) / 9));
+    private int icons(GuiGraphics g, Host host, int x, int y, int s, Map<String, Damage.Piece> set, java.util.Set<String> fixed,
+            Map<String, String> worn, int room) {
+        int gap = room >= 9 * (s + 2) + 8 * 2 ? 2 : 1;
+        int step = s + 2 + gap;
         for (int i = 0; i < Plans.SLOTS.length; i++) {
             String slot = Plans.SLOTS[i];
             Damage.Piece p = set.get(slot);
             String name = p == null ? null : p.name();
-            int c = fixed.contains(slot) ? CHOSEN : name != null && !name.equals(worn.get(slot)) ? Theme.GREEN : Theme.WELL;
-            int sx = x + i * (s + 1);
-            g.fill(sx, y, sx + s, y + s, Theme.INK_2);
-            g.fill(sx + 1, y + 1, sx + s - 1, y + s - 1, c);
+            boolean locked = fixed.contains(slot);
+            int frame = locked ? CHOSEN : name != null && !name.equals(worn.get(slot)) ? Theme.GREEN : Theme.INK_3;
+            int fx = x + i * step;
+            // the kit's item slot; its edge in the slot's colour (none when it stays as you wear it)
+            Kit.slot(g, fx, y - 1, s + 2, frame == Theme.INK_3 ? 0 : frame);
+            if (name == null) {
+                continue;
+            }
+            ItemData info = itemOf(name);
+            ItemStack icon = info == null ? ItemStack.EMPTY : host.icon(info);
+            if (!icon.isEmpty()) {
+                renderIcon(g, icon, fx + 1, y, s);
+                host.item(fx, y - 1, s + 2, s + 2, info, icon, itemExtra(name, locked, p.stack() != null));
+                if (locked && firstIcon == null) {
+                    firstIcon = new int[] {fx, y - 1, s + 2, s + 2};
+                }
+            }
         }
+        return 9 * step - gap;
     }
 
-    /** The picked build: what changes against what you wear, its skill points, the equip order, and what to get. */
-    private void details(GuiGraphics g, Host host, Roadmap.Candidate c, int x, int y, int w, int h) {
+    /** An item icon at 16 or 12 pixels (scaled down whole). */
+    private static void renderIcon(GuiGraphics g, ItemStack stack, int x, int y, int s) {
+        if (s == 16) {
+            g.renderItem(stack, x, y);
+            return;
+        }
+        g.pose().pushMatrix();
+        g.pose().translate(x, y);
+        g.pose().scale(s / 16f, s / 16f);
+        g.renderItem(stack, 0, 0);
+        g.pose().popMatrix();
+    }
+
+    /**
+     * An item's tooltip from the item data, for when Wynntils has no stack to draw one (the
+     * preview, a Wynntils change): its name in its tier's colour, tier, type and level, the
+     * class and skill requirements, the base stats and the identifications' ranges.
+     */
+    static List<Component> itemTooltip(ItemData info) {
+        List<Component> out = new ArrayList<>();
+        out.add(Component.literal(info.name()).withStyle(info.tier().colour()).withStyle(UiFont::bold));
+        out.add(Component.literal(nice(info.tier().name()) + " " + typeOf(info)).withStyle(info.tier().colour()));
+        out.add(Component.literal("Combat Lv. Min: " + info.level()).withStyle(ChatFormatting.GRAY));
+        info.requirements().klass().ifPresent(k -> out.add(Component.literal("Class Req: " + nice(k.name())).withStyle(ChatFormatting.GRAY)));
+        for (var r : info.requirements().skills()) {
+            out.add(Component.literal(r.skill().displayName() + " Min: " + r.points()).withStyle(ChatFormatting.GRAY));
+        }
+        var base = info.base();
+        if (base.health() != 0) {
+            out.add(Component.literal("❤ Health: " + (base.health() > 0 ? "+" : "") + base.health()).withStyle(ChatFormatting.DARK_RED));
+        }
+        for (var d : base.damages()) {
+            out.add(Component.literal(nice(d.type()) + " Damage: " + d.low() + "-" + d.high()).withStyle(ChatFormatting.GOLD));
+        }
+        for (var d : base.defences()) {
+            out.add(Component.literal(nice(d.element()) + " Defence: " + (d.value() > 0 ? "+" : "") + d.value()).withStyle(ChatFormatting.GRAY));
+        }
+        base.attackSpeed().ifPresent(a -> out.add(Component.literal(nice(a.replace('_', ' ')) + " Attack Speed").withStyle(ChatFormatting.GRAY)));
+        int shown = 0;
+        for (var st : info.stats()) {
+            if (shown++ >= 14) {
+                out.add(Component.literal("…").withStyle(ChatFormatting.DARK_GRAY));
+                break;
+            }
+            String unit = "PERCENT".equals(st.unit()) ? "%" : "";
+            String range = st.fixed() ? signed(st.min()) + unit : signed(st.min()) + unit + " to " + signed(st.max()) + unit;
+            boolean good = st.inverted() ? st.max() <= 0 : st.min() >= 0;
+            out.add(Component.literal(range + " " + st.name()).withStyle(good ? ChatFormatting.GREEN : ChatFormatting.RED));
+        }
+        base.majorId().ifPresent(m -> out.add(Component.literal("+" + m).withStyle(ChatFormatting.AQUA)));
+        return out;
+    }
+
+    private static String signed(int v) {
+        return v > 0 ? "+" + v : String.valueOf(v);
+    }
+
+    /** The lines under an item's own tooltip: where it comes from, and "chosen by you" for a chosen one. */
+    private List<Component> itemExtra(String name, boolean locked, boolean ownedStack) {
+        List<Component> out = new ArrayList<>();
+        boolean have = ownedStack || haveNames().contains(name) || worn().containsValue(name);
+        Object[] src = source(name);
+        String where = have ? L.t("wynnlabs.results.have")
+                : src[1] != null ? L.t("wynnlabs.results.market", Prices.fmt((double) src[1])) : (String) src[0];
+        out.add(Component.literal(where).withStyle(have ? ChatFormatting.GREEN : ChatFormatting.DARK_AQUA));
+        if (locked) {
+            out.add(L.c("wynnlabs.results.chosen_by_you").withStyle(ChatFormatting.LIGHT_PURPLE));
+        }
+        return out;
+    }
+
+    /**
+     * The picked build: its nine pieces as icons, what changes against what you wear, its skill
+     * points, the equip order, and what to get (each with its icon and where it comes from, a
+     * price after the coin). {@code s}: the icon size.
+     */
+    private void details(GuiGraphics g, Host host, Roadmap.Candidate c, int x, int y, int w, int h, int s) {
         Kit.outline(g, x, y, w, h, Theme.LINE);
         int ix = x + 5;
         int iw = w - 10;
-        int ly = y + 4;
+        int ly = y + 5;
         int bottom = y + h - 4;
+        Map<String, String> worn = worn();
+        icons(g, host, ix, ly + 1, s, c.set(), c.fixed(), worn, iw);
+        ly += s + 6;
         Build.Plan plan = Build.plan();
         Damage.Result now = plan == null ? null : plan.current();
         Damage.Result to = c.eval().result();
@@ -807,7 +999,7 @@ final class BuildWindow {
             Kit.text(g, font, v, dx + font.width(d[0] + " "), ly, v.startsWith("−") ? Theme.BAD : Theme.GOOD);
             dx += pw;
         }
-        ly += 13;
+        ly += 12;
         // the skill points to assign
         StringBuilder sp = new StringBuilder();
         int[] a = c.eval().allocation();
@@ -831,32 +1023,60 @@ final class BuildWindow {
         }
         Kit.text(g, font, Component.literal(L.t("wynnlabs.results.to_get")).withStyle(UiFont::bold), ix, ly, Theme.INK_2);
         ly += 11;
-        Map<String, String> worn = worn();
         java.util.Set<String> have = haveNames();
-        int left = 0;
-        List<String> lines = new ArrayList<>();
-        List<Integer> colours = new ArrayList<>();
+        List<String> slots = new ArrayList<>();
         for (String slot : Plans.SLOTS) {
             Damage.Piece p = c.set().get(slot);
-            if (p == null || p.name().equals(worn.get(slot))) {
-                continue;
+            if (p != null && !p.name().equals(worn.get(slot))) {
+                slots.add(slot);
             }
-            boolean owned = p.stack() != null || have.contains(p.name());
-            lines.add(p.name() + " — " + (owned ? L.t("wynnlabs.results.have") : sourceText(p.name())));
-            colours.add(owned ? Theme.GOOD : c.fixed().contains(slot) ? CHOSEN : Theme.INK);
         }
-        if (lines.isEmpty()) {
+        if (slots.isEmpty()) {
             Kit.text(g, font, fit(L.t("wynnlabs.results.nothing_to_get"), iw, false), ix, ly, Theme.GOOD);
             return;
         }
-        for (int i = 0; i < lines.size(); i++) {
-            if (ly + 9 > bottom || ly + 19 > bottom && i < lines.size() - 1) {
-                left = lines.size() - i;
-                Kit.text(g, font, L.n("wynnlabs.results.more", left, left), ix, ly, Theme.INK_3);
+        int lineH = s + 2;
+        for (int i = 0; i < slots.size(); i++) {
+            if (ly + lineH > bottom || ly + 2 * lineH > bottom && i < slots.size() - 1) {
+                int left = slots.size() - i;
+                Kit.text(g, font, L.n("wynnlabs.results.more", left, left), ix, ly + (lineH - 8) / 2, Theme.INK_3);
                 break;
             }
-            Kit.text(g, font, fit("• " + lines.get(i), iw, false), ix, ly, colours.get(i));
-            ly += 10;
+            String slot = slots.get(i);
+            Damage.Piece p = c.set().get(slot);
+            boolean locked = c.fixed().contains(slot);
+            boolean owned = p.stack() != null || have.contains(p.name());
+            ItemData info = itemOf(p.name());
+            ItemStack icon = info == null ? ItemStack.EMPTY : host.icon(info);
+            if (!icon.isEmpty()) {
+                renderIcon(g, icon, ix, ly, s);
+                host.item(ix, ly, s, s, info, icon, itemExtra(p.name(), locked, p.stack() != null));
+            }
+            int tx = ix + s + 4;
+            int ty = ly + (s - 8) / 2;
+            Component nm = Component.literal(p.name()).withStyle(info == null ? ChatFormatting.WHITE : info.tier().colour());
+            String nameText = fit(p.name(), Math.max(30, iw - (tx - ix)) * 55 / 100, false);
+            nm = Component.literal(nameText).withStyle(nm.getStyle());
+            Kit.text(g, font, nm, tx, ty, Theme.INK);
+            tx += font.width(nm);
+            if (locked) {
+                Art.icon(g, "lock", tx + 3, ty, 8, CHOSEN);
+                tx += 11;
+            }
+            int room = ix + iw - tx - 10;
+            if (owned) {
+                Kit.text(g, font, fit("— " + L.t("wynnlabs.results.have"), room + 6, false), tx + 4, ty, Theme.GOOD);
+            } else {
+                Object[] src = source(p.name());
+                if (src[1] != null) {
+                    Kit.text(g, font, "—", tx + 4, ty, Theme.INK_3);
+                    int cx = tx + 4 + font.width("— ");
+                    price(g, (double) src[1], cx, ty, ix + iw - cx);
+                } else {
+                    Kit.text(g, font, fit("— " + src[0], room + 6, false), tx + 4, ty, Theme.INK_3);
+                }
+            }
+            ly += lineH;
         }
     }
 
@@ -903,9 +1123,18 @@ final class BuildWindow {
         return null;
     }
 
-    /** Names of what you have in the bag and bank. */
+    private static java.util.Set<String> haveCache = java.util.Set.of();
+    private static long haveAt;
+
+    /** Names of what you have in the bag and bank; read again each second. */
     private static java.util.Set<String> haveNames() {
+        long now = System.currentTimeMillis();
+        if (now - haveAt < 1000) {
+            return haveCache;
+        }
+        haveAt = now;
         java.util.Set<String> out = new java.util.HashSet<>();
+        haveCache = out;
         try {
             for (ItemStack s : GameState.current().inventory()) {
                 if (!s.isEmpty()) {
@@ -921,27 +1150,37 @@ final class BuildWindow {
         return out;
     }
 
-    /** Where a piece comes from: this week's raid or camp pool, its Trade Market price, a quest, else its source. */
+    /** Where a piece comes from, as one line (a Trade Market price written out). */
     static String sourceText(String name) {
+        Object[] s = source(name);
+        return s[1] != null ? L.t("wynnlabs.results.market", Prices.fmt((double) s[1])) : (String) s[0];
+    }
+
+    /**
+     * Where a piece comes from: {text, Trade Market price (null when none)}: this week's raid
+     * pool, else its Trade Market price, a quest, its merchant, chest or drop.
+     */
+    static Object[] source(String name) {
         String pool = poolOf(name);
         if (pool != null) {
-            return L.t("wynnlabs.results.in_pool", pool);
+            return new Object[] {L.t("wynnlabs.results.in_pool", pool), null};
         }
-        ItemData info = GameState.current().allGear().filter(i -> i.name().equals(name)).findFirst().orElse(null);
+        ItemData info = itemOf(name);
         if (info == null) {
-            return "?";
+            return new Object[] {"?", null};
         }
         String src = Shopping.sourceOf(info);
         if (Shopping.tradable(info)) {
             Prices.Price p = GameState.current().price(name);
             if (p != null && p.typical() != null) {
-                return L.t("wynnlabs.results.market", Prices.fmt(p.typical()));
+                return new Object[] {"", p.typical()};
             }
         }
         if (src != null && src.startsWith("QUEST")) {
-            return L.t("wynnlabs.results.quest", Shopping.where(src));
+            return new Object[] {L.t("wynnlabs.results.quest", Shopping.where(src)), null};
         }
-        return src == null ? (Shopping.tradable(info) ? L.t("wynnlabs.results.market_unknown") : "?") : Shopping.where(src);
+        return new Object[] {src == null ? (Shopping.tradable(info) ? L.t("wynnlabs.results.market_unknown") : "?")
+            : Shopping.where(src), null};
     }
 
     private static Map<String, String> pools;
@@ -973,24 +1212,15 @@ final class BuildWindow {
     /** "Cancel" and the purple "Apply build N" (or "Overwrite" for a saved build's recompute). */
     private void footer(GuiGraphics g, Host host, int x, int y, int w, int mx, int my, boolean any) {
         String apply = overwriteId != null ? L.t("wynnlabs.results.overwrite", card + 1) : L.t("wynnlabs.results.apply", card + 1);
-        int aw = font.width(apply) + 18;
+        int aw = controlW("check", apply, w / 2);
         int ax = x + w - aw;
         if (any) {
-            boolean hov = in(mx, my, ax, y, aw, 14);
-            Art.box(g, ax, y, aw, 14, 3, hov ? 0xFF6E4CA6 : CHOSEN, 0xFF3E2766);
-            Art.icon(g, "check", ax + 4, y + 3, 8, CHOSEN_TEXT);
-            g.drawString(font, apply, ax + 14, y + 3, CHOSEN_TEXT, false);
-            btn(ax, y, aw, 14, "apply", null);
-            host.tip(ax, y, aw, 14, List.of(L.c("wynnlabs.results.apply_tip").withStyle(ChatFormatting.GRAY)));
+            control(g, host, ax, y, 14, "check", apply, PRIMARY, false, w / 2, "apply", null,
+                    List.of(L.c("wynnlabs.results.apply_tip").withStyle(ChatFormatting.GRAY)), mx, my);
         }
-        String cancel = L.t("wynnlabs.pick.cancel");
-        int cw = font.width(cancel) + 12;
-        int cx = any ? ax - 4 - cw : x + w - cw;
-        boolean ch = in(mx, my, cx, y, cw, 14);
-        Kit.button(g, cx, y, cw, 14, ch ? Kit.HOVER : Kit.REST);
-        g.drawString(font, cancel, cx + 6, y + 3, Kit.buttonText(Kit.REST), false);
-        btn(cx, y, cw, 14, "close", null);
-        host.tip(cx, y, cw, 14, List.of(L.c("wynnlabs.results.cancel_tip").withStyle(ChatFormatting.GRAY)));
+        int cx = any ? ax - 4 - ICON_W : x + w - ICON_W;
+        control(g, host, cx, y, 14, "x", L.t("wynnlabs.pick.cancel"), WOOD, false, 0, "close", null,
+                List.of(L.c("wynnlabs.results.cancel_tip").withStyle(ChatFormatting.GRAY)), mx, my);
     }
 
     // ---- SAVED ----
@@ -1003,8 +1233,8 @@ final class BuildWindow {
         Kit.text(g, font, Component.literal(fit(title, w - 30, true)).withStyle(UiFont::bold), x + 11, y, Theme.INK);
         int top = y + 14;
         int footY = y + h - 14;
-        int editH = editId == null ? 0 : 58;
-        int listH = footY - 4 - editH - top;
+        int editH = editId == null ? 0 : 54;
+        int listH = footY - (editId == null ? 4 : 8) - editH - top;
         Plans.Build current = Plans.current();
         Map<String, String> worn = worn();
         Kit.outline(g, x, top, w, listH, Theme.LINE);
@@ -1027,7 +1257,7 @@ final class BuildWindow {
             // the buttons on the right: Apply (not on your plan), Edit, Rename, Delete
             int bx = x + 1 + rw - 4;
             String[][] all4 = {{"trash", "delete", "wynnlabs.saved.delete_tip"}, {"pencil", "rename", "wynnlabs.saved.rename_tip"},
-                {"list-check", "edit", "wynnlabs.saved.edit_tip"}, {"check", "applySaved", "wynnlabs.saved.apply_tip"}};
+                {"edit", "edit", "wynnlabs.saved.edit_tip"}, {"check", "applySaved", "wynnlabs.saved.apply_tip"}};
             String[][] acts = mine ? java.util.Arrays.copyOf(all4, 3) : all4;
             for (String[] a : acts) {
                 bx -= 14;
@@ -1089,16 +1319,10 @@ final class BuildWindow {
             drawEdit(g, host, x, top + listH + 4, w, editH, mx, my);
         }
         // the footer: "+ Save current plan", and the undo line after a delete
-        String add = "+ " + L.t("wynnlabs.saved.add");
-        int aw = font.width(add) + 12;
         boolean can = current != null;
-        boolean ah = can && in(mx, my, x, footY, aw, 14);
-        Kit.button(g, x, footY, aw, 14, !can ? Kit.REST : ah ? Kit.HOVER : Kit.REST);
-        g.drawString(font, add, x + 6, footY + 3, can ? Kit.buttonText(Kit.REST) : Theme.CREAM_DIM, false);
-        if (can) {
-            btn(x, footY, aw, 14, "addCurrent", null);
-        }
-        host.tip(x, footY, aw, 14, List.of(L.c(can ? "wynnlabs.saved.add_tip" : "wynnlabs.saved.add_none").withStyle(ChatFormatting.GRAY)));
+        List<Component> addTip = List.of(L.c(can ? "wynnlabs.saved.add_tip" : "wynnlabs.saved.add_none").withStyle(ChatFormatting.GRAY));
+        int aw = control(g, host, x, footY, 14, "plus", L.t("wynnlabs.saved.add"), can ? PRIMARY : WOOD, false, w / 2,
+                can ? "addCurrent" : null, null, addTip, mx, my);
         long now = System.currentTimeMillis();
         Plans.Build gone = Plans.undoable(now);
         if (gone != null) {
@@ -1165,47 +1389,37 @@ final class BuildWindow {
         String head = L.t("wynnlabs.saved.editing", b.name());
         Kit.text(g, font, Component.literal(fit(head, w - 10, true)).withStyle(UiFont::bold), cx, cy, Theme.INK);
         cy += 12;
-        String plus = "+ " + L.t("wynnlabs.saved.add_item");
-        int plusW = font.width(plus) + 10;
+        int plusW = controlW("plus", L.t("wynnlabs.saved.add_item"), 70);
         for (String n : editLocks) {
             int cw = Math.min(font.width(n) + 18, 110);
             if (cx + cw + 3 + plusW > x + w - 5) {
                 break;
             }
-            Art.box(g, cx, cy, cw, 13, 3, 0xFFE4D8F2, CHOSEN);
-            Kit.text(g, font, fit(n, cw - 18, false), cx + 4, cy + 2, Theme.INK);
-            Art.icon(g, "x", cx + cw - 11, cy + 2, 8, CHOSEN);
-            btn(cx, cy, cw, 13, "editUnlock", n);
+            chip(g, cx, cy, cw, 14, in(mx, my, cx, cy, cw, 14));
+            Kit.text(g, font, fit(n, cw - 18, false), cx + 5, cy + 3, Theme.INK);
+            Art.icon(g, "x", cx + cw - 11, cy + 3, 8, CHOSEN);
+            btn(cx, cy, cw, 14, "editUnlock", n);
+            host.tip(cx, cy, cw, 14, List.of(Component.literal(n).withStyle(ChatFormatting.LIGHT_PURPLE),
+                    L.c("wynnlabs.pick.chip_tip").withStyle(ChatFormatting.DARK_GRAY)));
             cx += cw + 3;
         }
-        boolean ph = in(mx, my, cx, cy, plusW, 13);
-        Kit.button(g, cx, cy, plusW, 13, ph ? Kit.HOVER : Kit.REST);
-        g.drawString(font, plus, cx + 5, cy + 2, Kit.buttonText(Kit.REST), false);
-        btn(cx, cy, plusW, 13, "editAdd", null);
-        host.tip(cx, cy, plusW, 13, List.of(L.c("wynnlabs.saved.add_item_tip").withStyle(ChatFormatting.GRAY)));
-        cy += 16;
-        // the buttons on the right of the strip's summary
-        String[][] acts = {{"wynnlabs.saved.recompute", "editRecompute", "wynnlabs.saved.recompute_tip"},
-            {"wynnlabs.saved.save_new", "editSaveNew", "wynnlabs.saved.save_new_tip"},
-            {"wynnlabs.pick.cancel", "editCancel", "wynnlabs.saved.edit_cancel_tip"}};
+        control(g, host, cx, cy, 14, "plus", L.t("wynnlabs.saved.add_item"), WOOD, false, 70, "editAdd", null,
+                List.of(L.c("wynnlabs.saved.add_item_tip").withStyle(ChatFormatting.GRAY)), mx, my);
+        cy += 17;
+        // the buttons on the right of the strip's summary: Recompute (purple), Save as new (a disk), Cancel (✕)
         int bx = x + w - 5;
-        for (String[] a : acts) {
-            String t = L.t(a[0]);
-            int bw = font.width(t) + 10;
-            bx -= bw;
-            boolean on = a[1].equals("editRecompute");
-            boolean hov = in(mx, my, bx, cy, bw, 13);
-            if (on) {
-                Art.box(g, bx, cy, bw, 13, 3, hov ? 0xFF6E4CA6 : CHOSEN, 0xFF3E2766);
-                g.drawString(font, t, bx + 5, cy + 2, CHOSEN_TEXT, false);
-            } else {
-                Kit.button(g, bx, cy, bw, 13, hov ? Kit.HOVER : Kit.REST);
-                g.drawString(font, t, bx + 5, cy + 2, Kit.buttonText(Kit.REST), false);
-            }
-            btn(bx, cy, bw, 13, a[1], null);
-            host.tip(bx, cy, bw, 13, List.of(L.c(a[2]).withStyle(ChatFormatting.GRAY)));
-            bx -= 3;
-        }
+        int rw = controlW("refresh", L.t("wynnlabs.saved.recompute"), w / 2);
+        bx -= rw;
+        control(g, host, bx, cy, 14, "refresh", L.t("wynnlabs.saved.recompute"), PRIMARY, false, w / 2, "editRecompute", null,
+                List.of(L.c("wynnlabs.saved.recompute_tip").withStyle(ChatFormatting.GRAY)), mx, my);
+        bx -= 3 + ICON_W;
+        control(g, host, bx, cy, 14, "device-floppy", L.t("wynnlabs.saved.save_new"), WOOD, false, 0, "editSaveNew", null,
+                List.of(L.c("wynnlabs.saved.save_new_tip").withStyle(ChatFormatting.GRAY)), mx, my);
+        bx -= 3 + ICON_W;
+        control(g, host, bx, cy, 14, "x", L.t("wynnlabs.pick.cancel"), WOOD, false, 0, "editCancel", null,
+                List.of(L.c("wynnlabs.saved.edit_cancel_tip").withStyle(ChatFormatting.GRAY)), mx, my);
+        bx -= 3;
+        cy += 1;
         Kit.text(g, font, fit(summary(editTuning), bx - 4 - (x + 5), false), x + 5, cy + 2, Theme.INK_3);
     }
 
@@ -1488,6 +1702,65 @@ final class BuildWindow {
 
     // =====================================================================================
     // small helpers
+
+    /** A wood button (Kit.button). */
+    static final int WOOD = 0;
+    /** The purple primary button (Kit.primary). */
+    static final int PRIMARY = 1;
+    /** An icon-only button's width. */
+    private static final int ICON_W = 16;
+
+    /**
+     * One control in the mod's button sprites: {@code text} after the icon when the whole of it
+     * fits {@code maxW} comfortably, else the icon alone, centred, with the label as the first
+     * tooltip line (the one rule for every control here: text when it fits, never cut). Returns
+     * its width. {@code on}: a selected wood control (gold); {@code text} null: always the icon.
+     */
+    private int control(GuiGraphics g, Host host, int x, int y, int h, String icon, String text, int kind, boolean on, int maxW,
+            String act, Object arg, List<Component> tip, int mx, int my) {
+        int full = text == null ? Integer.MAX_VALUE : (icon == null ? 0 : 11) + font.width(text) + 12;
+        boolean words = text != null && full <= maxW;
+        int w = words ? full : ICON_W;
+        boolean hov = in(mx, my, x, y, w, h);
+        int state = on ? Kit.ON : hov ? Kit.HOVER : Kit.REST;
+        if (kind == PRIMARY) {
+            Kit.primary(g, x, y, w, h, hov);
+        } else {
+            Kit.button(g, x, y, w, h, state);
+        }
+        int ink = kind == PRIMARY ? Theme.CREAM : Kit.buttonText(state);
+        int iy = y + (h - 8) / 2;
+        if (words) {
+            int tx = x + 6;
+            if (icon != null) {
+                Art.icon(g, icon, tx, iy, 8, ink);
+                tx += 11;
+            }
+            g.drawString(font, text, tx, y + (h - 8) / 2, ink, false);
+        } else if (icon != null) {
+            Art.icon(g, icon, x + (w - 8) / 2, iy, 8, ink);
+        }
+        if (act != null) {
+            btn(x, y, w, h, act, arg);
+        }
+        List<Component> lines = new ArrayList<>();
+        if (!words && text != null) {
+            lines.add(Component.literal(text).withStyle(ChatFormatting.WHITE));
+        }
+        if (tip != null) {
+            lines.addAll(tip);
+        }
+        if (!lines.isEmpty()) {
+            host.tip(x, y, w, h, lines);
+        }
+        return w;
+    }
+
+    /** {@link #control}'s width without drawing it. */
+    private int controlW(String icon, String text, int maxW) {
+        int full = text == null ? Integer.MAX_VALUE : (icon == null ? 0 : 11) + font.width(text) + 12;
+        return text != null && full <= maxW ? full : ICON_W;
+    }
 
     private void btn(int x, int y, int w, int h, String act, Object arg) {
         btns.add(new Btn(x, y, w, h, act, arg));
