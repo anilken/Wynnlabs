@@ -189,6 +189,9 @@ public class LayoutMatrix implements FabricClientGameTest {
             });
             ctx.getInput().resizeWindow(1920, 1080);
             writeReport(out.resolve("layout-report.txt"), report);
+            if (!STANDS.isEmpty()) {
+                Files.write(shots.resolve("home-stand" + (VANILLA ? "-vanilla" : "") + ".txt"), STANDS, StandardCharsets.UTF_8);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -519,6 +522,7 @@ public class LayoutMatrix implements FabricClientGameTest {
     /** Every rail tab, and the crafting tab's suggestions view, at the current size. */
     private static void checkMenu(ClientGameTestContext ctx, String where, int[] gui, Map<String, List<String>> report, Path shots)
             throws Exception {
+        int[][] stands = new int[2][];
         for (int tab = 0; tab < TAB_NAMES.length; tab++) {
             if (!ONLY.isEmpty() && !TAB_NAMES[tab].equals(ONLY)) {
                 continue;
@@ -528,7 +532,7 @@ public class LayoutMatrix implements FabricClientGameTest {
             // the crafting tab's calculator and sets; the quests tab's steps and points; the
             // endgame tab's three compact sections; every settings category
             boolean compact = gui[0] < 560 || gui[1] < 300;
-            int[] views = t == 10 || t == 2 ? new int[] {0, 1} : t == ENDGAME && compact ? new int[] {0, 1, 2}
+            int[] views = t == 10 || t == 2 || t == 0 ? new int[] {0, 1} : t == ENDGAME && compact ? new int[] {0, 1, 2}
                     : t == SETTINGS ? java.util.stream.IntStream.range(0, SETTING_CATS.length + SETTING_EXTRAS.length).toArray()
                     : new int[] {0};
             for (int view : views) {
@@ -544,8 +548,15 @@ public class LayoutMatrix implements FabricClientGameTest {
                 if (t == SETTINGS) {
                     ctx.runOnClient(mc -> settingsView((RoadmapScreen) mc.screen, view, compact));
                 }
-                String name = TAB_NAMES[t] + (t == SETTINGS ? "-" + settingsName(view) : views.length > 1 ? "-" + view : "");
+                if (t == 0) {
+                    ctx.runOnClient(mc -> HomeTab.previewLong = view == 1);
+                }
+                String name = TAB_NAMES[t] + (t == SETTINGS ? "-" + settingsName(view) : t == 0 ? (view == 1 ? "-long" : "")
+                        : views.length > 1 ? "-" + view : "");
                 measure(ctx, where + " " + name, gui, report, () -> ((RoadmapScreen) net.minecraft.client.Minecraft.getInstance().screen).clickAreas());
+                if (t == 0) {
+                    stands[view] = ctx.computeOnClient(mc -> HomeTab.INSTANCE.standBox.clone());
+                }
                 if (shots != null) {
                     ctx.takeScreenshot(TestScreenshotOptions.of(where.replaceAll("[^0-9a-z@x]", "") + "-" + name + (VANILLA ? "-vanilla" : ""))
                             .disableCounterPrefix().withDestinationDir(shots));
@@ -553,6 +564,17 @@ public class LayoutMatrix implements FabricClientGameTest {
                 if (t == SETTINGS) {
                     ctx.runOnClient(mc -> settingsViewDone(view));
                 }
+            }
+            if (t == 0) {
+                // the home's figure: long names and a wide weapon pill leave its box as it is
+                ctx.runOnClient(mc -> HomeTab.previewLong = false);
+                String line = where + ": figure " + stands[0][2] + "x" + stands[0][3] + " at " + stands[0][0] + "," + stands[0][1]
+                        + " (panel " + stands[0][4] + " wide, " + stands[0][5] + " high)";
+                if (!java.util.Arrays.equals(stands[0], stands[1])) {
+                    line += ", with long names " + stands[1][2] + "x" + stands[1][3] + " at " + stands[1][0] + "," + stands[1][1];
+                    report.computeIfAbsent(where + " home-long", k -> new ArrayList<>()).add("the figure moved with long names");
+                }
+                STANDS.add(line);
             }
             if (t == 2) {
                 questStates(ctx, where, gui, report, shots);
@@ -573,6 +595,9 @@ public class LayoutMatrix implements FabricClientGameTest {
             UpdateCheck.reset();
         });
     }
+
+    /** The home figure's box at each size, written to build/preview/layout/home-stand.txt. */
+    private static final List<String> STANDS = new ArrayList<>();
 
     private static String settingsName(int view) {
         return view < SETTING_CATS.length ? SETTING_CATS[view] : SETTING_EXTRAS[view - SETTING_CATS.length];
