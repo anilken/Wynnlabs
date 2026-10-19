@@ -156,7 +156,7 @@ def fabricRange = { String range ->
 }
 
 processResources {
-    def props = [version: project.version, wynntils_range: fabricRange(rootProject.wynntils_range)]
+    def props = [version: rootProject.metaVersion, wynntils_range: fabricRange(rootProject.wynntils_range)]
     inputs.properties props
     filesMatching('fabric.mod.json') {
         expand props

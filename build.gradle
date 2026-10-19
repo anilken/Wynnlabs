@@ -17,6 +17,17 @@ allprojects {
     group = rootProject.maven_group
 }
 
+// The version the mod reports (fabric.mod.json, neoforge.mods.toml). A release passes
+// -Pmod_version=<next>; a local build says the last release tag plus "+dev" ("0.2.1+dev"), so the
+// update check compares it with the release it was built after. The jar names keep mod_version.
+ext.metaVersion = gradle.startParameter.projectProperties.containsKey('mod_version') ? mod_version : {
+    def tag = providers.exec {
+        commandLine 'git', 'describe', '--tags', '--abbrev=0', '--match', 'v[0-9]*'
+        ignoreExitValue = true
+    }.standardOutput.asText.get().trim()
+    return (tag ? tag.substring(1) : mod_version) + '+dev'
+}()
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'architectury-plugin'
@@ -602,7 +613,7 @@ tasks.register('checkMetadata') {
             return m.collectEntries { k, v -> [(k.toString()): v.toString()] }
         }
         def fabricProps = propsOf(':fabric', [:])
-        def neoProps = propsOf(':neoforge', [version          : project.version, minecraft_version: project.minecraft_version,
+        def neoProps = propsOf(':neoforge', [version          : metaVersion, minecraft_version: project.minecraft_version,
                                              neoforge_version : project.neoforge_version, wynntils_range: declared])
         def expand = { String text, Map props ->
             text.replaceAll(/\$\{([A-Za-z0-9_]+)\}/) { all, name -> props.containsKey(name) ? props[name] : all }
@@ -686,8 +697,8 @@ tasks.register('checkMetadata') {
         if (depTables.any { it != "dependencies.${neoMod.modId}" }) {
             problems << "neoforge.mods.toml: dependency tables ${depTables.join(', ')} do not all name the mod id ${neoMod.modId}"
         }
-        if (fabric.version != neoMod.version || fabric.version != project.version.toString()) {
-            problems << "version: fabric.mod.json gives ${fabric.version}, neoforge.mods.toml gives ${neoMod.version}, mod_version is ${project.version}"
+        if (fabric.version != neoMod.version || fabric.version != metaVersion.toString()) {
+            problems << "version: fabric.mod.json gives ${fabric.version}, neoforge.mods.toml gives ${neoMod.version}, the build's version is ${metaVersion}"
         }
         if (interval(fabricRange) == null || interval(fabricRange) != interval(neoRange) || interval(neoRange) != interval(declared)) {
             problems << "Wynntils range: fabric.mod.json declares ${fabricRange}, neoforge.mods.toml declares ${neoRange} (wynntils_range is ${declared})"

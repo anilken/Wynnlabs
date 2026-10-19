@@ -83,7 +83,7 @@ if (wynntilsNeoForge.isEmpty()) {
 // real mod wiring; no -Dwynnlabs.fixtures, so it reads the live game, not a recording
 
 processResources {
-    def props = [version          : project.version,
+    def props = [version          : rootProject.metaVersion,
                  minecraft_version: rootProject.minecraft_version,
                  neoforge_version : rootProject.neoforge_version,
                  wynntils_range   : rootProject.wynntils_range]
