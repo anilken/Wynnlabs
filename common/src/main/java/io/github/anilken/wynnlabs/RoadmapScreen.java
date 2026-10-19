@@ -685,6 +685,10 @@ final class RoadmapScreen extends Screen {
      */
     /** A tab's icon on a rounded tile of its colour (home purple, today amber, quests blue …). */
     private void badge(GuiGraphics g, int tab, int x, int y) {
+        badge(g, tab, x, y, 16);
+    }
+
+    private void badge(GuiGraphics g, int tab, int x, int y, int size) {
         String icon;
         int bg;
         int fg;
@@ -702,7 +706,7 @@ final class RoadmapScreen extends Screen {
             case TAB_ENDGAME -> { icon = "trophy"; bg = 0xFF40280C; fg = 0xFFFFD36B; }
             default -> { icon = "settings"; bg = 0xFF24242E; fg = 0xFFB4B2A9; }
         }
-        Art.iconTile(g, icon, x, y, 16, bg, fg);
+        Art.iconTile(g, icon, x, y, size, bg, fg);
     }
 
     /** A centred card for a page with nothing yet: what to do, step by step. */
@@ -1239,26 +1243,37 @@ final class RoadmapScreen extends Screen {
         // button and no "Esc" line in the compact rail)
         int foot = compact ? 22 : 42;
         int pitch = Math.max(14, Math.min(24, (h - foot - 10 - 4) / RAIL.length));
+        // 2px between entries; the icon shrinks with a short entry so it never spills over
         int eh = pitch - 2;
+        int icon = compact ? Math.min(18, eh & ~1) : Math.min(16, (eh - 4) & ~1);
         for (int i = 0; i < RAIL.length; i++) {
             int t = RAIL[i];
             boolean on = t == tab;
             boolean hover = mx >= x && mx < x + railW() && my >= ry && my < ry + eh;
-            if (on) {
-                // the selected tab is gold and reaches over the page's torn rim with a tip
-                Kit.button(g, x + 4, ry, railW() - 4, eh, Kit.ON);
-                Kit.tip(g, x + railW(), ry, eh);
-            } else {
-                Kit.button(g, x + 4, ry, railW() - 8, eh, hover ? Kit.HOVER : Kit.REST);
-            }
             // the discoveries' page title is too long for the rail: a shorter name there
             String name = t == TAB_DISCOVERIES ? L.t("wynnlabs.screen.rail_discoveries") : L.t(TABS[t]);
             if (compact) {
-                // icons only: the name on hover
-                badge(g, t, x + (railW() - 16) / 2, ry + (eh - 16) / 2);
+                // icons only, the tile is the button: gold behind the selected one, a frame on
+                // hover, the name in the tooltip
+                int ix = x + 2 + (railW() - 4 - icon) / 2;
+                int iy = ry + (eh - icon) / 2;
+                if (on) {
+                    Kit.button(g, x + 4, ry, railW() - 4, eh, Kit.ON);
+                    Kit.tip(g, x + railW(), ry, eh);
+                } else if (hover) {
+                    Kit.button(g, ix - 3, ry, icon + 6, eh, Kit.HOVER);
+                }
+                badge(g, t, ix, iy, icon);
                 hits.add(new Hit(x, ry, railW(), eh, null, List.of(Component.literal(name)), null));
             } else {
-                badge(g, t, x + 8, ry + (eh - 16) / 2);
+                if (on) {
+                    // the selected tab is gold and reaches over the page's torn rim with a tip
+                    Kit.button(g, x + 4, ry, railW() - 4, eh, Kit.ON);
+                    Kit.tip(g, x + railW(), ry, eh);
+                } else {
+                    Kit.button(g, x + 4, ry, railW() - 8, eh, hover ? Kit.HOVER : Kit.REST);
+                }
+                badge(g, t, x + 8 + (16 - icon) / 2, ry + (eh - icon) / 2, icon);
                 g.drawString(font, fit(name, railW() - 34), x + 30, ry + (eh - 8) / 2, on ? Theme.INK : Theme.CREAM, !on);
             }
             tabs.add(new int[] {x, ry, railW(), eh, t});
