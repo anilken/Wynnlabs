@@ -173,9 +173,7 @@ public class LayoutMatrix implements FabricClientGameTest {
                     ctx.waitForScreen(RoadmapScreen.class);
                 }
             }
-            if (ONLY.isEmpty()) {
-                menuScale(ctx, shots, report);
-            }
+            menuScale(ctx, shots, report);
             if (ONLY.isEmpty() || "endgame".equals(ONLY)) {
                 endgame(ctx, shots, report);
                 pools(ctx, shots, report);
@@ -200,12 +198,14 @@ public class LayoutMatrix implements FabricClientGameTest {
     }
 
     /**
-     * The menu scale: at 1920x1080 on scale 4 with the menu at 3 the quests tab looks as it does on
-     * scale 3 (both shots saved), nothing leaves the 480x270 window, and a click on a rail tab,
-     * given in the game's own GUI pixels, lands on that tab.
+     * The menu scale: at 1920x1080 on scale 4 with the menu at 3 the quests tab (with
+     * -PpreviewTab, that tab) looks as it does on scale 3 (both shots saved), nothing leaves the
+     * 480x270 window, and a click on a rail tab, given in the game's own GUI pixels, lands on that tab.
      */
     private static void menuScale(ClientGameTestContext ctx, Path shots, Map<String, List<String>> report) throws Exception {
         ctx.getInput().resizeWindow(1920, 1080);
+        int only = List.of(TAB_NAMES).indexOf(ONLY);
+        int shown = only < 0 ? 2 : only;
         for (int[] run : new int[][] {{3, 0}, {4, 3}}) {
             ctx.runOnClient(mc -> {
                 Settings.setNumber("menuScale", run[1]);
@@ -214,7 +214,7 @@ public class LayoutMatrix implements FabricClientGameTest {
             });
             ctx.setScreen(RoadmapScreen::new);
             ctx.waitForScreen(RoadmapScreen.class);
-            ctx.runOnClient(mc -> set(mc.screen, "tab", 2));
+            ctx.runOnClient(mc -> set(mc.screen, "tab", shown));
             int[] gui = ctx.computeOnClient(mc -> new int[] {mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight()});
             measure(ctx, "menu scale " + run[1] + " on game scale " + run[0], gui, report, List::of);
             ctx.takeScreenshot(TestScreenshotOptions.of("menuscale-game" + run[0] + "-menu" + run[1])

@@ -83,16 +83,13 @@ final class Kit {
         return Identifier.fromNamespaceAndPath("wynnlabs", "kit/" + name);
     }
 
+    /** A kit sprite over the box: nine-sliced ones through {@link NineSlice}, so borders stay even at scale 3. */
     private static void nine(GuiGraphics g, String name, int x, int y, int w, int h) {
-        if (w > 0 && h > 0) {
-            g.blitSprite(RenderPipelines.GUI_TEXTURED, sprite(name), x, y, w, h);
-        }
+        nine(g, name, x, y, w, h, -1);
     }
 
     private static void nine(GuiGraphics g, String name, int x, int y, int w, int h, int tint) {
-        if (w > 0 && h > 0) {
-            g.blitSprite(RenderPipelines.GUI_TEXTURED, sprite(name), x, y, w, h, tint);
-        }
+        NineSlice.draw(g, sprite(name), x, y, w, h, tint);
     }
 
     // ---- frame ----
