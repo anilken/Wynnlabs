@@ -54,7 +54,7 @@ final class ItemIcons {
 
     private ItemIcons() {}
 
-    /** Draws the icon at {@code size} 16 or 12 and reports which source drew. */
+    /** Draws the icon at {@code size} (16, 12, or 24 in a card) and reports which source drew. */
     static Drawn draw(GuiGraphics g, PoolItem item, Klass aspectClass, int x, int y, int size, boolean dim) {
         PoolIcons.Ref ref = PoolIcons.resolve(item, aspectClass);
         Drawn drawn = Drawn.GLYPH;
@@ -181,7 +181,9 @@ final class ItemIcons {
             return false;
         }
         if (ref.tint() == 0) {
-            return WynnTex.draw(g, path, x, y, size, size);
+            // without its empty margin, the size the item model would show (the aspect
+            // model shows its 48 px picture at 3x, so its 16 px crystal fills the slot)
+            return WynnTex.drawTrimmed(g, path, x, y, size);
         }
         int[] s = WynnTex.size(path);                // a grey powder, in its element's colour
         if (s[0] == 0) {
