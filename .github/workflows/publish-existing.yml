@@ -1,0 +1,101 @@
+name: Publish an existing release
+
+# Uploads the jars of a release that is already on GitHub to Modrinth and/or CurseForge, for when
+# the Release workflow's upload to one site failed. Nothing is built, tagged or released here:
+# the jars and the notes come from the GitHub release itself.
+#
+# Start it from Actions -> Publish an existing release -> Run workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The release tag, e.g. v0.2.1
+        required: true
+        type: string
+      target:
+        description: Where to upload
+        type: choice
+        options: [curseforge, modrinth, both]
+        default: curseforge
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish ${{ matrix.loader }} ${{ inputs.tag }} to ${{ inputs.target }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - loader: fabric
+            label: Fabric
+            dependencies: |
+              wynntils(required)
+              fabric-api(required)
+              wynnventory(optional)
+          - loader: neoforge
+            label: NeoForge
+            dependencies: |
+              wynntils(required)
+              wynnventory(optional)
+    env:
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+      MODRINTH_PROJECT_ID: ${{ secrets.MODRINTH_PROJECT_ID }}
+      CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+      CURSEFORGE_PROJECT_ID: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+      TAG: ${{ inputs.tag }}
+    steps:
+      - name: The release's jar and notes
+        id: get
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          case "$TAG" in v[0-9]*.[0-9]*.[0-9]*) ;; *) echo "::error::Not a release tag: $TAG"; exit 1;; esac
+          mkdir -p dist notes
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir dist --pattern "wynnlabs-${{ matrix.loader }}-*.jar"
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json body --jq .body > notes/release-notes.md
+          jar=$(ls dist/wynnlabs-${{ matrix.loader }}-*.jar | head -1)
+          test -n "$jar" || { echo "::error::No ${{ matrix.loader }} jar in $TAG"; exit 1; }
+          echo "jar=$jar" >> "$GITHUB_OUTPUT"
+
+      - name: Modrinth
+        if: (inputs.target == 'modrinth' || inputs.target == 'both') && env.MODRINTH_TOKEN != '' && env.MODRINTH_PROJECT_ID != ''
+        uses: Kir-Antipov/mc-publish@v3.3.1
+        with:
+          modrinth-id: ${{ env.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ env.MODRINTH_TOKEN }}
+          files: ${{ steps.get.outputs.jar }}
+          name: Wynn Labs ${{ inputs.tag }} (${{ matrix.label }})
+          version: ${{ inputs.tag }}
+          version-type: release
+          changelog-file: notes/release-notes.md
+          loaders: ${{ matrix.loader }}
+          game-versions: 1.21.11
+          java: 21
+          environment: client
+          dependencies: ${{ matrix.dependencies }}
+          modrinth-unfeature-mode: none
+
+      - name: CurseForge
+        if: ${{ !cancelled() && (inputs.target == 'curseforge' || inputs.target == 'both') && env.CURSEFORGE_TOKEN != '' && env.CURSEFORGE_PROJECT_ID != '' }}
+        uses: Kir-Antipov/mc-publish@v3.3.1
+        with:
+          curseforge-id: ${{ env.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ env.CURSEFORGE_TOKEN }}
+          files: ${{ steps.get.outputs.jar }}
+          name: Wynn Labs ${{ inputs.tag }} (${{ matrix.label }})
+          version: ${{ inputs.tag }}
+          version-type: release
+          changelog-file: notes/release-notes.md
+          loaders: ${{ matrix.loader }}
+          game-versions: 1.21.11
+          java: 21
+          environment: client
+          dependencies: ${{ matrix.dependencies }}
