@@ -397,7 +397,8 @@ final class Plans {
 
         void pickPlan() {
             picked = false;
-        }    }
+        }
+    }
 
     // ---- the file ----
 
