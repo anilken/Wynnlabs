@@ -87,6 +87,19 @@ final class HomeTab {
 
     private HomeTab() {}
 
+    // ---- preview (LayoutMatrix): long names, to check they never move the figure ----
+
+    /** Long slot names by slot index, for the preview. */
+    private static final String[] LONG = {"The King's Robe", "The King's Robe", "Darkiron Scrap", "Darkiron Scrap",
+        "Enzan's Lucky Charm", "Enzan's Lucky Charm", "Darkiron Scrap", "Enzan's Lucky Charm", "The King's Robe"};
+    /** For the preview: every slot shows a long name and the weapon a "+142%" pill; never set in the game. */
+    static boolean previewLong;
+    /**
+     * The figure's box drawn last frame (x, y, w, h) and the panel's width and stand room, for the
+     * preview's check that the names never move it.
+     */
+    final int[] standBox = new int[6];
+
     // ---- what the tiles read, twice a second rather than every frame ----
 
     private record Data(List<PoolItem> pool, Klass klass, boolean raidsUp, int dryPulls, boolean aspectsUp, int owned,
@@ -226,6 +239,16 @@ final class HomeTab {
     private static final int MARK_GAP = 3;
     /** The gain pill's and the tick pill's height. */
     private static final int PILL_H = 11;
+    /**
+     * The name zone beside each slot column: at least this share (in percent) of the room between
+     * the two columns, at least {@link #PILL_ZONE}, and at most {@link #ZONE_CAP} (the large menu
+     * {@link #ZONE_LARGE_CAP}) once the figure has its size.
+     */
+    private static final int ZONE_SHARE = 28;
+    private static final int ZONE_CAP = 70;
+    private static final int ZONE_LARGE_CAP = 90;
+    /** Compact: the zone beside each column holds only its pills, the widest gain ("+142%") included. */
+    private static final int PILL_ZONE = 40;
 
     private void panel(GuiGraphics g, In in, Host host, int x, int y, int w, int h, boolean compact, boolean large,
             int mx, int my) {
@@ -264,66 +287,7 @@ final class HomeTab {
         int bottom = y + h - PAD - barH - 4;
         int areaH = bottom - top;
         int s = large ? 36 : compact ? 18 : 22;
-        // beside each column: its pills and (not compact) the names, in up to two lines each
         boolean names = !compact;
-        int cap = large ? 90 : 70;
-        int markL = 0;
-        int markR = 0;
-        int nameL = 0;
-        int nameR = 0;
-        for (SlotView v : armour) {
-            markL = Math.max(markL, markW(v));
-            nameL = names ? Math.max(nameL, wrapWidth(nameOf(v), cap)) : 0;
-        }
-        for (SlotView v : trinkets) {
-            markR = Math.max(markR, markW(v));
-            nameR = names ? Math.max(nameR, wrapWidth(nameOf(v), cap)) : 0;
-        }
-        int zoneL = Math.max(markL, nameL);
-        int zoneR = Math.max(markR, nameR);
-        // the middle: the figure, with the weapon's slot laid over its right hand (on the viewer's right)
-        // and the weapon's pill beside the slot, facing away from the body
-        int edge = PAD + 1 + s + MARK_GAP + 1;
-        int midX = x + edge + zoneL + 4;
-        int midW = w - 2 * edge - zoneL - zoneR - 8;
-        int pw = weapon == null ? 0 : markW(weapon);
-        int uMax = Math.max(1, (areaH - 1) / 32);
-        int u = uMax;
-        while (u > 1 && reachW(u, s, pw) > midW) {
-            u--;
-        }
-        if (names) {
-            // the names come first: on one line when the figure still gets 3 units or more, else in
-            // two lines with what the figure leaves going back to them
-            int oneL = markL;
-            int oneR = markR;
-            for (SlotView v : armour) {
-                oneL = Math.max(oneL, Math.min(cap, font.width(nameOf(v))));
-            }
-            for (SlotView v : trinkets) {
-                oneR = Math.max(oneR, Math.min(cap, font.width(nameOf(v))));
-            }
-            int oneW = w - 2 * edge - oneL - oneR - 8;
-            int uOne = uMax;
-            while (uOne > 1 && reachW(uOne, s, pw) > oneW) {
-                uOne--;
-            }
-            if (uOne >= 3 && reachW(uOne, s, pw) <= oneW) {
-                zoneL = oneL;
-                zoneR = oneR;
-                midX = x + edge + zoneL + 4;
-                midW = oneW;
-                u = uOne;
-            }
-            int spare = Math.max(0, midW - reachW(u, s, pw)) / 2;
-            zoneL += Math.max(0, Math.min(spare, oneL - zoneL));
-            zoneR += Math.max(0, Math.min(spare, oneR - zoneR));
-            midX = x + edge + zoneL + 4;
-            midW = w - 2 * edge - zoneL - zoneR - 8;
-        }
-        // the figure and the weapon's pill as one group, centred in the middle
-        int l = midX + Math.max(0, (midW - reachW(u, s, pw)) / 2);
-        int standY = top + Math.max(0, (areaH - 32 * u - 1) / 2);
         // the rows: tall enough for a pill and two lines of name, else one, else none
         int lines = names ? 2 : 0;
         while (lines > 0 && 4 * s + 3 * Math.max(3, block(lines) - s + 3) > areaH) {
@@ -332,23 +296,46 @@ final class HomeTab {
         int sg = Math.max(3, Math.max(block(lines) - s + 3, Math.min(large ? 24 : 6, (areaH - 4 * s) / 3)));
         sg = Math.min(sg, Math.max(3, (areaH - 4 * s) / 3));
         int colY = top + Math.max(0, (areaH - 4 * s - 3 * sg) / 2);
+        // beside each column a zone for its pills and (not compact) its names, its width from the
+        // panel's alone: never measured from the names or the pills, so the figure is the same for
+        // every character and the names fit into the zone (one line, two, or two ending in "…")
+        int edge = PAD + 1 + s + MARK_GAP + 1;
+        int room = w - 2 * edge - 8;
+        int zoneMin = names ? Math.max(PILL_ZONE, room * ZONE_SHARE / 100) : PILL_ZONE;
+        int zoneCap = names ? large ? ZONE_LARGE_CAP : ZONE_CAP : PILL_ZONE;
+        // the figure from the panel alone: as tall as the room between the title and the build bar
+        // allows, as wide as the room between the two zones
+        int u = Math.max(1, Math.min((areaH - 1) / 32, (room - 2 * zoneMin - 1) / 16));
+        int figW = 16 * u + 1;
+        // the width the figure leaves goes back to the zones, the same on both sides
+        int zone = Math.max(0, Math.min(zoneCap, (room - figW) / 2));
+        int midX = x + edge + zone + 4;
+        int midW = room - 2 * zone;
+        int l = midX + Math.max(0, (midW - figW) / 2);
+        int standY = top + Math.max(0, (areaH - 32 * u - 1) / 2);
         // which parts are tinted: an upgrade green, a worn piece wood, nothing worn pale
         int[] state = new int[9];
         for (SlotView v : in.slots()) {
             state[v.index()] = v.gear() != null ? 2 : v.worn().isEmpty() ? 0 : 1;
         }
         stand(g, l + 8 * u, standY, u, state);
+        standBox[0] = l;
+        standBox[1] = standY;
+        standBox[2] = 16 * u + 1;
+        standBox[3] = 32 * u + 1;
+        standBox[4] = w;
+        standBox[5] = areaH;
         for (int i = 0; i < armour.size(); i++) {
-            slot(g, host, armour.get(i), x + PAD + 1, colY + i * (s + sg), s, true, zoneL, lines, large);
+            slot(g, host, armour.get(i), x + PAD + 1, colY + i * (s + sg), s, true, zone, lines, large);
         }
         for (int i = 0; i < trinkets.size(); i++) {
-            slot(g, host, trinkets.get(i), x + w - PAD - 1 - s, colY + i * (s + sg), s, false, zoneR, lines, large);
+            slot(g, host, trinkets.get(i), x + w - PAD - 1 - s, colY + i * (s + sg), s, false, zone, lines, large);
         }
         if (weapon != null) {
             // drawn after the figure, so it lies over the hand: the slot centred on the hand's last two units
             int wx = l + 14 * u - s / 2;
             int wy = standY + 19 * u - s / 2;
-            weaponSlot(g, host, weapon, wx, wy, s, x + w - edge - zoneR - 4, bottom, names, large);
+            weaponSlot(g, host, weapon, wx, wy, s, x + w - edge - zone - 4, bottom, names, large);
         }
         buildBar(g, in, host, x + PAD + 1, y + h - PAD - barH, w - 2 * PAD - 2, compact, count, gains);
     }
@@ -360,19 +347,30 @@ final class HomeTab {
 
     /** The width of a slot's pill: its gain, or the tick's 15; 0 for an empty slot. */
     private int markW(SlotView v) {
-        if (v.gear() != null) {
+        if (gained(v)) {
             return font.width(gainText(v)) + 8;
         }
         return v.worn().isEmpty() ? 0 : 15;
     }
 
+    /** A slot with a gain pill: an upgrade (and, in the long-names preview, the weapon). */
+    private static boolean gained(SlotView v) {
+        return v.gear() != null || previewLong && v.index() == 4;
+    }
+
     private static String gainText(SlotView v) {
+        if (previewLong && v.index() == 4) {
+            return "+142%";
+        }
         return Double.isNaN(v.gain()) ? L.t("wynnlabs.screen.pill_set")
                 : (v.gain() < -0.5 ? "−" : "+") + RoadmapScreen.pct(Math.round(Math.abs(v.gain())));
     }
 
     /** The name a slot shows: the upgrade's, else what is worn, else "empty". */
     private static String nameOf(SlotView v) {
+        if (previewLong) {
+            return LONG[v.index()];
+        }
         return v.gear() != null ? v.gear().info().name()
                 : v.worn().isEmpty() ? L.t("wynnlabs.screen.empty") : ItemJson.clean(v.worn().getHoverName().getString());
     }
@@ -382,7 +380,12 @@ final class HomeTab {
      * space that makes the longer line shortest; the second line ends in "…" when still too long.
      */
     private List<String> wrap2(String s, int w) {
-        if (font.width(s) <= w) {
+        return wrap2(s, w, false);
+    }
+
+    /** {@link #wrap2(String, int)} measured as drawn: in bold when {@code bold}. */
+    private List<String> wrap2(String s, int w, boolean bold) {
+        if (width(s, bold) <= w) {
             return List.of(s);
         }
         String a = null;
@@ -391,26 +394,14 @@ final class HomeTab {
         for (int i = s.indexOf(' '); i > 0; i = s.indexOf(' ', i + 1)) {
             String l1 = s.substring(0, i);
             String l2 = s.substring(i + 1);
-            int m = Math.max(font.width(l1), font.width(l2));
-            if (font.width(l1) <= w && m < best) {
+            int m = Math.max(width(l1, bold), width(l2, bold));
+            if (width(l1, bold) <= w && m < best) {
                 best = m;
                 a = l1;
                 b = l2;
             }
         }
-        return a == null ? List.of(fit(s, w)) : List.of(a, fit(b, w));
-    }
-
-    /**
-     * The narrowest width a name takes in two lines (broken at its best space; a single word whole),
-     * at most {@code cap}: the columns get no more, so the figure keeps the rest.
-     */
-    private int wrapWidth(String s, int cap) {
-        int best = font.width(s);
-        for (int i = s.indexOf(' '); i > 0; i = s.indexOf(' ', i + 1)) {
-            best = Math.min(best, Math.max(font.width(s.substring(0, i)), font.width(s.substring(i + 1))));
-        }
-        return Math.min(cap, best);
+        return a == null ? List.of(fit(s, w, bold)) : List.of(a, fit(b, w, bold));
     }
 
     /**
@@ -513,40 +504,43 @@ final class HomeTab {
     }
 
     /**
-     * How wide the figure and the weapon's pill are together at {@code u}: the slot sits centred on
-     * the right hand's column 14u, its pill {@code pw} wide to its right.
-     */
-    private static int reachW(int u, int s, int pw) {
-        return pw == 0 ? 16 * u + 1 : Math.max(16 * u + 1, 14 * u - s / 2 + s + MARK_GAP + 1 + pw);
-    }
-
-    /**
      * The weapon's slot over the figure's hand, like the others: its pill to the right, vertically
-     * centred on it, and under the pill up to two lines of the whole name while they end left of
-     * {@code right} and above {@code bottom}; else the name is in the tooltip only.
+     * centred on it, when it ends left of {@code right}, with up to two lines of the whole name
+     * under it while they end left of {@code right} and above {@code bottom}. With no room beside,
+     * the pill goes under the slot (over its lower corner when the panel ends first) and the name
+     * is in the tooltip only. The figure never moves for either.
      */
     private void weaponSlot(GuiGraphics g, Host host, SlotView v, int sx, int sy, int s, int right, int bottom, boolean names,
             boolean large) {
         boolean up = v.gear() != null;
         ItemStack show = up ? v.icon() : plain(v.worn(), v.type());
         box(g, v, show, sx, sy, s, large);
+        int pw = markW(v);
         int px = sx + s + MARK_GAP + 1;
         int py = sy + (s - PILL_H) / 2;
+        boolean beside = px + pw <= right;
+        if (!beside) {
+            px = Math.min(sx + (s - pw) / 2, right - pw);
+            py = Math.min(sy + s + MARK_GAP + 1, bottom - PILL_H);
+        }
         mark(g, v, show, px, -1, py);
         int ny = py + PILL_H + 2;
-        int lines = names ? Math.min(2, (bottom - ny + 1) / 10) : 0;
+        int lines = names && beside ? Math.min(2, (bottom - ny + 1) / 10) : 0;
         List<String> name = lines > 0 && right - px >= 20 ? wrap2(nameOf(v), right - px) : List.of();
         if (name.size() > lines || String.join(" ", name).contains("…")) {
             name = List.of();
         }
-        int nw = markW(v);
+        int nw = pw;
         for (int i = 0; i < name.size(); i++) {
             Component t = Component.literal(name.get(i)).withStyle(up ? v.gear().info().tier().colour() : ChatFormatting.GRAY);
             Kit.text(g, font, t, px, ny + i * 10, Theme.paperRgb(Theme.INK));
             nw = Math.max(nw, font.width(t));
         }
+        int left = Math.min(sx, px);
+        int top = Math.min(sy, py);
+        int rgt = Math.max(sx + s, px + nw);
         int bot = Math.max(sy + s, name.isEmpty() ? py + PILL_H : ny + name.size() * 10 - 1);
-        areas(host, v, new int[] {sx, sy, px + nw - sx, bot - sy});
+        areas(host, v, new int[] {left, top, rgt - left, bot - top});
     }
 
     /** A slot's square and its item (or the game's empty-slot picture). */
@@ -563,7 +557,7 @@ final class HomeTab {
 
     /** A slot's pill: its gain on green, or a tick on paper when it is fine; nothing for an empty slot. */
     private void mark(GuiGraphics g, SlotView v, ItemStack show, int left, int right, int y) {
-        if (v.gear() != null) {
+        if (gained(v)) {
             pill(g, gainText(v), null, left, right, y, Theme.SEAL_3, Theme.SEAL_TEXT);
         } else if (!show.isEmpty()) {
             pill(g, null, "check", left, right, y, Theme.PAPER_DEEP, Theme.GOOD);
@@ -812,7 +806,7 @@ final class HomeTab {
                     ink(g, fit(L.t("wynnlabs.homev.aspects_done"), tw), tx, y + 20, Theme.GOOD);
                 } else {
                     String shortName = shortAspect(a.aspect().name());
-                    List<String> name = wrap2(shortName, tw);
+                    List<String> name = wrap2(shortName, tw, true);
                     int by;
                     if (!String.join(" ", name).contains("…")) {
                         // beside the ring: "Next" over the name in up to two lines
@@ -828,7 +822,7 @@ final class HomeTab {
                                 .append(Component.literal(shortName).withStyle(UiFont::bold).withColor(tierColour(a.aspect().rarity()) & 0xFFFFFF));
                         if (font.width(next) > w - 12) {
                             // still too wide: the name alone, in its colour
-                            next = Component.literal(fit(shortName, w - 12)).withStyle(UiFont::bold)
+                            next = Component.literal(fit(shortName, w - 12, true)).withStyle(UiFont::bold)
                                     .withColor(tierColour(a.aspect().rarity()) & 0xFFFFFF);
                         }
                         Kit.text(g, font, next, x + 6, y + 51, Theme.INK);
@@ -1098,7 +1092,7 @@ final class HomeTab {
             host.area(x, y, w, h, null, List.of(opens("wynnlabs.screen.tab_discoveries")), "#qopen:" + RoadmapScreen.TAB_DISCOVERIES);
             return;
         }
-        ink(g, Component.literal(fit(e.name(), w - 12)).withStyle(UiFont::bold), x + 6, y + 19, Theme.ACCENT);
+        ink(g, Component.literal(fit(e.name(), w - 12, true)).withStyle(UiFont::bold), x + 6, y + 19, Theme.ACCENT);
         ink(g, fit(RoadmapScreen.dist(d.nearDist()) + " · Lv. " + e.minLevel(), w - 12), x + 6, y + 30, Theme.INK_3);
         if (h >= 52 && e.region() != null) {
             ink(g, fit(e.region(), w - 12), x + 6, y + 41, Theme.INK_3);
@@ -1210,13 +1204,29 @@ final class HomeTab {
     }
 
     private String fit(String s, int w) {
+        return fit(s, w, false);
+    }
+
+    /**
+     * {@code s} cut with "…" to {@code w}, measured as drawn: bold text is wider (a pixel per
+     * letter in the game's own font), so a name drawn bold is fitted in bold.
+     */
+    private String fit(String s, int w, boolean bold) {
         if (s == null || w <= 0) {
             return "";
         }
-        if (font.width(s) <= w) {
+        if (width(s, bold) <= w) {
             return s;
         }
-        return font.plainSubstrByWidth(s, Math.max(0, w - font.width("…"))) + "…";
+        String cut = font.plainSubstrByWidth(s, Math.max(0, w - width("…", bold)));
+        while (!cut.isEmpty() && width(cut + "…", bold) > w) {
+            cut = cut.substring(0, cut.length() - 1);
+        }
+        return cut + "…";
+    }
+
+    private int width(String s, boolean bold) {
+        return bold ? font.width(Component.literal(s).withStyle(UiFont::bold)) : font.width(s);
     }
 
     /** "Aspect of the Monolith" → "Monolith", for a narrow tile. */
