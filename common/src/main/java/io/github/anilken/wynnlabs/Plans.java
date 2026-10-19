@@ -90,7 +90,74 @@ final class Plans {
     static synchronized void apply(Build b) {
         load();
         book.current = b;
+        removed = null;
         save();
+    }
+
+    /** The plan removed last and when, for Undo; null when none. */
+    private static Build removed;
+    private static long removedWhen;
+
+    /**
+     * Removes the plan (the Plan pill's ✕, a right-click on Choose items): the panel shows the
+     * suggestions again; the chosen items, the strip and the saved builds stay. {@link #undoRemove}
+     * brings it back for {@link #UNDO_MS}.
+     */
+    static synchronized boolean remove(long now) {
+        load();
+        if (book.current == null) {
+            return false;
+        }
+        Build b = book.current;
+        book.current = null;
+        save();
+        removed = b;
+        removedWhen = now;
+        return true;
+    }
+
+    /** The plan that can still be brought back, or null. */
+    static synchronized Build removedUndoable(long now) {
+        return removed != null && now - removedWhen <= UNDO_MS ? removed : null;
+    }
+
+    /** Undo: the removed plan is the plan again, exactly as it was. */
+    static synchronized boolean undoRemove(long now) {
+        Build b = removedUndoable(now);
+        if (b == null) {
+            return false;
+        }
+        load();
+        book.current = b;
+        removed = null;
+        save();
+        return true;
+    }
+
+    /**
+     * The plan's Save: into My builds (a default name when it has none) and linked to that copy;
+     * when it is saved already, that copy is updated with the plan (its name and creation kept).
+     * Returns the saved copy, or null without a plan.
+     */
+    static synchronized Build savePlan(long now) {
+        load();
+        Build cur = book.current;
+        if (cur == null) {
+            return null;
+        }
+        if (isSaved(cur)) {
+            return overwrite(cur.id(), cur, now);
+        }
+        Build kept = save(cur, now);
+        book.current = cur.withId(kept.id()).named(kept.name());
+        save();
+        return kept;
+    }
+
+    /** Whether the plan is one of the saved builds (by id). */
+    static synchronized boolean isSaved(Build b) {
+        load();
+        return b != null && book.saved.stream().anyMatch(s -> s.id().equals(b.id()));
     }
 
     // ---- the saved builds ----
@@ -367,6 +434,7 @@ final class Plans {
         loadedFor = null;
         book = new Book();
         deleted = null;
+        removed = null;
         HINT.reset();
     }
 

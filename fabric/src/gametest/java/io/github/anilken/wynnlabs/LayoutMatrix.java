@@ -627,13 +627,54 @@ public class LayoutMatrix implements FabricClientGameTest {
             }
             Plans.clearAll();
         });
-        String[] states = {"pick", "loading", "results", "results-high", "plan", "plan-done", "plan-hint", "saved", "saved-rename",
+        String[] states = {"pick", "loading", "results", "results-high", "plan", "plan-removed", "plan-done", "plan-hint", "saved", "saved-rename",
             "saved-edit", "road-none", "road-building", "road-stale", "road-stale-plan", "road-stale-hint"};
         for (String s : states) {
             ctx.runOnClient(mc -> homeState(s));
             measure(ctx, where + " home-" + s, gui, report, areas);
             ctx.takeScreenshot(TestScreenshotOptions.of(file + "-home-" + s + (VANILLA ? "-vanilla" : ""))
                     .disableCounterPrefix().withDestinationDir(dir));
+            if (s.equals("plan")) {
+                // the mouse on the plan's first slot: the item's full tooltip, the plan's lines under it
+                ctx.waitTicks(1);
+                double[] at = ctx.computeOnClient(mc -> {
+                    int[] r = HomeTab.INSTANCE.firstSlot;
+                    return r == null ? null : onScreen(mc, r);
+                });
+                if (at == null) {
+                    report.computeIfAbsent(where + " home-plan", k -> new ArrayList<>()).add("no plan slot to hover");
+                } else {
+                    hoverShot(ctx, at, dir, file + "-home-plan-tip" + (VANILLA ? "-vanilla" : ""));
+                }
+                // the mouse on a missing piece's pill: the same tooltip, "Missing · …" first; the pill,
+                // and the gaps beside it, hover as the slot does
+                ctx.waitTicks(1);
+                String gap = ctx.computeOnClient(mc -> {
+                    int[] p = HomeTab.INSTANCE.firstPill;
+                    if (p == null || !(mc.screen instanceof RoadmapScreen rs)) {
+                        return "no missing piece's pill to hover";
+                    }
+                    int cy = p[1] + p[3] / 2;
+                    // the pill's middle, and the gap between it and its slot's square
+                    int gapX = p[4] == 1 ? p[0] - 2 : p[0] + p[2] + 2;
+                    for (int px : new int[] {p[0] + p[2] / 2, gapX}) {
+                        if (!rs.tooltipAt(px, cy)) {
+                            return "no tooltip at " + px + "," + cy + " by the pill at " + p[0] + "," + p[1] + " " + p[2] + "x" + p[3];
+                        }
+                    }
+                    return null;
+                });
+                double[] pill = ctx.computeOnClient(mc -> {
+                    int[] p = HomeTab.INSTANCE.firstPill;
+                    return p == null ? null : onScreen(mc, new int[] {p[0] + p[2] / 6, p[1], p[2], p[3]});
+                });
+                if (gap != null) {
+                    report.computeIfAbsent(where + " home-plan", k -> new ArrayList<>()).add(gap);
+                }
+                if (pill != null) {
+                    hoverShot(ctx, pill, dir, file + "-home-pill-tip" + (VANILLA ? "-vanilla" : ""));
+                }
+            }
             if (s.equals("results")) {
                 // the mouse on a chosen item's icon: its tooltip over the window
                 ctx.waitTicks(1);
@@ -695,6 +736,13 @@ public class LayoutMatrix implements FabricClientGameTest {
                 } else {
                     Plans.HINT.reset();
                 }
+            }
+            case "plan-removed" -> {
+                // the plan's ✕ pressed: the suggestions again, "Plan removed · Undo" on the build line
+                w.close();
+                Plans.HINT.reset();
+                Plans.apply(planOf(builds.builds().get(0), "Covetous Thunder build", now));
+                Plans.remove(now);
             }
             case "plan-done" -> {
                 w.close();

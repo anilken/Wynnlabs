@@ -61,6 +61,8 @@ const ICONS = [
   'helmet', 'shirt', 'hanger', 'shoe', 'circle-dot', 'circles', 'trident', 'bow', 'crystal-ball', 'flask-2', 'script', 'meat',
   // the build window: the balanced focus, Clear and Edit
   'scale', 'eraser', 'edit',
+  // a plan's missing piece whose source is unknown
+  'question-mark',
 ];
 const tabler = join(here, 'node_modules/@tabler/icons/icons/outline');
 for (const name of ICONS) {

@@ -45,10 +45,14 @@ final class RoadmapScreen extends Screen {
     private record Box(String label, Slot type, int ring) {}
 
     private record Hit(int x, int y, int w, int h, ItemStack stack, List<Component> tip, String copy,
-            QuestBook.Entry quest) {
+            QuestBook.Entry quest, List<Component> lead) {
+
+        Hit(int x, int y, int w, int h, ItemStack stack, List<Component> tip, String copy, QuestBook.Entry quest) {
+            this(x, y, w, h, stack, tip, copy, quest, null);
+        }
 
         Hit(int x, int y, int w, int h, ItemStack stack, List<Component> tip, String copy) {
-            this(x, y, w, h, stack, tip, copy, null);
+            this(x, y, w, h, stack, tip, copy, null, null);
         }
     }
 
@@ -110,6 +114,17 @@ final class RoadmapScreen extends Screen {
     private int tab;
     private final Map<String, ItemStack> icons = new HashMap<>();
     private final List<Hit> hits = new ArrayList<>();
+
+    /** The preview: whether a hover area with a tooltip lies under (x, y) this frame (logical pixels). */
+    boolean tooltipAt(int x, int y) {
+        for (Hit h : hits) {
+            boolean tip = h.stack() != null || h.tip() != null && !h.tip().isEmpty();
+            if (tip && x >= h.x() && x < h.x() + h.w() && y >= h.y() && y < h.y() + h.h()) {
+                return true;
+            }
+        }
+        return false;
+    }
     private final List<int[]> levelRows = new ArrayList<>();   // x, y, w, h, step index
     private final List<int[]> tabs = new ArrayList<>();        // x, y, w, h, tab index
     private final List<Object[]> toggles = new ArrayList<>();  // {int[] rect, String key}
@@ -457,7 +472,13 @@ final class RoadmapScreen extends Screen {
         MenuScale.render(this, g, mx, my, (x, y) -> draw(g, x, y, pt));
     }
 
+    /** The mouse this frame (logical pixels), for the drawing helpers that are not handed it. */
+    private int frameMx;
+    private int frameMy;
+
     private void draw(GuiGraphics g, int mx, int my, float pt) {
+        frameMx = mx;
+        frameMy = my;
         super.render(g, mx, my, pt);
         hits.clear();
         levelRows.clear();
@@ -579,12 +600,20 @@ final class RoadmapScreen extends Screen {
         for (Hit hit : hits) {
             if (mx >= hit.x() && mx < hit.x() + hit.w() && my >= hit.y() && my < hit.y() + hit.h()) {
                 List<Component> marked = hit.stack() == null ? null : requirementTooltip(hit.stack());
-                if (hit.stack() != null && hit.tip() != null && !hit.tip().isEmpty()) {
-                    // an item's own tooltip with lines under it (the build window: where it comes from)
-                    List<Component> lines = new ArrayList<>(marked != null ? marked
-                            : Screen.getTooltipFromItem(Minecraft.getInstance(), hit.stack()));
-                    lines.add(Component.empty());
-                    lines.addAll(hit.tip());
+                boolean lead = hit.lead() != null && !hit.lead().isEmpty();
+                if (hit.stack() != null && (lead || hit.tip() != null && !hit.tip().isEmpty())) {
+                    // an item's own tooltip with lines under it (the build window: where it comes from),
+                    // and over it the lines that explain a pill ("Missing · dropped by mobs")
+                    List<Component> lines = new ArrayList<>();
+                    if (lead) {
+                        lines.addAll(hit.lead());
+                        lines.add(Component.empty());
+                    }
+                    lines.addAll(marked != null ? marked : Screen.getTooltipFromItem(Minecraft.getInstance(), hit.stack()));
+                    if (hit.tip() != null && !hit.tip().isEmpty()) {
+                        lines.add(Component.empty());
+                        lines.addAll(hit.tip());
+                    }
                     g.setTooltipForNextFrame(font, lines, hit.stack().getTooltipImage(), mx, my,
                             hit.stack().get(net.minecraft.core.component.DataComponents.TOOLTIP_STYLE));
                 } else if (marked != null) {
@@ -1454,7 +1483,7 @@ final class RoadmapScreen extends Screen {
             UpRow r = rows.get(i);
             Roadmap.Gear u = r.gear();
             slots.add(new HomeTab.SlotView(i, boxLabel(r.box()), r.type(), r.worn(), u, u == null ? ItemStack.EMPTY : icon(u.info()),
-                    u == null ? Double.NaN : rowGain(u), u == null ? null : gearTip(u)));
+                    u == null ? Double.NaN : rowGain(u), u == null ? null : context(gearTip(u))));
         }
         // the build score now, and with the selected milestone's whole set (NaN when it has none)
         Build.Plan plan = Build.plan();
@@ -1472,6 +1501,56 @@ final class RoadmapScreen extends Screen {
                 saved, searching, road());
     }
 
+    /**
+     * The one way an item's hover is made on the Home tab and in the build window: its full
+     * tooltip (tier-coloured name, type and level, requirements, base stats, identification
+     * ranges) and then, after a blank line, {@code extra} (plan, source, gain, story). A worn
+     * piece shows its own stack's tooltip with your rolls; another piece Wynntils' tooltip of its
+     * guide stack, or without one ({@link BuildWindow#itemTooltip}) the item data's. {@code front}:
+     * ahead of the other hits (an icon over its card).
+     */
+    private void itemHit(boolean front, int x, int y, int w, int h, ItemData info, ItemStack worn, List<Component> extra) {
+        itemHit(front, x, y, w, h, info, worn, List.of(), extra);
+    }
+
+    /** {@link #itemHit}, with {@code lead} lines over the item's tooltip (a blank line between). */
+    private void itemHit(boolean front, int x, int y, int w, int h, ItemData info, ItemStack worn, List<Component> lead,
+            List<Component> extra) {
+        List<Component> ex = extra == null ? List.of() : extra;
+        List<Component> ld = lead == null || lead.isEmpty() ? null : lead;
+        Hit hit;
+        if (worn != null && !worn.isEmpty()) {
+            hit = new Hit(x, y, w, h, worn, ex.isEmpty() ? null : ex, null, null, ld);
+        } else {
+            ItemStack st = info == null ? ItemStack.EMPTY : icon(info);
+            if (iconInfo.containsKey(st)) {
+                hit = new Hit(x, y, w, h, st, ex.isEmpty() ? null : ex, null, null, ld);
+            } else {
+                List<Component> tip = new ArrayList<>();
+                if (ld != null) {
+                    tip.addAll(ld);
+                    tip.add(Component.empty());
+                }
+                tip.addAll(info == null ? List.of() : BuildWindow.itemTooltip(info));
+                if (!ex.isEmpty()) {
+                    tip.add(Component.empty());
+                    tip.addAll(ex);
+                }
+                hit = new Hit(x, y, w, h, null, tip, null);
+            }
+        }
+        if (front) {
+            hits.add(0, hit);
+        } else {
+            hits.add(hit);
+        }
+    }
+
+    /** A pick's story without its first line (the name): the item's own tooltip has the name. */
+    private static List<Component> context(List<Component> tip) {
+        return tip.size() <= 1 ? List.of() : List.copyOf(tip.subList(1, tip.size()));
+    }
+
     /** The places to level now, from the road map (none without one). */
     private List<String> places() {
         return steps.isEmpty() ? List.of() : steps.get(0).places();
@@ -1481,6 +1560,18 @@ final class RoadmapScreen extends Screen {
     private HomeTab.Road road() {
         HomeTab.Road preview = HomeTab.previewRoad;
         return preview != null ? preview : new HomeTab.Road(steps.isEmpty(), Roadmap.isBuilding(), Roadmap.progress(), Roadmap.stale());
+    }
+
+    /**
+     * Removes the plan: the panel shows the suggestions with "Now" selected; the chosen items,
+     * the strip and the saved builds stay; the build line offers Undo for a few seconds.
+     */
+    private boolean removePlan() {
+        if (!Plans.remove(System.currentTimeMillis())) {
+            return false;
+        }
+        selected = 0;
+        return true;
     }
 
     /** An explicit change the road map follows (archetype, goal, powders, language): built again when there is one. */
@@ -1539,18 +1630,23 @@ final class RoadmapScreen extends Screen {
             worn += has ? 1 : 0;
             HomeTab.Mark mark = has ? locked ? HomeTab.Mark.DONE_CHOSEN : HomeTab.Mark.DONE : locked ? HomeTab.Mark.CHOSEN : HomeTab.Mark.GET;
             List<Component> tip = new ArrayList<>();
-            tip.add(Component.literal(name).withStyle(info.tier().colour()).withStyle(UiFont::bold));
+            List<Component> lead = new ArrayList<>();
             tip.add(L.c(locked ? "wynnlabs.homev.slot_chosen" : "wynnlabs.homev.slot_planned").withStyle(ChatFormatting.LIGHT_PURPLE));
             if (has) {
                 tip.add(L.c("wynnlabs.homev.slot_worn").withStyle(ChatFormatting.GREEN));
             } else {
-                tip.add(Component.literal(BuildWindow.sourceText(name)).withStyle(ChatFormatting.DARK_AQUA));
+                // the pill's icon explained first: "Missing · dropped by mobs", then where, when known
+                lead.add(L.c("wynnlabs.homev.slot_missing", BuildWindow.sourceText(name)).withStyle(ChatFormatting.GOLD));
+                String detail = BuildWindow.sourceDetail(name);
+                if (detail != null) {
+                    lead.add(Component.literal(detail).withStyle(ChatFormatting.GRAY));
+                }
                 Prices.Price p = Prices.of(name);
                 if (p != null && p.typical() != null && Shopping.tradable(info)) {
                     left += p.typical();
                 }
             }
-            slots.add(new HomeTab.SlotView(i, boxLabel(r.box()), r.type(), r.worn(), null, icon(info), Double.NaN, tip, mark, info));
+            slots.add(new HomeTab.SlotView(i, boxLabel(r.box()), r.type(), r.worn(), null, icon(info), Double.NaN, tip, mark, info, lead));
         }
         int better = Plans.HINT.showing();
         HomeTab.PlanLine line = new HomeTab.PlanLine(plan.name(), worn, plan.items().size(), left, better,
@@ -1568,16 +1664,8 @@ final class RoadmapScreen extends Screen {
 
         @Override
         public void item(int x, int y, int w, int h, ItemData info, ItemStack stack, List<Component> extra) {
-            // first in the list: an icon lies over its card, and the first hit under the mouse shows.
-            // Wynntils' own tooltip for its guide stack; without one, the item data's
-            if (iconInfo.containsKey(stack)) {
-                hits.add(0, new Hit(x, y, w, h, stack, extra, null));
-            } else {
-                List<Component> tip = new ArrayList<>(BuildWindow.itemTooltip(info));
-                tip.add(Component.empty());
-                tip.addAll(extra);
-                hits.add(0, new Hit(x, y, w, h, null, tip, null));
-            }
+            // first in the list: an icon lies over its card, and the first hit under the mouse shows
+            itemHit(true, x, y, w, h, info, ItemStack.EMPTY, extra);
         }
 
         @Override
@@ -1609,6 +1697,16 @@ final class RoadmapScreen extends Screen {
         @Override
         public void quest(int x, int y, int w, int h, List<Component> tip, QuestBook.Entry q) {
             hits.add(new Hit(x, y, w, h, null, tip, null, q));
+        }
+
+        @Override
+        public void item(int x, int y, int w, int h, ItemData info, ItemStack worn, List<Component> extra) {
+            itemHit(false, x, y, w, h, info, worn, extra);
+        }
+
+        @Override
+        public void item(int x, int y, int w, int h, ItemData info, ItemStack worn, List<Component> lead, List<Component> extra) {
+            itemHit(false, x, y, w, h, info, worn, lead, extra);
         }
 
         @Override
@@ -1937,7 +2035,7 @@ final class RoadmapScreen extends Screen {
         Plans.Build plan = Plans.current();
         boolean planOn = planPills.planSelected(plan);
         String planText = L.t("wynnlabs.homev.plan_pill");
-        int planW = plan == null ? 0 : font.width(planText) + 12;
+        int planW = plan == null ? 0 : font.width(planText) + 12 + PLAN_X;
         room -= plan == null ? 0 : planW + 3;
         List<int[]> order = pillOrder(shown, pos, levelWindow);
         while (levelWindow > 1 && pillsWidth(order, shown) > room) {
@@ -1978,9 +2076,21 @@ final class RoadmapScreen extends Screen {
             } else {
                 onWood(g, planText, bx + 6, y, Kit.REST);
             }
-            levelRows.add(new int[] {bx, y - 3, planW, 14, PLAN_PILL});
-            hits.add(new Hit(bx, y - 3, planW, 14, null, List.of(Component.literal(plan.name()).withStyle(ChatFormatting.LIGHT_PURPLE),
+            levelRows.add(new int[] {bx, y - 3, planW - PLAN_X, 14, PLAN_PILL});
+            hits.add(new Hit(bx, y - 3, planW - PLAN_X, 14, null, List.of(Component.literal(plan.name()).withStyle(ChatFormatting.LIGHT_PURPLE),
                     L.c("wynnlabs.homev.plan_pill_tip").withStyle(ChatFormatting.GRAY)), null));
+            // its ✕ at the right end: the plan removed (Undo on the build line for a few seconds)
+            int xx = bx + planW - PLAN_X - 1;
+            boolean xh = frameMx >= xx && frameMx < xx + 12 && frameMy >= y - 2 && frameMy < y + 10;
+            Kit.button(g, xx, y - 2, 12, 12, xh ? Kit.HOVER : Kit.REST);
+            Art.icon(g, "x", xx + 2, y, 8, Kit.buttonText(xh ? Kit.HOVER : Kit.REST));
+            List<Component> xtip = new ArrayList<>();
+            xtip.add(L.c("wynnlabs.homev.plan_remove").withStyle(ChatFormatting.WHITE));
+            xtip.add(L.c("wynnlabs.homev.plan_remove_tip").withStyle(ChatFormatting.GRAY));
+            if (!Plans.isSaved(plan)) {
+                xtip.add(L.c("wynnlabs.homev.plan_unsaved").withStyle(ChatFormatting.GOLD));
+            }
+            hits.add(new Hit(xx, y - 2, 12, 12, null, xtip, "#qplanremove:"));
             bx -= 3;
         }
         return bx + 3;
@@ -1988,6 +2098,8 @@ final class RoadmapScreen extends Screen {
 
     /** The Plan pill's place in levelRows (the milestones are 0 and up, ‹ and › -1 and -2). */
     private static final int PLAN_PILL = -3;
+    /** The room the Plan pill's ✕ takes at its right end. */
+    private static final int PLAN_X = 13;
     /** Whether the Plan pill or a level pill is selected (kept across menu openings). */
     private static final Plans.Pills planPills = new Plans.Pills();
 
@@ -6456,15 +6568,30 @@ final class RoadmapScreen extends Screen {
                     refreshAsked = true;
                 } else if (c.startsWith("#qpick:")) {
                     if (event.button() == 1) {
-                        // right-click: the chosen items and the plan cleared
-                        Locks.clear();
-                        Plans.apply(null);
-                        Around.forget();
-                        flash = L.t("wynnlabs.homev.pick_cleared");
-                        flashUntil = System.currentTimeMillis() + 2500;
+                        // right-click: the plan removed, as its pill's ✕ does (Undo on the build line);
+                        // with no plan, the chosen items cleared
+                        if (!removePlan()) {
+                            Locks.clear();
+                            Around.forget();
+                            flash = L.t("wynnlabs.homev.pick_cleared");
+                            flashUntil = System.currentTimeMillis() + 2500;
+                        }
                     } else {
                         BuildWindow.INSTANCE.openPick();
                     }
+                } else if (c.startsWith("#qplanremove:")) {
+                    removePlan();
+                } else if (c.startsWith("#qplansave:")) {
+                    boolean was = Plans.isSaved(Plans.current());
+                    Plans.Build kept = Plans.savePlan(System.currentTimeMillis());
+                    if (kept != null) {
+                        flash = L.t(was ? "wynnlabs.homev.plan_updated" : "wynnlabs.homev.plan_saved_flash", kept.name());
+                        flashUntil = System.currentTimeMillis() + 2500;
+                    }
+                } else if (c.startsWith("#qplanedit:")) {
+                    BuildWindow.INSTANCE.editPlan(Plans.current());
+                } else if (c.startsWith("#qplanundo:")) {
+                    Plans.undoRemove(System.currentTimeMillis());
                 } else if (c.startsWith("#qsaved:")) {
                     BuildWindow.INSTANCE.openSaved();
                 } else if (c.startsWith("#qhint:")) {

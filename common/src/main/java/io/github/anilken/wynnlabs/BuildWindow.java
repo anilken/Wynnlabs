@@ -137,6 +137,7 @@ final class BuildWindow {
      * result list once seen and cancelled is gone (Suggest build again shows new ones).
      */
     void openPick() {
+        editingPlan = null;
         loadChoice();
         open = true;
         overwriteId = null;
@@ -182,8 +183,43 @@ final class BuildWindow {
         return result != null;
     }
 
+    /**
+     * The plan's Edit: the picker with the plan's chosen items and strip. Suggest build, then
+     * Apply replaces the plan, and updates its copy in My builds when it has one.
+     */
+    void editPlan(Plans.Build plan) {
+        if (plan == null) {
+            return;
+        }
+        open = true;
+        overwriteId = null;
+        editingPlan = Plans.isSaved(plan) ? plan.id() : "";
+        chosen = new ArrayList<>(Locks.resolve(GameState.current(), plan.locks()));
+        tuning = plan.tuning();
+        Locks.set(names(chosen));
+        Locks.setTuning(tuning);
+        Around.forget();
+        result = null;
+        unseenGen = -1;
+        view = View.PICK;
+        focusSearch(true);
+    }
+
+    /** Editing the plan: "" for an unsaved one, its saved copy's id, null when not editing it. */
+    private String editingPlan;
+
+    /** Tests: the items and the strip the picker holds. */
+    List<String> chosenNames() {
+        return names(chosen);
+    }
+
+    Tuning.Choice tuning() {
+        return tuning;
+    }
+
     /** "My builds". */
     void openSaved() {
+        editingPlan = null;
         open = true;
         view = View.SAVED;
         renameId = null;
@@ -200,6 +236,7 @@ final class BuildWindow {
         card = 0;
         overwriteId = null;
         fromHint = r.check();
+        editingPlan = null;
         chosen = new ArrayList<>(Locks.resolve(GameState.current(), r.around()));
         tuning = r.tuning();
         view = View.RESULTS;
@@ -210,7 +247,9 @@ final class BuildWindow {
         open = false;
         renameId = null;
         focusSearch(false);
-        rename.setFocused(false);
+        if (rename != null) {
+            rename.setFocused(false);
+        }
     }
 
     private void focusSearch(boolean on) {
@@ -1251,6 +1290,77 @@ final class BuildWindow {
         return out;
     }
 
+    /**
+     * The icon of where a piece comes from, by the same order as {@link #source}: this week's
+     * pool (the raid trophy), the Trade Market (a coin), a merchant (the cart), a quest or a quest
+     * item (the scroll), a cave or loot chest (the box), mobs (the sword), a dungeon (the
+     * skull); a question mark when nothing is known.
+     */
+    static String sourceIcon(String name) {
+        if (poolOf(name) != null) {
+            return "trophy";
+        }
+        ItemData info = itemOf(name);
+        if (info == null) {
+            return "question-mark";
+        }
+        boolean tradable = Shopping.tradable(info);
+        if (tradable) {
+            Prices.Price p = GameState.current().price(name);
+            if (p != null && p.typical() != null) {
+                return "coin";
+            }
+        }
+        String src = Shopping.sourceOf(info);
+        boolean known = src != null && !src.isBlank() && !src.toUpperCase(Locale.ROOT).startsWith("UNKNOWN");
+        if (known) {
+            return switch (Shopping.kind(src)) {
+                case "merchant" -> "shopping-cart";
+                case "quest" -> "script";
+                case "chest" -> "box";
+                case "drop" -> "sword";
+                case "dungeon" -> "skull";
+                default -> "question-mark";
+            };
+        }
+        if ("QUEST_ITEM".equals(info.restriction())) {
+            return "script";
+        }
+        return tradable ? "coin" : "question-mark";
+    }
+
+    /**
+     * One more line about where a piece comes from, under {@link #sourceText}, or null: the mob
+     * area of a drop or the region of a chest (the line itself names neither), or, when the
+     * line is the Trade Market's price, the place it also comes from.
+     */
+    static String sourceDetail(String name) {
+        if (poolOf(name) != null) {
+            return null;
+        }
+        ItemData info = itemOf(name);
+        if (info == null) {
+            return null;
+        }
+        String src = Shopping.sourceOf(info);
+        if (src == null || src.isBlank() || src.toUpperCase(Locale.ROOT).startsWith("UNKNOWN")) {
+            return null;
+        }
+        if (source(name)[1] != null) {
+            return L.t("wynnlabs.homev.source_also", Shopping.where(src));
+        }
+        String[] parts = src.split(": ", 2);
+        String place = parts.length > 1 ? parts[1].trim() : "";
+        if (place.isEmpty()) {
+            return null;
+        }
+        return switch (parts[0]) {
+            case "NORMAL_MOB_DROP", "MOB_REGION" -> L.t("wynnlabs.homev.source_area", place);
+            case "CAVE_LOOT_CHEST", "CAVE_COMPLETION", "LOOT_CHEST" -> L.t("wynnlabs.homev.source_region", place);
+            default -> null;
+        };
+    }
+
     /** Where a piece comes from, as one line (a Trade Market price written out). */
     static String sourceText(String name) {
         Object[] s = source(name);
@@ -1742,7 +1852,14 @@ final class BuildWindow {
             }
             return;
         }
-        Plans.apply(fresh.named(Plans.defaultName(fresh)));
+        if (editingPlan != null && !editingPlan.isEmpty() && Plans.byId(editingPlan) != null) {
+            // the plan's Edit: its saved copy follows (name kept), and it stays the plan
+            Plans.Build kept = Plans.overwrite(editingPlan, fresh, now);
+            Plans.apply(kept);
+        } else {
+            Plans.apply(fresh.named(Plans.defaultName(fresh)));
+        }
+        editingPlan = null;
         discardResults();                           // applied: the plan holds it now
         hostApplied();
     }

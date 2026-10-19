@@ -156,6 +156,65 @@ class PlansTest {
     }
 
     @Test
+    void removingAPlanAndUndo() {
+        Plans.Build a = build("Mine", List.of("Covetous Thunder"), "Yume");
+        Plans.apply(a);
+        Plans.Build kept = Plans.save(build("Kept", List.of(), "Venison"), 900);
+        assertTrue(Plans.remove(1000));
+        assertNull(Plans.current(), "the panel back to the suggestions");
+        assertEquals(List.of(kept), Plans.saved(), "saved builds untouched");
+        assertEquals(a, Plans.removedUndoable(1000 + Plans.UNDO_MS - 1));
+        assertTrue(Plans.undoRemove(1001));
+        assertEquals(a, Plans.current(), "Undo brings it back exactly");
+        assertNull(Plans.removedUndoable(1002), "nothing left to undo");
+        assertTrue(Plans.remove(2000));
+        assertFalse(Plans.undoRemove(2000 + Plans.UNDO_MS + 1), "too late to undo");
+        assertFalse(Plans.remove(3000), "no plan: nothing to remove");
+    }
+
+    @Test
+    void saveAddsThePlanOrUpdatesItsCopy() {
+        Plans.Build a = build("Thunder plan", List.of("Covetous Thunder"), "Yume");
+        Plans.apply(a);
+        assertFalse(Plans.isSaved(Plans.current()));
+        Plans.Build kept = Plans.savePlan(1000);
+        assertEquals(1, Plans.saved().size(), "added to My builds");
+        assertEquals("Thunder plan", kept.name());
+        assertTrue(Plans.isSaved(Plans.current()), "the plan is linked to its copy");
+        assertEquals(kept.id(), Plans.current().id());
+        // changed and saved again: the same copy updated, its name kept
+        Plans.Build changed = new Plans.Build(kept.id(), "Thunder plan", List.of("Covetous Thunder"), Tuning.Choice.PLAIN,
+                java.util.Map.of("HELMET", "Venison"), 999, 44, kept.created(), 1500);
+        Plans.apply(changed);
+        Plans.Build again = Plans.savePlan(2000);
+        assertEquals(1, Plans.saved().size(), "no second copy");
+        assertEquals(kept.id(), again.id());
+        assertEquals("Venison", Plans.saved().get(0).items().get("HELMET"));
+        assertEquals("Thunder plan", Plans.saved().get(0).name());
+
+    }
+
+    @Test
+    void editPreloadsTheWindow() {
+        Locks.use(List.of());
+        Locks.useTuning(Tuning.Choice.PLAIN);
+        try {
+            Plans.Build a = build("Thunder plan", List.of("Covetous Thunder", "Morph-Emerald"), "Yume");
+            Plans.apply(a);
+            BuildWindow.INSTANCE.editPlan(Plans.current());
+            assertTrue(BuildWindow.INSTANCE.isOpen());
+            assertEquals(BuildWindow.View.PICK, BuildWindow.INSTANCE.view(), "the picker");
+            assertEquals(List.of("Covetous Thunder", "Morph-Emerald"), BuildWindow.INSTANCE.chosenNames(), "the plan's chosen items");
+            assertEquals(a.tuning(), BuildWindow.INSTANCE.tuning(), "and its strip");
+            assertEquals(a.locks(), Locks.names(), "kept as the window's choice");
+            BuildWindow.INSTANCE.close();
+        } finally {
+            Locks.use(null);
+            Locks.useTuning(null);
+        }
+    }
+
+    @Test
     void thePlanPill() {
         Plans.Pills p = new Plans.Pills();
         assertFalse(p.shown(null), "no plan: the pills as before");

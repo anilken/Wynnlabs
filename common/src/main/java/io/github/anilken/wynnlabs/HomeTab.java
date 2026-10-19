@@ -41,14 +41,15 @@ final class HomeTab {
     /**
      * One gear slot: its place in the screen's slot order (0-3 armour, 4 the weapon, 5-8 rings,
      * bracelet, necklace), its name, what is worn, the upgrade (null: keep) with its icon, gain
-     * and tooltip.
+     * and tooltip; for a plan's missing piece, {@code lead}: the lines above the item's tooltip
+     * that explain its pill ("Missing · dropped by mobs" and a detail).
      */
     record SlotView(int index, String label, Slot type, ItemStack worn, Roadmap.Gear gear, ItemStack icon, double gain,
-            List<Component> tip, Mark mark, ItemData planned) {
+            List<Component> tip, Mark mark, ItemData planned, List<Component> lead) {
 
         SlotView(int index, String label, Slot type, ItemStack worn, Roadmap.Gear gear, ItemStack icon, double gain,
                 List<Component> tip) {
-            this(index, label, type, worn, gear, icon, gain, tip, Mark.NONE, null);
+            this(index, label, type, worn, gear, icon, gain, tip, Mark.NONE, null, List.of());
         }
 
         /** A plan's piece to show (chosen or still to get): its icon framed, not what is worn. */
@@ -100,6 +101,15 @@ final class HomeTab {
 
         /** A quest's area: a click tracks it. */
         void quest(int x, int y, int w, int h, List<Component> tip, QuestBook.Entry q);
+
+        /**
+         * An item's hover: its full tooltip (the worn stack's own with your rolls when {@code worn}
+         * is not empty, else the item database's) with {@code extra} context lines under it.
+         */
+        void item(int x, int y, int w, int h, ItemData info, ItemStack worn, List<Component> extra);
+
+        /** {@link #item}, with {@code lead} lines above the item's tooltip (a blank line between). */
+        void item(int x, int y, int w, int h, ItemData info, ItemStack worn, List<Component> lead, List<Component> extra);
 
         /** A slot whose click opens its comparison (when it has options). */
         void compare(int[] rect, SlotView s);
@@ -247,6 +257,7 @@ final class HomeTab {
     void draw(GuiGraphics g, In in, Host host, int x, int y, int w, int h, boolean compact, boolean large, int mx, int my) {
         font = UiFont.get();
         this.large = large;
+        firstPill = null;
         long now = System.currentTimeMillis();
         if (d == null || now - dataAt > 500) {
             d = Data.read();
@@ -337,6 +348,9 @@ final class HomeTab {
                 savedButton(g, host, bx, ty - 3, savedW, in, mx, my);
             }
         }
+        // the title row's free room, where the plan's buttons fold when the panel has no room for their row
+        int foldLeft = tx;
+        int foldRight = bx - 3;
 
         List<SlotView> armour = new ArrayList<>();
         List<SlotView> trinkets = new ArrayList<>();
@@ -392,13 +406,26 @@ final class HomeTab {
         // the figure from the panel alone: as tall as the room between the title and the build bar
         // allows, as wide as the room between the two zones
         int u = Math.max(1, Math.min((areaH - 1) / 32, (room - 2 * zoneMin - 1) / 16));
+        // the plan's view: a row of its buttons under the figure, above the bar; the figure gives
+        // up that row's height (the slot columns keep theirs), or the buttons fold into the title row
+        int figH = areaH;
+        boolean planRow = false;
+        if (in.plan() != null && !compact) {
+            int u2 = Math.max(1, Math.min((areaH - PLAN_ROW - 1) / 32, (room - 2 * zoneMin - 1) / 16));
+            int zone2 = Math.max(0, Math.min(zoneCap, (room - 16 * u2 - 1) / 2));
+            if ((areaH - PLAN_ROW - 1) / 32 >= 1 && room - 2 * zone2 >= 3 * 16 + 6) {
+                planRow = true;
+                u = u2;
+                figH = areaH - PLAN_ROW;
+            }
+        }
         int figW = 16 * u + 1;
         // the width the figure leaves goes back to the zones, the same on both sides
         int zone = Math.max(0, Math.min(zoneCap, (room - figW) / 2));
         int midX = x + edge + zone + 4;
         int midW = room - 2 * zone;
         int l = midX + Math.max(0, (midW - figW) / 2);
-        int standY = top + Math.max(0, (areaH - 32 * u - 1) / 2);
+        int standY = top + Math.max(0, (figH - 32 * u - 1) / 2);
         // which parts are tinted: a chosen item purple, an upgrade (or a plan's piece to get) green,
         // a worn piece wood, nothing worn pale
         int[] state = new int[9];
@@ -424,6 +451,14 @@ final class HomeTab {
             int wx = l + 14 * u - s / 2;
             int wy = standY + 19 * u - s / 2;
             weaponSlot(g, host, weapon, wx, wy, s, x + w - edge - zone - 4, bottom, names, large);
+        }
+        if (in.plan() != null) {
+            if (planRow) {
+                planButtons(g, host, in, midX, bottom - 14, midW, false, mx, my);
+            } else if (foldRight - foldLeft >= 2 * 16 + 3) {
+                // folded: Save and Edit as icons left of My builds (Remove is the Plan pill's ✕)
+                planButtons(g, host, in, foldRight - (2 * 16 + 3), ty - 3, 2 * 16 + 3, true, mx, my);
+            }
         }
         // the preview's check: the bar's whole line is one part, which no slot, pill or name may touch
         LayoutCheck.part(g.pose(), x + PAD + 1, y + h - PAD - barH, w - 2 * PAD - 2, barH, "bar", "the build bar");
@@ -591,8 +626,67 @@ final class HomeTab {
                 L.c("wynnlabs.home.refresh_tip").withStyle(ChatFormatting.GRAY)), "#qrefresh:");
     }
 
+    /** The preview: the first slot's hover box this frame, for a tooltip shot. */
+    int[] firstSlot;
+    /** The preview: the first missing piece's pill this frame (x, y, w, h, 1 when its square is on its left), for a tooltip shot. */
+    int[] firstPill;
+
     /** Whose part the next pill is, for the preview's check. */
     private String partOwner;
+
+    /** The plan's button row under the figure: its 14px and the gaps above and below it. */
+    private static final int PLAN_ROW = 18;
+
+    /**
+     * The plan's buttons, centred in {@code w} from {@code x}: Save (purple: "Saved ✓" once it is
+     * in My builds, a click then updates that copy), Edit (the Choose-items window with its items
+     * and strip) and Remove (as the Plan pill's ✕, with Undo). Text when all of it fits, else
+     * icons with their names in the tooltips. {@code folded}: the title row's icons, Save and Edit.
+     */
+    private void planButtons(GuiGraphics g, Host host, In in, int x, int y, int w, boolean folded, int mx, int my) {
+        boolean saved = Plans.isSaved(Plans.current());
+        String[][] b = {
+            {"bookmark", L.t(saved ? "wynnlabs.homev.plan_saved" : "wynnlabs.homev.plan_save"), "#qplansave:",
+                saved ? "wynnlabs.homev.plan_saved_tip" : "wynnlabs.homev.plan_save_tip", "1"},
+            {"edit", L.t("wynnlabs.homev.plan_edit"), "#qplanedit:", "wynnlabs.homev.plan_edit_tip", "0"},
+            {"x", L.t("wynnlabs.homev.plan_remove"), "#qplanremove:", "wynnlabs.homev.plan_remove_tip", "0"}};
+        int n = folded ? 2 : 3;
+        int full = 0;
+        for (int i = 0; i < n; i++) {
+            full += font.width(b[i][1]) + 23 + (i > 0 ? 3 : 0);
+        }
+        boolean words = !folded && full <= w;
+        int total = words ? full : n * 16 + (n - 1) * 3;
+        int bx = x + (w - total) / 2;
+        for (int i = 0; i < n; i++) {
+            int bw = words ? font.width(b[i][1]) + 23 : 16;
+            boolean hov = mx >= bx && mx < bx + bw && my >= y && my < y + 14;
+            boolean primary = b[i][4].equals("1");
+            int ink;
+            if (primary) {
+                Kit.primary(g, bx, y, bw, 14, hov);
+                ink = Theme.CREAM;
+            } else {
+                Kit.button(g, bx, y, bw, 14, hov ? Kit.HOVER : Kit.REST);
+                ink = Kit.buttonText(hov ? Kit.HOVER : Kit.REST);
+            }
+            if (words) {
+                Art.icon(g, b[i][0], bx + 6, y + 3, 8, ink);
+                g.drawString(font, b[i][1], bx + 17, y + 3, ink, false);
+            } else {
+                Art.icon(g, b[i][0], bx + 4, y + 3, 8, ink);
+            }
+            LayoutCheck.part(g.pose(), bx, y, bw, 14, "planrow", "the plan's " + b[i][2] + " button");
+            List<Component> tip = new ArrayList<>();
+            tip.add(Component.literal(b[i][1]).withStyle(ChatFormatting.WHITE));
+            tip.add(L.c(b[i][3]).withStyle(ChatFormatting.GRAY));
+            if (b[i][2].equals("#qplanremove:") && !saved) {
+                tip.add(L.c("wynnlabs.homev.plan_unsaved").withStyle(ChatFormatting.GOLD));
+            }
+            host.area(bx, y, bw, 14, null, tip, b[i][2]);
+            bx += bw + 3;
+        }
+    }
 
     /** The out-of-date strip's height with its gap under it. */
     private static final int STRIP_H = 17;
@@ -615,13 +709,36 @@ final class HomeTab {
         return lines == 0 ? PILL_H : PILL_H + 2 + lines * 10 - 1;
     }
 
-    /** The width of a slot's pill: its gain, or the tick's 15; 0 for an empty slot. */
-    private int markW(SlotView v) {
-        if (v.mark() == Mark.CHOSEN) {
-            return font.width(L.t("wynnlabs.homev.chosen_pill")) + 8;
+    /**
+     * A plan's missing piece's pill in {@code room} pixels: {text, icon}. "Missing" with the
+     * source's icon, the icon alone where that does not fit; a chosen piece keeps "chosen" with
+     * the icon, then "chosen" alone, then the icon alone.
+     */
+    private String[] missingPill(SlotView v, int room) {
+        String icon = BuildWindow.sourceIcon(v.planned() == null ? "" : v.planned().name());
+        String text = L.t(v.mark() == Mark.CHOSEN ? "wynnlabs.homev.chosen_pill" : "wynnlabs.homev.get_pill");
+        if (pillW(text, icon) <= room) {
+            return new String[] {text, icon};
         }
-        if (v.mark() == Mark.GET) {
-            return font.width(L.t("wynnlabs.homev.get_pill")) + 8;
+        if (v.mark() == Mark.CHOSEN && pillW(text, null) <= room) {
+            return new String[] {text, null};
+        }
+        return new String[] {null, icon};
+    }
+
+    /** A pill's width: its text and 8px icon side by side, either alone; the icon alone is 15. */
+    private int pillW(String text, String icon) {
+        if (text == null) {
+            return 15;
+        }
+        return font.width(text) + 8 + (icon == null ? 0 : 10);
+    }
+
+    /** The width of a slot's pill in {@code room} pixels: its gain, or the tick's 15; 0 for an empty slot. */
+    private int markW(SlotView v, int room) {
+        if (v.mark() == Mark.CHOSEN || v.mark() == Mark.GET) {
+            String[] p = missingPill(v, room);
+            return pillW(p[0], p[1]);
         }
         if (v.mark() == Mark.DONE || v.mark() == Mark.DONE_CHOSEN) {
             return 15;
@@ -773,7 +890,7 @@ final class HomeTab {
         int bh = block(name.size());
         int py = sy + (s - bh) / 2;
         partOwner = "slot" + v.index();
-        mark(g, v, show, left ? bx : -1, left ? -1 : bx + zone, py);
+        mark(g, v, show, left ? bx : -1, left ? -1 : bx + zone, py, zone);
         for (int i = 0; i < name.size(); i++) {
             Component c = Component.literal(name.get(i)).withStyle(nameColour(v));
             int nx = left ? bx : bx + zone - font.width(c);
@@ -797,8 +914,9 @@ final class HomeTab {
             boolean large) {
         ItemStack show = showOf(v);
         box(g, v, show, sx, sy, s, large, false);
-        int pw = markW(v);
         int px = sx + s + MARK_GAP + 1;
+        int room = right - px;
+        int pw = markW(v, room);
         int py = sy + (s - PILL_H) / 2;
         boolean beside = px + pw <= right;
         if (!beside) {
@@ -806,7 +924,7 @@ final class HomeTab {
             py = Math.min(sy + s + MARK_GAP + 1, bottom - PILL_H);
         }
         partOwner = "slot" + v.index();
-        mark(g, v, show, px, -1, py);
+        mark(g, v, show, px, -1, py, room);
         int ny = py + PILL_H + 2;
         int lines = names && beside ? Math.min(2, (bottom - ny + 1) / 10) : 0;
         List<String> name = lines > 0 && right - px >= 20 ? wrap2(nameOf(v), right - px) : List.of();
@@ -861,18 +979,21 @@ final class HomeTab {
     }
 
     /**
-     * A slot's pill: "chosen" on purple for an item you build around, "get" on green for a plan's
-     * piece to get, a tick (purple for a chosen item) when you wear the plan's piece; else its
+     * A slot's pill: "chosen" on purple for an item you build around, "Missing" on green for a
+     * plan's piece to get, both with the icon of where it comes from (the icon alone where
+     * {@code room} is short), a tick (purple for a chosen item) when you wear the plan's piece; else its
      * gain on green, or a tick on paper when it is fine; nothing for an empty slot.
      */
-    private void mark(GuiGraphics g, SlotView v, ItemStack show, int left, int right, int y) {
+    private void mark(GuiGraphics g, SlotView v, ItemStack show, int left, int right, int y, int room) {
         switch (v.mark()) {
-            case CHOSEN -> {
-                pill(g, L.t("wynnlabs.homev.chosen_pill"), null, left, right, y, CHOSEN, CHOSEN_TEXT);
-                return;
-            }
-            case GET -> {
-                pill(g, L.t("wynnlabs.homev.get_pill"), null, left, right, y, Theme.SEAL_3, Theme.SEAL_TEXT);
+            case CHOSEN, GET -> {
+                String[] p = missingPill(v, room);
+                if (firstPill == null) {
+                    int pw = pillW(p[0], p[1]);
+                    firstPill = new int[] {left >= 0 ? left : right - pw, y, pw, PILL_H, left >= 0 ? 1 : 0};
+                }
+                boolean chosen = v.mark() == Mark.CHOSEN;
+                pill(g, p[0], p[1], left, right, y, chosen ? CHOSEN : Theme.SEAL_3, chosen ? CHOSEN_TEXT : Theme.SEAL_TEXT);
                 return;
             }
             case DONE -> {
@@ -893,12 +1014,19 @@ final class HomeTab {
     }
 
     /** A slot's hover and click: the upgrade's story and its comparison, else the worn item's tooltip. */
-    private static void areas(Host host, SlotView v, int[] rect) {
-        if (v.mark() != Mark.NONE && v.tip() != null) {
-            host.area(rect[0], rect[1], rect[2], rect[3], null, v.tip(), null);
+    private void areas(Host host, SlotView v, int[] rect) {
+        if (v.index() == 0) {
+            firstSlot = rect.clone();
+        }
+        // every item here shows its full tooltip (Host.item), its context lines under it
+        if (v.mark() != Mark.NONE && v.planned() != null) {
+            boolean worn = v.mark() == Mark.DONE || v.mark() == Mark.DONE_CHOSEN;
+            // the rect holds the square, the pill and the name: the pill's hover is the slot's
+            host.item(rect[0], rect[1], rect[2], rect[3], v.planned(), worn ? v.worn() : ItemStack.EMPTY,
+                    v.lead() == null ? List.of() : v.lead(), v.tip());
         } else if (v.gear() != null) {
             host.compare(rect, v);
-            host.area(rect[0], rect[1], rect[2], rect[3], null, v.tip(), null);
+            host.item(rect[0], rect[1], rect[2], rect[3], v.gear().info(), ItemStack.EMPTY, v.tip());
         } else if (!v.worn().isEmpty()) {
             host.area(rect[0], rect[1], rect[2], rect[3], v.worn(), null, null);
         } else {
@@ -912,11 +1040,15 @@ final class HomeTab {
      * or ending at {@code right} (the other is -1).
      */
     private void pill(GuiGraphics g, String text, String icon, int left, int right, int y, int fill, int ink) {
-        int pw = text != null ? font.width(text) + 8 : 15;
+        int pw = pillW(text, icon);
         int px = left >= 0 ? left : right - pw;
         Kit.seal(g, px, y, pw, PILL_H, fill);
         LayoutCheck.part(g.pose(), px, y, pw, PILL_H, partOwner == null ? "pill" : partOwner, "a pill (" + (text == null ? icon : text) + ")");
-        if (text != null) {
+        if (text != null && icon != null) {
+            // the icon, then the text
+            Art.icon(g, icon, px + 4, y + (PILL_H - 8) / 2, 8, ink);
+            g.drawString(font, text, px + 14, y + 2, ink, true);
+        } else if (text != null) {
             g.drawString(font, text, px + (pw - font.width(text) + 1) / 2, y + 2, ink, true);
         } else {
             Art.icon(g, icon, px + (pw - 8) / 2, y + (PILL_H - 8) / 2, 8, ink);
@@ -942,6 +1074,18 @@ final class HomeTab {
      * worked out, the slots' gains summed and no bar.
      */
     private void buildBar(GuiGraphics g, In in, Host host, int x, int y, int w, boolean compact, int count, double gains) {
+        if (Plans.removedUndoable(System.currentTimeMillis()) != null) {
+            // a plan just removed: "Plan removed · Undo" for a few seconds, as after deleting a saved build
+            String gone = L.t("wynnlabs.homev.plan_removed") + " · ";
+            String undo = L.t("wynnlabs.saved.undo");
+            int ly = compact ? y : y + 11;
+            int lx = x + (w - font.width(gone) - font.width(undo)) / 2;
+            Kit.text(g, font, gone, lx, ly, Theme.INK_3);
+            Kit.text(g, font, undo, lx + font.width(gone), ly, Theme.LINK);
+            host.area(lx + font.width(gone), ly - 1, font.width(undo), 10, null,
+                    List.of(L.c("wynnlabs.homev.plan_undo_tip").withStyle(ChatFormatting.GRAY)), "#qplanundo:");
+            return;
+        }
         if (count == 0) {
             String all = fit(L.t("wynnlabs.homev.all_fine"), w - 10);
             int ax = x + (w - font.width(all) - 10) / 2;
