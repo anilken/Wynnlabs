@@ -656,6 +656,9 @@ public class LayoutMatrix implements FabricClientGameTest {
                 ctx.runOnClient(mc -> Settings.setNumber("langOverride", 2));
             }
         }
+        if (where.startsWith("1920x1080@3")) {
+            scrollDrag(ctx, where, report);
+        }
         ctx.runOnClient(mc -> {
             BuildWindow.INSTANCE.close();
             Around.previewLoading = null;
@@ -746,6 +749,56 @@ public class LayoutMatrix implements FabricClientGameTest {
                 };
             }
             default -> { }
+        }
+    }
+
+    /**
+     * The Choose-items list's scrollbar with the mouse, as the player would: a press on the
+     * thumb, a drag 60px down (and past the bar), the release; then a click on the track below
+     * the thumb pages on. Reported when the list does not follow.
+     */
+    private static void scrollDrag(ClientGameTestContext ctx, String where, Map<String, List<String>> report) {
+        ctx.runOnClient(mc -> {
+            Locks.use(List.of());
+            BuildWindow.INSTANCE.previewPick("", List.of(), Tuning.Choice.PLAIN);
+        });
+        ctx.waitTicks(3);
+        String problem = ctx.computeOnClient(mc -> {
+            BuildWindow w = BuildWindow.INSTANCE;
+            int[] t = w.listBar().thumb();
+            if (!w.listBar().shown()) {
+                return "the list has no scrollbar to drag";
+            }
+            double f = MenuScale.factor();
+            var info = new net.minecraft.client.input.MouseButtonInfo(0, 0);
+            double cx = t[0] + t[2] / 2.0;
+            double cy = t[1] + t[3] / 2.0;
+            mc.screen.mouseClicked(new net.minecraft.client.input.MouseButtonEvent(cx / f, cy / f, info), false);
+            if (!w.listBar().dragging()) {
+                return "a press on the thumb did not start a drag";
+            }
+            mc.screen.mouseDragged(new net.minecraft.client.input.MouseButtonEvent((cx + 40) / f, (cy + 60) / f, info), 40 / f, 60 / f);
+            int afterDrag = w.listScroll();
+            mc.screen.mouseReleased(new net.minecraft.client.input.MouseButtonEvent((cx + 40) / f, (cy + 60) / f, info));
+            if (afterDrag <= 0) {
+                return "dragging the thumb 60px did not scroll the list";
+            }
+            if (w.listBar().dragging()) {
+                return "the release did not end the drag";
+            }
+            int[] t2 = w.listBar().thumb();
+            int[] track = w.listBar().track();
+            double below = Math.min(track[1] + track[3] - 1, t2[1] + t2[3] + 4);
+            if (below <= t2[1] + t2[3]) {
+                return null;                            // the thumb sits at the bottom: no track below it
+            }
+            mc.screen.mouseClicked(new net.minecraft.client.input.MouseButtonEvent(cx / f, below / f, info), false);
+            mc.screen.mouseReleased(new net.minecraft.client.input.MouseButtonEvent(cx / f, below / f, info));
+            System.out.println("[WynnLabs] preview scrollbar: drag to row " + afterDrag + ", page to row " + w.listScroll());
+            return w.listScroll() > afterDrag ? null : "a click on the track below the thumb did not page";
+        });
+        if (problem != null) {
+            report.computeIfAbsent(where + " pick scrollbar", k -> new ArrayList<>()).add(problem);
         }
     }
 

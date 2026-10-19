@@ -6133,6 +6133,9 @@ final class RoadmapScreen extends Screen {
     public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
         double f = MenuScale.factor();
         MouseButtonEvent e = MenuScale.event(event);
+        if (tab == 0 && BuildWindow.INSTANCE.mouseDragged(e.x(), e.y())) {
+            return true;                                // a build window scrollbar's thumb follows the mouse
+        }
         if (tab == TAB_CRAFT && CraftingTab.INSTANCE.mouseDragged(e.x(), e.y())) {
             return true;                                // the probability slider follows the mouse
         }
@@ -6142,6 +6145,7 @@ final class RoadmapScreen extends Screen {
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         CraftingTab.INSTANCE.mouseReleased();
+        BuildWindow.INSTANCE.mouseReleased();
         return super.mouseReleased(MenuScale.event(event));
     }
 

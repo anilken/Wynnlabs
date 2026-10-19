@@ -456,7 +456,7 @@ final class BuildWindow {
             Kit.text(g, font, fit(L.t("wynnlabs.pick.none"), w - 12, false), x + 6, y + 6, Theme.INK_3);
             return;
         }
-        int rw = w - 2 - (max > 0 ? 5 : 0);
+        int rw = w - 2 - (max > 0 ? ScrollBar.W + 2 : 0);
         for (int i = 0; i < rows && listScroll + i < items.size(); i++) {
             ItemData it = items.get(listScroll + i);
             int ry = y + 1 + i * ROW_H;
@@ -492,11 +492,12 @@ final class BuildWindow {
             host.item(x + 1, ry, rw, ROW_H, it, icon, List.of(
                     L.c(on ? "wynnlabs.pick.row_off" : "wynnlabs.pick.row_on").withStyle(ChatFormatting.DARK_GRAY)));
         }
-        if (max > 0) {
-            int bh = Math.max(12, (h - 2) * rows / items.size());
-            int by = y + 1 + (h - 2 - bh) * listScroll / max;
-            g.fill(x + w - 5, y + 1, x + w - 3, y + h - 1, 0x22000000);
-            g.fill(x + w - 5, by, x + w - 3, by + bh, 0x88000000);
+        // the scrollbar: drag its thumb, click its track for a page (ScrollBar)
+        listBar.place(x + w - ScrollBar.W - 1, y + 1, h - 2, rows, items.size(), listScroll);
+        listBar.draw(g, mx, my);
+        if (listBar.shown()) {
+            int[] t = listBar.track();
+            btn(t[0], t[1], t[2], t[3], "scrollbar", null);
         }
     }
 
@@ -1303,7 +1304,7 @@ final class BuildWindow {
         int rows = Math.max(1, (listH - 2) / SAVED_ROW_H);
         int max = Math.max(0, all.size() - rows);
         savedScroll = Math.max(0, Math.min(savedScroll, max));
-        int rw = w - 2 - (max > 0 ? 5 : 0);
+        int rw = w - 2 - (max > 0 ? ScrollBar.W + 2 : 0);
         boolean renaming = false;
         if (all.isEmpty()) {
             Kit.text(g, font, fit(L.t("wynnlabs.saved.none"), w - 12, false), x + 6, top + 6, Theme.INK_3);
@@ -1371,11 +1372,11 @@ final class BuildWindow {
         if (!renaming) {
             rename.setFocused(false);
         }
-        if (max > 0) {
-            int bh = Math.max(12, (listH - 2) * rows / all.size());
-            int by = top + 1 + (listH - 2 - bh) * savedScroll / max;
-            g.fill(x + w - 5, top + 1, x + w - 3, top + listH - 1, 0x22000000);
-            g.fill(x + w - 5, by, x + w - 3, by + bh, 0x88000000);
+        savedBar.place(x + w - ScrollBar.W - 1, top + 1, listH - 2, rows, all.size(), savedScroll);
+        savedBar.draw(g, mx, my);
+        if (savedBar.shown()) {
+            int[] t = savedBar.track();
+            btn(t[0], t[1], t[2], t[3], "scrollbar", null);
         }
         if (editId != null) {
             drawEdit(g, host, x, top + listH + 4, w, editH, mx, my);
@@ -1491,6 +1492,12 @@ final class BuildWindow {
     boolean mouseClicked(double mx, double my, int button) {
         if (!open) {
             return false;
+        }
+        // the scrollbars first: a press there never reaches the rows
+        ScrollBar bar = view == View.PICK ? listBar : view == View.SAVED ? savedBar : null;
+        if (bar != null && button == 0 && bar.mouseClicked(mx, my)) {
+            syncScroll();
+            return true;
         }
         Btn hit = null;
         for (int i = btns.size() - 1; i >= 0; i--) {
@@ -1689,6 +1696,45 @@ final class BuildWindow {
         renameId = null;
         rename.setFocused(false);
     }
+
+    /** A drag with the button held: a scrollbar's thumb follows it. True when a bar took it. */
+    boolean mouseDragged(double mx, double my) {
+        if (!open) {
+            return false;
+        }
+        boolean took = listBar.mouseDragged(my) || savedBar.mouseDragged(my);
+        if (took) {
+            syncScroll();
+        }
+        return took;
+    }
+
+    /** The button let go: any drag ends. */
+    void mouseReleased() {
+        listBar.mouseReleased();
+        savedBar.mouseReleased();
+    }
+
+    /** The lists follow their bars. */
+    private void syncScroll() {
+        if (view == View.PICK) {
+            listScroll = listBar.offset();
+        } else if (view == View.SAVED) {
+            savedScroll = savedBar.offset();
+        }
+    }
+
+    /** The preview and tests: the Choose-items list's bar and where the list is. */
+    ScrollBar listBar() {
+        return listBar;
+    }
+
+    int listScroll() {
+        return listScroll;
+    }
+
+    private final ScrollBar listBar = new ScrollBar();
+    private final ScrollBar savedBar = new ScrollBar();
 
     boolean mouseScrolled(double mx, double my, double v) {
         if (!open) {
