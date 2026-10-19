@@ -380,7 +380,12 @@ final class HomeTab {
      * space that makes the longer line shortest; the second line ends in "…" when still too long.
      */
     private List<String> wrap2(String s, int w) {
-        if (font.width(s) <= w) {
+        return wrap2(s, w, false);
+    }
+
+    /** {@link #wrap2(String, int)} measured as drawn: in bold when {@code bold}. */
+    private List<String> wrap2(String s, int w, boolean bold) {
+        if (width(s, bold) <= w) {
             return List.of(s);
         }
         String a = null;
@@ -389,14 +394,14 @@ final class HomeTab {
         for (int i = s.indexOf(' '); i > 0; i = s.indexOf(' ', i + 1)) {
             String l1 = s.substring(0, i);
             String l2 = s.substring(i + 1);
-            int m = Math.max(font.width(l1), font.width(l2));
-            if (font.width(l1) <= w && m < best) {
+            int m = Math.max(width(l1, bold), width(l2, bold));
+            if (width(l1, bold) <= w && m < best) {
                 best = m;
                 a = l1;
                 b = l2;
             }
         }
-        return a == null ? List.of(fit(s, w)) : List.of(a, fit(b, w));
+        return a == null ? List.of(fit(s, w, bold)) : List.of(a, fit(b, w, bold));
     }
 
     /**
@@ -801,7 +806,7 @@ final class HomeTab {
                     ink(g, fit(L.t("wynnlabs.homev.aspects_done"), tw), tx, y + 20, Theme.GOOD);
                 } else {
                     String shortName = shortAspect(a.aspect().name());
-                    List<String> name = wrap2(shortName, tw);
+                    List<String> name = wrap2(shortName, tw, true);
                     int by;
                     if (!String.join(" ", name).contains("…")) {
                         // beside the ring: "Next" over the name in up to two lines
@@ -817,7 +822,7 @@ final class HomeTab {
                                 .append(Component.literal(shortName).withStyle(UiFont::bold).withColor(tierColour(a.aspect().rarity()) & 0xFFFFFF));
                         if (font.width(next) > w - 12) {
                             // still too wide: the name alone, in its colour
-                            next = Component.literal(fit(shortName, w - 12)).withStyle(UiFont::bold)
+                            next = Component.literal(fit(shortName, w - 12, true)).withStyle(UiFont::bold)
                                     .withColor(tierColour(a.aspect().rarity()) & 0xFFFFFF);
                         }
                         Kit.text(g, font, next, x + 6, y + 51, Theme.INK);
@@ -1087,7 +1092,7 @@ final class HomeTab {
             host.area(x, y, w, h, null, List.of(opens("wynnlabs.screen.tab_discoveries")), "#qopen:" + RoadmapScreen.TAB_DISCOVERIES);
             return;
         }
-        ink(g, Component.literal(fit(e.name(), w - 12)).withStyle(UiFont::bold), x + 6, y + 19, Theme.ACCENT);
+        ink(g, Component.literal(fit(e.name(), w - 12, true)).withStyle(UiFont::bold), x + 6, y + 19, Theme.ACCENT);
         ink(g, fit(RoadmapScreen.dist(d.nearDist()) + " · Lv. " + e.minLevel(), w - 12), x + 6, y + 30, Theme.INK_3);
         if (h >= 52 && e.region() != null) {
             ink(g, fit(e.region(), w - 12), x + 6, y + 41, Theme.INK_3);
@@ -1199,13 +1204,29 @@ final class HomeTab {
     }
 
     private String fit(String s, int w) {
+        return fit(s, w, false);
+    }
+
+    /**
+     * {@code s} cut with "…" to {@code w}, measured as drawn: bold text is wider (a pixel per
+     * letter in the game's own font), so a name drawn bold is fitted in bold.
+     */
+    private String fit(String s, int w, boolean bold) {
         if (s == null || w <= 0) {
             return "";
         }
-        if (font.width(s) <= w) {
+        if (width(s, bold) <= w) {
             return s;
         }
-        return font.plainSubstrByWidth(s, Math.max(0, w - font.width("…"))) + "…";
+        String cut = font.plainSubstrByWidth(s, Math.max(0, w - width("…", bold)));
+        while (!cut.isEmpty() && width(cut + "…", bold) > w) {
+            cut = cut.substring(0, cut.length() - 1);
+        }
+        return cut + "…";
+    }
+
+    private int width(String s, boolean bold) {
+        return bold ? font.width(Component.literal(s).withStyle(UiFont::bold)) : font.width(s);
     }
 
     /** "Aspect of the Monolith" → "Monolith", for a narrow tile. */
