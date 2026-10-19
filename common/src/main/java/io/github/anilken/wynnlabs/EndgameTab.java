@@ -72,7 +72,6 @@ final class EndgameTab {
     private static final String TEX_RAID = "wynn/gui/content_book/raid_active";
     private static final String TEX_CAMP = "wynn/gui/content_book/loot_camp_active";
     private static final String TEX_LOOT = "wynn/gui/loot/";
-    private static final String TEX_ASPECT = "wynn/gui/ability_tree/aspect/";
     private static final String TEX_ASPECTS_BUTTON = "wynn/gui/ability_tree/button/aspects";
 
     private static final long MIN = 60_000L;
@@ -350,6 +349,10 @@ final class EndgameTab {
     private static final int L_RULE = 1;
     private static final int L_ROW = 2;
     private static final int REGION_ROW = 24;
+    /** A card label's glyph (a 12 px line pitch holds it), drawn 2 px above its text line. */
+    private static final int ICON = 12;
+    /** A list row's glyph (rows of 12), drawn 1 px above its text line: a little over the letters' height. */
+    private static final int ROW_ICON = 10;
     /** A pool from an earlier week: its header and source drawn greyed. */
     private static final int GREYED = Theme.LINE;
 
@@ -598,9 +601,12 @@ final class EndgameTab {
             } else if (hover) {
                 Kit.row(g, x + 2, ry, rw, REGION_ROW, 0, true);
             }
-            glyph(g, raid ? TEX_RAID : TEX_CAMP, raid ? "sword" : "map-pin", x + 5, ry + 3, 8, Theme.INK_2);
-            ink(g, fit(regionName(r), rw - 17), x + 16, ry + 3, Theme.INK);
-            regionLine(g, r, x + 16, ry + 13, rw - 17);
+            // the glyph beside both lines, as tall as they are
+            int gs = 16;
+            glyph(g, raid ? TEX_RAID : TEX_CAMP, raid ? "sword" : "map-pin", x + 5, ry + (REGION_ROW - gs) / 2, gs, Theme.INK_2);
+            int tx = x + 5 + gs + 4;
+            ink(g, fit(regionName(r), x + rw - 1 - tx), tx, ry + 3, Theme.INK);
+            regionLine(g, r, tx, ry + 13, x + rw - 1 - tx);
             if (!on) {
                 acts.add(new Act(x + 2, ry, rw, REGION_ROW, () -> pick(raid, r.name()), "endgame:region:" + r.name()));
             }
@@ -669,8 +675,7 @@ final class EndgameTab {
         String rest = headRest(r, stale);
         String name = r.name().isEmpty() ? regionName(r) : r.name().toUpperCase(Locale.ROOT);
         int restW = Math.min(font.width(rest), (right - x) / 2);
-        String nf = fit(name, right - x - restW);
-        Component nc = bold(nf);
+        Component nc = boldFit(name, right - x - restW);
         Kit.text(g, font, nc, x, y + 2, stale ? GREYED : Theme.INK);
         int nx = x + font.width(nc);
         ink(g, fit(rest, right - nx), nx, y + 2, stale ? GREYED : Theme.INK_2);
@@ -730,8 +735,8 @@ final class EndgameTab {
         arrow(g, right - 14, y, "chevron-right", regs.get((idx + 1) % regs.size()), raid, "endgame:step+", mx, my);
         int tx = x + 18;
         int end = right - 18;
-        glyph(g, raid ? TEX_RAID : TEX_CAMP, raid ? "sword" : "map-pin", tx, y + 3, 8, Theme.INK_2);
-        int nx = tx + 11;
+        glyph(g, raid ? TEX_RAID : TEX_CAMP, raid ? "sword" : "map-pin", tx, y + 1, ICON, Theme.INK_2);
+        int nx = tx + ICON + 3;
         String count = regionCount(lit);
         String rest = (count.isEmpty() ? "" : " · " + count)
                 + (lit.shinies() > 0 ? " · " + L.t("wynnlabs.endgame.shiny_n", lit.shinies()) : "")
@@ -1092,15 +1097,17 @@ final class EndgameTab {
     /** Since the last mythic: the raid half (Wynntils' account counters) and the lootrun half (this character). */
     private void dryCard(GuiGraphics g, int x, int y, int w, int h, boolean large, int mx, int my) {
         Kit.card(g, x, y, w, h, Theme.TIER_MYTHIC);
-        mythicGlyph(g, x + 6, y + 6, 8);
-        ink(g, fit(L.t("wynnlabs.endgame.dry_head"), w - 24), x + 17, y + 6, Theme.INK_2);
+        // each label's glyph is ICON tall, 2 px above its line; the label starts 3 px after it
+        int gap = ICON + 3;
+        mythicGlyph(g, x + 6, y + 4, ICON);
+        ink(g, fit(L.t("wynnlabs.endgame.dry_head"), w - 12 - gap), x + 6 + gap, y + 6, Theme.INK_2);
         int mid = x + w / 2;
         g.fill(mid, y + 18, mid + 1, y + h - 5, Theme.LINE);
         // the raid half
         int hx = x + 6;
         int hw = mid - 5 - hx;
-        glyph(g, TEX_RAID, "sword", hx, y + 18, 8, Theme.INK_2);
-        ink(g, fit(L.t("wynnlabs.endgame.raid"), hw - 11), hx + 11, y + 18, Theme.INK_2);
+        glyph(g, TEX_RAID, "sword", hx, y + 16, ICON, Theme.INK_2);
+        ink(g, fit(L.t("wynnlabs.endgame.raid"), hw - gap), hx + gap, y + 18, Theme.INK_2);
         String[] rv = raidDryValue();
         value(g, rv[0], rv[1], hx, y + 30, hw, d.raidsUp() ? Theme.TIER_MYTHIC : Theme.WARN);
         ink(g, fit(rv[2], hw), hx, y + 42, Theme.INK_3);
@@ -1111,13 +1118,13 @@ final class EndgameTab {
         // the lootrun half
         int lx = mid + 6;
         int lw = x + w - 6 - lx;
-        glyph(g, TEX_CAMP, "map-pin", lx, y + 18, 8, Theme.INK_2);
-        ink(g, fit(L.t("wynnlabs.endgame.lootrun"), lw - 11), lx + 11, y + 18, Theme.INK_2);
+        glyph(g, TEX_CAMP, "map-pin", lx, y + 16, ICON, Theme.INK_2);
+        ink(g, fit(L.t("wynnlabs.endgame.lootrun"), lw - gap), lx + gap, y + 18, Theme.INK_2);
         String[] lv = lootDryValue();
         value(g, lv[0], lv[1], lx, y + 30, lw, d.lootUp() ? Theme.TIER_MYTHIC : Theme.WARN);
         if (d.lootUp() && !d.mythics().isEmpty()) {
-            mythicGlyph(g, lx, y + 42, 8);
-            ink(g, fit(lv[2], lw - 11), lx + 11, y + 42, Theme.INK_3);
+            mythicGlyph(g, lx, y + 40, ICON);
+            ink(g, fit(lv[2], lw - gap), lx + gap, y + 42, Theme.INK_3);
         } else {
             ink(g, fit(lv[2], lw), lx, y + 42, Theme.INK_3);
         }
@@ -1226,7 +1233,7 @@ final class EndgameTab {
                 Art.icon(g, "clock", sx + 6, sy + 6, 16, Theme.INK_3);
                 lines = new String[] {L.t("wynnlabs.endgame.aspects_no_data"), L.t("wynnlabs.endgame.aspects_no_data_2")};
             } else if (!d.known()) {
-                if (!WynnTex.draw(g, TEX_ASPECTS_BUTTON, sx + 2, sy + 2, 24, 24)) {
+                if (!WynnTex.drawTrimmed(g, TEX_ASPECTS_BUTTON, sx + 2, sy + 2, 24)) {
                     Art.icon(g, "hierarchy", sx + 6, sy + 6, 16, Theme.INK_2);
                 }
                 lines = new String[] {L.t("wynnlabs.endgame.aspects_unread"), L.t("wynnlabs.endgame.aspects_unread_2"),
@@ -1244,9 +1251,9 @@ final class EndgameTab {
         }
         int ring = tierColour(a.aspect().rarity());
         Kit.slot(g, sx, sy, 28, ring);
-        if (!WynnTex.draw(g, TEX_ASPECT + d.klass().name().toLowerCase(Locale.ROOT), sx + 2, sy + 2, 24, 24)) {
-            Art.icon(g, "flame", sx + 6, sy + 6, 16, ring);
-        }
+        // the aspect's own icon filling the slot, as the list and the Pools view draw it (the
+        // pack's 48 px picture holds a 16 px crystal: drawn whole into the slot it was a dot)
+        aspectGlyph(g, a.aspect(), sx + 2, sy + 2, 24);
         // line 1: the label, the tier pips and, after a pick, the way back to the recommendation
         int right = x + w - 6;
         if (pinned != null) {
@@ -1263,9 +1270,17 @@ final class EndgameTab {
         pips(g, right - pw, y + 7, a.aspect().tiers(), a.ownedTier(), ring);
         String label = L.t(pinned != null ? "wynnlabs.endgame.card_selected" : "wynnlabs.endgame.card_next");
         ink(g, fit(label, right - pw - 6 - tx), tx, y + 6, Theme.INK_2);
-        Kit.text(g, font, bold(fit(a.aspect().name(), tw)), tx, y + 17, ring);
+        // the name in bold, measured in bold; on the large card a long one takes two lines (the
+        // fifth line gives way), else it is cut with "…" inside the card
+        List<MutableComponent> title = boldLines(a.aspect().name(), tw, large ? 2 : 1);
+        int ny = y + 17;
+        for (MutableComponent line : title) {
+            Kit.text(g, font, line, tx, ny, ring);
+            ny += 10;
+        }
+        int shift = Math.max(0, title.size() - 1) * 10;
         String reason = a.reason().isEmpty() ? L.t("wynnlabs.endgame.reason_none") : a.reason();
-        ink(g, fit(reason, tw), tx, y + 29, Theme.INK);
+        ink(g, fit(reason, tw), tx, y + 29 + shift, Theme.INK);
         // the source, and its pool mark when the pool shown holds it: from Wynnventory, the raids
         // holding it this week (full names when they fit, else short ones)
         String name = a.aspect().name();
@@ -1290,11 +1305,11 @@ final class EndgameTab {
             src = L.t("wynnlabs.endgame.source_raid") + (RaidPool.holds(name) ? L.t("wynnlabs.endgame.source_pool") : "");
         }
         String srcFit = fit(src, tw - tagW);
-        ink(g, srcFit, tx, y + 41, Theme.INK_3);
+        ink(g, srcFit, tx, y + 41 + shift, Theme.INK_3);
         if (tag != null) {
-            tag(g, tag, tx + font.width(srcFit) + 4, y + 40);
+            tag(g, tag, tx + font.width(srcFit) + 4, y + 40 + shift);
         }
-        if (large) {
+        if (large && shift == 0) {
             // the fifth line: the raids' full names when line four had to shorten them
             ink(g, fit(fullRaids != null ? fullRaids : nextTierText(a), tw), tx, y + 53, Theme.INK_3);
         }
@@ -1339,8 +1354,8 @@ final class EndgameTab {
         List<Component> tip;
         switch (i) {
             case SEC_RAIDS -> {
-                glyph(g, TEX_RAID, "sword", tx, y + 5, 8, Theme.INK_2);
-                ink(g, fit(L.t("wynnlabs.endgame.raid"), tw - 11), tx + 11, y + 5, Theme.INK_2);
+                glyph(g, TEX_RAID, "sword", tx, y + 3, ICON, Theme.INK_2);
+                ink(g, fit(L.t("wynnlabs.endgame.raid"), tw - ICON - 4), tx + ICON + 4, y + 5, Theme.INK_2);
                 String v = !d.raidsUp() ? L.t("wynnlabs.endgame.off")
                         : d.dry().aspectPulls() >= 0 ? L.n("wynnlabs.endgame.pulls_n", d.dry().aspectPulls()) : L.t("wynnlabs.endgame.unknown");
                 value(g, v, d.dry().aspectPulls() >= 0 ? String.valueOf(d.dry().aspectPulls()) : v, tx, y + 17, tw,
@@ -1348,8 +1363,8 @@ final class EndgameTab {
                 tip = new ArrayList<>(raidDryTip());
             }
             case SEC_LOOTRUNS -> {
-                glyph(g, TEX_CAMP, "map-pin", tx, y + 5, 8, Theme.INK_2);
-                ink(g, fit(L.t("wynnlabs.endgame.lootrun"), tw - 11), tx + 11, y + 5, Theme.INK_2);
+                glyph(g, TEX_CAMP, "map-pin", tx, y + 3, ICON, Theme.INK_2);
+                ink(g, fit(L.t("wynnlabs.endgame.lootrun"), tw - ICON - 4), tx + ICON + 4, y + 5, Theme.INK_2);
                 String v = !d.lootUp() ? L.t("wynnlabs.endgame.off")
                         : d.lootruns().isEmpty() ? L.t("wynnlabs.endgame.no_runs") : L.n("wynnlabs.endgame.pulls_n", d.dryPulls());
                 value(g, v, d.lootruns().isEmpty() ? v : String.valueOf(d.dryPulls()), tx, y + 17, tw,
@@ -1370,16 +1385,16 @@ final class EndgameTab {
                 }
                 if (a != null && d.known() || a != null && pinned != null) {
                     int ring = tierColour(a.aspect().rarity());
-                    aspectGlyph(g, a.aspect(), tx, y + 3, 12);
-                    ink(g, fit(L.t(pinned != null ? "wynnlabs.endgame.card_selected" : "wynnlabs.endgame.card_next"), tw - 16),
-                            tx + 16, y + 5, Theme.INK_2);
-                    Kit.text(g, font, bold(fit(a.aspect().name(), tw)), tx, y + 17, ring);
+                    aspectGlyph(g, a.aspect(), tx, y + 3, ICON);
+                    ink(g, fit(L.t(pinned != null ? "wynnlabs.endgame.card_selected" : "wynnlabs.endgame.card_next"), tw - ICON - 4),
+                            tx + ICON + 4, y + 5, Theme.INK_2);
+                    Kit.text(g, font, boldFit(a.aspect().name(), tw), tx, y + 17, ring);
                     tip = new ArrayList<>(aspectTip(a));
                 } else {
-                    if (!WynnTex.draw(g, TEX_ASPECTS_BUTTON, tx, y + 4, 10, 10)) {
-                        Art.icon(g, "hierarchy", tx, y + 5, 8, Theme.INK_2);
+                    if (!WynnTex.drawTrimmed(g, TEX_ASPECTS_BUTTON, tx, y + 3, ICON)) {
+                        Art.icon(g, "hierarchy", tx, y + 3, ICON, Theme.INK_2);
                     }
-                    ink(g, fit(L.t("wynnlabs.endgame.aspects"), tw - 11), tx + 11, y + 5, Theme.INK_2);
+                    ink(g, fit(L.t("wynnlabs.endgame.aspects"), tw - ICON - 4), tx + ICON + 4, y + 5, Theme.INK_2);
                     String v = !d.aspectsUp() ? L.t("wynnlabs.endgame.off") : !d.dataReady() ? L.t("wynnlabs.endgame.unknown")
                             : L.t("wynnlabs.endgame.open_aspects");
                     ink(g, fit(v, tw), tx, y + 17, d.aspectsUp() ? Theme.INK_3 : Theme.WARN);
@@ -1424,13 +1439,13 @@ final class EndgameTab {
         }
         String line = L.t("wynnlabs.endgame.line_loot", d.dryPulls(), d.dryRuns());
         String m = d.mythics().isEmpty() ? "" : L.n("wynnlabs.endgame.mythic_n", d.mythics().size());
-        int mw = m.isEmpty() ? 0 : font.width(m) + 14;
+        int mw = m.isEmpty() ? 0 : font.width(m) + ROW_ICON + 6;
         String lf = fit(line, w - mw);
         ink(g, lf, x, y, Theme.INK_2);
         if (!m.isEmpty()) {
             int gx = x + font.width(lf) + 4;
-            mythicGlyph(g, gx, y, 8);
-            ink(g, m, gx + 10, y, Theme.TIER_MYTHIC);
+            mythicGlyph(g, gx, y - 1, ROW_ICON);
+            ink(g, m, gx + ROW_ICON + 2, y, Theme.TIER_MYTHIC);
         }
         tips.add(new Tip(x, y, w, 11, lootDryTip()));
         return y + 12;
@@ -1690,7 +1705,7 @@ final class EndgameTab {
         int pullsR = ageR - 24;
         int timeR = pullsR - (large ? 44 : 46);
         int markX = timeR - 38;
-        int nameX = x + 12;
+        int nameX = x + 1 + ROW_ICON + 3;
         int max = large ? 10 : 8;
         // this week's mythic camps take the row(s) above the totals
         int lines = d.p().camps().isEmpty() ? 0 : mythicLine(g, x, 0, w, large ? 2 : 1, false);
@@ -1700,16 +1715,16 @@ final class EndgameTab {
             boolean hover = mx >= x && mx < x + w && my >= ry && my < ry + rowH;
             Kit.row(g, x, ry, w, rowH, i, hover);
             int ty = ry + 2;
-            glyph(g, f.isRaid() ? TEX_RAID : TEX_CAMP, f.isRaid() ? "sword" : "map-pin", x + 1, ty, 8, Theme.INK_3);
+            glyph(g, f.isRaid() ? TEX_RAID : TEX_CAMP, f.isRaid() ? "sword" : "map-pin", x + 1, ty - 1, ROW_ICON, Theme.INK_3);
             int nameW = markX - 4 - nameX;
             if (f.mythic() != null) {
                 String mn = f.mythic();
                 int mw = Math.min(font.width(mn), nameW / 2);
-                String nf = fit(f.name(), nameW - mw - 14);
+                String nf = fit(f.name(), nameW - mw - ROW_ICON - 6);
                 ink(g, nf, nameX, ty, Theme.INK);
                 int gx = nameX + font.width(nf) + 3;
-                mythicGlyph(g, gx, ty, 8);
-                ink(g, fit(mn, markX - 4 - gx - 10), gx + 10, ty, Theme.TIER_MYTHIC);
+                mythicGlyph(g, gx, ty - 1, ROW_ICON);
+                ink(g, fit(mn, markX - 4 - gx - ROW_ICON - 2), gx + ROW_ICON + 2, ty, Theme.TIER_MYTHIC);
             } else {
                 ink(g, fit(f.name(), nameW), nameX, ty, Theme.INK);
             }
@@ -1745,12 +1760,12 @@ final class EndgameTab {
         }
         String label = L.t("wynnlabs.endgame.mythic_week") + " ";
         int end = x + w;
-        int cx = x + 11 + font.width(label);
+        int cx = x + ROW_ICON + 3 + font.width(label);
         int line = 0;
         int shown = 0;
         if (draw) {
-            mythicGlyph(g, x, y, 8);
-            ink(g, label, x + 11, y, Theme.INK_2);
+            mythicGlyph(g, x, y - 1, ROW_ICON);
+            ink(g, label, x + ROW_ICON + 3, y, Theme.INK_2);
         }
         for (int i = 0; i < camps.size(); i++) {
             CampMythics c = camps.get(i);
@@ -1763,7 +1778,7 @@ final class EndgameTab {
                 }
                 // the next line, under the label
                 line++;
-                cx = x + 11;
+                cx = x + ROW_ICON + 3;
                 part = c.camp() + " " + c.count();
                 if (cx + font.width(part) + plusW > end) {
                     break;
@@ -1885,11 +1900,11 @@ final class EndgameTab {
             int nameW = markX - 6 - x;
             if (r.mythic() != null) {
                 int mw = Math.min(font.width(r.mythic()), nameW / 2);
-                String nf = fit(r.camp(), nameW - mw - 14);
+                String nf = fit(r.camp(), nameW - mw - ROW_ICON - 6);
                 ink(g, nf, x + 2, ty, Theme.INK);
                 int gx = x + 2 + font.width(nf) + 3;
-                mythicGlyph(g, gx, ty, 8);
-                ink(g, fit(r.mythic(), markX - 4 - gx - 10), gx + 10, ty, Theme.TIER_MYTHIC);
+                mythicGlyph(g, gx, ty - 1, ROW_ICON);
+                ink(g, fit(r.mythic(), markX - 4 - gx - ROW_ICON - 2), gx + ROW_ICON + 2, ty, Theme.TIER_MYTHIC);
             } else {
                 ink(g, fit(r.camp(), nameW), x + 2, ty, Theme.INK);
             }
@@ -1960,8 +1975,16 @@ final class EndgameTab {
         String who = (compact ? "" : nice(d.klass()) + (arch.isEmpty() ? "" : " · ")) + arch;
         String rt = (who.isEmpty() ? "" : who + " · ") + count;
         if (!compact) {
-            int rtw = Math.min(font.width(rt), w / 2);
-            String rf = fit(rt, rtw);
+            // the room right of the title: the class, then the archetype give way before the
+            // count is ever cut (the class shows in the icon and the tooltip)
+            int room = w - (font.width(L.t("wynnlabs.endgame.aspects")) + 3 + 5 + 12) - 16;
+            if (font.width(rt) > room && !arch.isEmpty()) {
+                rt = arch + " · " + count;
+            }
+            if (font.width(rt) > room) {
+                rt = count;
+            }
+            String rf = fit(rt, room);
             int rtx = x + w - font.width(rf);
             boolean icon = d.klass() != Klass.NONE && WynnTex.classIcon(g, d.klass().name(), rtx - 12, y - 1, 10);
             ink(g, rf, rtx, y, Theme.INK_3);
@@ -2171,7 +2194,7 @@ final class EndgameTab {
     private void raidHeader(GuiGraphics g, Line l, int x, int y, int w, int h) {
         g.fill(x, y, x + w, y + h, Theme.WELL);
         int ty = y + 2;
-        glyph(g, TEX_RAID, "sword", x + 3, ty, 8, Theme.INK_2);
+        glyph(g, TEX_RAID, "sword", x + 3, y + 1, ROW_ICON, Theme.INK_2);
         long seen = d.p().seenOf(l.raid());
         String age = seen < 0 ? "" : ago(seen);
         String count = l.marked() > 0 ? L.t("wynnlabs.endgame.pool_new", l.marked()) : "";
@@ -2184,7 +2207,8 @@ final class EndgameTab {
         if (!age.isEmpty()) {
             ink(g, sep + age, rx + font.width(count), ty, Theme.INK_3);
         }
-        ink(g, fit(l.raid(), rx - 6 - (x + 14)), x + 14, ty, Theme.INK_2);
+        int nx = x + 3 + ROW_ICON + 3;
+        ink(g, fit(l.raid(), rx - 6 - nx), nx, ty, Theme.INK_2);
         List<Component> tip = new ArrayList<>();
         tip.add(title(l.raid(), ChatFormatting.GOLD));
         tip.add(grey(L.t("wynnlabs.endgame.tip_group_marked", l.marked(), d.p().byRaid().getOrDefault(l.raid(), List.of()).size())));
@@ -2237,7 +2261,7 @@ final class EndgameTab {
             rx -= tw + 4;
         }
         int nx = x + 31;                                // 3 px clear of the 12 px icon
-        Kit.text(g, font, lit ? bold(fit(name, rx - nx)) : Component.literal(fit(name, rx - nx)), nx, ty, colour);
+        Kit.text(g, font, lit ? boldFit(name, rx - nx) : Component.literal(fit(name, rx - nx)), nx, ty, colour);
         if (large && h > 14) {
             ink(g, fit(a.reason(), x + w - 2 - nx), nx, y + 13, Theme.INK_3);
         }
@@ -2341,8 +2365,9 @@ final class EndgameTab {
         Kit.text(g, font, text, x + Kit.Ui.TAG_PAD, y + 1, Theme.CARD);
     }
 
+    /** A pack glyph without its empty margin (the content book's 32 px raid glyph is 19 px of it), else an icon. */
     private void glyph(GuiGraphics g, String tex, String fallback, int x, int y, int size, int colour) {
-        if (!WynnTex.draw(g, tex, x, y, size, size)) {
+        if (!WynnTex.drawTrimmed(g, tex, x, y, size)) {
             Art.icon(g, fallback, x, y, size, colour);
         }
     }
@@ -2504,6 +2529,54 @@ final class EndgameTab {
             return s;
         }
         return font.plainSubstrByWidth(s, Math.max(0, w - font.width("…"))) + "…";
+    }
+
+    /**
+     * {@code s} in bold, cut with "…" to {@code w} measured in bold: the game's bold is a pixel
+     * wider per letter (the web font's bold face differs too), so a cut measured plain runs over.
+     */
+    private MutableComponent boldFit(String s, int w) {
+        if (s == null || w <= 0) {
+            return Component.empty();
+        }
+        MutableComponent whole = bold(s);
+        if (font.width(whole) <= w) {
+            return whole;
+        }
+        String cut = font.substrByWidth(whole, Math.max(0, w - font.width(bold("…")))).getString();
+        return bold(cut.stripTrailing() + "…");
+    }
+
+    /**
+     * {@code s} in bold over at most {@code maxLines} lines of {@code w}, broken between words and
+     * measured in bold; the last line is cut with "…" when the rest does not fit.
+     */
+    private List<MutableComponent> boldLines(String s, int w, int maxLines) {
+        List<MutableComponent> out = new ArrayList<>();
+        if (s == null || s.isEmpty() || w <= 0) {
+            return out;
+        }
+        String rest = s;
+        while (out.size() < maxLines - 1 && font.width(bold(rest)) > w) {
+            String[] words = rest.split(" ");
+            String line = "";
+            int used = 0;
+            for (String word : words) {
+                String next = line.isEmpty() ? word : line + " " + word;
+                if (!line.isEmpty() && font.width(bold(next)) > w) {
+                    break;
+                }
+                line = next;
+                used++;
+            }
+            if (used >= words.length || font.width(bold(line)) > w) {
+                break;                                  // one word wider than the line: cut it instead
+            }
+            out.add(bold(line));
+            rest = String.join(" ", java.util.Arrays.copyOfRange(words, used, words.length));
+        }
+        out.add(boldFit(rest, w));
+        return out;
     }
 
     private static String num(int v) {
