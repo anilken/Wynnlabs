@@ -1559,7 +1559,7 @@ final class EndgameTab {
         int end = x + w - 13;
         String source = L.t(p.wynnventory() ? "wynnlabs.endgame.src_wynnventory" : "wynnlabs.endgame.src_game");
         String head = L.t("wynnlabs.endgame.pool_head") + " · ";
-        String age = d.poolAge() == null ? "" : d.poolAge();
+        String age = d.poolAge() == null ? "" : L.cap(d.poolAge());
         if (large) {
             // every pool aspect of the class, with its raids' short names when from Wynnventory
             List<String> names = new ArrayList<>();

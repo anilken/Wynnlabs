@@ -1395,7 +1395,7 @@ final class BuildWindow {
             return new Object[] {L.t("wynnlabs.results.quest", Shopping.where(src)), null};
         }
         if (known) {
-            return new Object[] {Shopping.where(src), null};
+            return new Object[] {L.cap(Shopping.where(src)), null};
         }
         if ("QUEST_ITEM".equals(info.restriction())) {
             return new Object[] {L.t("wynnlabs.results.quest_reward"), null};
