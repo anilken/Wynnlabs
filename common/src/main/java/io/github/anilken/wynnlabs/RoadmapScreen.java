@@ -468,8 +468,26 @@ final class RoadmapScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
+        if (DevHooks.ON && DevHooks.driving()) {
+            // the dev screenshot tool: its own mouse (off the window, or over the element whose
+            // tooltip it takes), and the frame's boxes noted afresh
+            DevHooks.beginFrame();
+            mx = DevHooks.mouseX();
+            my = DevHooks.mouseY();
+        }
         // at the menu scale (MenuScale): a logical size, a scaled pose, logical mouse positions
         MenuScale.render(this, g, mx, my, (x, y) -> draw(g, x, y, pt));
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics g, int mx, int my, float pt) {
+        if (DevHooks.ON && DevHooks.driving()) {
+            // the dev screenshot tool: a flat backdrop instead of the blurred world (black, then white)
+            var w = Minecraft.getInstance().getWindow();
+            g.fill(0, 0, w.getGuiScaledWidth() + 1, w.getGuiScaledHeight() + 1, DevHooks.backdrop());
+            return;
+        }
+        super.renderBackground(g, mx, my, pt);
     }
 
     /** The mouse this frame (logical pixels), for the drawing helpers that are not handed it. */
@@ -2812,6 +2830,13 @@ final class RoadmapScreen extends Screen {
 
     @Override
     public boolean keyPressed(net.minecraft.client.input.KeyEvent event) {
+        // the screenshot tool drives the menu: Esc stops it (and puts everything back), other keys wait
+        if (DevHooks.ON && DevHooks.driving()) {
+            if (event.key() == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+                DevHooks.escape();
+            }
+            return true;
+        }
         // the build window first: Esc closes a rename or the window, never the menu
         if (tab == 0 && BuildWindow.INSTANCE.keyPressed(event.key())) {
             return true;
@@ -2969,6 +2994,9 @@ final class RoadmapScreen extends Screen {
         // the grid
         int gy = py + 19;
         int bottom = y + h - 12;
+        if (DevHooks.ON) {
+            DevHooks.part("banklist", g.pose(), x, gy, w, bottom - gy);
+        }
         String q = search.getValue().trim().toLowerCase(Locale.ROOT);
         g.enableScissor(x, gy, x + w, bottom);
         int contentH;
@@ -3014,6 +3042,9 @@ final class RoadmapScreen extends Screen {
     /** One slot: a sunken square, the item, its count, a coloured frame for the verdict, dimmed if filtered out. */
     private void slot(GuiGraphics g, int x, int y, ItemStack stack, String count, int mark, boolean dim, boolean hover) {
         Kit.slot(g, x, y, SLOT, 0);
+        if (DevHooks.ON && stack != null && !dim && tab == TAB_BANK) {
+            DevHooks.part("bankitem", g.pose(), x, y, SLOT, SLOT);
+        }
         if (stack != null) {
             g.renderItem(stack, x + 1, y + 1);
             // the bar and such without the game's count, which sits low enough to spill out of the slot
@@ -3965,6 +3996,9 @@ final class RoadmapScreen extends Screen {
                     .withStyle(ChatFormatting.RED)));
             tip.add(L.c("wynnlabs.quests.click_detail").withStyle(ChatFormatting.DARK_GRAY));
             hits.add(new Hit(x, ry, listW, rowH - 1, null, tip, "#qsel:" + q.name()));
+            if (DevHooks.ON) {
+                DevHooks.part("quest", g.pose(), x, ry, listW, rowH - 1);
+            }
         }
         if (list.isEmpty()) {
             ink(g, L.c("wynnlabs.quests.none_in_filter").withStyle(ChatFormatting.GRAY), x + 6, cy + 6, 0xFFFFFFFF);
@@ -4552,6 +4586,9 @@ final class RoadmapScreen extends Screen {
             }
             tip.add(L.c("wynnlabs.quests.click_detail").withStyle(ChatFormatting.DARK_GRAY));
             hits.add(new Hit(x, ry, listW - 20, rowH - 1, null, tip, "#discsel:" + e.id()));
+            if (DevHooks.ON) {
+                DevHooks.part("disc", g.pose(), x, ry, listW - 20, rowH - 1);
+            }
         }
         if (list.isEmpty()) {
             ink(g, L.c("wynnlabs.discoveries.none_shown").withStyle(ChatFormatting.GRAY), x + 6, cy + 6, 0xFFFFFFFF);
@@ -6243,6 +6280,9 @@ final class RoadmapScreen extends Screen {
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+        if (DevHooks.ON && DevHooks.driving()) {
+            return true;
+        }
         double f = MenuScale.factor();
         MouseButtonEvent e = MenuScale.event(event);
         if (tab == 0 && BuildWindow.INSTANCE.mouseDragged(e.x(), e.y())) {
@@ -6263,6 +6303,9 @@ final class RoadmapScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (DevHooks.ON && DevHooks.driving()) {
+            return true;                                // the screenshot tool drives the menu
+        }
         event = MenuScale.event(event);                 // logical pixels, as drawn
         double ex = event.x();
         double ey = event.y();
@@ -6715,6 +6758,9 @@ final class RoadmapScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double x, double y, double h, double v) {
+        if (DevHooks.ON && DevHooks.driving()) {
+            return true;                                // the screenshot tool drives the menu
+        }
         x = MenuScale.at(x);
         y = MenuScale.at(y);
         if (tab == 0 && BuildWindow.INSTANCE.isOpen()) {

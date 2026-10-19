@@ -424,6 +424,9 @@ final class EndgameTab {
 
     /** Havuzlar: the sub-tabs, then the region list and the pane (standard, large) or the ‹ › line and one list (compact). */
     private void drawPools(GuiGraphics g, int x, int y, int w, int h, boolean compact, boolean large, int mx, int my) {
+        if (DevHooks.ON) {
+            DevHooks.part("pools", g.pose(), x, y, w, h);
+        }
         boolean raid = poolTab == TAB_RAIDS;
         List<PoolView.Region> regs = d.v().regions(raid);
         subTabs(g, x, y, w, compact, mx, my);

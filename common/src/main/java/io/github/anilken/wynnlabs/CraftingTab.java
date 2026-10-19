@@ -2403,6 +2403,9 @@ final class CraftingTab {
         int rx = Math.min(fx + fw + 1, screenW - 9);
         int ry = fy + 24;
         LayoutCheck.frame(g.pose(), rx, ry, 9, 40);
+        if (DevHooks.ON) {
+            DevHooks.frame(g.pose(), rx, ry, 9, 40);         // the dev screenshot tool's crop keeps the ribbon
+        }
         boolean rh = in(mx, my, rx, ry, 9, 40);
         Kit.button(g, rx, ry, 9, 40, drawerOpen ? Kit.ON : rh ? Kit.HOVER : Kit.REST);
         Art.icon(g, "bookmark", rx + 1, ry + 16, 7, drawerOpen ? Theme.INK : Theme.CREAM);

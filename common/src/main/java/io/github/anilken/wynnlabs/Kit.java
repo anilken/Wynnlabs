@@ -97,6 +97,9 @@ final class Kit {
     /** The window: dark outline, wooden border, brass nails in the corners. */
     static void window(GuiGraphics g, int x, int y, int w, int h) {
         LayoutCheck.frame(g.pose(), x, y, w, h);                 // the preview's layout check: the screen's own box
+        if (DevHooks.ON) {
+            DevHooks.frame(g.pose(), x, y, w, h + 3);            // the dev screenshot tool's crop: the frame and its shadow
+        }
         // a soft shadow straight under the frame, fading out in three steps
         g.fill(x + 3, y + h, x + w - 3, y + h + 1, 0x66000000);
         g.fill(x + 5, y + h + 1, x + w - 5, y + h + 2, 0x40000000);
@@ -157,6 +160,9 @@ final class Kit {
         y = Math.max(y, 0);
         close(g, x, y, size, hover);
         LayoutCheck.frame(g.pose(), x, y, size, size);
+        if (DevHooks.ON) {
+            DevHooks.frame(g.pose(), x, y, size, size);           // the dev screenshot tool's crop keeps the seal
+        }
         return new int[] {x, y, size, size};
     }
 

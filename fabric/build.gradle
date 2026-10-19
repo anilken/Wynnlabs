@@ -84,7 +84,8 @@ loom.runs.matching { it.name == 'clientGameTest' }.configureEach {
     vmArg "-Dwynnlabs.fixtures=${file('src/test/resources/fixtures').absolutePath}"
     // the shots stay in the root build/preview, where the tools and the README look
     vmArg "-Dwynnlabs.preview=${rootProject.layout.buildDirectory.dir('preview').get().asFile.absolutePath}"
-    // -PpreviewOnly=layout: only the size matrix; -PpreviewOnly=jmenu: only the J menu shots; -PlayoutStrict: problems fail
+    // -PpreviewOnly=layout: only the size matrix; -PpreviewOnly=jmenu: only the J menu shots;
+    // -PpreviewOnly=shots: only the /wynnlabs shots check (ShotsPreview); -PlayoutStrict: problems fail
     if (rootProject.hasProperty('previewOnly')) {
         vmArg "-Dwynnlabs.previewOnly=${rootProject.property('previewOnly')}"
     }
@@ -162,8 +163,29 @@ def fabricRange = { String range ->
 processResources {
     def props = [version: rootProject.metaVersion, wynntils_range: fabricRange(rootProject.wynntils_range)]
     inputs.properties props
+    def dev = rootProject.devTools
+    inputs.property 'devTools', dev
     filesMatching('fabric.mod.json') {
         expand props
+        // a dev build also loads the developer tools' mixins (common/src/dev); a release never names them
+        if (dev) {
+            filter { String line -> line.replace('"wynnlabs.mixins.json"', '"wynnlabs.mixins.json",\n    "wynnlabs.dev.mixins.json"') }
+        }
+    }
+}
+
+// the developer tools' tests: with the tools only (a release build has neither)
+if (rootProject.devTools) {
+    sourceSets.test.java.srcDir 'src/devTest/java'
+    sourceSets.gametest.java.srcDir 'src/devGametest/java'
+}
+processGametestResources {
+    def dev = rootProject.devTools
+    inputs.property 'devTools', dev
+    filesMatching('fabric.mod.json') {
+        if (!dev) {
+            filter { String line -> line.contains('ShotsPreview') ? null : line }
+        }
     }
 }
 

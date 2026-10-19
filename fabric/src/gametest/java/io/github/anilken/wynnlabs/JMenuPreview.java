@@ -19,7 +19,8 @@ public class JMenuPreview implements FabricClientGameTest {
 
     @Override
     public void runTest(ClientGameTestContext ctx) {
-        if ("layout".equals(System.getProperty("wynnlabs.previewOnly"))) {
+        String only = System.getProperty("wynnlabs.previewOnly");
+        if (only != null && !only.equals("jmenu")) {
             return;
         }
         Path out = Path.of(System.getProperty("wynnlabs.preview", "preview"));

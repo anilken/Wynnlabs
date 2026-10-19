@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.anilken.wynnlabs.dev.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "GuiGraphicsShotsMixin",
+    "TooltipRectMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -61,6 +61,46 @@ approve intended changes) and the checks `checkLang`, `checkPersonal` and `check
 `gradle checkWynntilsVersions` compiles against every jar in `libs/wynntils-matrix/`.
 `gradle :neoforge:runClient` starts a NeoForge dev client (with Wynntils if its neoforge jar is in `libs/`).
 
+**Developer tools (dev builds only).** `common/src/dev` holds tools for the mod's own pages, such as
+the menu screenshot command below. Every local build includes them. A release build (one that passes
+`-Pmod_version`, as the Release workflow does) compiles without them. Its jars have no dev class and
+no `wynnlabs.dev.mixins.json`, and do not register the command. `checkDevTools` fails the release when
+they slip in. Add `-PdevTools` to a `-Pmod_version` build to keep them. The menu reaches them only
+through `DevHooks`, whose hooks are `if (DevHooks.ON)` checks on a constant that is `false` in a
+release jar. Their tests live in `fabric/src/devTest` and `fabric/src/devGametest`.
+
+**Menu screenshots.** In a dev build with **Debug logging** on (Y → Settings → Prices and data), type
+`/wynnlabs shots [en|tr|current] [all|<tab>] [x2|x3|x4] [hidename]` in a world (default `en all`).
+
+- **What it does.** It switches the mod's menu language and opens the menu. Then it takes every view
+  of every tab in rail order: the tab as it opens, then its sub-pages, filters and windows. Examples
+  are the settings pages, the quest filters and detail tabs, the bank filters and a search, Endgame's
+  aspect filter, Pools and each region, Crafting's lower part and suggestions, the ability tree's end,
+  and Home's Choose items window (with a type filter), results, plan and My builds. It also takes
+  tooltip shots of a gear slot, a Missing pill, a list row, the week tile, a pool row, a bank item,
+  a quest and a discovery.
+- **What it skips.** A view with nothing to show (no plan, no result, an empty filter) is skipped, and
+  the numbers stay in a row.
+- **Output.** The pictures go to
+  `screenshots/wynnlabs/<yyyy-MM-dd_HH-mm-ss>/<lang>-<nn>-<tab>-<state>.png` (`main` for the tab as it
+  opens). Close-ups of key panels (Home's gear panel and week tile, the build results, the pools, the
+  bank list) go to `close/…-close-<part>.png`. An `index.html` lists them all, and a chat line links
+  the folder.
+- **Picture.** Each picture is the mod's window alone, plus a tooltip that reaches past it. Minecraft's
+  own screenshot code grabs the view twice, over a black and a white backdrop instead of the world,
+  and the two give every pixel its alpha. The picture is cropped with a 3 px transparent margin and
+  transparent rounded corners.
+- **Options.** `<tab>` is one of `home craft tree today endgame quests discoveries bank damage deaths
+  ai settings`. `x2`/`x3`/`x4` draw the menu at that menu scale for the run. The menu fills the game
+  window at every scale, so a larger scale gives larger text, not a larger image. `hidename` shows
+  "Player" for your Minecraft name in any text the menu draws.
+- **Restore.** The HUD stays out of the pictures. The language, the menu scale, the screen and the
+  menu's views go back as they were at the end, on Esc or on an error.
+- **Limits.** It only opens the mod's own menu and never starts a road map build or a build search.
+  Build the road map in that language first if you want it in the pictures.
+
+`gradle :fabric:runClientGameTest -PpreviewOnly=shots` checks the command on the recorded character.
+
 `install-when-closed.sh` copies the Fabric jar into `$WYNNLABS_MODS` (or `.local-mods-path`) once
 Minecraft is closed; with `neoforge` it copies the NeoForge jar into `$WYNNLABS_NEOFORGE_MODS` (or
 `.local-mods-path-neoforge`).

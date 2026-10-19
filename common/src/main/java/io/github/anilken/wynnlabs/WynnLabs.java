@@ -163,6 +163,10 @@ public final class WynnLabs {
         });
         // /av <item>: a hunt (client-side command, never sent to the server)
         platform.registerClientCommand(WynnLabs::huntCommand);
+        // dev builds only: the developer tools (the /wynnlabs shots command); nothing in a release jar
+        if (DevHooks.ON) {
+            DevHooks.register(platform);
+        }
         // Y opens the road map (rebindable in Controls; J clashed with Wynntils)
         var category = platform.keyCategory(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath("wynnlabs", "main"));

@@ -346,7 +346,10 @@ final class BuildWindow {
         }
         g.nextStratum();                                // over the menu's text and items
         LayoutCheck.cover(g.pose(), menu[0] - 5, menu[1] - 5, menu[2] + 10, menu[3] + 10);
-        g.fill(menu[0] - 5, menu[1] - 5, menu[0] + menu[2] + 5, menu[1] + menu[3] + 5, 0xA0000000);
+        // (the dev screenshot tool, while it runs: the dim in the frame's own shape, its corners clear)
+        if (!DevHooks.ON || !DevHooks.dim(g, menu[0] - 5, menu[1] - 5, menu[2] + 10, menu[3] + 10, 0xA0000000)) {
+            g.fill(menu[0] - 5, menu[1] - 5, menu[0] + menu[2] + 5, menu[1] + menu[3] + 5, 0xA0000000);
+        }
         int ww = Math.min(menu[2] - 16, large ? 600 : 460);
         int wh = Math.min(menu[3] - 14, large ? 420 : 320);
         int wx = menu[0] + (menu[2] - ww) / 2;
@@ -565,6 +568,9 @@ final class BuildWindow {
             Kit.text(g, font, Component.literal(fit(it.name(), nameRoom, false)).withStyle(it.tier().colour()), nx, ry + 5, Theme.INK);
             Kit.text(g, font, meta, right - metaW, ry + 5, Theme.INK_3);
             btn(x + 1, ry, rw, ROW_H, "item", it);
+            if (DevHooks.ON) {
+                DevHooks.part("pickrow", g.pose(), x + 1, ry, rw, ROW_H);
+            }
             // the item's own tooltip (stats, ranges, requirements) with what a click does under it
             host.item(x + 1, ry, rw, ROW_H, it, icon, List.of(
                     L.c(on ? "wynnlabs.pick.row_off" : "wynnlabs.pick.row_on").withStyle(ChatFormatting.DARK_GRAY)));
@@ -798,6 +804,9 @@ final class BuildWindow {
     private static final int CHOSEN_TEXT = HomeTab.CHOSEN_TEXT;
 
     private void drawResults(GuiGraphics g, Host host, int x, int y, int w, int h, int mx, int my) {
+        if (DevHooks.ON) {
+            DevHooks.part("results", g.pose(), x, y - 3, w, h + 3);
+        }
         Around.Result r = result;
         // the header: back to the items, the count found around them
         int bw = control(g, host, x, y - 3, 14, "arrow-left", L.t("wynnlabs.results.back"), WOOD, false, 0, "back", null,

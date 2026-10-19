@@ -28,6 +28,11 @@ ext.metaVersion = gradle.startParameter.projectProperties.containsKey('mod_versi
     return (tag ? tag.substring(1) : mod_version) + '+dev'
 }()
 
+// The developer tools (common/src/dev: the /wynnlabs shots screenshot tool, its mixin config,
+// fabric/src/devTest and devGametest): in every local build, never in a release. A release passes
+// -Pmod_version; -PdevTools puts them into such a build anyway (to try a release build with them).
+ext.devTools = !gradle.startParameter.projectProperties.containsKey('mod_version') || hasProperty('devTools')
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'architectury-plugin'
@@ -244,6 +249,62 @@ tasks.register('checkEmbeddedKey') {
     }
 }
 
+// Developer tools check: a release jar (built with -Pmod_version, without -PdevTools) holds none
+// of common/src/dev's classes (each source file's class and its nested ones, the dev.mixin
+// package), no wynnlabs.dev.mixins.json, and its fabric.mod.json / neoforge.mods.toml do not name
+// that config. A dev build only reports what it carries. Runs after the player jars.
+def devJarTasks = ['remapJar']
+tasks.register('checkDevTools') {
+    group = 'verification'
+    description = 'Fails when a release jar contains the developer tools (common/src/dev).'
+    keyJarProjects.each { path -> devJarTasks.each { name -> mustRunAfter "${path}:${name}" } }
+    doLast {
+        def devRoot = file('common/src/dev/java')
+        // io/github/anilken/wynnlabs/Shots.java -> io/github/anilken/wynnlabs/Shots(.class | $Inner.class)
+        def prefixes = fileTree(devRoot).include('**/*.java').files.collect {
+            devRoot.toPath().relativize(it.toPath()).toString().replace(File.separatorChar, '/' as char).replaceFirst(/\.java$/, '')
+        }
+        def isDev = { String name ->
+            name.startsWith('io/github/anilken/wynnlabs/dev/') || name == 'wynnlabs.dev.mixins.json'
+                    || prefixes.any { p -> name == "${p}.class" || name.startsWith("${p}\$") && name.endsWith('.class') }
+        }
+        def jars = keyJarProjects.collectMany { path ->
+            devJarTasks.collect { name -> project(path).tasks.named(name).get().archiveFile.get().asFile }
+        }.findAll { it.isFile() }
+        def report = []
+        def bad = []
+        jars.each { j ->
+            def found = []
+            new java.util.zip.ZipFile(j).withCloseable { zip ->
+                zip.entries().each { e ->
+                    if (isDev(e.name)) {
+                        found << e.name
+                    }
+                    if ((e.name == 'fabric.mod.json' || e.name == 'META-INF/neoforge.mods.toml')
+                            && zip.getInputStream(e).getText('UTF-8').contains('wynnlabs.dev.mixins.json')) {
+                        found << "${e.name} names wynnlabs.dev.mixins.json"
+                    }
+                }
+            }
+            report << "${j.name}: ${found.size()} dev entries"
+            if (!devTools && found) {
+                bad << "${j.name}: ${found.sort().join(', ')}"
+            }
+        }
+        if (bad) {
+            throw new GradleException("checkDevTools: FAIL, release jars carry the developer tools:\n  " + bad.join('\n  '))
+        }
+        logger.lifecycle("checkDevTools: ${devTools ? 'dev build, tools included' : 'release build, no developer tools'} (${report.join('; ')})")
+    }
+}
+if (!devTools) {
+    keyJarProjects.each { path ->
+        devJarTasks.each { name ->
+            project(path).tasks.matching { it.name == name }.configureEach { finalizedBy ':checkDevTools' }
+        }
+    }
+}
+
 // Release check: none of the values in the git-ignored release-blocklist.txt (character ids,
 // names, key fragments, local paths) may appear in what gets published. Matches are reported
 // by file, line and blocklist line number, never by value. Recorded test fixtures
@@ -298,7 +359,7 @@ check.dependsOn checkPersonal
 
 // The Java sources checkLang and checkWynntilsImports read: the shared code and both loader
 // modules (a missing folder, such as neoforge's before it has classes, is simply empty)
-def sourceRoots = ['common/src/main/java', 'fabric/src/main/java', 'neoforge/src/main/java']
+def sourceRoots = ['common/src/main/java', 'common/src/dev/java', 'fabric/src/main/java', 'neoforge/src/main/java']
 
 // Language check: every "wynnlabs.*" key the Java code uses must exist in en_us.json and
 // tr_tr.json, both files must have the same keys, and no key may be unused. A literal ending in

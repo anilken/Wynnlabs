@@ -309,6 +309,9 @@ final class HomeTab {
     private void panel(GuiGraphics g, In in, Host host, int x, int y, int w, int h, boolean compact, boolean large,
             int mx, int my) {
         card(g, x, y, w, h, 0, false);
+        if (DevHooks.ON) {
+            DevHooks.part("gear", g.pose(), x, y, w, h);
+        }
         // the title line: the name, the refresh button, the level buttons on the right, PAD in from both edges
         Component title = Component.literal(L.t("wynnlabs.homev.gear")).withStyle(UiFont::bold);
         int ty = y + PAD + 1;
@@ -1263,6 +1266,9 @@ final class HomeTab {
      */
     private void weekTile(GuiGraphics g, Host host, int x, int y, int w, int h, int mx, int my) {
         tile(g, x, y, w, h, "trophy", L.t("wynnlabs.homev.week"), Theme.TIER_MYTHIC, mx, my);
+        if (DevHooks.ON) {
+            DevHooks.part("week", g.pose(), x, y, w, h);
+        }
         List<Component> tip = new ArrayList<>();
         tip.add(Component.literal(L.t("wynnlabs.homev.week_tip")).withStyle(ChatFormatting.LIGHT_PURPLE));
         boolean dry = d.raidsUp() && d.dryPulls() >= 0;
