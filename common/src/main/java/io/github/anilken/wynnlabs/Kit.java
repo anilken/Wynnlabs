@@ -97,11 +97,20 @@ final class Kit {
     /** The window: dark outline, wooden border, brass nails in the corners. */
     static void window(GuiGraphics g, int x, int y, int w, int h) {
         LayoutCheck.frame(g.pose(), x, y, w, h);                 // the preview's layout check: the screen's own box
+        Shots.frame(g.pose(), x, y, w, h + 3);                   // the screenshot tool's crop: the frame and its shadow
         // a soft shadow straight under the frame, fading out in three steps
         g.fill(x + 3, y + h, x + w - 3, y + h + 1, 0x66000000);
         g.fill(x + 5, y + h + 1, x + w - 5, y + h + 2, 0x40000000);
         g.fill(x + 8, y + h + 2, x + w - 8, y + h + 3, 0x1C000000);
         nine(g, "window", x, y, w, h);
+    }
+
+    /**
+     * A shade over a window drawn with {@link #window} at the same box (a modal's dimmed backdrop):
+     * the frame's own shape in {@code argb}, so its rounded corners stay clear.
+     */
+    static void shade(GuiGraphics g, int x, int y, int w, int h, int argb) {
+        nine(g, "window", x, y, w, h, argb);
     }
 
     private static final int PLANK_W = 100;
@@ -157,6 +166,7 @@ final class Kit {
         y = Math.max(y, 0);
         close(g, x, y, size, hover);
         LayoutCheck.frame(g.pose(), x, y, size, size);
+        Shots.frame(g.pose(), x, y, size, size);                // the screenshot tool's crop keeps the seal
         return new int[] {x, y, size, size};
     }
 

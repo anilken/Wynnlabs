@@ -468,12 +468,26 @@ final class RoadmapScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
-        if (Shots.capturing()) {
-            mx = -10000;                        // the screenshot tool: no hover and no tooltip in the pictures
-            my = -10000;
+        if (!Shots.capturing()) {
+            // at the menu scale (MenuScale): a logical size, a scaled pose, logical mouse positions
+            MenuScale.render(this, g, mx, my, (x, y) -> draw(g, x, y, pt));
+            return;
         }
-        // at the menu scale (MenuScale): a logical size, a scaled pose, logical mouse positions
-        MenuScale.render(this, g, mx, my, (x, y) -> draw(g, x, y, pt));
+        // the screenshot tool: no hover and no tooltip in the pictures, and the window's boxes noted to crop to
+        Shots.beginFrame();
+        MenuScale.render(this, g, -10000, -10000, (x, y) -> draw(g, x, y, pt));
+        Shots.endFrame();
+    }
+
+    /** The screenshot tool: a flat backdrop instead of the blurred world (black, then white: ShotCrop). */
+    @Override
+    public void renderBackground(GuiGraphics g, int mx, int my, float pt) {
+        if (Shots.capturing()) {
+            var w = Minecraft.getInstance().getWindow();
+            g.fill(0, 0, w.getGuiScaledWidth() + 1, w.getGuiScaledHeight() + 1, Shots.backdrop());
+            return;
+        }
+        super.renderBackground(g, mx, my, pt);
     }
 
     // ---- the screenshot tool (Shots): the tabs by name, and a tab or a view inside it selected ----

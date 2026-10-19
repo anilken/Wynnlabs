@@ -378,7 +378,7 @@ final class BuildWindow {
         }
         g.nextStratum();                                // over the menu's text and items
         LayoutCheck.cover(g.pose(), menu[0] - 5, menu[1] - 5, menu[2] + 10, menu[3] + 10);
-        g.fill(menu[0] - 5, menu[1] - 5, menu[0] + menu[2] + 5, menu[1] + menu[3] + 5, 0xA0000000);
+        Kit.shade(g, menu[0] - 5, menu[1] - 5, menu[2] + 10, menu[3] + 10, 0xA0000000);   // the menu's frame shape: its corners stay clear
         int ww = Math.min(menu[2] - 16, large ? 600 : 460);
         int wh = Math.min(menu[3] - 14, large ? 420 : 320);
         int wx = menu[0] + (menu[2] - ww) / 2;

@@ -17,10 +17,12 @@ class ShotRunTest {
     private static final int[] RAIL = {0, 3, 2, 1};
     private static final String[] NAMES = {"home", "today", "endgame", "settings"};
 
-    /** A game that writes down what is done to it. */
+    /** A game that writes down what is done to it. A picture is two grabs (over black, over white); "capture" marks the last. */
     private static final class Fake implements ShotRun.Stage {
         final List<String> log = new ArrayList<>();
         int lang = 2;
+        int scale = 0;
+        int backdrop = -1;
         boolean flags;
         boolean hidden;
         boolean open;
@@ -40,6 +42,17 @@ class ShotRunTest {
         public void lang(int pick) {
             log.add("lang " + pick);
             lang = pick;
+        }
+
+        @Override
+        public int scale() {
+            return scale;
+        }
+
+        @Override
+        public void scale(int s) {
+            log.add("scale " + s);
+            scale = s;
         }
 
         @Override
@@ -76,12 +89,29 @@ class ShotRunTest {
         }
 
         @Override
-        public void capture(String file) {
+        public int passes() {
+            return 2;
+        }
+
+        @Override
+        public void backdrop(int pass) {
+            log.add("backdrop " + pass);
+            backdrop = pass;
+        }
+
+        @Override
+        public void capture(String file, int pass) {
             if (failOn != null && file.contains("endgame")) {
                 throw failOn;
             }
-            log.add("capture " + file);
-            pending++;
+            if (backdrop != pass) {
+                throw new AssertionError("grabbed pass " + pass + " over backdrop " + backdrop);
+            }
+            log.add("grab " + file + " " + pass);
+            if (pass == passes() - 1) {
+                log.add("capture " + file);
+                pending++;
+            }
         }
 
         @Override
@@ -144,11 +174,10 @@ class ShotRunTest {
         assertEquals(List.of("capture en-01-home.png", "capture en-02-home-picker.png", "capture en-03-home-plan.png",
                 "capture en-04-settings.png", "capture en-05-settings-about.png", "capture en-06-endgame.png",
                 "capture en-07-endgame-pools.png", "capture en-08-today.png"), only(game.log, "capture"));
-        for (int i = 0; i < game.log.size(); i++) {
-            if (game.log.get(i).startsWith("capture")) {
-                assertTrue(game.log.get(i - 1).startsWith("select"), "a capture right after its select: " + game.log);
-            }
-        }
+        // each picture: selected, over black, grabbed, over white, grabbed again
+        int first = game.log.indexOf("select home-picker");
+        assertEquals(List.of("select home-picker", "backdrop 0", "grab en-02-home-picker.png 0", "backdrop 1",
+                "grab en-02-home-picker.png 1", "capture en-02-home-picker.png"), game.log.subList(first, first + 6));
         // then the screen, the language and the flags back, and one message with the count
         int restore = game.log.indexOf("restore");
         assertEquals(List.of("restore", "lang 2", "flags false", "done 8"), game.log.subList(restore, game.log.size()));
@@ -167,8 +196,13 @@ class ShotRunTest {
         run.tick();                                 // select
         for (int i = 0; i < 4; i++) {
             run.tick();
-            assertTrue(only(game.log, "capture").isEmpty(), "captured before the frames settled");
+            assertTrue(only(game.log, "grab").isEmpty(), "grabbed before the frames settled");
         }
+        run.tick();
+        assertEquals(List.of("grab tr-01-today.png 0"), only(game.log, "grab"));
+        // the white backdrop drawn for a frame before the second grab
+        run.tick();
+        assertEquals(1, only(game.log, "grab").size());
         run.tick();
         assertEquals(List.of("capture tr-01-today.png"), only(game.log, "capture"));
     }
@@ -185,23 +219,39 @@ class ShotRunTest {
     @Test
     void escStopsAndPutsEverythingBack() {
         Fake game = new Fake();
-        ShotRun run = new ShotRun(game, ShotRun.plan(RAIL, NAMES, "all"), 1, true);
+        ShotRun run = new ShotRun(game, ShotRun.plan(RAIL, NAMES, "all"), 1, 3, true);
         for (int i = 0; i < 40; i++) {
             run.tick();
         }
         assertTrue(game.hidden);
         assertEquals(1, game.lang);
+        assertEquals(3, game.scale);
         run.escape();
         assertFalse(run.tick());
         assertEquals(ShotRun.Stop.ESC, game.stop);
         int restore = game.log.indexOf("restore");
-        assertEquals(List.of("restore", "lang 2", "flags false", "done " + run.count() + " ESC"),
+        assertEquals(List.of("restore", "scale 0", "lang 2", "flags false", "done " + run.count() + " ESC"),
                 game.log.subList(restore, game.log.size()));
         assertEquals(2, game.lang);
+        assertEquals(0, game.scale);
         assertFalse(game.flags);
         assertFalse(game.hidden);
         assertFalse(run.tick());
         assertEquals(1, only(game.log, "restore").size(), "put back once");
+    }
+
+    @Test
+    void theSizeIsSetBeforeTheMenuOpensAndPutBack() {
+        Fake game = new Fake();
+        runToEnd(new ShotRun(game, ShotRun.plan(RAIL, NAMES, "today"), -1, 4, false), game);
+        assertEquals(List.of("flags true", "scale 4", "open"), game.log.subList(0, 3));
+        assertTrue(game.log.indexOf("scale 0") > game.log.indexOf("restore"));
+        assertEquals(0, game.scale);
+        // the size already on: nothing to change, nothing to put back
+        Fake same = new Fake();
+        same.scale = 3;
+        runToEnd(new ShotRun(same, ShotRun.plan(RAIL, NAMES, "today"), -1, 3, false), same);
+        assertTrue(only(same.log, "scale").isEmpty(), same.log.toString());
     }
 
     @Test
@@ -263,5 +313,15 @@ class ShotRunTest {
         assertEquals(6, Shots.maskedAt("Hello anilKen!", "anilken", 0));
         assertEquals(-1, Shots.maskedAt("Hello there", "anilken", 0));
         assertEquals(-1, Shots.maskedAt("anything", "", 0));
+    }
+
+    @Test
+    void theSizeWordsAreRead() {
+        String[] bad = new String[1];
+        Shots.Options o = Shots.parse("tr x4 endgame hidename", bad);
+        assertEquals(new Shots.Options(2, "endgame", 4, true), o);
+        assertEquals(new Shots.Options(1, "all", -1, false), Shots.parse("", bad));
+        assertNull(Shots.parse("x5", bad));
+        assertEquals("x5", bad[0]);
     }
 }

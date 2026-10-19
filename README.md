@@ -62,14 +62,19 @@ approve intended changes) and the checks `checkLang`, `checkPersonal` and `check
 `gradle :neoforge:runClient` starts a NeoForge dev client (with Wynntils if its neoforge jar is in `libs/`).
 
 **Menu screenshots.** With **Debug logging** on (Y → Settings → Prices and data), type
-`/wynnlabs shots [en|tr|current] [all|<tab>] [hidename]` in a world (default `en all`). It switches
-the mod's menu language, opens the menu, and saves each tab in rail order, plus Home's Choose items
-window and plan view, Settings → About and Endgame → Pools, with Minecraft's own screenshot code to
+`/wynnlabs shots [en|tr|current] [all|<tab>] [x2|x3|x4] [hidename]` in a world (default `en all`). It
+switches the mod's menu language, opens the menu, and saves each tab in rail order, plus Home's Choose
+items window and plan view, Settings → About and Endgame → Pools, to
 `screenshots/wynnlabs/<yyyy-MM-dd_HH-mm-ss>/<lang>-<nn>-<tab>[-<state>].png`. A chat line links the
 folder at the end. `<tab>` is one of `home craft tree today endgame quests discoveries bank damage
-deaths ai settings`. `hidename` shows "Player" for your Minecraft name in any text the menu draws.
-The HUD and the mouse hover stay out of the pictures. The language, the screen and the menu's views
-go back as they were at the end, on Esc or on an error. It only opens the mod's own menu and never
+deaths ai settings`. Each picture is the mod's window alone: Minecraft's own screenshot code grabs the
+view twice, over a black and a white backdrop instead of the world, and the two give every pixel its
+alpha. The picture is cropped to the window's frame, shadow and close seal, with a 3 px transparent
+margin and transparent rounded corners. `x2`/`x3`/`x4` draw the menu at that menu scale for the run.
+The menu fills the game window at every scale, so a larger scale gives larger text, not a larger image.
+`hidename` shows "Player" for your Minecraft name in any text the menu draws. The HUD and the mouse
+hover stay out of the pictures. The language, the menu scale, the screen and the menu's views go back
+as they were at the end, on Esc or on an error. It only opens the mod's own menu and never
 starts a road map build or a build search: build the road map in that language first if you want it
 in the pictures. `gradle :fabric:runClientGameTest -PpreviewOnly=shots` checks it on the recorded
 character.

@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.ChatFormatting;
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -29,13 +30,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 /**
- * {@code /wynnlabs shots [en|tr|current] [all|<tab>] [hidename]}: pictures of the mod's own menu
+ * {@code /wynnlabs shots [en|tr|current] [all|<tab>] [x2|x3|x4] [hidename]}: pictures of the mod's own menu
  * for the mod's pages, taken in the real game with the real resource pack. Only while the Debug
  * setting is on, and only when the player types it.
  *
  * <p>It opens the mod's menu (nothing else), selects each tab in rail order and a few views inside
- * them, and saves the frames with Minecraft's own screenshot path (as F2 does) to
- * {@code screenshots/wynnlabs/<time>/}. It never opens a game menu, clicks a slot or sends
+ * them, and grabs each view with Minecraft's own screenshot path (as F2 does) twice, over a black
+ * and a white backdrop instead of the world. The picture saved to {@code screenshots/wynnlabs/<time>/}
+ * is the mod's window alone (frame, shadow, close seal, side panels) on transparency, cropped to its
+ * box with a small margin ({@link ShotCrop}). {@code x2}/{@code x3}/{@code x4} draw it at that menu
+ * scale for the run. It never opens a game menu, clicks a slot or sends
  * anything to the server, and it never starts a road map build or a build search: it captures
  * what is there. The sequence itself is {@link ShotRun}; this is its side in the game.
  */
@@ -52,8 +56,41 @@ public final class Shots {
 
     static final String MASK = "Player";
 
+    /** The colour behind the menu while capturing (black, then white for the same view: ShotCrop). */
+    private static volatile int backdrop = 0xFF000000;
+    /** The mod's window boxes drawn in the frame being drawn, and in the last one finished (GUI pixels {x0, y0, x1, y1}). */
+    private static float[] frameNow;
+    private static volatile float[] frameLast;
+
     static boolean capturing() {
         return capturing;
+    }
+
+    static int backdrop() {
+        return backdrop;
+    }
+
+    /** RoadmapScreen, before it draws a frame while capturing. */
+    static void beginFrame() {
+        frameNow = null;
+    }
+
+    /** RoadmapScreen, after it drew a frame while capturing: its window boxes are the ones to crop to. */
+    static void endFrame() {
+        frameLast = frameNow;
+    }
+
+    /**
+     * A box of the mod's window drawn under {@code pose} (the frame with its shadow, the close seal,
+     * a side panel): the picture keeps all of them. Only while capturing.
+     */
+    static void frame(org.joml.Matrix3x2f pose, int x, int y, int w, int h) {
+        if (!capturing) {
+            return;
+        }
+        var a = pose.transformPosition(x, y, new org.joml.Vector2f());
+        var b = pose.transformPosition(x + w, y + h, new org.joml.Vector2f());
+        frameNow = ShotCrop.union(frameNow, new float[] {Math.min(a.x, b.x), Math.min(a.y, b.y), Math.max(a.x, b.x), Math.max(a.y, b.y)});
     }
 
     static boolean running() {
@@ -100,7 +137,7 @@ public final class Shots {
         for (int t : RoadmapScreen.railOrder()) {
             out.add(RoadmapScreen.tabName(t));
         }
-        out.add("hidename");
+        out.addAll(List.of("x2", "x3", "x4", "hidename"));
         return out;
     }
 
@@ -117,13 +154,17 @@ public final class Shots {
         return at.buildFuture();
     }
 
-    /** The options, read: the language (as the rail's picker numbers it, -1 to keep), the tab ("all"), whether the name is hidden. */
-    record Options(int lang, String only, boolean hideName) {}
+    /**
+     * The options, read: the language (as the rail's picker numbers it, -1 to keep), the tab
+     * ("all"), the menu scale to draw at (2 to 4, -1 to keep), whether the name is hidden.
+     */
+    record Options(int lang, String only, int scale, boolean hideName) {}
 
     /** {@code options} read, or null with the word that is not one ({@code bad[0]}). */
     static Options parse(String options, String[] bad) {
         int lang = 1;
         String only = "all";
+        int scale = -1;
         boolean hide = false;
         List<String> tabs = new ArrayList<>();
         for (int t : RoadmapScreen.railOrder()) {
@@ -137,6 +178,9 @@ public final class Shots {
                 case "current" -> lang = -1;
                 case "all" -> only = "all";
                 case "hidename" -> hide = true;
+                case "x2" -> scale = 2;
+                case "x3" -> scale = 3;
+                case "x4" -> scale = 4;
                 default -> {
                     if (!tabs.contains(w)) {
                         bad[0] = w;
@@ -146,7 +190,7 @@ public final class Shots {
                 }
             }
         }
-        return new Options(lang, only, hide);
+        return new Options(lang, only, scale, hide);
     }
 
     /** Reads the options and starts a run; the line shown to the player. */
@@ -172,9 +216,13 @@ public final class Shots {
             names[t] = RoadmapScreen.tabName(t);
         }
         List<ShotRun.Shot> shots = ShotRun.plan(RoadmapScreen.railOrder(), names, o.only());
-        Path dir = mc.gameDirectory.toPath().resolve("screenshots").resolve("wynnlabs")
-                .resolve(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss", Locale.ROOT)));
-        run = new ShotRun(new Live(mc, dir), shots, o.lang(), o.hideName());
+        Path base = mc.gameDirectory.toPath().resolve("screenshots").resolve("wynnlabs");
+        String stamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss", Locale.ROOT));
+        Path dir = base.resolve(stamp);
+        for (int k = 2; Files.exists(dir); k++) {
+            dir = base.resolve(stamp + "_" + k);         // two runs in one second: one folder each
+        }
+        run = new ShotRun(new Live(mc, dir), shots, o.lang(), o.scale(), o.hideName());
         boolean plan = Plans.current() != null;
         long n = shots.stream().filter(s -> plan || !"plan".equals(s.state())).count();
         return L.cn("wynnlabs.shots.started", n).withStyle(ChatFormatting.GRAY);
@@ -299,6 +347,8 @@ public final class Shots {
             } else {
                 capturing = false;
                 hidden = null;
+                backdrop = 0xFF000000;
+                frameLast = null;
                 mc.options.hideGui = hudWas;
             }
         }
@@ -330,29 +380,91 @@ public final class Shots {
         }
 
         @Override
-        public void capture(String file) {
+        public int passes() {
+            return 2;
+        }
+
+        @Override
+        public void backdrop(int pass) {
+            backdrop = pass == 0 ? 0xFF000000 : 0xFFFFFFFF;
+        }
+
+        /** The picture being taken: its window box in framebuffer pixels, and its frame over black. */
+        private int[] rect;
+        private CompletableFuture<NativeImage> overBlack;
+
+        @Override
+        public void capture(String file, int pass) {
+            if (pass == 0) {
+                float[] gui = frameLast;
+                if (gui == null) {
+                    throw new IllegalStateException("the menu drew no window");
+                }
+                rect = ShotCrop.pixels(gui, mc.getWindow().getGuiScale());
+                overBlack = grab();
+                return;
+            }
             Path p = dir.resolve(file);
             try {
                 Files.createDirectories(dir);
             } catch (java.io.IOException e) {
                 throw new IllegalStateException("cannot create " + dir, e);
             }
+            int[] box = rect;
+            CompletableFuture<NativeImage> black = overBlack;
+            CompletableFuture<NativeImage> white = grab();
             pending.incrementAndGet();
-            try {
-                // the frame drawn last (this tick runs before the next one is drawn), as F2 takes it
-                Screenshot.takeScreenshot(mc.getMainRenderTarget(), image -> Util.ioPool().execute(() -> {
-                    try (image) {
-                        image.writeToFile(p);
-                    } catch (Exception e) {
-                        failed.incrementAndGet();
-                        System.out.println("[WynnLabs] screenshots: could not write " + p + ": " + e);
-                    } finally {
-                        pending.decrementAndGet();
-                    }
-                }));
-            } catch (RuntimeException e) {
-                pending.decrementAndGet();
-                throw e;
+            // both frames read back: the window alone, cropped and on transparency, written off the client thread
+            black.thenAcceptBothAsync(white, (b, w) -> {
+                try (b; w; NativeImage out = window(b, w, box)) {
+                    out.writeToFile(p);
+                } catch (Exception e) {
+                    failed.incrementAndGet();
+                    System.out.println("[WynnLabs] screenshots: could not write " + p + ": " + e);
+                } finally {
+                    pending.decrementAndGet();
+                }
+            }, Util.ioPool());
+            overBlack = null;
+        }
+
+        /** The frame drawn last (this tick runs before the next one is drawn), as F2 takes it. */
+        private CompletableFuture<NativeImage> grab() {
+            CompletableFuture<NativeImage> f = new CompletableFuture<>();
+            Screenshot.takeScreenshot(mc.getMainRenderTarget(), f::complete);
+            return f;
+        }
+
+        /** The window's box of the two frames with a transparent margin, each pixel with its own alpha (ShotCrop). */
+        private static NativeImage window(NativeImage black, NativeImage white, int[] box) {
+            int m = ShotCrop.MARGIN;
+            int[] px = ShotCrop.compose(black::getPixel, white::getPixel, black.getWidth(), black.getHeight(), box, m);
+            int ow = box[2] + 2 * m;
+            int oh = box[3] + 2 * m;
+            NativeImage out = new NativeImage(ow, oh, true);
+            for (int y = 0; y < oh; y++) {
+                for (int x = 0; x < ow; x++) {
+                    out.setPixel(x, y, px[y * ow + x]);
+                }
+            }
+            return out;
+        }
+
+        /** Whether settings.json had no menu scale: put back as absent. */
+        private final boolean scaleUnset = Settings.number("menuScale", -1) == -1;
+
+        @Override
+        public int scale() {
+            return Settings.number("menuScale", 0);
+        }
+
+        /** The settings tab's Menu scale buttons set this same number; the next frame draws at it. */
+        @Override
+        public void scale(int scale) {
+            if (scaleUnset && scale == 0) {
+                Settings.resetNumber("menuScale");
+            } else {
+                Settings.setNumber("menuScale", scale);
             }
         }
 
@@ -363,6 +475,10 @@ public final class Shots {
 
         @Override
         public void restore() {
+            if (overBlack != null) {
+                overBlack.thenAccept(NativeImage::close);   // stopped between a picture's two frames
+                overBlack = null;
+            }
             // only our menu is replaced: a screen something else opened since stays
             if (screen != null && mc.screen == screen) {
                 mc.setScreen(prev);
