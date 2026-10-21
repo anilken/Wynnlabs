@@ -4207,11 +4207,20 @@ final class RoadmapScreen extends Screen {
                 hits.add(new Hit(ix, iy - 1, iw - 32, Kit.Ui.LINE_DENSE * stepRows, null, tip, null));
                 iy += Kit.Ui.LINE_DENSE * stepRows;
                 if (i == cur) {
-                    // the stage you are on: its first hints (more of them on a large page)
-                    int hintRows = layout.large() ? 5 : 2;
-                    for (int k = 0; k < st.hints().size() && k < hintRows && iy + 10 <= bottom; k++) {
-                        ink(g, fit(QuestWiki.shown(st.hints().get(k)), iw - 14), ix + 12, iy, MUTED);
-                        iy += Kit.Ui.LINE_DENSE;
+                    // the stage you are on: its hints wrapped, not cut, so a puzzle's last line (its
+                    // answer, often) shows too; more rows on a large page
+                    int hintRows = layout.large() ? 10 : 4;
+                    int used = 0;
+                    hints:
+                    for (String h : st.hints()) {
+                        for (FormattedCharSequence line : font.split(Component.literal(QuestWiki.shown(h)), iw - 14)) {
+                            if (used >= hintRows || iy + 10 > bottom) {
+                                break hints;
+                            }
+                            ink(g, line, ix + 12, iy, MUTED);
+                            iy += Kit.Ui.LINE_DENSE;
+                            used++;
+                        }
                     }
                 }
             }
