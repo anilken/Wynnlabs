@@ -216,7 +216,7 @@
   "wynnlabs.auto.box_blacksmith_no_price": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok",
   "wynnlabs.auto.box_unpriced_one": "(%s: fiyat yok)",
   "wynnlabs.auto.box_unpriced_some": "(%s/%s olasılığın fiyatı var)",
-  "wynnlabs.auto.market_full": "Blacksmith'e sat: Trade Market'te yer yok (%s ilan hakkın var, bu %s sırada)",
+  "wynnlabs.auto.market_full": "Blacksmith'e sat, Trade Market dolu: %s ilan hakkı, bu %s",
   "wynnlabs.auto.sell_market_unidentified": "%s. Olduğu gibi Trade Market'te sat, ~%s (alıcı rolleri göremez)",
   "wynnlabs.auto.unid_identify_then_sell": "Item Identifier'da tanımla (%s zümrüt), sonra Trade Market'te sat: tanımlısı ~%s, tanımsızı ~%s. %s",
   "wynnlabs.auto.crafted_wrong_class": "%s eşyası, sen %s'sın. Blacksmith'e sat",

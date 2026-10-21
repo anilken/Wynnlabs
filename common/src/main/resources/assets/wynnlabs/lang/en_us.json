@@ -216,7 +216,7 @@
   "wynnlabs.auto.box_blacksmith_no_price": "Sell it to the Blacksmith: none of its outcomes has a price yet",
   "wynnlabs.auto.box_unpriced_one": "(%s: no price)",
   "wynnlabs.auto.box_unpriced_some": "(%s/%s have a price)",
-  "wynnlabs.auto.market_full": "Sell to the Blacksmith: no room on the Trade Market (you have %s slot, this is %s)|Sell to the Blacksmith: no room on the Trade Market (you have %s slots, this is %s)",
+  "wynnlabs.auto.market_full": "Sell to the Blacksmith, Trade Market full: %s slot, this is %s|Sell to the Blacksmith, Trade Market full: %s slots, this is %s",
   "wynnlabs.auto.sell_market_unidentified": "%s. Sell it as it is on the Trade Market, ~%s (buyers can't see its rolls)",
   "wynnlabs.auto.unid_identify_then_sell": "Identify it at the Item Identifier (%s emeralds), then sell it on the Trade Market: identified ~%s, unidentified ~%s. %s",
   "wynnlabs.auto.crafted_wrong_class": "%s item; you play %s. Sell it to the Blacksmith",

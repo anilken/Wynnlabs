@@ -56,9 +56,9 @@ class MarketSlotsTest {
 
     @Test
     void theNoteSaysWhy() {
-        assertEquals("Sell to the Blacksmith: no room on the Trade Market (you have 15 slots, this is 18th)",
+        assertEquals("Sell to the Blacksmith, Trade Market full: 15 slots, this is 18th",
                 MarketSlots.note(15, 18));
-        assertEquals("Sell to the Blacksmith: no room on the Trade Market (you have 1 slot, this is 2nd)",
+        assertEquals("Sell to the Blacksmith, Trade Market full: 1 slot, this is 2nd",
                 MarketSlots.note(1, 2));
         assertEquals("Blacksmith", Advice.sellPlace(new Advice.Entry(Verdict.SELL, MarketSlots.note(15, 18))));
         assertEquals("21st", MarketSlots.ordinal(21));
@@ -72,7 +72,7 @@ class MarketSlotsTest {
         tr.addProperty("langOverride", 2);
         Settings.use(tr);
         try {
-            assertEquals("Blacksmith'e sat: Trade Market'te yer yok (15 ilan hakkın var, bu 18. sırada)",
+            assertEquals("Blacksmith'e sat, Trade Market dolu: 15 ilan hakkı, bu 18.",
                     MarketSlots.note(15, 18));
             assertEquals("Blacksmith", Advice.sellPlace(new Advice.Entry(Verdict.SELL, MarketSlots.note(15, 18))));
         } finally {

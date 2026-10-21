@@ -115,8 +115,13 @@ final class MarketSlots {
 
     // ---- the ranking of the bag and the bank ----
 
-    /** The verdicts the limit changed: bag stacks by identity, kept bank stacks by {@link Vault#id}. */
-    private record Ranking(long key, long built, Map<ItemStack, Advice.Entry> bag, Map<String, Advice.Entry> bank) {}
+    /**
+     * The verdicts the limit changed: bag stacks by identity, kept bank stacks by {@link Vault#id},
+     * and by {@link ItemJson#keyOf} when every bag copy of an item was left out (for a stack moved
+     * into a shop's slots, which is a new stack there).
+     */
+    private record Ranking(long key, long built, Map<ItemStack, Advice.Entry> bag, Map<String, Advice.Entry> bank,
+            Map<String, Advice.Entry> byKey) {}
 
     private static volatile Ranking ranking;
     private static boolean building;                // a verdict asked while ranking: no ranking inside it
@@ -139,6 +144,9 @@ final class MarketSlots {
             String id = Vault.idOf(stack);              // a stack in the bank page open now
             cut = id == null ? null : r.bank().get(id);
         }
+        if (cut == null && shopOpen()) {
+            cut = r.byKey().get(ItemJson.keyOf(stack));
+        }
         return cut != null ? cut : e;
     }
 
@@ -150,6 +158,21 @@ final class MarketSlots {
         Ranking r = current();
         Advice.Entry cut = r == null ? null : r.bank().get(bankId);
         return cut == null ? null : cut.note();
+    }
+
+    /**
+     * A shop or other container is open (not the bag, not the bank): items you put into its slots
+     * leave the bag, so the ranking holds still until it closes.
+     */
+    private static boolean shopOpen() {
+        try {
+            var screen = net.minecraft.client.Minecraft.getInstance().screen;
+            return screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>
+                    && !(screen instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen)
+                    && !Vault.bankOpen();
+        } catch (Throwable t) {
+            return false;
+        }
     }
 
     private static long key() {
@@ -165,6 +188,9 @@ final class MarketSlots {
         long key = key();
         long now = System.currentTimeMillis();
         Ranking r = ranking;
+        if (r != null && shopOpen()) {
+            return r;                                   // items moved into the shop's slots keep their place
+        }
         if (r != null && r.key() == key && now - r.built() < 30_000) {
             return r;
         }
@@ -178,7 +204,7 @@ final class MarketSlots {
             try {
                 r = build(key, now);
             } catch (Throwable ignored) {
-                r = new Ranking(key, now, Map.of(), Map.of());  // no limit rather than a broken tooltip
+                r = new Ranking(key, now, Map.of(), Map.of(), Map.of());  // no limit rather than a broken tooltip
             } finally {
                 building = false;
             }
@@ -210,22 +236,32 @@ final class MarketSlots {
         int slots = slots();
         Map<ItemStack, Advice.Entry> bag = new IdentityHashMap<>();
         Map<String, Advice.Entry> bank = new HashMap<>();
+        Map<String, Advice.Entry> byKey = new HashMap<>();
+        java.util.Set<String> seated = new java.util.HashSet<>();
         if (all.stream().mapToInt(c -> Math.max(1, c.copies())).sum() > slots) {
             Map<Object, Seat> seats = rank(all, slots);
             for (Candidate c : all) {
                 Seat seat = seats.get(c.id());
+                String k = c.id() instanceof ItemStack st ? ItemJson.keyOf(st) : null;
                 if (seat.fits()) {
+                    if (k != null) {
+                        seated.add(k);
+                    }
                     continue;
                 }
                 Advice.Entry cut = new Advice.Entry(Verdict.SELL, note(slots, seat.place()));
                 if (c.id() instanceof ItemStack st) {
                     bag.put(st, cut);
+                    if (k != null) {
+                        byKey.putIfAbsent(k, cut);
+                    }
                 } else {
                     bank.put((String) c.id(), cut);
                 }
             }
         }
-        return new Ranking(key, now, bag, bank);
+        seated.forEach(byKey::remove);
+        return new Ranking(key, now, bag, bank, byKey);
     }
 
     /** A kept stack's worth: judged again from the kept item when it can be, else its price. */
