@@ -201,6 +201,12 @@ public final class WynnLabs {
             } catch (Throwable t) {
                 System.out.println("[WynnLabs] tooltip hook unavailable: " + t);
             }
+            // tooltips drawn smaller while a menu is open (MenuTooltips)
+            try {
+                Wyn.listen(new WynntilsEvents.Tooltips());
+            } catch (Throwable t) {
+                System.out.println("[WynnLabs] menu tooltip size hook unavailable: " + t);
+            }
             // the quests tab's "read quests with Wynntils": the lists Wynntils posts after the press
             try {
                 Wyn.listen(Wyn.Feature.QUESTS, new WynntilsEvents.Quests());

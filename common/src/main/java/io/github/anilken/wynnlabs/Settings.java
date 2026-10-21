@@ -152,13 +152,31 @@ final class Settings {
     static final Map<String, int[]> STEPS = new LinkedHashMap<>();
     /** Number setting → its language key. */
     static final Map<String, String> STEP_LABELS = new LinkedHashMap<>();
-    /** Number setting → the switch it belongs to (the row is dimmed while that is off). */
+    /** Number setting → the switch its row sits under on the settings tab. */
     static final Map<String, String> STEP_PARENT = new LinkedHashMap<>();
+    /** Number setting → the language key that writes its value ("85%"); plain digits when absent. */
+    static final Map<String, String> STEP_FORMAT = new LinkedHashMap<>();
     private static final Map<String, Integer> STEP_DEFAULT = new LinkedHashMap<>();
+
+    static {
+        // tooltip size while a menu is open, in percent; 100 leaves tooltips as the game draws them
+        STEPS.put("menuTooltipScale", new int[] {70, 75, 80, 85, 90, 95, 100});
+        STEP_LABELS.put("menuTooltipScale", "wynnlabs.setting.menuTooltipScale");
+        STEP_PARENT.put("menuTooltipScale", "tooltipPrice");
+        STEP_FORMAT.put("menuTooltipScale", "wynnlabs.settings.percent");
+        STEP_DEFAULT.put("menuTooltipScale", 85);
+        DESC.put("menuTooltipScale", "wynnlabs.setting_desc.menuTooltipScale");
+    }
 
     /** A stepped number setting's value (its default when unset). */
     static int stepValue(String key) {
-        return number(key, STEP_DEFAULT.getOrDefault(key, 0));
+        return number(key, stepDefault(key));
+    }
+
+    /** What a stepped number setting is before the player touches it. */
+    static int stepDefault(String key) {
+        Integer d = STEP_DEFAULT.get(key);
+        return d == null ? 0 : d;
     }
 
     /** One step down (−1) or up (+1) through a number setting's values, stopping at the ends. */
