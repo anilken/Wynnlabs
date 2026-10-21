@@ -16,9 +16,9 @@ import org.joml.Vector2ic;
  * asks for a positioner before it places a tooltip, and its own fitting (universal scale, fit to
  * screen) stands aside when one is set. So ours replaces that fitting in menus rather than
  * shrinking on top of it: the smaller of the two scales is drawn, and smaller still only when the
- * tooltip would not fit the window's height. The positioner scales the pose around the tooltip's
- * corner (where the game puts it beside the mouse) and places the scaled box inside the window;
- * {@link #end} undoes the pose once the tooltip is drawn.
+ * tooltip would not fit the window's height. The positioner places the scaled box beside the
+ * mouse and inside the window, scales the pose and hands back that place in the pose's units, as
+ * Wynntils' fitting does; {@link #end} undoes the pose once the tooltip is drawn.
  */
 final class MenuTooltips {
 
@@ -31,7 +31,7 @@ final class MenuTooltips {
     /** Never smaller than this, whatever the tooltip's length. */
     static final float MIN = 0.25f;
 
-    private static final Positioner POSITIONER = new Positioner();
+    private static final ScaledTooltipPositioner POSITIONER = new ScaledTooltipPositioner();
 
     private MenuTooltips() {}
 
@@ -102,17 +102,23 @@ final class MenuTooltips {
     }
 
     /**
-     * One positioner for every tooltip (render thread only, nothing allocated per frame): it
-     * pushes the scaled pose when the game asks where to draw, and hands back the pose's origin.
+     * One positioner for every tooltip (render thread only, nothing allocated per frame). It works
+     * the way Wynntils' own fitting does, so mods that wrap a positioner to make room beside the
+     * tooltip (WynnChaYuan, for Wynnventory's price box) move it correctly: the pose is scaled,
+     * and the place handed back is in the scaled pose's units. Those mods read the scale from a
+     * {@code ScaledTooltipPositioner}'s {@code scaleFactor}, hence the class and field names.
      */
-    private static final class Positioner implements ClientTooltipPositioner {
+    private static final class ScaledTooltipPositioner implements ClientTooltipPositioner {
 
-        private static final Vector2ic ORIGIN = new Vector2i(0, 0);
         private final float[] at = new float[2];
+        private final Vector2i pos = new Vector2i();
         private GuiGraphics g;
         private float ours;
         private float wynntils;
         private boolean pushed;
+        /** The last scale drawn; read by other mods before the next tooltip is placed. */
+        @SuppressWarnings("unused")
+        private float scaleFactor = 1f;
 
         void begin(GuiGraphics g, float ours, float wynntils) {
             end(this.g);                            // a tooltip whose end never came: its pose first
@@ -124,14 +130,17 @@ final class MenuTooltips {
         @Override
         public Vector2ic positionTooltip(int screenW, int screenH, int mouseX, int mouseY, int w, int h) {
             float t = scale(ours, wynntils, h, screenH);
+            scaleFactor = t;
             place(screenW, screenH, mouseX, mouseY, w, h, t, at);
+            pos.set(Math.round(at[0] / t), Math.round(at[1] / t));
             double gs = Minecraft.getInstance().getWindow().getGuiScale();
             var pose = g.pose();
             pose.pushMatrix();
-            pose.translate(snap(at[0], gs), snap(at[1], gs));
+            // what rounding to whole scaled units lost, so the text still starts on a window pixel
+            pose.translate(snap(at[0], gs) - pos.x * t, snap(at[1], gs) - pos.y * t);
             pose.scale(t, t);
             pushed = true;
-            return ORIGIN;
+            return pos;
         }
 
         void end(GuiGraphics g) {
