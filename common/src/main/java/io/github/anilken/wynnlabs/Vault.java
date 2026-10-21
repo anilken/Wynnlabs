@@ -266,15 +266,16 @@ final class Vault {
 
     private static final Map<String, ItemStack> STACKS = new java.util.HashMap<>();
 
-    /** The stored item to draw: the real one when it was saved, else a named paper. */
+    /** The stored item to draw: the real one when it was saved (with today's picture), else a named paper. */
     static ItemStack stackOf(Stored s) {
-        String k = s.item() == null ? "name:" + s.name() : s.item();
+        String json = drawn(s);
+        String k = json == null ? "name:" + s.name() : json;
         return STACKS.computeIfAbsent(k, x -> {
             try {
                 var level = Minecraft.getInstance().level;
-                if (s.item() != null && level != null) {
+                if (json != null && level != null) {
                     var ops = level.registryAccess().createSerializationContext(com.mojang.serialization.JsonOps.INSTANCE);
-                    var r = ItemStack.CODEC.parse(ops, JsonParser.parseString(s.item())).result();
+                    var r = ItemStack.CODEC.parse(ops, JsonParser.parseString(json)).result();
                     if (r.isPresent()) {
                         annotate(r.get());
                         return r.get();
@@ -286,6 +287,43 @@ final class Vault {
             paper.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.literal(s.name()));
             return paper;
         });
+    }
+
+    /**
+     * The newest picture of everything saved and each item's JSON to draw, for one vault version:
+     * a page saved since makes a new one, so a later copy fixes an older page's pictures.
+     */
+    private record Pictures(int version, Map<String, BankIcons.Pic> newest, Map<String, String> drawn) {}
+
+    private static volatile Pictures pictures;
+
+    /** The saved item's JSON with today's picture (BankIcons), worked out once per item and version. */
+    private static String drawn(Stored s) {
+        if (s.item() == null) {
+            return null;
+        }
+        Pictures p = pictures;
+        if (p == null || p.version() != version) {
+            List<Stored> all = new ArrayList<>();
+            PAGES.values().forEach(all::addAll);
+            p = new Pictures(version, BankIcons.newest(all), new java.util.concurrent.ConcurrentHashMap<>());
+            pictures = p;
+        }
+        Map<String, BankIcons.Pic> newest = p.newest();
+        return p.drawn().computeIfAbsent(s.item(), k -> BankIcons.repaint(s, newest, Vault::gearPicture));
+    }
+
+    /** A piece's picture as Wynntils has it now, or null when it does not know the piece. */
+    private static BankIcons.Pic gearPicture(String name) {
+        ItemStack st = Wyn.gearPicture(name);
+        var cmd = st == null ? null : st.get(net.minecraft.core.component.DataComponents.CUSTOM_MODEL_DATA);
+        if (cmd == null || cmd.floats().isEmpty() || !(cmd.floats().get(0) > 0)) {
+            return null;                        // no model number (a vanilla head, an unknown piece)
+        }
+        JsonArray f = new JsonArray();
+        f.add(cmd.floats().get(0));
+        String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(st.getItem()).toString();
+        return new BankIcons.Pic(id, f, null, 0, false);
     }
 
     /** The stored box (type, tier, levels), or null when it is not one. */

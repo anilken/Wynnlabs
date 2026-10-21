@@ -404,6 +404,17 @@ final class Wyn {
         return guard(Feature.GEAR_DB, () -> Models.Gear.getGearInfoFromDisplayName(name), null);
     }
 
+    /**
+     * A piece's picture as Wynntils' gear data has it now (its item with today's model number),
+     * or null when unknown. Wynntils' own stack: read it, never change it.
+     */
+    static ItemStack gearPicture(String name) {
+        return guard(Feature.GEAR_DB, () -> {
+            GearInfo info = Models.Gear.getGearInfoFromDisplayName(name);
+            return info == null ? null : info.metaInfo().material().itemStack();
+        }, null);
+    }
+
     static List<GearInfo> possibleGears(GearBoxItem box) {
         return guard(Feature.GEAR_DB, () -> Models.Gear.getPossibleGears(box), List.of());
     }

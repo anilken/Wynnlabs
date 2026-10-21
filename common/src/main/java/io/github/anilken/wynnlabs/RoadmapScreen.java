@@ -2861,8 +2861,9 @@ final class RoadmapScreen extends Screen {
     private String bankPage = "";                                       // "" = every item, by kind
     private final List<Object[]> bankFilterHits = new ArrayList<>();   // {int[] rect, Integer filter}
     private final List<Object[]> bankPageHits = new ArrayList<>();     // {int[] rect, String page}
-    private static final int SLOT = 18;
-    private static final int PITCH = 20;
+    private static final int SLOT = 24;                 // the bank's slots: big enough to tell items apart
+    private static final int PITCH = 26;
+    private static final int ICON = 20;                 // the item in a slot, 2px from its edge
     private static final int MARK_SELL = Theme.MARK_SELL;
     private static final int MARK_QUEST = Theme.MARK_QUEST;
     private static final int MARK_IDENTIFY = Theme.MARK_IDENTIFY;
@@ -3046,9 +3047,14 @@ final class RoadmapScreen extends Screen {
             DevHooks.part("bankitem", g.pose(), x, y, SLOT, SLOT);
         }
         if (stack != null) {
-            g.renderItem(stack, x + 1, y + 1);
+            int in = (SLOT - ICON) / 2;
+            g.pose().pushMatrix();
+            g.pose().translate(x + in, y + in);
+            g.pose().scale(ICON / 16f, ICON / 16f);
+            g.renderItem(stack, 0, 0);
             // the bar and such without the game's count, which sits low enough to spill out of the slot
-            g.renderItemDecorations(font, stack, x + 1, y + 1, "");
+            g.renderItemDecorations(font, stack, 0, 0, "");
+            g.pose().popMatrix();
             if (count != null) {
                 // the count inside the slot, bottom right, 1px in
                 g.drawString(font, count, x + SLOT - 1 - font.width(count), y + SLOT - 9, 0xFFFFFFFF, true);
