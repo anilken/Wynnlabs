@@ -4899,7 +4899,8 @@ final class RoadmapScreen extends Screen {
     /** What the row's value is in a few characters ("6 lv", "30 EB", "Boltslinger"); "" for a switch. */
     private static String shortValue(SetRow r) {
         return switch (r.kind()) {
-            case "rule" -> L.cap(RuleEditor.display(r.r()));
+            case "rule" -> r.r().key().equals("marketSlots") && RuleEditor.value(r.r()) <= 0
+                    ? MarketSlots.autoShort() : L.cap(RuleEditor.display(r.r()));
             case "arch" -> TreePlanner.chosen().isEmpty() ? L.t("wynnlabs.settings.archetype_off") : TreePlanner.chosen();
             case "goal" -> Setup.goalName(Setup.goal());
             case "scale" -> MenuScale.setting() == 0 ? L.t("wynnlabs.settings.scale_game") : String.valueOf(MenuScale.setting());
@@ -4980,6 +4981,7 @@ final class RoadmapScreen extends Screen {
                 case "ahead", "grind_above" -> new Object[] {lv + v};
                 case "min_gain" -> new Object[] {RuleEditor.format(rule, v), RuleEditor.format(rule, Math.max(0, v - 1))};
                 case "reroll" -> new Object[] {RuleEditor.format(rule, Math.max(0, v - 1)), RuleEditor.format(rule, v)};
+                case "market_slots" -> new Object[] {MarketSlots.slots()};
                 default -> new Object[] {RuleEditor.format(rule, v)};
             };
         }

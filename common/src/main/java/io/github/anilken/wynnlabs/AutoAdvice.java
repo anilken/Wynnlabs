@@ -28,7 +28,8 @@ final class AutoAdvice {
 
     private AutoAdvice() {}
 
-    private record Cached(long until, int stamp, Advice.Entry entry) {}
+    /** {@code gain}: what a Trade Market verdict expects to bring in ({@link #market}), NaN otherwise. */
+    private record Cached(long until, int stamp, Advice.Entry entry, double gain) {}
 
     private static final java.util.Map<ItemStack, Cached> CACHE =
             java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
@@ -40,17 +41,54 @@ final class AutoAdvice {
      * expires in one frame.
      */
     static Advice.Entry cached(ItemStack stack) {
+        return MarketSlots.apply(stack, raw(stack).entry());
+    }
+
+    /** {@link #cached} before the Trade Market's order limit: what {@link MarketSlots} ranks. */
+    static Advice.Entry uncapped(ItemStack stack) {
+        return raw(stack).entry();
+    }
+
+    /** Emeralds the stack's Trade Market verdict expects after the fee (and a reveal), NaN when unknown. */
+    static double gain(ItemStack stack) {
+        return raw(stack).gain();
+    }
+
+    private static Cached raw(ItemStack stack) {
         long now = System.currentTimeMillis();
         int stamp = Stamp.now();
         Cached c = CACHE.get(stack);
         if (c != null && now < c.until() && c.stamp() == stamp) {
-            return c.entry();
+            return c;
         }
         long t = Perf.start();                  // a miss: /perf counts them as advice.decide
+        double[] noted = GAIN.get();
+        double outer = noted[0];                // a verdict that asks for another stack's keeps its own
+        noted[0] = Double.NaN;
         Advice.Entry e = decide(stack);
+        double gain = noted[0];
+        noted[0] = outer;
         Perf.end("advice.decide", t);
-        CACHE.put(stack, new Cached(now + 30_000 + (System.identityHashCode(stack) & 4095), stamp, e));
+        c = new Cached(now + 30_000 + (System.identityHashCode(stack) & 4095), stamp, e, gain);
+        CACHE.put(stack, c);
+        return c;
+    }
+
+    /** The gain the verdict being decided on this thread noted with {@link #market}. */
+    private static final ThreadLocal<double[]> GAIN = ThreadLocal.withInitial(() -> new double[] {Double.NaN});
+
+    /**
+     * A verdict that sends the item to the Trade Market, with what it should bring in after the
+     * fee: {@link MarketSlots} ranks these when there are more of them than market orders.
+     */
+    private static Advice.Entry market(Advice.Entry e, double gain) {
+        GAIN.get()[0] = gain;
         return e;
+    }
+
+    /** {@code price} less the market fee. */
+    private static double afterFee(double price) {
+        return price * (1 - marketFee() / 100.0);
     }
 
     /** True when this stack is what you wear (armour, accessory or your weapon). */
@@ -209,8 +247,8 @@ final class AutoAdvice {
                 Prices.Price pr = GameState.current().price(info.name());
                 Double unid = pr == null ? null : pr.unidTypical() != null ? pr.unidTypical() : pr.typical();
                 if (unid != null && unid >= Rules.sub("trade", "minTradeMarketPrice", 1920)) {
-                    return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.old_sell_unidentified",
-                            itemLevel, Prices.fmt(unid), cost));
+                    return market(new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.old_sell_unidentified",
+                            itemLevel, Prices.fmt(unid), cost)), afterFee(unid));
                 }
                 return new Advice.Entry(Verdict.IDENTIFY, L.t("wynnlabs.auto.old_identify", cost));
             }
@@ -470,11 +508,18 @@ final class AutoAdvice {
             state.requestPrices(List.of(gear.data().name()));
             price = price != null && state.now() - price.seen() > 7L * 24 * 3600 * 1000 ? null : price;
         }
+        if (price != null && gear.unidentified()) {
+            Advice.Entry revealed = sellRevealed(gear, why, price);
+            if (revealed != null) {
+                return revealed;
+            }
+        }
         if (price != null) {
-            Double typical = gear.unidentified() && price.unidTypical() != null ? price.unidTypical() : price.typical();
+            Double typical = price.typical();
             if (typical != null) {
                 if (typical >= Rules.sub("trade", "minTradeMarketPrice", 1920)) {
-                    return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_market_price", why, Prices.fmt(typical)));
+                    return market(new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_market_price", why,
+                            Prices.fmt(typical))), afterFee(typical));
                 }
                 return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_blacksmith_market_price", why, Prices.fmt(typical)));
             }
@@ -500,44 +545,101 @@ final class AutoAdvice {
         return new Advice.Entry(Verdict.SELL, why + ". " + where);
     }
 
+    /**
+     * A revealed piece you will not wear (named, stats "?"): it lists on the Trade Market as it
+     * is, but buyers cannot see its rolls. Identify it first only when identified copies sell
+     * for clearly more (at least rules.trade.revealMinProfit over the fee). Null without a price.
+     */
+    private static Advice.Entry sellRevealed(ItemView gear, String why, Prices.Price price) {
+        Double unid = price.unidTypical();
+        Double identified = price.typical();
+        int cost = gear.data().tier().identificationCost(gear.data().level());
+        if (unid != null && identified != null
+                && (identified - unid) * (1 - marketFee() / 100.0) - cost >= revealMinProfit()) {
+            return new Advice.Entry(Verdict.IDENTIFY, L.t("wynnlabs.auto.unid_identify_then_sell", cost,
+                    Prices.fmt(identified), Prices.fmt(unid), why));
+        }
+        Double asIs = unid != null ? unid : identified;
+        if (asIs == null) {
+            return null;
+        }
+        if (asIs >= Rules.sub("trade", "minTradeMarketPrice", 1920)) {
+            return market(new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_market_unidentified", why,
+                    Prices.fmt(asIs))), afterFee(asIs));
+        }
+        return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_blacksmith_market_price", why, Prices.fmt(asIs)));
+    }
+
     private static Advice.Entry sellBox(ItemView.Box box, String why) {
-        String tier = box.tier().name();
         // Boss altar and similar drops cannot be traded: if nothing in the box can, only the
         // Blacksmith takes it (The Scarecrow's Vest from Bovine Barn)
+        String tier = box.tier().name();
+        boolean valuable = Rules.list("trade", "valuableTiers").contains(tier) || tier.equals("LEGENDARY");
+        BoxRoutes.Choice c = BoxRoutes.choose(outcomes(box, null), marketFee(), revealMinProfit(), valuable);
+        return boxRoute(box, c, why, 0, 0);
+    }
+
+    /** The market fee the advice takes off a sale, in % (rules.trade.marketFeePercent). */
+    static double marketFee() {
+        return Rules.sub("trade", "marketFeePercent", 5);
+    }
+
+    /** Emeralds a reveal and listing must leave over its fee (rules.trade.revealMinProfit). */
+    static double revealMinProfit() {
+        return Rules.sub("trade", "revealMinProfit", 640);
+    }
+
+    /**
+     * Everything the box can hold, with its fee, its price listed unidentified (else identified)
+     * and whether it is {@code wear}, the one you would wear. Asks for the prices it lacks.
+     */
+    private static List<BoxRoutes.Outcome> outcomes(ItemView.Box box, String wear) {
         GameState state = GameState.current();
-        boolean anyTradable = false;
-        boolean any = false;
-        for (ItemData info : state.possibleGears(box)) {
-            any = true;
-            anyTradable |= Shopping.tradable(info);
-        }
-        if (any && !anyTradable) {
-            return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_untradable", why));
-        }
-        // What the outcomes fetch on the Trade Market: identifying costs a few emeralds, so a
-        // box whose best outcome sells well is worth identifying and selling, not scrapping
-        String bestName = null;
-        double bestPrice = 0;
-        java.util.List<String> names = new java.util.ArrayList<>();
+        List<String> names = new ArrayList<>();
+        List<BoxRoutes.Outcome> out = new ArrayList<>();
         for (ItemData info : state.possibleGears(box)) {
             names.add(info.name());
             Prices.Price p = state.price(info.name());
-            Double v = p == null ? null : p.typical();
-            if (v != null && Shopping.tradable(info) && v > bestPrice) {
-                bestPrice = v;
-                bestName = info.name();
-            }
+            Double v = p == null ? null : p.unidTypical() != null ? p.unidTypical() : p.typical();
+            out.add(new BoxRoutes.Outcome(info.name(), box.tier().identificationCost(info.level()), v,
+                    Shopping.tradable(info), info.name().equals(wear)));
         }
-        state.requestPrices(names);
-        if (bestName != null && bestPrice >= Rules.sub("trade", "minTradeMarketPrice", 1920)) {
-            int cost = box.tier().identificationCost(box.high());
-            // SELL with the way to sell it: identify first, the Trade Market pays for the outcome
-            return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.box_identify_then_sell", why, cost,
-                    bestName, Prices.fmt(bestPrice)));
+        if (!names.isEmpty()) {
+            state.requestPrices(names);
         }
-        boolean valuable = Rules.list("trade", "valuableTiers").contains(tier) || tier.equals("LEGENDARY");
-        return new Advice.Entry(Verdict.SELL, why + ". " + (valuable
-                ? L.t("wynnlabs.auto.sell_unidentified_market") : L.t("wynnlabs.auto.sell_blacksmith")));
+        return out;
+    }
+
+    /** The verdict and note for the way {@link BoxRoutes} picked: the way first, then why. */
+    private static Advice.Entry boxRoute(ItemView.Box box, BoxRoutes.Choice c, String why, int fits, int all) {
+        BoxRoutes.Value v = c.value();
+        String cost = v.outcomes() == 0 ? box.tier().identificationCost(box.high()) + " E" : BoxRoutes.cost(v);
+        String tail = why == null || why.isEmpty() ? "" : ". " + why;
+        return switch (c.route()) {
+            case IDENTIFIER -> new Advice.Entry(Verdict.IDENTIFY,
+                    L.t("wynnlabs.auto.box_identify_wear", cost, c.wearable(), fits, all));
+            case UNTRADABLE -> new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_untradable", why));
+            case REVEAL_MARKET -> market(new Advice.Entry(Verdict.SELL, v.expected() == null
+                    ? L.t("wynnlabs.auto.box_reveal_no_price", cost) + tail
+                    : L.t("wynnlabs.auto.box_reveal_market", cost, Prices.fmt(v.expected())) + unpriced(v) + tail),
+                    v.net() == null ? Double.NaN : v.net());
+            case BLACKSMITH -> new Advice.Entry(Verdict.SELL, v.expected() == null
+                    ? L.t("wynnlabs.auto.box_blacksmith_no_price") + tail
+                    : v.net() < 0
+                    ? L.t("wynnlabs.auto.box_blacksmith_fee", Prices.fmt(v.expected()), cost) + unpriced(v) + tail
+                    : L.t("wynnlabs.auto.box_blacksmith_small", Prices.fmt(v.net()), Prices.fmt(revealMinProfit()))
+                            + unpriced(v) + tail);
+        };
+    }
+
+    /** " (Tarnkappe: no price)" or " (3/5 have a price)" when some outcomes have none; else "". */
+    private static String unpriced(BoxRoutes.Value v) {
+        List<String> missing = v.unpriced();
+        if (missing.isEmpty()) {
+            return "";
+        }
+        return " " + (missing.size() == 1 ? L.t("wynnlabs.auto.box_unpriced_one", missing.get(0))
+                : L.t("wynnlabs.auto.box_unpriced_some", v.outcomes() - missing.size(), v.outcomes()));
     }
 
     /**
@@ -784,9 +886,9 @@ final class AutoAdvice {
         Double each = p == null ? null : p.typical();
         double min = Rules.sub("trade", "minTradeMarketPrice", 1920);
         if (each != null && each * stack.count() >= min) {
-            return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.craft_sell", Prices.fmt(each * stack.count()),
+            return market(new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.craft_sell", Prices.fmt(each * stack.count()),
                     stack.count() > 1 ? L.t("wynnlabs.auto.craft_sell_all") : "",
-                    usable.isEmpty() ? "" : L.t("wynnlabs.auto.craft_or_use", usable.get(0))));
+                    usable.isEmpty() ? "" : L.t("wynnlabs.auto.craft_or_use", usable.get(0)))), afterFee(each * stack.count()));
         }
         if (!usable.isEmpty()) {
             return new Advice.Entry(Verdict.KEEP, L.t("wynnlabs.auto.craft_usable", String.join(", ", usable)));
@@ -826,8 +928,8 @@ final class AutoAdvice {
         }
         Prices.Price p = GameState.current().price(stack.name());
         if (p != null && p.typical() != null && p.typical() * stack.count() >= Rules.sub("trade", "minTradeMarketPrice", 1920)) {
-            return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.dungeon_outlevelled_sell",
-                    Prices.fmt(p.typical() * stack.count())));
+            return market(new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.dungeon_outlevelled_sell",
+                    Prices.fmt(p.typical() * stack.count()))), afterFee(p.typical() * stack.count()));
         }
         return new Advice.Entry(Verdict.KEEP, L.t("wynnlabs.auto.dungeon_outlevelled_low", what, lv));
     }
@@ -898,6 +1000,7 @@ final class AutoAdvice {
         // the build model: does any outcome you could wear raise the build at its level? A box
         // whose outcomes all leave the build where it is gets sold, not identified
         Build.Plan plan = Build.plan();
+        String wearName = null;
         if (all > 0 && plan != null && plan.result() != null && plan.result().objective() > 0) {
             double bestGain = Double.NEGATIVE_INFINITY;
             String bestName = null;
@@ -916,6 +1019,7 @@ final class AutoAdvice {
                 return sellBox(box, L.t("wynnlabs.auto.box_no_build_gain", bestName,
                         (bestGain >= 0 ? "+" : "") + Math.round(bestGain * 10) / 10.0));
             }
+            wearName = bestName;
         }
         // too far ahead to identify now: kept for later only when an outcome will help (above)
         if (low > level + tooHigh) {
@@ -934,10 +1038,28 @@ final class AutoAdvice {
                 return sellBox(box, L.t("wynnlabs.auto.box_worn_better", wb.name()));
             }
         }
-        int cost = box.tier().identificationCost(high);
-        return new Advice.Entry(Verdict.IDENTIFY, all > 0
-                ? L.t("wynnlabs.auto.box_identify_odds", fits, all, cost)
-                : L.t("wynnlabs.auto.box_identify", cost));
+        if (all == 0) {
+            return new Advice.Entry(Verdict.IDENTIFY, L.t("wynnlabs.auto.box_identify", box.tier().identificationCost(high)));
+        }
+        // the one you would wear: the build's best pick, else the best-scoring outcome for you
+        String wear = wearName;
+        if (wear == null) {
+            double best = Double.NEGATIVE_INFINITY;
+            for (ItemData info : GameState.current().possibleGears(box)) {
+                Klass c = info.requirements().klass().orElse(info.slot().klass());
+                if ((c == null || c == Klass.NONE || c == cls) && info.level() <= level + tooHigh && score(info) > best) {
+                    best = score(info);
+                    wear = info.name();
+                }
+            }
+        }
+        if (wear == null) {
+            return new Advice.Entry(Verdict.IDENTIFY, L.t("wynnlabs.auto.box_identify", box.tier().identificationCost(high)));
+        }
+        String tier = box.tier().name();
+        boolean valuable = Rules.list("trade", "valuableTiers").contains(tier) || tier.equals("LEGENDARY");
+        return boxRoute(box, BoxRoutes.choose(outcomes(box, wear), marketFee(), revealMinProfit(), valuable),
+                null, fits, all);
     }
 
     /**

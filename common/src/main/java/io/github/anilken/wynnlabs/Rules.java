@@ -72,7 +72,7 @@ final class Rules {
                 "incomingElements": {"neutral": 0.5, "earth": 0.1, "thunder": 0.1, "water": 0.1, "fire": 0.1, "air": 0.1}
               },
               "grind": {"levelsBelow": 3, "levelsAbove": 3},
-              "trade": {"valuableTiers": ["MYTHIC", "FABLED"], "junkTiers": ["NORMAL"], "minTradeMarketPrice": 1920, "legendaryMinPercent": 80, "anyMinPercent": 95},
+              "trade": {"valuableTiers": ["MYTHIC", "FABLED"], "junkTiers": ["NORMAL"], "minTradeMarketPrice": 1920, "legendaryMinPercent": 80, "anyMinPercent": 95, "revealMinProfit": 640, "marketFeePercent": 5, "marketSlots": 0},
               "names": {},
               "kinds": {}
             }

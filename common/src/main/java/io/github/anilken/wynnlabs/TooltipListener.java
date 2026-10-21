@@ -259,7 +259,8 @@ public final class TooltipListener {
         // colour behind a small icon bottom-left (cart / anvil)
         String where = null;
         if (e.verdict() == Verdict.SELL && e.note() != null) {
-            where = e.note().contains("Blacksmith") ? "hammer" : e.note().contains("Trade Market") ? "shopping-cart" : null;
+            String place = Advice.sellPlace(e);
+            where = "Blacksmith".equals(place) ? "hammer" : "Trade Market".equals(place) ? "shopping-cart" : null;
         }
         int colour = 0xFF000000 | ("shopping-cart".equals(where) ? 0xFFC23A : e.verdict().rgb());
         int tw = font.width(word);
