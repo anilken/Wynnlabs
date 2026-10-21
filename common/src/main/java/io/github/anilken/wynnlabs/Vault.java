@@ -668,16 +668,30 @@ final class Vault {
         if (n.length() < 4) {
             return List.of();
         }
-        return QuestBook.all().stream()
+        // the bank tab asks for every slot on every frame: the answers live a second
+        long now = System.currentTimeMillis();
+        if (now - questsAt > 1000) {
+            QUESTS_FOR.clear();
+            questsAt = now;
+        }
+        return QUESTS_FOR.computeIfAbsent(n, k -> QuestBook.all().stream()
                 .filter(q -> !"COMPLETED".equals(q.status()) && q.task() != null
-                        && q.task().toLowerCase(Locale.ROOT).contains(n))
-                .map(QuestBook.Entry::name).toList();
+                        && q.task().toLowerCase(Locale.ROOT).contains(k))
+                .map(QuestBook.Entry::name).toList());
     }
+
+    private static final Map<String, List<String>> QUESTS_FOR = new java.util.concurrent.ConcurrentHashMap<>();
+    private static volatile long questsAt;
 
     // ---- clean-up ----
 
     /** What the bank holds that the rules say to sell, Trade Market ones first. */
     static List<Group> junk() {
+        long now = System.currentTimeMillis();
+        List<Group> last = junk;
+        if (last != null && junkVersion == version && now - junkAt < 1000) {
+            return last;                                // asked on every frame by the bank tab
+        }
         List<Group> out = new ArrayList<>();
         for (Group g : groups()) {
             if (g.reachable() && g.sell() != null && questsFor(g).isEmpty()) {
@@ -685,8 +699,16 @@ final class Vault {
             }
         }
         out.sort((a, b) -> Boolean.compare("Trade Market".equals(place(b)), "Trade Market".equals(place(a))));
+        out = List.copyOf(out);
+        junk = out;
+        junkVersion = version;
+        junkAt = now;
         return out;
     }
+
+    private static volatile List<Group> junk;
+    private static volatile int junkVersion;
+    private static volatile long junkAt;
 
     /**
      * "Trade Market" / "Blacksmith" for a sell group, from the stored verdict; the Blacksmith
