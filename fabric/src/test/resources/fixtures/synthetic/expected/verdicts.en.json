@@ -51,7 +51,7 @@
     "where": "bag 15",
     "name": "Unidentified Relik",
     "verdict": "IDENTIFY",
-    "note": "4/4 outcomes suit you, costs at most 14 emeralds"
+    "note": "Identify it at the Item Identifier (~13-14 E): you could wear Remembrance · 4/4 outcomes suit you"
   },
   {
     "where": "bag 16",
@@ -135,7 +135,7 @@
     "where": "bank acct:Account Bank p. 1#1",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: the Trade Market would leave ~5 EB, under your 10 EB minimum (2/4 have a price). None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 2#4",

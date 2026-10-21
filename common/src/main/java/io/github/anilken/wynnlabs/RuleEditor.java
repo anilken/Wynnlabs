@@ -44,7 +44,10 @@ final class RuleEditor {
             num("wynnlabs.rules.grind_above", "wynnlabs.rules.grind_above_desc", "grind", "levelsAbove", 3, 0, 10, 1, "lv"),
             flag("wynnlabs.rules.no_mythic", "wynnlabs.rules.no_mythic_desc", "excludeTiers", "MYTHIC"),
             flag("wynnlabs.rules.no_event", "wynnlabs.rules.no_event_desc", "excludeSources", "EVENT"),
-            flag("wynnlabs.rules.no_raid", "wynnlabs.rules.no_raid_desc", "excludeSources", "RAID"));
+            flag("wynnlabs.rules.no_raid", "wynnlabs.rules.no_raid_desc", "excludeSources", "RAID"),
+            new Rule("wynnlabs.rules.reveal_profit", "wynnlabs.rules.reveal_profit_desc", "trade", "revealMinProfit", 640,
+                    0, 0, 0, new double[] {0, 64, 128, 320, 640, 1280, 1920, 4096}, "E", null),
+            num("wynnlabs.rules.market_fee", "wynnlabs.rules.market_fee_desc", "trade", "marketFeePercent", 5, 0, 20, 1, "%"));
 
     private RuleEditor() {}
 
@@ -87,7 +90,7 @@ final class RuleEditor {
     static final List<Section> SECTIONS = List.of(
             new Section("wynnlabs.rules.sec_sell", new int[] {0, 1}),
             new Section("wynnlabs.rules.sec_shopping", new int[] {2, 3, 4, 5, 13, 14, 15}),
-            new Section("wynnlabs.rules.sec_trade", new int[] {6, 7, 8, 9}),
+            new Section("wynnlabs.rules.sec_trade", new int[] {6, 16, 17, 7, 8, 9}),
             new Section("wynnlabs.rules.sec_quests", new int[] {10, 11, 12}));
 
     /** "8 lv", "%10", "1.9 LE", "on". */

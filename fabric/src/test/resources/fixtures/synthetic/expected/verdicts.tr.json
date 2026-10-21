@@ -51,7 +51,7 @@
     "where": "bag 15",
     "name": "Unidentified Relik",
     "verdict": "IDENTIFY",
-    "note": "4/4 olasılık sana uygun, en çok 14 zümrüt"
+    "note": "Item Identifier'da tanımla (~13-14 E): Remembrance giyebilirsin · 4/4 olasılık sana uygun"
   },
   {
     "where": "bag 16",
@@ -135,7 +135,7 @@
     "where": "bank acct:Account Bank p. 1#1",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: Trade Market'te ~5 EB kalır, sınırın (10 EB) altında (2/4 olasılığın fiyatı var). Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 2#4",
