@@ -4840,28 +4840,72 @@ final class RoadmapScreen extends Screen {
             return rows;
         }
         if (cat.equals("build")) {
+            rows.add(new SetRow("head", "wynnlabs.settings.sec_build_goal", -1));
             rows.add(new SetRow("advice", "advice_here", -1));
             rows.add(new SetRow("arch", "archetype", -1));
             rows.add(new SetRow("goal", "goal", -1));
         }
-        for (String k : Settings.LABELS.keySet()) {
-            if (cat.equals(Settings.category(k))) {
-                rows.add(new SetRow("switch", k, -1));
-                for (var st : Settings.STEP_PARENT.entrySet()) {
-                    if (st.getValue().equals(k)) {
-                        rows.add(new SetRow("step", st.getKey(), -1));  // a number right under its switch
-                    }
-                }
-                if (k.equals("priceApi")) {
-                    rows.add(new SetRow("key", "key", -1));     // the key belongs right under live prices
+        java.util.Set<String> done = new java.util.HashSet<>();
+        for (String[] sec : SETTING_SECTIONS.getOrDefault(cat, List.of())) {
+            rows.add(new SetRow("head", sec[0], -1));
+            for (int j = 1; j < sec.length; j++) {
+                if (sec[j].equals("menu_scale")) {
+                    rows.add(new SetRow("scale", "menu_scale", -1));
+                } else if (Settings.LABELS.containsKey(sec[j]) && cat.equals(Settings.category(sec[j]))) {
+                    addSwitch(rows, sec[j]);
+                    done.add(sec[j]);
                 }
             }
         }
-        if (cat.equals("look")) {
-            rows.add(new SetRow("scale", "menu_scale", -1));
+        for (String k : Settings.LABELS.keySet()) {
+            if (cat.equals(Settings.category(k)) && !done.contains(k)) {
+                addSwitch(rows, k);                     // one no section names yet: at the end
+            }
         }
         return rows;
     }
+
+    /** A switch, its number right under it, and the key right under live prices. */
+    private static void addSwitch(List<SetRow> rows, String k) {
+        rows.add(new SetRow("switch", k, -1));
+        for (var st : Settings.STEP_PARENT.entrySet()) {
+            if (st.getValue().equals(k)) {
+                rows.add(new SetRow("step", st.getKey(), -1));
+            }
+        }
+        if (k.equals("priceApi")) {
+            rows.add(new SetRow("key", "key", -1));
+        }
+    }
+
+    /**
+     * Each page's settings under section titles, as the Rules page has them: the title's key, then
+     * the settings in order ("menu_scale" is the menu size row). A key a build does not have is
+     * skipped; a setting no section names comes at the end.
+     */
+    private static final Map<String, List<String[]>> SETTING_SECTIONS = Map.of(
+            "look", List.<String[]>of(
+                    new String[] {"wynnlabs.settings.sec_text", "webFont", "menu_scale"}),
+            "tips", List.of(
+                    new String[] {"wynnlabs.settings.sec_advice", "itemAdvice", "altAdvice", "wornHint"},
+                    new String[] {"wynnlabs.settings.sec_tooltip", "powderHint", "tooltipPrice", "boxPrices", "bankHint"}),
+            "glow", List.of(
+                    new String[] {"wynnlabs.settings.sec_bag", "glowUpgrade", "glowShop", "sellGlow", "verdictBadges",
+                            "hotbarBadges"},
+                    new String[] {"wynnlabs.settings.sec_ground", "groundGlow", "groundBeam", "groundGlowShop",
+                            "groundGlowNormal"},
+                    new String[] {"wynnlabs.settings.sec_menus", "glowTree"}),
+            "coach", List.of(
+                    new String[] {"wynnlabs.settings.sec_chat", "chatUpgrade", "chatSkills", "chatLevelUp"},
+                    new String[] {"wynnlabs.settings.sec_warnings", "dangerWarn", "survivalWarn", "coachToasts"},
+                    new String[] {"wynnlabs.settings.sec_screen", "dpsHud", "sellSummary"}),
+            "quests", List.<String[]>of(
+                    new String[] {"wynnlabs.settings.sec_quests", "glowQuest", "miniQuests"}),
+            "build", List.<String[]>of(
+                    new String[] {"wynnlabs.settings.sec_tree", "menuAdvice", "autoTree", "learning", "manaMeter"}),
+            "data", List.of(
+                    new String[] {"wynnlabs.settings.sec_online", "priceApi", "questGuides", "updateCheck"},
+                    new String[] {"wynnlabs.settings.sec_dev", "debug"}));
 
     private static boolean isToggle(SetRow r) {
         return r.kind().equals("switch") || r.kind().equals("advice") || r.kind().equals("rule") && r.r().isSwitch();
