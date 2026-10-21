@@ -109,6 +109,16 @@ class QuestGuideTest {
         QuestWiki.Place door = places.stream().filter(p -> p.at()[0] == -1079 && p.at()[2] == -5600).findFirst().orElseThrow();
         assertEquals(6, door.stage());
         assertEquals("Merdivenden çık ve büyük kapıya gir.", QuestWiki.placeText("Merdivenden çık ve [-1079, 85, -5600] noktasındaki büyük kapıya gir."));
+        // only a verb after "noktasında": the place starts the sentence
+        assertEquals("Erisk, mağaranın sonunda", QuestWiki.placeText(
+                "Erisk, mağaranın sonunda [-778, 7, -436] noktasında bulunur.", new int[] {-778, 7, -436}));
+        assertEquals("Fountain of Youth'un girişi", QuestWiki.placeText(
+                "Fountain of Youth'un girişi, Isfurus'un yanındaki suyun içinde -793, 34, -373 noktasında bulunabilir.",
+                new int[] {-793, 34, -373}));
+        assertEquals("büyük kapıya gir.", QuestWiki.placeText(
+                "Merdivenden çık ve [-1079, 85, -5600] noktasındaki büyük kapıya gir.", new int[] {-1079, 85, -5600}));
+        assertEquals("Yusanu ve Sui ile konuş.", QuestWiki.placeText(
+                "[120, 60, -900] noktasında Yusanu ve Sui ile konuş.", new int[] {120, 60, -900}), "more than a verb: the words after");
         assertFalse(door.what().contains("-5600"), "a label without its coordinates: " + door.what());
         for (int i = 0; i < places.size(); i++) {
             for (int j = i + 1; j < places.size(); j++) {
