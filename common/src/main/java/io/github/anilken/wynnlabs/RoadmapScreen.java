@@ -4212,8 +4212,8 @@ final class RoadmapScreen extends Screen {
                     int hintRows = layout.large() ? 10 : 4;
                     int used = 0;
                     hints:
-                    for (String h : st.hints()) {
-                        for (FormattedCharSequence line : font.split(Component.literal(QuestWiki.shown(h)), iw - 14)) {
+                    for (String hint : st.hints()) {
+                        for (FormattedCharSequence line : font.split(Component.literal(QuestWiki.shown(hint)), iw - 14)) {
                             if (used >= hintRows || iy + 10 > bottom) {
                                 break hints;
                             }
