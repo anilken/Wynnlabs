@@ -27,6 +27,8 @@ wynnlabs.auto.next_upgrade              after "Old (Lv. 20): " in a note
 wynnlabs.auto.next_upgrade_none         after "Old (Lv. 20): " in a note
 wynnlabs.auto.then_wear_empty           "…, then wear it" at the end of a note
 wynnlabs.auto.then_wear_instead         "…, then wear it instead of …" at the end of a note
+wynnlabs.rules.market_slots_no_rank    the rank inside "Auto (…: 5)"
+wynnlabs.rules.market_slots_unknown    the rank inside "Auto (…: 5)"
 wynnlabs.around.problem_points          after "These cannot be equipped together: "
 wynnlabs.around.problem_skill           after "These cannot be equipped together: "
 wynnlabs.aspect.planned                 inside "( )" after an ability's name

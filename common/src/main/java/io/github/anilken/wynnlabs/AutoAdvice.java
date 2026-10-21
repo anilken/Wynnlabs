@@ -28,7 +28,8 @@ final class AutoAdvice {
 
     private AutoAdvice() {}
 
-    private record Cached(long until, int stamp, Advice.Entry entry) {}
+    /** {@code gain}: what a Trade Market verdict expects to bring in ({@link #market}), NaN otherwise. */
+    private record Cached(long until, int stamp, Advice.Entry entry, double gain) {}
 
     private static final java.util.Map<ItemStack, Cached> CACHE =
             java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
@@ -40,17 +41,54 @@ final class AutoAdvice {
      * expires in one frame.
      */
     static Advice.Entry cached(ItemStack stack) {
+        return MarketSlots.apply(stack, raw(stack).entry());
+    }
+
+    /** {@link #cached} before the Trade Market's order limit: what {@link MarketSlots} ranks. */
+    static Advice.Entry uncapped(ItemStack stack) {
+        return raw(stack).entry();
+    }
+
+    /** Emeralds the stack's Trade Market verdict expects after the fee (and a reveal), NaN when unknown. */
+    static double gain(ItemStack stack) {
+        return raw(stack).gain();
+    }
+
+    private static Cached raw(ItemStack stack) {
         long now = System.currentTimeMillis();
         int stamp = Stamp.now();
         Cached c = CACHE.get(stack);
         if (c != null && now < c.until() && c.stamp() == stamp) {
-            return c.entry();
+            return c;
         }
         long t = Perf.start();                  // a miss: /perf counts them as advice.decide
+        double[] noted = GAIN.get();
+        double outer = noted[0];                // a verdict that asks for another stack's keeps its own
+        noted[0] = Double.NaN;
         Advice.Entry e = decide(stack);
+        double gain = noted[0];
+        noted[0] = outer;
         Perf.end("advice.decide", t);
-        CACHE.put(stack, new Cached(now + 30_000 + (System.identityHashCode(stack) & 4095), stamp, e));
+        c = new Cached(now + 30_000 + (System.identityHashCode(stack) & 4095), stamp, e, gain);
+        CACHE.put(stack, c);
+        return c;
+    }
+
+    /** The gain the verdict being decided on this thread noted with {@link #market}. */
+    private static final ThreadLocal<double[]> GAIN = ThreadLocal.withInitial(() -> new double[] {Double.NaN});
+
+    /**
+     * A verdict that sends the item to the Trade Market, with what it should bring in after the
+     * fee: {@link MarketSlots} ranks these when there are more of them than market orders.
+     */
+    private static Advice.Entry market(Advice.Entry e, double gain) {
+        GAIN.get()[0] = gain;
         return e;
+    }
+
+    /** {@code price} less the market fee. */
+    private static double afterFee(double price) {
+        return price * (1 - marketFee() / 100.0);
     }
 
     /** True when this stack is what you wear (armour, accessory or your weapon). */
@@ -209,8 +247,8 @@ final class AutoAdvice {
                 Prices.Price pr = GameState.current().price(info.name());
                 Double unid = pr == null ? null : pr.unidTypical() != null ? pr.unidTypical() : pr.typical();
                 if (unid != null && unid >= Rules.sub("trade", "minTradeMarketPrice", 1920)) {
-                    return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.old_sell_unidentified",
-                            itemLevel, Prices.fmt(unid), cost));
+                    return market(new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.old_sell_unidentified",
+                            itemLevel, Prices.fmt(unid), cost)), afterFee(unid));
                 }
                 return new Advice.Entry(Verdict.IDENTIFY, L.t("wynnlabs.auto.old_identify", cost));
             }
@@ -480,7 +518,8 @@ final class AutoAdvice {
             Double typical = price.typical();
             if (typical != null) {
                 if (typical >= Rules.sub("trade", "minTradeMarketPrice", 1920)) {
-                    return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_market_price", why, Prices.fmt(typical)));
+                    return market(new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_market_price", why,
+                            Prices.fmt(typical))), afterFee(typical));
                 }
                 return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_blacksmith_market_price", why, Prices.fmt(typical)));
             }
@@ -525,7 +564,8 @@ final class AutoAdvice {
             return null;
         }
         if (asIs >= Rules.sub("trade", "minTradeMarketPrice", 1920)) {
-            return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_market_unidentified", why, Prices.fmt(asIs)));
+            return market(new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_market_unidentified", why,
+                    Prices.fmt(asIs))), afterFee(asIs));
         }
         return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_blacksmith_market_price", why, Prices.fmt(asIs)));
     }
@@ -579,9 +619,10 @@ final class AutoAdvice {
             case IDENTIFIER -> new Advice.Entry(Verdict.IDENTIFY,
                     L.t("wynnlabs.auto.box_identify_wear", cost, c.wearable(), fits, all));
             case UNTRADABLE -> new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_untradable", why));
-            case REVEAL_MARKET -> new Advice.Entry(Verdict.SELL, v.expected() == null
+            case REVEAL_MARKET -> market(new Advice.Entry(Verdict.SELL, v.expected() == null
                     ? L.t("wynnlabs.auto.box_reveal_no_price", cost) + tail
-                    : L.t("wynnlabs.auto.box_reveal_market", cost, Prices.fmt(v.expected())) + unpriced(v) + tail);
+                    : L.t("wynnlabs.auto.box_reveal_market", cost, Prices.fmt(v.expected())) + unpriced(v) + tail),
+                    v.net() == null ? Double.NaN : v.net());
             case BLACKSMITH -> new Advice.Entry(Verdict.SELL, v.expected() == null
                     ? L.t("wynnlabs.auto.box_blacksmith_no_price") + tail
                     : v.net() < 0
@@ -845,9 +886,9 @@ final class AutoAdvice {
         Double each = p == null ? null : p.typical();
         double min = Rules.sub("trade", "minTradeMarketPrice", 1920);
         if (each != null && each * stack.count() >= min) {
-            return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.craft_sell", Prices.fmt(each * stack.count()),
+            return market(new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.craft_sell", Prices.fmt(each * stack.count()),
                     stack.count() > 1 ? L.t("wynnlabs.auto.craft_sell_all") : "",
-                    usable.isEmpty() ? "" : L.t("wynnlabs.auto.craft_or_use", usable.get(0))));
+                    usable.isEmpty() ? "" : L.t("wynnlabs.auto.craft_or_use", usable.get(0)))), afterFee(each * stack.count()));
         }
         if (!usable.isEmpty()) {
             return new Advice.Entry(Verdict.KEEP, L.t("wynnlabs.auto.craft_usable", String.join(", ", usable)));
@@ -887,8 +928,8 @@ final class AutoAdvice {
         }
         Prices.Price p = GameState.current().price(stack.name());
         if (p != null && p.typical() != null && p.typical() * stack.count() >= Rules.sub("trade", "minTradeMarketPrice", 1920)) {
-            return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.dungeon_outlevelled_sell",
-                    Prices.fmt(p.typical() * stack.count())));
+            return market(new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.dungeon_outlevelled_sell",
+                    Prices.fmt(p.typical() * stack.count()))), afterFee(p.typical() * stack.count()));
         }
         return new Advice.Entry(Verdict.KEEP, L.t("wynnlabs.auto.dungeon_outlevelled_low", what, lv));
     }

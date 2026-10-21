@@ -4980,6 +4980,7 @@ final class RoadmapScreen extends Screen {
                 case "ahead", "grind_above" -> new Object[] {lv + v};
                 case "min_gain" -> new Object[] {RuleEditor.format(rule, v), RuleEditor.format(rule, Math.max(0, v - 1))};
                 case "reroll" -> new Object[] {RuleEditor.format(rule, Math.max(0, v - 1)), RuleEditor.format(rule, v)};
+                case "market_slots" -> new Object[] {MarketSlots.slots()};
                 default -> new Object[] {RuleEditor.format(rule, v)};
             };
         }

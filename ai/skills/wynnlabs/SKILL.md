@@ -72,6 +72,8 @@ and explain or disagree when you have a reason.
    Identifier (stats stay "?") and then it can be listed; the Item Identifier shows the rolls, for
    a box with something the player would wear. A revealed piece sells as it is, but buyers cannot
    see its rolls.
+   The Trade Market has only so many order slots (by rank, or rule `trade.marketSlots`): the items
+   that bring in the most get them, the rest go to the Blacksmith. Do not send more there than that.
 5. Quests: `/quests` gives status and requirements. Prefer quests the player out-levels a little.
 6. Secret discoveries: `/discoveries` lists them with `done`, `minLevel`, `distance` and whether each
    requirement is met (`null` when the mod cannot tell). Suggest near ones within the player's level
