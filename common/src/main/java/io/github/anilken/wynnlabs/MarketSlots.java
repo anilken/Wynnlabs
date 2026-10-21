@@ -122,8 +122,8 @@ final class MarketSlots {
 
     /**
      * The verdicts the limit changed: bag stacks by identity, kept bank stacks by {@link Vault#id},
-     * and by {@link ItemJson#keyOf} when every bag copy of an item was left out (for a stack moved
-     * into a shop's slots, which is a new stack there).
+     * and by {@link ItemJson#keyOf} when every copy of an item was left out (for a stack moved
+     * into a shop's slots, or one on a bank page turned to and not read yet: new stacks there).
      */
     private record Ranking(long key, long built, Map<ItemStack, Advice.Entry> bag, Map<String, Advice.Entry> bank,
             Map<String, Advice.Entry> byKey) {}
@@ -147,10 +147,12 @@ final class MarketSlots {
         Advice.Entry cut = r.bag().get(stack);
         if (cut == null) {
             String id = Vault.idOf(stack);              // a stack in the bank page open now
-            cut = id == null ? null : r.bank().get(id);
-        }
-        if (cut == null && shopOpen()) {
-            cut = r.byKey().get(ItemJson.keyOf(stack));
+            if (id != null) {
+                cut = r.bank().get(id);
+            } else if (shopOpen() || Vault.bankOpen()) {
+                // a page just turned to (not read yet) or a stack moved into a shop: by what it is
+                cut = r.byKey().get(ItemJson.keyOf(stack));
+            }
         }
         return cut != null ? cut : e;
     }
@@ -231,10 +233,14 @@ final class MarketSlots {
             all.add(new Candidate(s, Double.isNaN(gain) ? priced(ItemJson.clean(s.getHoverName().getString())) : gain,
                     copies(kind, s.getCount())));
         }
+        Map<String, String> keys = new HashMap<>();     // bank id → what the item is, as for a stack
         for (Vault.Group g : Vault.groups()) {
             for (Vault.Stored s : g.places()) {
                 if (Vault.reachable(s.page()) && toMarket(new Advice.Entry(s.verdict(), s.note()))) {
                     all.add(new Candidate(Vault.id(s), bankGain(s), copies(s.kind(), s.count())));
+                    if (s.item() != null) {
+                        keys.put(Vault.id(s), ItemJson.keyOf(Vault.stackOf(s)));
+                    }
                 }
             }
         }
@@ -247,7 +253,7 @@ final class MarketSlots {
             Map<Object, Seat> seats = rank(all, slots);
             for (Candidate c : all) {
                 Seat seat = seats.get(c.id());
-                String k = c.id() instanceof ItemStack st ? ItemJson.keyOf(st) : null;
+                String k = c.id() instanceof ItemStack st ? ItemJson.keyOf(st) : keys.get(c.id());
                 if (seat.fits()) {
                     if (k != null) {
                         seated.add(k);
@@ -262,6 +268,9 @@ final class MarketSlots {
                     }
                 } else {
                     bank.put((String) c.id(), cut);
+                    if (k != null) {
+                        byKey.putIfAbsent(k, cut);
+                    }
                 }
             }
         }
