@@ -198,7 +198,10 @@ final class Vault {
         String kind = parsed.map(AutoAdvice::kindOf).orElse("unknown");
         String prof = parsed.isPresent() && parsed.get().professions() != null
                 ? String.join(",", parsed.get().professions()) : "";
-        Advice.Entry e = AutoAdvice.cached(stack);
+        // kept before the Trade Market's order limit: MarketSlots ranks what is kept, and a
+        // verdict cut by the limit would never count again
+        Advice.Entry e = AutoAdvice.uncapped(stack);
+        READ_AT.put(stack, key + "#" + slot);
         // a box: its type, tier and levels, to tell boxes apart and list what can come out
         ItemView.Box b = parsed.isPresent() && parsed.get().isBox() ? parsed.get().box() : null;
         String box = b != null
@@ -207,6 +210,20 @@ final class Vault {
         return new Stored(name, level, key, now, stack.getCount(), gear, kind,
                 e == null ? null : e.verdict().name(), e == null ? null : e.note(), e == null || e.note() == null ? null : L.code(),
                 by, prof, slot, encode(stack), box);
+    }
+
+    /** The open page's stacks by identity: which kept stack ({@link #id}) each one is. */
+    private static final java.util.Map<ItemStack, String> READ_AT =
+            java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
+
+    /** A kept stack's place, "page key#slot", the same for the stack while its page is open. */
+    static String id(Stored s) {
+        return s.page() + "#" + s.slot();
+    }
+
+    /** {@link #id} of a stack in the bank page open now (read once its items arrived), else null. */
+    static String idOf(ItemStack stack) {
+        return READ_AT.get(stack);
     }
 
     /** Each stack's JSON, by identity: a page stays open for many reads, its stacks do not change. */
@@ -484,7 +501,7 @@ final class Vault {
     }
 
     /** True for the account bank and this character's own bank: the ones you can open now. */
-    private static boolean reachable(String key) {
+    static boolean reachable(String key) {
         return key.startsWith("acct:") || key.startsWith("char:" + Profile.id() + ":");
     }
 
@@ -671,10 +688,16 @@ final class Vault {
         return out;
     }
 
-    /** "Trade Market" / "Blacksmith" for a sell group, from the stored verdict. */
+    /**
+     * "Trade Market" / "Blacksmith" for a sell group, from the stored verdict; the Blacksmith
+     * when the Trade Market has no order left for it ({@link MarketSlots}).
+     */
     static String place(Group g) {
         Stored s = g.sell();
-        return s == null ? null : Advice.sellPlace(new Advice.Entry(s.verdict(), s.note()));
+        if (s == null) {
+            return null;
+        }
+        return MarketSlots.cutNote(id(s)) != null ? "Blacksmith" : Advice.sellPlace(new Advice.Entry(s.verdict(), s.note()));
     }
 
     /**
@@ -688,13 +711,17 @@ final class Vault {
         if (s.note() == null) {
             return null;
         }
+        String cut = MarketSlots.cutNote(id(s));         // no room on the Trade Market for it
+        if (cut != null) {
+            return cut;
+        }
         if (L.code().equals(s.noteLang())) {
             return s.note();
         }
         try {
             GameState state = GameState.current();
             if (s.item() != null && s.by() != null && state.inGame() && s.by().equals(state.classType().name())) {
-                Advice.Entry e = AutoAdvice.cached(stackOf(s));
+                Advice.Entry e = AutoAdvice.uncapped(stackOf(s));
                 if (e != null && e.verdict().name().equals(s.verdict())) {
                     return e.note();
                 }

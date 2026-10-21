@@ -501,12 +501,16 @@ final class Advice {
     /**
      * "Trade Market" or "Blacksmith" for a sell verdict, from its note; null otherwise. These two
      * are game names and the same in every language, so callers may compare them. For an IDENTIFY
-     * verdict that sells on the Trade Market afterwards it returns display text ("sonra Trade
-     * Market" / "then Trade Market"), which no caller compares.
+     * verdict it returns "Item Identifier" when the note names it (where to identify), else for
+     * one that sells on the Trade Market afterwards display text ("sonra Trade Market" / "then
+     * Trade Market"), which no caller compares.
      */
     static String sellPlace(Entry e) {
         if (e == null || e.note() == null || !(e.verdict() == Verdict.SELL || e.verdict() == Verdict.IDENTIFY)) {
             return null;
+        }
+        if (e.verdict() == Verdict.IDENTIFY && e.note().contains("Item Identifier")) {
+            return "Item Identifier";
         }
         String place = placeIn(e.note());
         if ("Blacksmith".equals(place)) {
@@ -530,7 +534,8 @@ final class Advice {
         if (n.contains("Blacksmith'e sat")) {
             return "Blacksmith";
         }
-        if (n.contains("Trade Market'te sat")) {
+        if (n.contains("Trade Market'te sat") || n.contains("Trade Market'te göster")
+                || n.contains("Reveal it at the Trade Market")) {
             return "Trade Market";
         }
         var m = SELL_WORD.matcher(n);
