@@ -715,6 +715,7 @@
   "wynnlabs.rules.market_slots": "Trade Market slots",
   "wynnlabs.rules.market_slots_desc": "How many orders you may have on the Trade Market at once, buy and sell together. Auto follows your rank; the items that bring in the most get them, the rest go to the Blacksmith",
   "wynnlabs.rules.market_slots_auto": "Auto (%s: %s)",
+  "wynnlabs.rules.market_slots_auto_short": "Auto: %s",
   "wynnlabs.rules.market_slots_no_rank": "no rank",
   "wynnlabs.rules.market_slots_unknown": "rank not read yet",
   "wynnlabs.rules.reroll": "Suggest reroll below",

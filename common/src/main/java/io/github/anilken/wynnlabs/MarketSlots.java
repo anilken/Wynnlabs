@@ -59,6 +59,11 @@ final class MarketSlots {
         return L.t("wynnlabs.rules.market_slots_auto", name, forRank(rank));
     }
 
+    /** "Auto: 15": the same in a settings row, where the rule's name must fit too. */
+    static String autoShort() {
+        return L.t("wynnlabs.rules.market_slots_auto_short", forRank(Wyn.supporterRank()));
+    }
+
     /**
      * One item the advice sends to the Trade Market. {@code gain}: emeralds it should bring in
      * after the fee, NaN when unknown. {@code copies}: the orders it needs (one per piece of

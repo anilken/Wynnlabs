@@ -715,6 +715,7 @@
   "wynnlabs.rules.market_slots": "Trade Market ilan hakkı",
   "wynnlabs.rules.market_slots_desc": "Trade Market'te aynı anda kaç ilanın olabileceği, alış ve satış birlikte. Otomatik, rütbene göre; en çok getiren eşyalar yer alır, kalanı Blacksmith'e gider",
   "wynnlabs.rules.market_slots_auto": "Otomatik (%s: %s)",
+  "wynnlabs.rules.market_slots_auto_short": "Oto: %s",
   "wynnlabs.rules.market_slots_no_rank": "rütbe yok",
   "wynnlabs.rules.market_slots_unknown": "rütbe henüz okunmadı",
   "wynnlabs.rules.reroll": "Kötü roll sınırı",
