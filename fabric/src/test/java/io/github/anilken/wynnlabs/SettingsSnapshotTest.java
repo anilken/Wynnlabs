@@ -40,6 +40,21 @@ class SettingsSnapshotTest {
     }
 
     @Test
+    void steppedNumbersStartAtTheirDefault() {
+        Settings.use(new JsonObject());
+        assertEquals(85, Settings.stepValue("menuTooltipScale"), "menu tooltips start at 85%");
+        int[] options = Settings.STEPS.get("menuTooltipScale");
+        assertEquals(100, options[options.length - 1], "100% (as the game draws them) is a choice");
+        assertTrue(java.util.Arrays.stream(options).anyMatch(o -> o == 85), "the default is a choice");
+        assertTrue(Settings.LABELS.containsKey(Settings.STEP_PARENT.get("menuTooltipScale")), "its row sits under a switch");
+
+        JsonObject o = new JsonObject();
+        o.addProperty("menuTooltipScale", 70);
+        Settings.use(o);
+        assertEquals(70, Settings.stepValue("menuTooltipScale"));
+    }
+
+    @Test
     void oldFilesWithRemovedFeaturesStillLoad() {
         JsonObject old = new JsonObject();
         old.addProperty("chestGlow", true);
