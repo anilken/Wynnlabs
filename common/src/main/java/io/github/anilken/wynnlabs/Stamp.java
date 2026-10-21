@@ -22,6 +22,12 @@ final class Stamp {
      */
     static volatile int language;
 
+    /**
+     * Every stack in the bag by identity and count, not only gear: what {@link MarketSlots}
+     * ranks (boxes, ingredients, keys too). It rebuilds that ranking only, never cached verdicts.
+     */
+    static volatile int bag;
+
     private Stamp() {}
 
     static int now() {
@@ -38,15 +44,18 @@ final class Stamp {
         language = L.code().hashCode();
         if (mc.player == null) {
             inventory = 0;
+            bag = 0;
             return;
         }
         var inv = mc.player.getInventory();
         int h = 1;
+        int all = 1;
         for (int i = 0; i < inv.getContainerSize(); i++) {
             var s = inv.getItem(i);
             if (s.isEmpty()) {
                 continue;
             }
+            all = (all * 31 + System.identityHashCode(s)) * 31 + s.getCount();
             var view = WynntilsItems.view(s);
             if (view.isEmpty() || !(view.get().isGear() || view.get().isCrafted())) {
                 continue;
@@ -59,5 +68,6 @@ final class Stamp {
             INVENTORY_CHANGES.incrementAndGet();
         }
         inventory = now;
+        bag = all;
     }
 }

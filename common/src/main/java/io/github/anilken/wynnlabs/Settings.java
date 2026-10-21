@@ -51,6 +51,7 @@ final class Settings {
         LABELS.put("dpsHud", "wynnlabs.setting.dpsHud");
         LABELS.put("sellGlow", "wynnlabs.setting.sellGlow");
         LABELS.put("verdictBadges", "wynnlabs.setting.verdictBadges");
+        LABELS.put("hotbarBadges", "wynnlabs.setting.hotbarBadges");
         LABELS.put("miniQuests", "wynnlabs.setting.miniQuests");
         LABELS.put("questGuides", "wynnlabs.setting.questGuides");
         LABELS.put("updateCheck", "wynnlabs.setting.updateCheck");
@@ -100,6 +101,8 @@ final class Settings {
         DESC.put("sellGlow", "wynnlabs.setting_desc.sellGlow");
         CATEGORY.put("verdictBadges", "glow");
         DESC.put("verdictBadges", "wynnlabs.setting_desc.verdictBadges");
+        CATEGORY.put("hotbarBadges", "glow");
+        DESC.put("hotbarBadges", "wynnlabs.setting_desc.hotbarBadges");
         CATEGORY.put("chatUpgrade", "coach");
         CATEGORY.put("chatSkills", "coach");
         DESC.put("chatSkills", "wynnlabs.setting_desc.chatSkills");

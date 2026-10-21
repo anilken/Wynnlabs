@@ -44,7 +44,13 @@ final class RuleEditor {
             num("wynnlabs.rules.grind_above", "wynnlabs.rules.grind_above_desc", "grind", "levelsAbove", 3, 0, 10, 1, "lv"),
             flag("wynnlabs.rules.no_mythic", "wynnlabs.rules.no_mythic_desc", "excludeTiers", "MYTHIC"),
             flag("wynnlabs.rules.no_event", "wynnlabs.rules.no_event_desc", "excludeSources", "EVENT"),
-            flag("wynnlabs.rules.no_raid", "wynnlabs.rules.no_raid_desc", "excludeSources", "RAID"));
+            flag("wynnlabs.rules.no_raid", "wynnlabs.rules.no_raid_desc", "excludeSources", "RAID"),
+            new Rule("wynnlabs.rules.reveal_profit", "wynnlabs.rules.reveal_profit_desc", "trade", "revealMinProfit", 640,
+                    0, 0, 0, new double[] {0, 64, 128, 320, 640, 1280, 1920, 4096}, "E", null),
+            num("wynnlabs.rules.market_fee", "wynnlabs.rules.market_fee_desc", "trade", "marketFeePercent", 5, 0, 20, 1, "%"),
+            // 0 = from the account's rank (MarketSlots)
+            num("wynnlabs.rules.market_slots", "wynnlabs.rules.market_slots_desc", "trade", "marketSlots", 0, 0,
+                    MarketSlots.MAX, 1, "slots"));
 
     private RuleEditor() {}
 
@@ -87,10 +93,10 @@ final class RuleEditor {
     static final List<Section> SECTIONS = List.of(
             new Section("wynnlabs.rules.sec_sell", new int[] {0, 1}),
             new Section("wynnlabs.rules.sec_shopping", new int[] {2, 3, 4, 5, 13, 14, 15}),
-            new Section("wynnlabs.rules.sec_trade", new int[] {6, 7, 8, 9}),
+            new Section("wynnlabs.rules.sec_trade", new int[] {6, 16, 17, 18, 7, 8, 9}),
             new Section("wynnlabs.rules.sec_quests", new int[] {10, 11, 12}));
 
-    /** "8 lv", "%10", "1.9 LE", "on". */
+    /** "8 lv", "%10", "1.9 LE", "on", "Auto (HERO: 15)". */
     static String display(Rule r) {
         return format(r, value(r));
     }
@@ -105,6 +111,7 @@ final class RuleEditor {
             case "E" -> Prices.fmt(v);
             case "%" -> L.t("wynnlabs.screen.pct", n);
             case "lv" -> L.t("wynnlabs.rules.levels", n);
+            case "slots" -> n <= 0 ? MarketSlots.autoText() : String.valueOf(n);
             default -> String.valueOf(n);
         };
     }
@@ -177,8 +184,8 @@ final class RuleEditor {
 
     /**
      * Sets a rule to a typed value. Emerald rules read "30", "30 eb", "1.5 le", "500 e" (a plain
-     * number is EB); others a plain number, kept within the rule's range. Returns false when the
-     * text is no value.
+     * number is EB); others a plain number, kept within the rule's range ("auto" for the Trade
+     * Market slots). Returns false when the text is no value.
      */
     static boolean set(Rule r, String typed) {
         if (r.isSwitch() || typed == null) {
@@ -199,6 +206,8 @@ final class RuleEditor {
             }
         } else if (t.endsWith("%")) {
             t = t.substring(0, t.length() - 1);
+        } else if (r.unit().equals("slots") && (t.startsWith("auto") || t.startsWith("oto"))) {
+            t = "0";                            // "auto" / "otomatik": from the rank again
         }
         double v;
         try {

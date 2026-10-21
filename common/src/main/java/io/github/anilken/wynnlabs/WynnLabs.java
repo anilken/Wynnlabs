@@ -154,6 +154,17 @@ public final class WynnLabs {
                 Perf.end("hud.DpsHud", t);
             }
         });
+        // the verdict badges on the hotbar's items (setting hotbarBadges), after the hotbar is drawn
+        platform.addHud(net.minecraft.resources.Identifier.fromNamespaceAndPath("wynnlabs", "hotbar_badges"), (g, dt) -> {
+            long t = Perf.start();
+            try {
+                HotbarBadges.render(g, dt);
+            } catch (Throwable ignored) {
+                // a badge must never break the HUD
+            } finally {
+                Perf.end("hud.HotbarBadges", t);
+            }
+        });
         // leaving the server closes the session report
         platform.onDisconnect(() -> {
             Coach.saveSession(System.currentTimeMillis());
