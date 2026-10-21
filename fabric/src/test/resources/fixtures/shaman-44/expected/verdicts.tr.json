@@ -273,7 +273,7 @@
     "where": "bank acct:Account Bank p. 1#26",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Panic Attack %-14.6). Market: tanımlamadan Trade Market'te sat"
+    "note": "Önce Trade Market'te göster (~640-656 E), sonra listele · Fiyat henüz yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Panic Attack %-14.6)"
   },
   {
     "where": "bank acct:Account Bank p. 1#27",
@@ -555,19 +555,19 @@
     "where": "bank acct:Account Bank p. 4#1",
     "name": "Unidentified Spear",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 4#2",
     "name": "Unidentified Boots",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Astral Walkers %+0.8). Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Astral Walkers %+0.8)"
   },
   {
     "where": "bank acct:Account Bank p. 4#3",
     "name": "Unidentified Bow",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 5#0",
@@ -693,43 +693,43 @@
     "where": "bank acct:Account Bank p. 6#0",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımlamadan Trade Market'te sat"
+    "note": "Önce Trade Market'te göster (~471-485 E), sonra listele · Fiyat henüz yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 6#1",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 6#2",
     "name": "Unidentified Bow",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 6#3",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımlamadan Trade Market'te sat"
+    "note": "Önce Trade Market'te göster (~444-458 E), sonra listele · Fiyat henüz yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 6#4",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 6#5",
     "name": "Unidentified Spear",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 6#6",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 6#7",
@@ -1143,7 +1143,7 @@
     "where": "bank acct:Account Bank p. 10#4",
     "name": "Unidentified Spear",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 10#5",
@@ -1155,19 +1155,19 @@
     "where": "bank acct:Account Bank p. 10#6",
     "name": "Unidentified Dagger",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~135 E), sonra Trade Market'te sat (Brazen Blade ~49 EB'e kadar)"
+    "note": "Önce Trade Market'te göster (~130-131 E), sonra listele · Beklenen ~40 EB. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 10#7",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 10#8",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank acct:Account Bank p. 10#9",
@@ -1185,7 +1185,7 @@
     "where": "bank acct:Account Bank p. 10#11",
     "name": "Unidentified Dagger",
     "verdict": "SELL",
-    "note": "Lv. 1-5, seviyenin çok altında. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: Trade Market'te ~3 EB kalır, sınırın (10 EB) altında. Lv. 1-5, seviyenin çok altında"
   },
   {
     "where": "bank acct:Account Bank p. 10#12",
@@ -1629,49 +1629,49 @@
     "where": "bank char:char0003:Character Bank p. 3#0",
     "name": "Unidentified Boots",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Way Back Home %-0.6). Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Way Back Home %-0.6)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#1",
     "name": "Unidentified Leggings",
     "verdict": "SELL",
-    "note": "Lv. 11-15, seviyenin çok altında. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: Trade Market'te ~5 EB kalır, sınırın (10 EB) altında. Lv. 11-15, seviyenin çok altında"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#2",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~43 E), sonra Trade Market'te sat (Hickory Stick ~42 EB'e kadar)"
+    "note": "Önce Trade Market'te göster (~41-43 E), sonra listele · Beklenen ~13 EB. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#3",
     "name": "Unidentified Necklace",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Rycar's Swagger %-9.5). Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Rycar's Swagger %-9.5)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#4",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~33 E), sonra Trade Market'te sat (Autumn ~48 EB'e kadar)"
+    "note": "Önce Trade Market'te göster (~31-33 E), sonra listele · Beklenen ~16 EB. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#5",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-7.5). Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-7.5)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#6",
     "name": "Unidentified Dagger",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~36 E), sonra Trade Market'te sat (Precedence ~41 EB'e kadar)"
+    "note": "Önce Trade Market'te göster (~34-36 E), sonra listele · Beklenen ~29 EB (2/6 olasılığın fiyatı var). Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#7",
     "name": "Unidentified Necklace",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Charm of the Vampire %-10.7). Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Charm of the Vampire %-10.7)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#9",
@@ -1683,7 +1683,7 @@
     "where": "bank char:char0003:Character Bank p. 3#10",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~33 E), sonra Trade Market'te sat (Autumn ~48 EB'e kadar)"
+    "note": "Önce Trade Market'te göster (~31-33 E), sonra listele · Beklenen ~16 EB. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#27",
@@ -1863,43 +1863,43 @@
     "where": "bank char:char0003:Character Bank p. 6#0",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~33 E), sonra Trade Market'te sat (Autumn ~48 EB'e kadar)"
+    "note": "Önce Trade Market'te göster (~31-33 E), sonra listele · Beklenen ~16 EB. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#1",
     "name": "Unidentified Spear",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#2",
     "name": "Unidentified Leggings",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Jera %-12.0). Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Jera %-12.0)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#3",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Hailstone %-0.8). Demirci: Blacksmith'e sat"
+    "note": "Önce Trade Market'te göster (~76-79 E), sonra listele · Beklenen ~13 EB (1/5 olasılığın fiyatı var). Hiçbir olasılık build'ine yaramıyor (en iyisi: Hailstone %-0.8)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#4",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-7.5). Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-7.5)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#5",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "Çıkabilecek eşyaların hiçbiri Shaman için değil. Market: tanımla (~74 E), sonra Trade Market'te sat (Water Relic Wand ~1.1 LE'e kadar)"
+    "note": "Önce Trade Market'te göster (~71-74 E), sonra listele · Beklenen ~41 EB. Çıkabilecek eşyaların hiçbiri Shaman için değil"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#6",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Hailstone %-0.8). Demirci: Blacksmith'e sat"
+    "note": "Önce Trade Market'te göster (~76-79 E), sonra listele · Beklenen ~13 EB (1/5 olasılığın fiyatı var). Hiçbir olasılık build'ine yaramıyor (en iyisi: Hailstone %-0.8)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#7",
@@ -1911,7 +1911,7 @@
     "where": "bank char:char0003:Character Bank p. 6#8",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Czytash's Compass %-6.6). Demirci: Blacksmith'e sat"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Czytash's Compass %-6.6)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#9",

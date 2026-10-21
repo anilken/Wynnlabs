@@ -273,7 +273,7 @@
     "where": "bank acct:Account Bank p. 1#26",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Panic Attack -14.6%). Market: sell it unidentified on the Trade Market"
+    "note": "Reveal it at the Trade Market first (~640-656 E), then list it there · No prices yet. No outcome helps your build (best: Panic Attack -14.6%)"
   },
   {
     "where": "bank acct:Account Bank p. 1#27",
@@ -555,19 +555,19 @@
     "where": "bank acct:Account Bank p. 4#1",
     "name": "Unidentified Spear",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 4#2",
     "name": "Unidentified Boots",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Astral Walkers +0.8%). Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Astral Walkers +0.8%)"
   },
   {
     "where": "bank acct:Account Bank p. 4#3",
     "name": "Unidentified Bow",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 5#0",
@@ -693,43 +693,43 @@
     "where": "bank acct:Account Bank p. 6#0",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Market: sell it unidentified on the Trade Market"
+    "note": "Reveal it at the Trade Market first (~471-485 E), then list it there · No prices yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 6#1",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 6#2",
     "name": "Unidentified Bow",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 6#3",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Market: sell it unidentified on the Trade Market"
+    "note": "Reveal it at the Trade Market first (~444-458 E), then list it there · No prices yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 6#4",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 6#5",
     "name": "Unidentified Spear",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 6#6",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 6#7",
@@ -1143,7 +1143,7 @@
     "where": "bank acct:Account Bank p. 10#4",
     "name": "Unidentified Spear",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 10#5",
@@ -1155,19 +1155,19 @@
     "where": "bank acct:Account Bank p. 10#6",
     "name": "Unidentified Dagger",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Market: identify it (~135 E), then sell it on the Trade Market (Brazen Blade up to ~49 EB)"
+    "note": "Reveal it at the Trade Market first (~130-131 E), then list it there · Expected ~40 EB. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 10#7",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 10#8",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank acct:Account Bank p. 10#9",
@@ -1185,7 +1185,7 @@
     "where": "bank acct:Account Bank p. 10#11",
     "name": "Unidentified Dagger",
     "verdict": "SELL",
-    "note": "Lv. 1-5, far below your level. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: the Trade Market would leave ~3 EB, under your 10 EB minimum. Lv. 1-5, far below your level"
   },
   {
     "where": "bank acct:Account Bank p. 10#12",
@@ -1629,49 +1629,49 @@
     "where": "bank char:char0003:Character Bank p. 3#0",
     "name": "Unidentified Boots",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Way Back Home -0.6%). Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Way Back Home -0.6%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#1",
     "name": "Unidentified Leggings",
     "verdict": "SELL",
-    "note": "Lv. 11-15, far below your level. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: the Trade Market would leave ~5 EB, under your 10 EB minimum. Lv. 11-15, far below your level"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#2",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Market: identify it (~43 E), then sell it on the Trade Market (Hickory Stick up to ~42 EB)"
+    "note": "Reveal it at the Trade Market first (~41-43 E), then list it there · Expected ~13 EB. None of the possible items are for Shaman"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#3",
     "name": "Unidentified Necklace",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Rycar's Swagger -9.5%). Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rycar's Swagger -9.5%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#4",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Market: identify it (~33 E), then sell it on the Trade Market (Autumn up to ~48 EB)"
+    "note": "Reveal it at the Trade Market first (~31-33 E), then list it there · Expected ~16 EB. None of the possible items are for Shaman"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#5",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Rayshyroth's Knowledge -7.5%). Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -7.5%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#6",
     "name": "Unidentified Dagger",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Market: identify it (~36 E), then sell it on the Trade Market (Precedence up to ~41 EB)"
+    "note": "Reveal it at the Trade Market first (~34-36 E), then list it there · Expected ~29 EB (2/6 have a price). None of the possible items are for Shaman"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#7",
     "name": "Unidentified Necklace",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Charm of the Vampire -10.7%). Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Charm of the Vampire -10.7%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#9",
@@ -1683,7 +1683,7 @@
     "where": "bank char:char0003:Character Bank p. 3#10",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Market: identify it (~33 E), then sell it on the Trade Market (Autumn up to ~48 EB)"
+    "note": "Reveal it at the Trade Market first (~31-33 E), then list it there · Expected ~16 EB. None of the possible items are for Shaman"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#27",
@@ -1863,43 +1863,43 @@
     "where": "bank char:char0003:Character Bank p. 6#0",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Market: identify it (~33 E), then sell it on the Trade Market (Autumn up to ~48 EB)"
+    "note": "Reveal it at the Trade Market first (~31-33 E), then list it there · Expected ~16 EB. None of the possible items are for Shaman"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#1",
     "name": "Unidentified Spear",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. None of the possible items are for Shaman"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#2",
     "name": "Unidentified Leggings",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Jera -12.0%). Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Jera -12.0%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#3",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Hailstone -0.8%). Sell it to the Blacksmith"
+    "note": "Reveal it at the Trade Market first (~76-79 E), then list it there · Expected ~13 EB (1/5 have a price). No outcome helps your build (best: Hailstone -0.8%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#4",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Rayshyroth's Knowledge -7.5%). Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -7.5%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#5",
     "name": "Unidentified Wand",
     "verdict": "SELL",
-    "note": "None of the possible items are for Shaman. Market: identify it (~74 E), then sell it on the Trade Market (Water Relic Wand up to ~1.1 LE)"
+    "note": "Reveal it at the Trade Market first (~71-74 E), then list it there · Expected ~41 EB. None of the possible items are for Shaman"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#6",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Hailstone -0.8%). Sell it to the Blacksmith"
+    "note": "Reveal it at the Trade Market first (~76-79 E), then list it there · Expected ~13 EB (1/5 have a price). No outcome helps your build (best: Hailstone -0.8%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#7",
@@ -1911,7 +1911,7 @@
     "where": "bank char:char0003:Character Bank p. 6#8",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Czytash's Compass -6.6%). Sell it to the Blacksmith"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Czytash's Compass -6.6%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#9",

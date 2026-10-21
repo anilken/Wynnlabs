@@ -31,6 +31,7 @@ import com.wynntils.models.lootrun.type.MissionType;
 import com.wynntils.models.marker.MarkerModel;
 import com.wynntils.models.marker.UserWaypointMarkerProvider;
 import com.wynntils.models.objectives.WynnObjective;
+import com.wynntils.models.players.type.PlayerRank;
 import com.wynntils.models.profession.type.ProfessionType;
 import com.wynntils.models.raid.RaidModel;
 import com.wynntils.models.territories.profile.TerritoryProfile;
@@ -329,6 +330,18 @@ final class Wyn {
 
     static String characterId() {
         return guard(Feature.CHARACTER, () -> Models.Character.getId(), "");
+    }
+
+    /**
+     * The account's supporter rank as Wynntils read it from the rank menu ("VIP", "HERO_PLUS" …,
+     * "NONE" without one), or null while it is not known: no scan yet this session and no copy
+     * kept from an earlier one. Staff ranks do not show here; the supporter rank under them does.
+     */
+    static String supporterRank() {
+        return guard(Feature.CHARACTER, () -> {
+            PlayerRank r = Models.Account.getSupporterRank();
+            return r == null || r == PlayerRank.NONE && !Models.Account.hasScannedRankInfo() ? null : r.name();
+        }, null);
     }
 
     static boolean reskinned() {
