@@ -43,8 +43,8 @@ public final class TooltipListener {
     private record SlotFacts(long until, int rules, int advice, boolean inBag, boolean cannot, int glow,
                              int step, int stepColour) {}
 
-    /** The badge part; also drawn by the J menu preview without a slot. */
-    private record BadgeFacts(long until, int rules, int advice, Component word, int wordWidth, float wordScale,
+    /** The badge part; also drawn by the J menu preview without a slot, and on the hotbar. */
+    record BadgeFacts(long until, int rules, int advice, Component word, int wordWidth, float wordScale,
                               int colour, String where, Component price, int priceWidth) {}
 
     private static final java.util.WeakHashMap<net.minecraft.world.item.ItemStack, SlotFacts> SLOT_FACTS = new java.util.WeakHashMap<>();
@@ -209,7 +209,7 @@ public final class TooltipListener {
         drawBadge(g, slot.x, slot.y, stack);
     }
 
-    private static BadgeFacts badgeFacts(net.minecraft.world.item.ItemStack stack) {
+    static BadgeFacts badgeFacts(net.minecraft.world.item.ItemStack stack) {
         long now = System.currentTimeMillis();
         BadgeFacts f = BADGE_FACTS.get(stack);
         if (f != null && now < f.until() && f.rules() == Stamp.now()) {
@@ -224,7 +224,7 @@ public final class TooltipListener {
 
     private static BadgeFacts buildBadge(net.minecraft.world.item.ItemStack stack, long until, int rules, int advice) {
         BadgeFacts none = new BadgeFacts(until, rules, advice, null, 0, 0, 0, null, null, 0);
-        if (!Settings.on("verdictBadges") || !Settings.on("itemAdvice")) {
+        if (!Settings.on("itemAdvice")) {           // verdictBadges is the menus' own switch: drawBadge
             return none;
         }
         var view = GameState.current().view(stack);
@@ -275,7 +275,7 @@ public final class TooltipListener {
 
     /** The word and the where-to-sell icon on a slot at x, y (the J menu preview draws them too). */
     static void drawBadge(GuiGraphics g, int x, int y, net.minecraft.world.item.ItemStack stack) {
-        if (stack.isEmpty()) {
+        if (stack.isEmpty() || !Settings.on("verdictBadges")) {
             return;
         }
         BadgeFacts f = badgeFacts(stack);
@@ -305,7 +305,7 @@ public final class TooltipListener {
      * Text at a scale with a dark outline all round (a drop shadow sits off the letters when
      * scaled). {@code rightBottom}: x, y are the bottom-right corner, else the top-left.
      */
-    private static void outlined(GuiGraphics g, net.minecraft.client.gui.Font font, Component c, int w, float x, float y,
+    static void outlined(GuiGraphics g, net.minecraft.client.gui.Font font, Component c, int w, float x, float y,
             float scale, int colour, boolean rightBottom) {
         float s = rightBottom ? Math.min(scale, 17f / Math.max(1, w)) : scale;
         g.pose().pushMatrix();
