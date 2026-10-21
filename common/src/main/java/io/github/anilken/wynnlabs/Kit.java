@@ -79,8 +79,9 @@ final class Kit {
     private static final Identifier GRAIN = Identifier.fromNamespaceAndPath("wynnlabs", "textures/gui/sprites/kit/grain.png");
     private static final int GRAIN_SIZE = 256;
 
-    /** {@code kit/slot} nine-sliced to 18 px ahead of time (kit/slot_18.png). */
+    /** {@code kit/slot} nine-sliced to 18 and 24 px ahead of time (kit/slot_18.png, kit/slot_24.png). */
     private static final Identifier SLOT_18 = Identifier.fromNamespaceAndPath("wynnlabs", "kit/slot_18");
+    private static final Identifier SLOT_24 = Identifier.fromNamespaceAndPath("wynnlabs", "kit/slot_24");
 
     private static Identifier sprite(String name) {
         return Identifier.fromNamespaceAndPath("wynnlabs", "kit/" + name);
@@ -287,9 +288,10 @@ final class Kit {
 
     /** An inset item slot; {@code ring} (0 = none) is a 1px tier-colour line just inside it. */
     static void slot(GuiGraphics g, int x, int y, int size, int ring) {
-        if (size == 18) {
-            // the common size, drawn ahead as one picture: one quad instead of nine (the bank draws hundreds)
-            g.blitSprite(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, SLOT_18, x, y, size, size);
+        if (size == 18 || size == 24) {
+            // the common sizes, drawn ahead as one picture: one quad instead of nine (the bank draws hundreds)
+            g.blitSprite(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, size == 18 ? SLOT_18 : SLOT_24,
+                    x, y, size, size);
         } else {
             nine(g, "slot", x, y, size, size);
         }
