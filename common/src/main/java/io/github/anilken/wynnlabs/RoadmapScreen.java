@@ -4812,7 +4812,7 @@ final class RoadmapScreen extends Screen {
     private int[] settingsListRect;
     private int rowPitch = SET_ROW;
 
-    /** One row of a settings category: kind switch, advice, arch, goal, scale, rule or key; "head" is a section title. */
+    /** One row of a settings category: kind switch, step, advice, arch, goal, scale, rule or key; "head" is a section title. */
     private record SetRow(String kind, String id, int rule) {
 
         boolean head() {
@@ -4840,23 +4840,72 @@ final class RoadmapScreen extends Screen {
             return rows;
         }
         if (cat.equals("build")) {
+            rows.add(new SetRow("head", "wynnlabs.settings.sec_build_goal", -1));
             rows.add(new SetRow("advice", "advice_here", -1));
             rows.add(new SetRow("arch", "archetype", -1));
             rows.add(new SetRow("goal", "goal", -1));
         }
-        for (String k : Settings.LABELS.keySet()) {
-            if (cat.equals(Settings.category(k))) {
-                rows.add(new SetRow("switch", k, -1));
-                if (k.equals("priceApi")) {
-                    rows.add(new SetRow("key", "key", -1));     // the key belongs right under live prices
+        java.util.Set<String> done = new java.util.HashSet<>();
+        for (String[] sec : SETTING_SECTIONS.getOrDefault(cat, List.of())) {
+            rows.add(new SetRow("head", sec[0], -1));
+            for (int j = 1; j < sec.length; j++) {
+                if (sec[j].equals("menu_scale")) {
+                    rows.add(new SetRow("scale", "menu_scale", -1));
+                } else if (Settings.LABELS.containsKey(sec[j]) && cat.equals(Settings.category(sec[j]))) {
+                    addSwitch(rows, sec[j]);
+                    done.add(sec[j]);
                 }
             }
         }
-        if (cat.equals("look")) {
-            rows.add(new SetRow("scale", "menu_scale", -1));
+        for (String k : Settings.LABELS.keySet()) {
+            if (cat.equals(Settings.category(k)) && !done.contains(k)) {
+                addSwitch(rows, k);                     // one no section names yet: at the end
+            }
         }
         return rows;
     }
+
+    /** A switch, its number right under it, and the key right under live prices. */
+    private static void addSwitch(List<SetRow> rows, String k) {
+        rows.add(new SetRow("switch", k, -1));
+        for (var st : Settings.STEP_PARENT.entrySet()) {
+            if (st.getValue().equals(k)) {
+                rows.add(new SetRow("step", st.getKey(), -1));
+            }
+        }
+        if (k.equals("priceApi")) {
+            rows.add(new SetRow("key", "key", -1));
+        }
+    }
+
+    /**
+     * Each page's settings under section titles, as the Rules page has them: the title's key, then
+     * the settings in order ("menu_scale" is the menu size row). A key a build does not have is
+     * skipped; a setting no section names comes at the end.
+     */
+    private static final Map<String, List<String[]>> SETTING_SECTIONS = Map.of(
+            "look", List.<String[]>of(
+                    new String[] {"wynnlabs.settings.sec_text", "webFont", "menu_scale"}),
+            "tips", List.of(
+                    new String[] {"wynnlabs.settings.sec_advice", "itemAdvice", "altAdvice", "wornHint"},
+                    new String[] {"wynnlabs.settings.sec_tooltip", "powderHint", "tooltipPrice", "boxPrices", "bankHint"}),
+            "glow", List.of(
+                    new String[] {"wynnlabs.settings.sec_bag", "glowUpgrade", "glowShop", "sellGlow", "verdictBadges",
+                            "hotbarBadges"},
+                    new String[] {"wynnlabs.settings.sec_ground", "groundGlow", "groundBeam", "groundGlowShop",
+                            "groundGlowNormal"},
+                    new String[] {"wynnlabs.settings.sec_menus", "glowTree"}),
+            "coach", List.of(
+                    new String[] {"wynnlabs.settings.sec_chat", "chatUpgrade", "chatSkills", "chatLevelUp"},
+                    new String[] {"wynnlabs.settings.sec_warnings", "dangerWarn", "survivalWarn", "coachToasts"},
+                    new String[] {"wynnlabs.settings.sec_screen", "dpsHud", "sellSummary"}),
+            "quests", List.<String[]>of(
+                    new String[] {"wynnlabs.settings.sec_quests", "glowQuest", "miniQuests"}),
+            "build", List.<String[]>of(
+                    new String[] {"wynnlabs.settings.sec_tree", "menuAdvice", "autoTree", "learning", "manaMeter"}),
+            "data", List.of(
+                    new String[] {"wynnlabs.settings.sec_online", "priceApi", "questGuides", "updateCheck"},
+                    new String[] {"wynnlabs.settings.sec_dev", "debug"}));
 
     private static boolean isToggle(SetRow r) {
         return r.kind().equals("switch") || r.kind().equals("advice") || r.kind().equals("rule") && r.r().isSwitch();
@@ -4873,6 +4922,7 @@ final class RoadmapScreen extends Screen {
     private static String rowTitle(SetRow r) {
         return switch (r.kind()) {
             case "switch" -> L.t(Settings.LABELS.get(r.id()));
+            case "step" -> L.t(Settings.STEP_LABELS.get(r.id()));
             case "advice" -> L.t("wynnlabs.settings.advice_here");
             case "arch" -> L.t("wynnlabs.settings.arch_title");
             case "goal" -> L.t("wynnlabs.settings.goal_title");
@@ -4885,7 +4935,7 @@ final class RoadmapScreen extends Screen {
 
     private static String rowDesc(SetRow r) {
         return switch (r.kind()) {
-            case "switch" -> L.t(Settings.DESC.get(r.id()));
+            case "switch", "step" -> L.t(Settings.DESC.get(r.id()));
             case "advice" -> L.t("wynnlabs.settings.advice_here_desc");
             case "arch" -> L.t("wynnlabs.settings.arch_desc");
             case "goal" -> L.t("wynnlabs.settings.goal_desc");
@@ -4899,7 +4949,9 @@ final class RoadmapScreen extends Screen {
     /** What the row's value is in a few characters ("6 lv", "30 EB", "Boltslinger"); "" for a switch. */
     private static String shortValue(SetRow r) {
         return switch (r.kind()) {
-            case "rule" -> L.cap(RuleEditor.display(r.r()));
+            case "rule" -> r.r().key().equals("marketSlots") && RuleEditor.value(r.r()) <= 0
+                    ? MarketSlots.autoShort() : L.cap(RuleEditor.display(r.r()));
+            case "step" -> stepText(r.id(), Settings.stepValue(r.id()));
             case "arch" -> TreePlanner.chosen().isEmpty() ? L.t("wynnlabs.settings.archetype_off") : TreePlanner.chosen();
             case "goal" -> Setup.goalName(Setup.goal());
             case "scale" -> MenuScale.setting() == 0 ? L.t("wynnlabs.settings.scale_game") : String.valueOf(MenuScale.setting());
@@ -4913,7 +4965,7 @@ final class RoadmapScreen extends Screen {
     /** Whether the row has a default to go back to. */
     private static boolean hasDefault(SetRow r) {
         return switch (r.kind()) {
-            case "switch", "advice", "scale", "rule" -> true;
+            case "switch", "step", "advice", "scale", "rule" -> true;
             default -> false;
         };
     }
@@ -4922,6 +4974,7 @@ final class RoadmapScreen extends Screen {
     private static boolean rowChanged(SetRow r) {
         return switch (r.kind()) {
             case "switch" -> Settings.changed(r.id());
+            case "step" -> Settings.stepValue(r.id()) != Settings.stepDefault(r.id());
             case "advice" -> !Rules.adviceHere();
             case "scale" -> MenuScale.setting() != 0;
             case "rule" -> RuleEditor.changed(r.r());
@@ -4946,6 +4999,11 @@ final class RoadmapScreen extends Screen {
         return switch (r.kind()) {
             case "switch" -> L.t("wynnlabs.settings.default", Settings.byDefault(r.id()) ? on : off);
             case "advice" -> L.t("wynnlabs.settings.default", on);
+            case "step" -> {
+                int[] options = Settings.STEPS.get(r.id());
+                yield L.t("wynnlabs.settings.default_range", stepText(r.id(), Settings.stepDefault(r.id())),
+                        stepText(r.id(), options[0]), stepText(r.id(), options[options.length - 1]));
+            }
             case "scale" -> {
                 int pick = MenuScale.setting();
                 int used = MenuScale.effective();
@@ -4969,6 +5027,9 @@ final class RoadmapScreen extends Screen {
     private static String rowExample(SetRow r) {
         String id = r.kind().equals("rule") ? RuleEditor.id(r.r()) : r.id();
         Object[] args = new Object[0];
+        if (r.kind().equals("step")) {
+            args = new Object[] {Settings.stepValue(id)};
+        }
         if (r.kind().equals("rule") && !r.r().isSwitch()) {
             RuleEditor.Rule rule = r.r();
             long v = Math.round(RuleEditor.value(rule));
@@ -4980,6 +5041,7 @@ final class RoadmapScreen extends Screen {
                 case "ahead", "grind_above" -> new Object[] {lv + v};
                 case "min_gain" -> new Object[] {RuleEditor.format(rule, v), RuleEditor.format(rule, Math.max(0, v - 1))};
                 case "reroll" -> new Object[] {RuleEditor.format(rule, Math.max(0, v - 1)), RuleEditor.format(rule, v)};
+                case "market_slots" -> new Object[] {MarketSlots.slots()};
                 default -> new Object[] {RuleEditor.format(rule, v)};
             };
         }
@@ -5184,15 +5246,15 @@ final class RoadmapScreen extends Screen {
             Kit.toggle(g, px, y + (h - 11) / 2, toggleOn(r));
             toggles.add(new Object[] {new int[] {px - 3, y, right - px + 3, h}, "#stog:" + i});
             ctrlX = px - 3;
-        } else if (steppers && r.kind().equals("rule")) {
+        } else if (steppers && (r.kind().equals("rule") || r.kind().equals("step"))) {
             String v = shortValue(r);
             int vw = Math.max(42, font.width(v) + 8);
             int bx = right - (vw + 26);
             int sy = y + (h - 12) / 2;
-            stepButton(g, bx, sy, "−", mx, my, "#rule:" + r.rule() + ":-1");
+            stepButton(g, bx, sy, "−", mx, my, stepId(r, -1));
             g.fill(bx + 13, sy, bx + 13 + vw, sy + 12, Theme.WELL);
             ink(g, v, bx + 13 + (vw - font.width(v)) / 2, sy + 2, Theme.INK);
-            stepButton(g, bx + 14 + vw, sy, "+", mx, my, "#rule:" + r.rule() + ":1");
+            stepButton(g, bx + 14 + vw, sy, "+", mx, my, stepId(r, 1));
             ctrlX = bx - 2;
         } else {
             String v = fit(shortValue(r), w / 2);
@@ -5394,6 +5456,16 @@ final class RoadmapScreen extends Screen {
                 stepButton(g, x + 16 + vw, sy, "+", mx, my, "#rule:" + r.rule() + ":1");
                 return new int[] {28 + vw, 14};
             }
+            case "step" -> {
+                String value = shortValue(r);
+                int vw = Math.max(44, font.width(value) + 10);
+                int sy = y + 1;
+                stepButton(g, x, sy, "−", mx, my, stepId(r, -1));
+                g.fill(x + 14, sy, x + 16 + vw, sy + 12, Theme.WELL);
+                ink(g, value, x + 15 + (vw - font.width(value)) / 2, sy + 2, Theme.INK);
+                stepButton(g, x + 16 + vw, sy, "+", mx, my, stepId(r, 1));
+                return new int[] {28 + vw, 14};
+            }
             case "arch", "goal" -> {
                 String chip = shortValue(r) + " ›";
                 int cw = Math.min(w, font.width(chip) + 14);
@@ -5475,6 +5547,7 @@ final class RoadmapScreen extends Screen {
                     rebuildWidgets();
                 }
             }
+            case "step" -> Settings.resetNumber(r.id());
             case "advice" -> adviceHere(true);
             case "scale" -> Settings.resetNumber("menuScale");
             case "rule" -> RuleEditor.reset(r.r());
@@ -5798,6 +5871,17 @@ final class RoadmapScreen extends Screen {
             onWood(g, s, x + (12 - font.width(s)) / 2 + 1, y + 2, hover ? Kit.HOVER : Kit.REST);
         }
         toggles.add(new Object[] {new int[] {x, y, 12, 12}, id});
+    }
+
+    /** The click id of a rule's or a number setting's − (−1) or + (+1). */
+    private static String stepId(SetRow r, int dir) {
+        return r.kind().equals("step") ? "#step:" + r.id() + ":" + dir : "#rule:" + r.rule() + ":" + dir;
+    }
+
+    /** A number setting's value as its row writes it ("85%"). */
+    private static String stepText(String key, int v) {
+        String fmt = Settings.STEP_FORMAT.get(key);
+        return fmt == null ? String.valueOf(v) : L.t(fmt, v);
     }
 
     /**
@@ -6458,6 +6542,9 @@ final class RoadmapScreen extends Screen {
                     } else if (id.startsWith("#rule:")) {
                         String[] p = id.split(":");
                         RuleEditor.step(RuleEditor.RULES.get(Integer.parseInt(p[1])), Integer.parseInt(p[2]));
+                    } else if (id.startsWith("#step:")) {
+                        String[] p = id.split(":");
+                        Settings.step(p[1], Integer.parseInt(p[2]));
                     } else if ("#rulesreset".equals(id)) {
                         RuleEditor.reset();
                         flash = L.t("wynnlabs.rules.reset_done");

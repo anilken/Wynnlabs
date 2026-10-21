@@ -1,7 +1,10 @@
 package io.github.anilken.wynnlabs;
 
+import com.wynntils.core.components.Managers;
+import com.wynntils.features.tooltips.TooltipFittingFeature;
 import com.wynntils.mc.event.ItemTooltipRenderEvent;
 import com.wynntils.mc.event.SlotRenderEvent;
+import com.wynntils.mc.event.TooltipRenderEvent;
 import com.wynntils.models.activities.event.ActivityUpdatedEvent;
 import com.wynntils.models.activities.type.ActivityType;
 import com.wynntils.models.characterstats.event.CombatXpGainEvent;
@@ -123,6 +126,61 @@ public final class WynntilsEvents {
                     System.out.println("[WynnLabs] quests from Wynntils failed: " + t);
                 }
             }
+        }
+    }
+
+    /**
+     * Tooltip size in menus ({@link MenuTooltips}). Wynntils asks for a positioner before it
+     * places each tooltip; its own fitting answers last (lowest priority) and only when nobody
+     * else did, so ours, a step earlier, takes its place in menus instead of shrinking on top of
+     * it, and draws the smaller of the two scales. Wynntils' features that place a tooltip
+     * themselves (item compare, item screenshots) answer first: then ours stands aside too.
+     * Registered on its own (Wyn.listen), so a change to these events costs only this.
+     */
+    public static final class Tooltips {
+
+        /** Wynntils' tooltip fitting, looked up once; null when this Wynntils has none. */
+        private TooltipFittingFeature fitting;
+        private boolean looked;
+
+        @SubscribeEvent(priority = EventPriority.LOW)
+        public void onPosition(TooltipRenderEvent.Position e) {
+            try {
+                if (e.getPositioner() == null) {
+                    var p = MenuTooltips.positioner(e.getGuiGraphics(), universalScale());
+                    if (p != null) {
+                        e.setPositioner(p);
+                    }
+                }
+            } catch (Throwable ignored) {
+                // the tooltip is then drawn as Wynntils and the game would
+            }
+        }
+
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public void onPost(TooltipRenderEvent.Post e) {
+            try {
+                MenuTooltips.end(e.getGuiGraphics());
+            } catch (Throwable ignored) {
+                // nothing was scaled
+            }
+        }
+
+        /** Wynntils' universal tooltip scale while its fitting is on; 1 otherwise. */
+        private float universalScale() {
+            if (!looked) {
+                looked = true;
+                try {
+                    fitting = Managers.Feature.getFeatureInstance(TooltipFittingFeature.class);
+                } catch (Throwable t) {
+                    System.out.println("[WynnLabs] Wynntils tooltip fitting not found, menu tooltips ignore it: " + t);
+                }
+            }
+            if (fitting == null || !fitting.isEnabled()) {
+                return 1f;
+            }
+            Float s = fitting.universalScale.get();
+            return s == null ? 1f : s;
         }
     }
 
