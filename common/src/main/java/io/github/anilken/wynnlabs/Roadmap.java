@@ -930,11 +930,12 @@ final class Roadmap {
                 continue;
             }
             Damage.Piece had = start.get(slot);
-            if (had != null && had.key().equals(want.key())) {
+            if (had != null && (had.key().equals(want.key()) || had.name().equalsIgnoreCase(want.name()))) {
                 // the set keeps what the milestone started with here (what you wear, or an
                 // earlier pick): the slot-by-slot pick is undone and its row goes, it is no
-                // "Yume → Yume" upgrade
-                build.put(slot, want);
+                // "Yume → Yume" upgrade. By name too: a set seed puts a piece you have back
+                // with its plain stats, and the one you have keeps its rolls
+                build.put(slot, had);
                 String row = null;
                 for (var pe : placed.entrySet()) {
                     if (pe.getValue().equals(slot)) {
