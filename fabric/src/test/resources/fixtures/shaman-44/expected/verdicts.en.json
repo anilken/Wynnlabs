@@ -69,7 +69,7 @@
     "where": "bag 15",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Sundown Poncho -1.7%). Sell it to the Blacksmith (untradable)"
+    "note": "No outcome helps your build (best: Sundown Poncho -1.6%). Sell it to the Blacksmith (untradable)"
   },
   {
     "where": "bag 16",
@@ -273,7 +273,7 @@
     "where": "bank acct:Account Bank p. 1#26",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Reveal it at the Trade Market first (~640-656 E), then list it there · No prices yet. No outcome helps your build (best: Panic Attack -57.9%)"
+    "note": "Reveal it at the Trade Market first (~640-656 E), then list it there · No prices yet. No outcome helps your build (best: Panic Attack -53.9%)"
   },
   {
     "where": "bank acct:Account Bank p. 1#27",
@@ -1659,7 +1659,7 @@
     "where": "bank char:char0003:Character Bank p. 3#5",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -7.4%)"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -5.7%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#6",
@@ -1887,7 +1887,7 @@
     "where": "bank char:char0003:Character Bank p. 6#4",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -7.4%)"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -5.7%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#5",

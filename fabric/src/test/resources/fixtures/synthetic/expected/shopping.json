@@ -8,8 +8,8 @@
       "name": "Neolithic",
       "tier": "LEGENDARY",
       "level": 20,
-      "score": 159.4,
-      "gain": 159.4,
+      "score": 162.4,
+      "gain": 162.4,
       "skillRequirements": {
         "STRENGTH": 5,
         "DEFENCE": 10
@@ -177,8 +177,8 @@
       "name": "Cyclo",
       "tier": "LEGENDARY",
       "level": 21,
-      "score": 54.3,
-      "gain": 54.3,
+      "score": 57.3,
+      "gain": 57.3,
       "skillRequirements": {
         "DEXTERITY": 4,
         "AGILITY": 8
@@ -342,8 +342,8 @@
       "name": "Technicolor Phase",
       "tier": "RARE",
       "level": 21,
-      "score": 111.6,
-      "gain": 111.6,
+      "score": 114.6,
+      "gain": 114.6,
       "skillRequirements": {
         "STRENGTH": 5,
         "DEXTERITY": 5,
