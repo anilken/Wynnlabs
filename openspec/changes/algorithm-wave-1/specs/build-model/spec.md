@@ -37,7 +37,7 @@ A build below the health floor for its level SHALL lose score by a factor that i
 
 #### Scenario: Defence is not hoarded
 - **WHEN** the synthetic character's road map is built for Lv 60 to 120
-- **THEN** no milestone puts more than about 70 assigned points in Defence
+- **THEN** Strength, Dexterity and Intelligence together gain at least 40 assigned points from the Lv 60 milestone to the last one (the cube gave them none, every new point went to Defence and Agility); Defence itself is not capped, as a fire weapon far below the floor rightly holds 70 to 100 of it
 
 ### Requirement: Death lessons are capped on the Damage goal
 On the Damage goal, what deaths taught SHALL raise the survival weights and the health floor by at most about 1.2×. Other goals keep the 2× cap. The stored lesson SHALL be kept as is, so switching goal restores its full effect.

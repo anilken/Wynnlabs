@@ -157,7 +157,7 @@ evaluate(...):                                      // ~878-884
 Tests (extend `SurvivalTest`): monotone and < 1% per 1% step from r = 1.00 to 0.95; ≥ 0.4 at
 r = 0.1 and r = 0; = 1 at and above the floor; survivalLearned 2.0 → factor 1.2 on DAMAGE, 2.0 on
 SAFE; existing `ehpFloor` assertions keep passing (they use deathFloorRatio ≤ 1.2 or non-Damage
-goals; adjust only with a written reason). Road map check: synthetic Lv 60-120 Defence ≤ ~70.
+goals; adjust only with a written reason). Road map check: synthetic Lv 60-120, the damage skills keep gaining points (Defence ≤ ~70 held only for the F1+F2 gear; with F4 its Lv 50 weapon is half fire and 70-100 Defence is right).
 
 ### F4 — XP on fighting goals (Setup, Feedback, Damage XP hunk)
 
