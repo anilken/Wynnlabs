@@ -142,6 +142,15 @@ class NowSetTest {
         return out;
     }
 
+    /** rules.model.goalXp set to {@code v}. */
+    private static void goalXp(double v) {
+        com.google.gson.JsonObject model = new com.google.gson.JsonObject();
+        model.addProperty("goalXp", v);
+        com.google.gson.JsonObject change = new com.google.gson.JsonObject();
+        change.add("model", model);
+        io.github.anilken.wynnlabs.core.Rules.update(change);
+    }
+
     private static Damage.Piece gear(String name) {
         return Damage.piece(GameState.current().allGear().filter(i -> i.name().equals(name)).findFirst().orElseThrow());
     }
@@ -163,6 +172,21 @@ class NowSetTest {
         // nothing worn: one piece at a time the search took Glimmer, Glimmer, Growth and Talisman
         // Charm, though the four ornaments in the bank beat them together
         shaman(tmp, Where.BANK);
+        // On the Damage goal XP is a side gain (rules.model.goalXp 0.3), and most of what the
+        // ornaments give is XP (+44 %): there two Myrrh, Cattail and Talisman Charm win on damage
+        // alone (about +19 % spell DPS; 31318 against 28844 with XP left out), which is right.
+        Map<String, Damage.Piece> picked = new LinkedHashMap<>(now().build());
+        Map<String, Damage.Piece> ornaments = new LinkedHashMap<>(picked);
+        ornaments.put("RING1", gear("Yellow Ornament"));
+        ornaments.put("RING2", gear("Yellow Ornament"));
+        ornaments.put("BRACELET", gear("Red Ornament"));
+        ornaments.put("NECKLACE", gear("Green Ornament"));
+        goalXp(0);
+        assertTrue(Build.allocate(picked, 72, 142).result().objective()
+                >= Build.allocate(ornaments, 72, 142).result().objective(), "on the Damage goal the picks win without XP");
+        // where XP counts in full (goalXp 1, as before the fighting goals weighed it less) the set
+        // is worth it: the search must see that only the four together pay
+        goalXp(1);
         Roadmap.Step s = now();
         assertEquals(ORNAMENTS, accessories(s.build()), "the set from the bank: " + s.build().keySet());
         Map<String, Damage.Piece> apart = new LinkedHashMap<>(s.build());
