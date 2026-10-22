@@ -883,7 +883,9 @@ final class Damage {
         // A role besides damage (the Tank and Healer goals): heals in every class are a share of
         // the caster's max health, raised by Healing Efficiency, once per cast; damage then counts
         // less (damageWeight below 1), so a tank or healer is not judged as a damage dealer
-        double heal = Math.max(1, health) * (1 + stat(s, "healingEfficiency") / 100.0) * Math.max(0.2, casts);
+        // Healing Efficiency far below -100 % (Immolation's -650 %) heals nothing, never less: the
+        // log of a negative heal was NaN, and a NaN score threw the weapon out as "does not fit"
+        double heal = Math.max(1e-9, Math.max(1, health) * (1 + stat(s, "healingEfficiency") / 100.0) * Math.max(0.2, casts));
         double fHeal = Math.max(0.2, 1 + model("healWeight", 0) * Math.log(heal / regenScale));
         // Boss fights reward a big hit per cast (rules.model.burstWeight), loot runs Loot Bonus and
         // Loot Quality (rules.model.lootWeight); both 0 unless the goal asks for them

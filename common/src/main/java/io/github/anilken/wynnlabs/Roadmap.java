@@ -211,7 +211,7 @@ final class Roadmap {
             List<String> out = Build.fitAround(baseline, fixed, earned);
             TriConsumer tc = trace;
             if (tc != null && !out.isEmpty()) {
-                tc.accept(level, Slot.UNKNOWN, "chosen items: " + out + " taken out to fit the skill points");
+                tc.accept(level, Slot.UNKNOWN, L.t("wynnlabs.road.trace_locks_out", out));
             }
         }
         Build.Eval after = baseline == null ? null : Build.allocate(baseline, level, earned);
@@ -274,7 +274,7 @@ final class Roadmap {
                     continue;
                 }
                 double gain = (obj / baseObj - 1) * 100;
-                trace(m, Slot.RING, info, String.format(java.util.Locale.ROOT, "other hand %.2f%% in %s", gain, slot));
+                trace(m, Slot.RING, info, L.t("wynnlabs.road.trace_other_hand", pct(gain), slot));
                 if (gain > bestGain) {
                     bestGain = gain;
                     best = info;
@@ -518,16 +518,15 @@ final class Roadmap {
         TriConsumer tc = trace;
         if (hit) {
             if (tc != null) {
-                tc.accept(c.m(), Slot.RING, "cache hit: the search's set comes from an earlier map ("
-                        + (chosen == null ? "none beat the picks" : setKey(chosen)) + ")");
+                tc.accept(c.m(), Slot.RING, L.t("wynnlabs.road.trace_cache_hit",
+                        chosen == null ? L.t("wynnlabs.road.trace_cache_none") : setKey(chosen)));
             }
         } else {
             Scored best = searchBest(c, build, cur, s0);
             double from = judged(cur, c.prev(), c.m());
             if (best.j() > from * 1.002 && !setKey(best.set()).equals(setKey(build))) {
                 chosen = best.set();
-                note(c.m(), String.format(java.util.Locale.ROOT, "search set %+.2f%% over the slot picks",
-                        (best.j() / from - 1) * 100));
+                note(c.m(), L.t("wynnlabs.road.trace_search_set", signedPct((best.j() / from - 1) * 100)));
             }
             BeamCache.put(ck, chosen);
         }
@@ -546,7 +545,7 @@ final class Roadmap {
         Scored inc = new Scored(new LinkedHashMap<>(build), cur, from);
         if (!beam.isEmpty() && beam.get(0).j() > from * 1.002) {
             inc = beam.get(0);
-            note(m, String.format(java.util.Locale.ROOT, "beam set %+.2f%% over the slot picks", (inc.j() / from - 1) * 100));
+            note(m, L.t("wynnlabs.road.trace_beam_set", signedPct((inc.j() / from - 1) * 100)));
         }
         if (c.fixed().isEmpty()) {
             inc = exactSearch(c, inc);              // its ring pairs know no chosen hand
@@ -555,7 +554,7 @@ final class Roadmap {
         Map<String, List<Damage.Piece>> main = slotPools(c);
         Scored first = localSearch(c, inc.set(), main);
         if (first != null && better(first, inc)) {
-            note(m, String.format(java.util.Locale.ROOT, "local search %+.2f%% from the beam's set", (first.j() / inc.j() - 1) * 100));
+            note(m, L.t("wynnlabs.road.trace_local_search", signedPct((first.j() / inc.j() - 1) * 100)));
             inc = first;
         }
         Perf.end("roadmap.local", t);
@@ -573,7 +572,7 @@ final class Roadmap {
             List<Start> more = new ArrayList<>();
             for (Seed s : setSeeds(inc.set(), inc.eval(), c.pools(), c.sets(), c.owned(), c.buyable(), c.fixed(), m,
                     c.earned(), c.prev())) {
-                addStart(more, seen, c, build, "set (round " + (round + 1) + ")", s.build());
+                addStart(more, seen, c, build, L.t("wynnlabs.road.trace_start_set_round", round + 1), s.build());
             }
             if (more.isEmpty()) {
                 break;
@@ -594,6 +593,16 @@ final class Roadmap {
             hook.accept(m, c.earned(), c.prev(), main, inc);
         }
         return inc;
+    }
+
+    /** A % for the trace, two places ("3.14"). */
+    private static String pct(double v) {
+        return String.format(java.util.Locale.ROOT, "%.2f", v);
+    }
+
+    /** A % change for the trace, signed ("+3.14"). */
+    private static String signedPct(double v) {
+        return String.format(java.util.Locale.ROOT, "%+.2f", v);
     }
 
     /** A trace line for the milestone's search. */
@@ -806,7 +815,7 @@ final class Roadmap {
             if (best == null) {
                 return inc;
             }
-            note(c.m(), String.format(java.util.Locale.ROOT, "local swap %+.2f%% judged in full", (best.j() / inc.j() - 1) * 100));
+            note(c.m(), L.t("wynnlabs.road.trace_local_swap", signedPct((best.j() / inc.j() - 1) * 100)));
             Scored on = localSearch(c, best.set(), pools);
             inc = on != null && better(on, best) ? on : best;
         }
@@ -856,20 +865,20 @@ final class Roadmap {
         int more = (int) Rules.sub("roadmap", "beamStarts", 4);
         for (int i = 0, n = 0; i < beam.size() && n < more; i++) {
             int had = out.size();
-            addStart(out, seen, c, build, "beam #" + (i + 1), beam.get(i).set());
+            addStart(out, seen, c, build, L.t("wynnlabs.road.trace_start_beam", i + 1), beam.get(i).set());
             n += out.size() - had;
         }
         for (Seed s : setSeeds(inc.set(), inc.eval(), c.pools(), c.sets(), c.owned(), c.buyable(), c.fixed(), c.m(),
                 c.earned(), c.prev())) {
-            addStart(out, seen, c, build, "set", s.build());
+            addStart(out, seen, c, build, L.t("wynnlabs.road.trace_start_set"), s.build());
         }
-        addStart(out, seen, c, build, "last milestone", c.start());
-        addStart(out, seen, c, build, "worn", c.worn());
+        addStart(out, seen, c, build, L.t("wynnlabs.road.trace_start_last"), c.start());
+        addStart(out, seen, c, build, L.t("wynnlabs.road.trace_start_worn"), c.worn());
         Map<String, Damage.Piece> fresh = new LinkedHashMap<>(inc.set());
         main.forEach((slot, pool) -> fresh.put(slot, pool.get(0)));
-        addStart(out, seen, c, build, "each slot's best", fresh);
+        addStart(out, seen, c, build, L.t("wynnlabs.road.trace_start_each"), fresh);
         for (ItemData w : weaponStarts(c, inc)) {
-            out.add(new Start("weapon " + w.name(), inc.set(), w));
+            out.add(new Start(L.t("wynnlabs.road.trace_start_weapon", w.name()), inc.set(), w));
         }
         return out;
     }
@@ -1027,6 +1036,9 @@ final class Roadmap {
      * starts' order, so the result never depends on which thread was quicker. A start whose own
      * score, raised by rules.roadmap.startReach (10 %), still cannot reach the best so far is
      * not searched (the bar is the best before this round, the same however the work is split).
+     * A set built around a weapon gets rules.roadmap.weaponStartReach (25 %): it is put together
+     * slot by slot in one pass, and the search often lifts it by more than 10 % (a Mythic that
+     * wants its own skill, Transfiguration at Lv 120 started 10.2 % behind and was never searched).
      */
     private static Scored runStarts(Ctx c, List<Start> starts, Scored inc, Map<String, List<Damage.Piece>> main) {
         if (starts.isEmpty()) {
@@ -1034,6 +1046,7 @@ final class Roadmap {
         }
         double bar = inc.j();
         double reach = Rules.sub("roadmap", "startReach", 0.10);
+        double weaponReach = Rules.sub("roadmap", "weaponStartReach", 0.25);
         List<java.util.function.Supplier<Scored>> work = new ArrayList<>();
         for (Start s : starts) {
             work.add(() -> {
@@ -1047,17 +1060,16 @@ final class Roadmap {
                     at = e == null ? null : new Scored(s.set(), e, judged(e, c.prev(), c.m()));
                 }
                 if (at == null) {
-                    note(c.m(), "start " + s.why() + ": cannot be worn");
+                    note(c.m(), L.t("wynnlabs.road.trace_start_unworn", s.why()));
                     return null;
                 }
-                if (at.j() * (1 + reach) < bar) {
-                    note(c.m(), String.format(java.util.Locale.ROOT, "start %s: %+.2f%%, too far behind to search",
-                            s.why(), (at.j() / bar - 1) * 100));
+                if (at.j() * (1 + (s.weapon() != null ? weaponReach : reach)) < bar) {
+                    note(c.m(), L.t("wynnlabs.road.trace_start_behind", s.why(), signedPct((at.j() / bar - 1) * 100)));
                     return at;
                 }
                 Scored end = localSearch(c, at.set(), pools);
-                note(c.m(), String.format(java.util.Locale.ROOT, "start %s: %+.2f%%, searched to %+.2f%%", s.why(),
-                        (at.j() / bar - 1) * 100, end == null ? Double.NaN : (end.j() / bar - 1) * 100));
+                note(c.m(), L.t("wynnlabs.road.trace_start_searched", s.why(), signedPct((at.j() / bar - 1) * 100),
+                        signedPct(end == null ? Double.NaN : (end.j() / bar - 1) * 100)));
                 return end == null ? at : end;
             });
         }
@@ -1066,8 +1078,7 @@ final class Roadmap {
         for (int i = 0; i < ends.size(); i++) {
             Scored e = ends.get(i);
             if (e != null && e.j() > best.j() * 1.002 && better(e, best)) {
-                note(c.m(), String.format(java.util.Locale.ROOT, "start %s wins %+.2f%%", starts.get(i).why(),
-                        (e.j() / best.j() - 1) * 100));
+                note(c.m(), L.t("wynnlabs.road.trace_start_wins", starts.get(i).why(), signedPct((e.j() / best.j() - 1) * 100)));
                 best = e;
             }
         }
@@ -1739,7 +1750,7 @@ final class Roadmap {
         if (tr != null) {
             StringBuilder c = new StringBuilder();
             cands.forEach((sl, ps) -> c.append(sl).append(ps.stream().map(Damage.Piece::name).toList()).append(' '));
-            tr.accept(m, Slot.RING, "exact over " + sets.size() * (long) rings.size() + " sets: " + c);
+            tr.accept(m, Slot.RING, L.t("wynnlabs.road.trace_exact_over", sets.size() * (long) rings.size(), c));
         }
         long started = System.nanoTime();
         double[] best = {curJ * 1.002};
@@ -1775,15 +1786,15 @@ final class Roadmap {
             })))).get();
         } catch (Exception e) {
             if (tr != null) {
-                tr.accept(m, Slot.RING, "exact failed: " + e);
+                tr.accept(m, Slot.RING, L.t("wynnlabs.road.trace_exact_failed", e));
             }
             return inc;                             // the beam's set stands
         } finally {
             fj.shutdown();
         }
         if (tr != null) {
-            tr.accept(m, Slot.RING, String.format(java.util.Locale.ROOT, "exact took %d ms, best %.0f against %.0f",
-                    (System.nanoTime() - started) / 1_000_000, best[0], curJ));
+            tr.accept(m, Slot.RING, L.t("wynnlabs.road.trace_exact_took", (System.nanoTime() - started) / 1_000_000,
+                    Math.round(best[0]), Math.round(curJ)));
         }
         if (bestSet[0] == null) {
             return inc;
@@ -1802,7 +1813,7 @@ final class Roadmap {
         if (ev == null) {
             return inc;
         }
-        note(m, String.format(java.util.Locale.ROOT, "exact set %+.2f%% over the beam's", (best[0] / curJ - 1) * 100));
+        note(m, L.t("wynnlabs.road.trace_exact_set", signedPct((best[0] / curJ - 1) * 100)));
         return new Scored(win, ev, judged(ev, prev, m));
     }
 
@@ -2118,6 +2129,13 @@ final class Roadmap {
         }
     }
 
+    /** A "skip: …" line for the trace, its reason a language key: nothing is put together while it is off. */
+    private static void skip(int m, Slot t, ItemData info, String key, Object... args) {
+        if (trace != null) {
+            trace(m, t, info, L.t("wynnlabs.road.trace_skip", L.t(key, args)));
+        }
+    }
+
     /** For the trace: how the build's parts move with {@code cand} in {@code slot}, points spread anew. */
     private static String parts(Map<String, Damage.Piece> base, String slot, Damage.Piece cand, int m, int earned) {
         Build.Eval a = Build.allocate(base, m, earned);
@@ -2126,7 +2144,7 @@ final class Roadmap {
         Build.Eval b = Build.allocate(with, m, earned);
         if (a == null || b == null) {
             String why = Build.whyNot(b == null ? with : base, earned);
-            return why != null ? why : "no allocation";
+            return why != null ? why : L.t("wynnlabs.road.trace_no_alloc");
         }
         Damage.Result x = a.result();
         Damage.Result y = b.result();
@@ -2149,14 +2167,16 @@ final class Roadmap {
     }
 
     /**
-     * Per Mythic name, the lowest level of a later version of it in the item data: Masterwork
-     * Aftershock (Lv 100) after Aftershock (Lv 77), or an Ascended one.
+     * Per Mythic name, the lowest level of a later version of it in the item data that you can
+     * get ({@code gettable}): Masterwork Aftershock (Lv 100) after Aftershock (Lv 77), or an
+     * Ascended one. A later version with no known source (Ascended Olympic) or over the budget
+     * replaces nothing: the older Mythic stays the best of its kind.
      */
-    private static Map<String, Integer> laterVersions(GameState state) {
+    static Map<String, Integer> laterVersions(GameState state, java.util.function.Predicate<ItemData> gettable) {
         Map<String, Integer> out = new HashMap<>();
         state.allGear().forEach(info -> {
             for (String p : new String[] {"Masterwork ", "Ascended "}) {
-                if (info.name().startsWith(p)) {
+                if (info.name().startsWith(p) && gettable.test(info)) {
                     out.merge(info.name().substring(p.length()), info.requirements().level(), Math::min);
                 }
             }
@@ -2168,12 +2188,34 @@ final class Roadmap {
      * A Mythic that no later version replaces by milestone {@code m} (Freedom, Ignis, Hadal at
      * Lv 120): still the best of its kind there however far below the level window it sits.
      */
-    private static boolean lastOfItsKind(ItemData info, int m, Map<String, Integer> laterVersion) {
+    static boolean lastOfItsKind(ItemData info, int m, Map<String, Integer> laterVersion) {
         if (!info.tier().name().equals("MYTHIC")) {
             return false;
         }
         Integer later = laterVersion.get(info.name());
         return later == null || later > m;
+    }
+
+    /**
+     * For the trace: why {@code cand} cannot go into {@code slot} of the milestone's set, null when
+     * the skill points are not the reason. A piece no set can wear is skipped as impossible
+     * ({@link Build#impossible}); one only this set cannot wear says what the set lacks
+     * ({@link Build#whyNot}), and a weapon is then no skip at all: the search builds sets around
+     * weapons ({@link #weaponStarts}) with the gear that gives the points.
+     */
+    private static String whyOut(Map<String, Damage.Piece> baseline, String slot, Damage.Piece cand, Slot t, int earned,
+            int[] reach) {
+        String alone = Build.impossible(cand, earned, reach);
+        if (alone != null) {
+            return L.t("wynnlabs.road.trace_skip", alone);
+        }
+        Map<String, Damage.Piece> trial = new LinkedHashMap<>(baseline);
+        trial.put(slot, cand);
+        String why = Build.whyNot(trial, earned, reach);
+        if (why == null) {
+            return null;
+        }
+        return L.t(t.isWeapon() ? "wynnlabs.road.trace_around" : "wynnlabs.road.trace_skip", why);
     }
 
     /**
@@ -2295,7 +2337,7 @@ final class Roadmap {
             // Wynncraft refuses a second piece of an exclusive group (Ornate Shadow, the Hives …)
             String clash = Exclusive.clash(baseline, slot, Exclusive.group(info));
             if (clash != null) {
-                trace(m, t, info, "skip in " + slot + ": " + Exclusive.group(info) + " with " + clash);
+                trace(m, t, info, L.t("wynnlabs.road.trace_clash", slot, Exclusive.group(info), clash));
                 continue;
             }
             // a weapon sets the element, so the points must be spread anew for it:
@@ -2818,8 +2860,6 @@ final class Roadmap {
             }
             cands.computeIfAbsent(t, k -> new ArrayList<>()).add(info);
         });
-        // a Mythic's later version (Masterwork Aftershock, an Ascended one) by the Mythic's name and its level
-        Map<String, Integer> laterVersion = laterVersions(state);
 
         Map<String, Integer> abilities = state.abilityPlan();
         // the tree read once for the run; each milestone scores with the nodes it will have,
@@ -2893,6 +2933,10 @@ final class Roadmap {
             int maxOff = maxOff(m);
             List<String> badTiers = badTiers(m);
             List<String> badSources = badSources(m);
+            // a Mythic's later version (Masterwork Aftershock, an Ascended one) by the Mythic's
+            // name and its level, when this milestone lets you get it
+            Map<String, Integer> laterVersion = laterVersions(state, info -> !badTiers.contains(info.tier().name())
+                    && (owned.contains(info.name()) || !Shopping.excluded(info, badSources)) && affordable.test(info));
             // today's Trade Market listings only matter for what you would buy soon, not 70 levels on
             boolean listingsMatter = m - level <= (int) Rules.sub("shopping", "aheadLevels", 5);
             List<Gear> gear = new ArrayList<>(steps.isEmpty() ? lockRows : List.of());   // the chosen items: rows of the first milestone
@@ -2975,37 +3019,37 @@ final class Roadmap {
                     if (judge == null || allocM == null && wornNames.contains(lname)
                             || info.requirements().level() < floor && !lastOfItsKind(info, m, laterVersion)
                             || badTiers.contains(info.tier().name())) {
-                        trace(m, t, info, "skip: worn / below window / tier");
+                        skip(m, t, info, "wynnlabs.road.trace_window");
                         continue;
                     }
                     // the weapon decides the element, so it is never thrown out for its skills
                     int off = t.isWeapon() ? 0 : offPoints(info, preferred, cover);
                     if (off > maxOff) {
-                        trace(m, t, info, "skip: off-skill " + off + " points past the set's > " + maxOff);
+                        skip(m, t, info, "wynnlabs.road.trace_off_skill", off, maxOff);
                         continue;
                     }
                     if (!affordable.test(info)) {
                         // over the budget, or a tradable piece with no known price: never suggested under one
-                        trace(m, t, info, "skip: over the budget");
+                        skip(m, t, info, "wynnlabs.road.trace_budget");
                         budgetCut.add(m);
                         continue;
                     }
                     // a few levels ahead only for the comparison panel's alternatives
                     boolean future = info.requirements().level() > m;
                     if (info.requirements().level() > m + peek || future && allocM == null) {
-                        trace(m, t, info, "skip: above the milestone");
+                        skip(m, t, info, "wynnlabs.road.trace_above");
                         continue;
                     }
                     // a quest the piece asks for that you have not done: not before its level
                     // (Sodeta Boots want Lost Soles); from there on it stays, with a caution
                     QuestBook.Entry quest = Shopping.questPending(state, info);
                     if (quest != null && quest.level() > m) {
-                        trace(m, t, info, "skip: quest " + quest.name() + " is Lv " + quest.level());
+                        skip(m, t, info, "wynnlabs.road.trace_quest", quest.name(), quest.level());
                         continue;
                     }
                     int total = info.requirements().skills().stream().mapToInt(r -> r.points()).sum();
                     if (total > earnedThen) {
-                        trace(m, t, info, "skip: needs " + total + " points > " + earnedThen);
+                        skip(m, t, info, "wynnlabs.road.trace_points", total, earnedThen);
                         continue;
                     }
                     if (!future && info.set().isPresent()) {
@@ -3046,18 +3090,19 @@ final class Roadmap {
                             if (trace != null) {
                                 // the allocator's reason, for the first slot it could take
                                 String why = null;
+                                boolean held = false;           // an earlier milestone's pick, in the set already
                                 for (String slot : t == Slot.RING ? new String[] {"RING1", "RING2"} : new String[] {Build.slotOf(t, 0)}) {
                                     if (slot != null) {
-                                        Map<String, Damage.Piece> trial = new LinkedHashMap<>(baseline);
-                                        trial.put(slot, cand);
-                                        why = Build.whyNot(trial, earnedThen, reach);
+                                        held |= baseline.get(slot) != null && baseline.get(slot).key().equals(cand.key());
+                                        why = whyOut(baseline, slot, cand, t, earnedThen, reach);
                                         if (why == null) {
                                             break;
                                         }
                                     }
                                 }
-                                trace(m, t, info, "skip: " + (why != null ? why
-                                        : baseObj <= 0 ? "nothing to score against yet (no weapon in the build)" : "does not fit the build"));
+                                trace(m, t, info, why != null ? why : L.t("wynnlabs.road.trace_skip", L.t(held
+                                        ? "wynnlabs.road.trace_held" : baseObj <= 0
+                                        ? "wynnlabs.road.trace_no_weapon" : "wynnlabs.road.trace_no_fit")));
                             }
                             continue;
                         }
@@ -3071,11 +3116,11 @@ final class Roadmap {
                             sc -= Rules.sub("shopping", "respecPenaltyPercent", 3);
                         }
                         if (Shopping.excluded(info, badSources) && (!owned.contains(info.name()) || buysOwned(cand))) {
-                            trace(m, t, info, "skip: source " + Shopping.origin(info));
+                            skip(m, t, info, "wynnlabs.road.trace_source", Shopping.origin(info));
                             continue;               // never offer what cannot be obtained
                         }
-                        trace(m, t, info, String.format(java.util.Locale.ROOT, "ranked %.2f%% in %s", sc, slotUsed)
-                                + (buysOwned(cand) ? " (a fresh copy)" : "")
+                        trace(m, t, info, L.t("wynnlabs.road.trace_ranked", pct(sc), slotUsed)
+                                + (buysOwned(cand) ? L.t("wynnlabs.road.trace_fresh") : "")
                                 + (trace != null && slotUsed != null ? " | " + parts(baseline, slotUsed, cand, m, earnedThen) : ""));
                         pool.add(new Object[] {info, sc, slotUsed});
                         if (future) {
@@ -3131,7 +3176,7 @@ final class Roadmap {
                         ItemData info = (ItemData) r[0];
                         boolean side = preferMarket && !Shopping.tradable(info);
                         if (side ? other++ >= keep : market++ >= keep) {
-                            trace(m, t, info, "skip: not in the best " + keep);
+                            skip(m, t, info, "wynnlabs.road.trace_not_best", keep);
                             continue;
                         }
                         String slotUsed = (String) r[3];
@@ -3143,11 +3188,9 @@ final class Roadmap {
                             Build.Eval fe = fullEval(baseline, slotUsed, cand, m, earnedThen);
                             if (fe == null || baseJ <= 0 && !t.isWeapon()) {
                                 if (trace != null) {
-                                    Map<String, Damage.Piece> trial = new LinkedHashMap<>(baseline);
-                                    trial.put(slotUsed, cand);
-                                    String why = Build.whyNot(trial, earnedThen, reach);
-                                    trace(m, t, info, "skip: " + (why != null ? why
-                                            : fe == null ? "no allocation" : "nothing to score against yet (no weapon in the build)"));
+                                    String why = whyOut(baseline, slotUsed, cand, t, earnedThen, reach);
+                                    trace(m, t, info, why != null ? why : L.t("wynnlabs.road.trace_skip", L.t(fe == null
+                                            ? "wynnlabs.road.trace_no_alloc" : "wynnlabs.road.trace_no_weapon")));
                                 }
                                 continue;
                             }
@@ -3190,12 +3233,12 @@ final class Roadmap {
                             boolean reroll = buy && wornNames.contains(info.name().toLowerCase(java.util.Locale.ROOT));
                             if (pickBy < Rules.sub("shopping", "minGainPercent", 10)
                                     && (reroll || pickBy < Build.gainThreshold(baseline.get(slotUsed), m))) {
-                                trace(m, t, info, String.format(java.util.Locale.ROOT, "skip: full %.2f%% (%.2f%% to choose by) under the bar %.2f%% (slot %s holds Lv %d)",
-                                        full, pickBy, Build.gainThreshold(baseline.get(slotUsed), m), slotUsed,
-                                        baseline.get(slotUsed) == null ? -1 : baseline.get(slotUsed).level()));
+                                skip(m, t, info, "wynnlabs.road.trace_under_bar",
+                                        pct(full), pct(pickBy), pct(Build.gainThreshold(baseline.get(slotUsed), m)), slotUsed,
+                                        baseline.get(slotUsed) == null ? -1 : baseline.get(slotUsed).level());
                                 continue;
                             }
-                            trace(m, t, info, String.format(java.util.Locale.ROOT, "judged %.2f%% in %s", full, slotUsed));
+                            trace(m, t, info, L.t("wynnlabs.road.trace_judged", pct(full), slotUsed));
                             eff = scaled(pickBy, (double) r[4]);     // keeps the "no listings" factor
                             sc = full;
                         }
@@ -3227,7 +3270,7 @@ final class Roadmap {
                         });
                         Object[] pick = closest(cleared, topScore, have, listingsMatter);
                         if (pick != null && pick[0] != top) {
-                            trace(m, t, (ItemData) pick[0], "tie-break over " + top.name());
+                            trace(m, t, (ItemData) pick[0], L.t("wynnlabs.road.trace_tie", top.name()));
                             top = (ItemData) pick[0];   // topScore stays the best's: as good a buy
                             topReal = (double) pick[2];
                             topSlot = (String) pick[3];

@@ -882,7 +882,7 @@ final class Build {
             // what the build's own gear gives here already counts in v; reach is what the slots
             // could give at best, so v past 100 by more than that cannot be met by any set
             int could = reach == null ? 0 : reach[k.ordinal()];
-            String name = k.name().toLowerCase(java.util.Locale.ROOT);
+            String name = skillText(k);
             if (v - could > 100) {
                 over.append(over.length() > 0 ? ", " : "").append(v).append(' ').append(name);
             } else {
@@ -897,6 +897,45 @@ final class Build {
         }
         if (used > earned) {
             return L.t("wynnlabs.road.why_points", used, earned, used - earned);
+        }
+        return null;
+    }
+
+    /** A skill's name in the mod's language, for {@link #whyNot}'s reasons ("5 Strength"). */
+    private static String skillText(SkillKind k) {
+        return L.t(switch (k) {
+            case STRENGTH -> "wynnlabs.caution.strength";
+            case DEXTERITY -> "wynnlabs.caution.dexterity";
+            case INTELLIGENCE -> "wynnlabs.caution.intelligence";
+            case DEFENCE -> "wynnlabs.caution.defence";
+            case AGILITY -> "wynnlabs.caution.agility";
+        });
+    }
+
+    /**
+     * Why {@code piece} cannot be worn in any set, for the road map trace: a skill past 100 even
+     * with the most the milestone's gear gives it ({@code reach}, as for {@link #whyNot}), or more
+     * points in all than earned once each skill takes that most off (Transfiguration's 70/70/55
+     * fits 200 points; with the Intelligence set it was judged in, 237 did not). The other pieces
+     * of the set it was tried in do not count: they can be swapped. Null when some set can wear it.
+     */
+    static String impossible(Damage.Piece piece, int earned, int[] reach) {
+        int[] min = minPoints(java.util.List.of(piece));
+        StringBuilder over = new StringBuilder();
+        int used = 0;
+        for (SkillKind k : SkillKind.values()) {
+            int v = min[k.ordinal()];
+            int could = reach == null ? 0 : reach[k.ordinal()];
+            if (v - could > 100) {
+                over.append(over.length() > 0 ? ", " : "").append(v).append(' ').append(skillText(k));
+            }
+            used += Math.max(0, v - could);
+        }
+        if (over.length() > 0) {
+            return L.t("wynnlabs.road.why_over", over);
+        }
+        if (used > earned) {
+            return L.t("wynnlabs.road.why_alone", used, earned, used - earned);
         }
         return null;
     }

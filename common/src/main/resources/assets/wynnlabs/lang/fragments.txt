@@ -78,3 +78,46 @@ wynnlabs.questadv.reason_unlocks        joined with ", " after the XP; L.cap as 
 wynnlabs.road.why_from_gear             after "skip: " in the road map trace
 wynnlabs.road.why_over                  after "skip: " in the road map trace
 wynnlabs.road.why_points                after "skip: " in the road map trace
+wynnlabs.road.why_alone                 after "skip: " in the road map trace
+wynnlabs.road.trace_skip                after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_no_weapon           after "skip: " in the road map trace
+wynnlabs.road.trace_no_fit              after "skip: " in the road map trace
+wynnlabs.road.trace_held                after "skip: " in the road map trace
+wynnlabs.road.trace_no_alloc            after "skip: " in the road map trace
+wynnlabs.road.trace_window              after "skip: " in the road map trace
+wynnlabs.road.trace_off_skill           after "skip: " in the road map trace
+wynnlabs.road.trace_budget              after "skip: " in the road map trace
+wynnlabs.road.trace_above               after "skip: " in the road map trace
+wynnlabs.road.trace_quest               after "skip: " in the road map trace
+wynnlabs.road.trace_points              after "skip: " in the road map trace
+wynnlabs.road.trace_source              after "skip: " in the road map trace
+wynnlabs.road.trace_not_best            after "skip: " in the road map trace
+wynnlabs.road.trace_under_bar           after "skip: " in the road map trace
+wynnlabs.road.trace_clash               after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_ranked              after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_fresh               a start's name or a note inside a road map trace line
+wynnlabs.road.trace_judged              after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_tie                 after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_other_hand          after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_locks_out           after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_cache_hit           after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_cache_none          a start's name or a note inside a road map trace line
+wynnlabs.road.trace_search_set          after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_beam_set            after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_local_search        after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_local_swap          after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_exact_set           after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_exact_over          after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_exact_failed        after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_exact_took          after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_start_beam          a start's name or a note inside a road map trace line
+wynnlabs.road.trace_start_set           a start's name or a note inside a road map trace line
+wynnlabs.road.trace_start_set_round     a start's name or a note inside a road map trace line
+wynnlabs.road.trace_start_last          a start's name or a note inside a road map trace line
+wynnlabs.road.trace_start_worn          a start's name or a note inside a road map trace line
+wynnlabs.road.trace_start_each          a start's name or a note inside a road map trace line
+wynnlabs.road.trace_start_weapon        a start's name or a note inside a road map trace line
+wynnlabs.road.trace_start_unworn        after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_start_behind        after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_start_searched      after "Name LvN: " or as a note in the road map trace
+wynnlabs.road.trace_start_wins          after "Name LvN: " or as a note in the road map trace
