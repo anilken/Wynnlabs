@@ -352,7 +352,9 @@ public final class Advice {
                     }
                 }
             }
-            if (req.quest().isPresent()) {
+            // the quest book only when the game's own checkmarks are not read: a quest just done
+            // is ticked on the item before the book's next scan
+            if (req.quest().isPresent() && (marks == null || !marks.known())) {
                 for (QuestBook.Entry q : QuestBook.all()) {
                     if (q.name().equalsIgnoreCase(req.quest().get()) && !"COMPLETED".equals(q.status())) {
                         why.add(L.t("wynnlabs.advice.why_quest", req.quest().get()));

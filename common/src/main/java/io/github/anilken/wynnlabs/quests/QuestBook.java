@@ -198,7 +198,7 @@ public final class QuestBook {
     private static long completedAt;
 
     /**
-     * Chat: "[Quest Completed]" followed by the quest's name. The finished quest leaves the
+     * Chat: "[Quest Completed]" (or "[Görev Tamamlandı]") and the quest's name. The finished quest leaves the
      * suggestions at once, without waiting for the content book to be opened again.
      */
     public static void onChat(net.minecraft.network.chat.Component message, boolean overlay) {
@@ -210,7 +210,8 @@ public final class QuestBook {
             return;
         }
         long now = System.currentTimeMillis();
-        if (text.contains("[Quest Completed]")) {
+        // the banner in the game's English and in its Turkish translation
+        if (text.contains("[Quest Completed]") || text.contains("[Görev Tamamlandı]")) {
             // the game sends the quest's name first, then "[Quest Completed]" (Frost Bite stayed
             // open when only a name after the banner counted)
             if (now - lastLineAt < 3000 && complete(lastLine)) {
@@ -234,7 +235,9 @@ public final class QuestBook {
     private static boolean complete(String name) {
         load();
         for (Entry e : ENTRIES.values()) {
-            if (e.name().equalsIgnoreCase(name) && !"COMPLETED".equals(e.status())) {
+            // the game's Turkish translation names the quest by its translated title
+            boolean named = e.name().equalsIgnoreCase(name) || QuestGuides.title(e.name()).equalsIgnoreCase(name);
+            if (named && !"COMPLETED".equals(e.status())) {
                 ENTRIES.put(e.name(), new Entry(e.name(), "COMPLETED", e.level(), e.length(), e.xp(), e.met(), e.task(),
                         e.x(), e.y(), e.z(), e.bookDistance(), System.currentTimeMillis(), e.type(), e.difficulty()));
                 save();
