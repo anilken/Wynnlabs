@@ -329,10 +329,9 @@ public final class Coach {
         book(m, castName, castDamage, castHits, castMana, window, castLasting ? 0 : castExpected, castDuration,
                 d != null && d.breakdown().summonRaw()[0] > 0);
         if (d != null && n + 1 >= CAL_CASTS && (n + 1) % 10 == 0) {
-            // the main attack weighed as the plan scored it (the ability tree you have), so the
-            // background left for the summons is the one the model's summons are compared with
-            JsonObject change = calibrationChanges(m, Rules.get().getAsJsonObject("model"), d.breakdown(),
-                    DamageReport.mainAttackWeight());
+            // the whole modelled main attack comes off the background (the meter hears every hit),
+            // so what is left is compared with the model's summons
+            JsonObject change = calibrationChanges(m, Rules.get().getAsJsonObject("model"), d.breakdown());
             if (change != null) {
                 Rules.update(change);           // only a real change: every write rebuilds all advice
             }
@@ -453,9 +452,8 @@ public final class Coach {
      * spellCalibration the spells without their own fall back to. Kept within 0.7-1.4 until steady
      * (50 casts, or 5 minutes of fighting for summons), then 0.5-10 (summons 0.05-10); a value is
      * written only when it moves by a tenth or more, as each write rebuilds all advice.
-     * {@code mainAttackWeight} is kept for callers and no longer used.
      */
-    public static JsonObject calibrationChanges(JsonObject m, JsonObject model, Damage.Breakdown b, double mainAttackWeight) {
+    public static JsonObject calibrationChanges(JsonObject m, JsonObject model, Damage.Breakdown b) {
         JsonObject all = m.has("spells") ? m.getAsJsonObject("spells") : new JsonObject();
         JsonObject out = new JsonObject();
         double globalCal = model != null && model.has("spellCalibration") ? model.get("spellCalibration").getAsDouble() : 1.0;
@@ -507,7 +505,7 @@ public final class Coach {
         double summons = b == null ? 0 : b.summonRaw()[0];
         if (bg != null && summons > 0 && bg.get("seconds").getAsDouble() >= 60) {
             // the meter hears every main attack hit: it comes off at its full modelled rate, not
-            // at the goal's weight (a score preference), so mainAttackWeight is not used here
+            // at the goal's weight (a score preference)
             double main = b.mainTotal();
             double target = boundedSummon(Math.max(0, bg.get("perSecond").getAsDouble() - main) / summons,
                     bg.get("seconds").getAsDouble() >= STEADY_SECONDS);

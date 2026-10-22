@@ -79,7 +79,7 @@ A change to the build score or the road map search SHALL be accepted only when a
 ## MODIFIED Requirements
 
 ### Requirement: Feedback moves weights within limits
-When the player wears something other than the advice, the model's weights MAY be nudged. Each nudge SHALL be small, and no weight SHALL go past a cap (default 1.5× its default). Values the player set by hand SHALL be kept. Weights above the cap from earlier nudges SHALL be clamped once, with a chat line naming them. While a fighting goal (Damage, Safe, Boss) is set, the XP weight SHALL NOT be nudged up.
+When the player wears something other than the advice, the model's weights MAY be nudged. Each nudge SHALL be small, and no weight SHALL go past a cap (default 1.5× its default). Values the player set by hand SHALL be kept. Weights above the cap from earlier nudges SHALL be clamped once, with a chat line naming them. While a goal that counts XP with diminishing returns is set (Damage, Safe, Boss: rules.model.xpLog 1), the XP weight SHALL NOT be nudged up. Safe keeps its goal XP factor of 1 (it still levels) and is still covered by this rule.
 
 #### Scenario: Repeated nudges
 - **WHEN** the player keeps choosing faster pieces over the advice

@@ -146,7 +146,7 @@ class SummonsCountedOnceTest {
         // the summons really deal 1.6 times the model's: the background between casts says so
         JsonObject measured = new JsonObject();
         Coach.bookBackground(measured, (main + 1.6 * raw) * 400, 400);
-        JsonObject change = Coach.calibrationChanges(measured, Rules.get().getAsJsonObject("model"), base.breakdown(), weight);
+        JsonObject change = Coach.calibrationChanges(measured, Rules.get().getAsJsonObject("model"), base.breakdown());
         assertNotNull(change);
         assertEquals(1.6, change.getAsJsonObject("model").get("summonCalibration").getAsDouble(), 1e-9);
         Rules.update(change);
@@ -159,8 +159,7 @@ class SummonsCountedOnceTest {
         // what the model now puts between casts is what was heard, so measuring again changes nothing
         assertEquals(main + 1.6 * raw, after.mainTotal() + after.summonTotal(),
                 1e-6 * (main + raw));
-        JsonObject twice = Coach.calibrationChanges(measured, Rules.get().getAsJsonObject("model"), after,
-                DamageReport.mainAttackWeight());
+        JsonObject twice = Coach.calibrationChanges(measured, Rules.get().getAsJsonObject("model"), after);
         assertTrue(twice == null || !twice.has("model") || !twice.getAsJsonObject("model").has("summonCalibration"),
                 "no second correction on top of the first: " + twice);
         // and the road map's scoring at today's level sees the same calibrated summons

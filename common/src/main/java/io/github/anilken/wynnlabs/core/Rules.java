@@ -283,9 +283,21 @@ public final class Rules {
         return hash;
     }
 
+    /**
+     * A number from the rules, or {@code fallback} when it is missing, not a number or not finite
+     * (a NaN slipped past every clamp after it: Math.min and Math.max hand NaN on).
+     */
     public static double sub(String group, String key, double fallback) {
         JsonObject g = rules.getAsJsonObject(group);
-        return g != null && g.has(key) && g.get(key).isJsonPrimitive() ? g.get(key).getAsDouble() : fallback;
+        if (g == null || !g.has(key) || !g.get(key).isJsonPrimitive()) {
+            return fallback;
+        }
+        try {
+            double v = g.get(key).getAsDouble();
+            return Double.isFinite(v) ? v : fallback;
+        } catch (NumberFormatException | UnsupportedOperationException e) {
+            return fallback;
+        }
     }
 
     /**

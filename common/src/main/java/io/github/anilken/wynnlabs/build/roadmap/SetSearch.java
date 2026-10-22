@@ -190,10 +190,10 @@ final class SetSearch {
 
     /**
      * The weapons a set is built around: the first rules.roadmap.weaponStarts of the weapon pool
-     * (6 from the endgame level on, 3 before), then for each element none of those (nor the
-     * weapon held) is of, its strongest weapon alone ({@link #elementBests}), then every Mythic
-     * and every weapon you have that the milestone allows, at most rules.roadmap.weaponStartsMax
-     * (16). A weapon judged as a swap into armour made for another element mostly loses, Mythics
+     * (6 from the endgame level on, 3 before), every weapon you have that the milestone allows,
+     * for each element none of those (nor the weapon held) is of its strongest weapon alone
+     * ({@link #elementBests}), then every Mythic, at most rules.roadmap.weaponStartsMax (16) in
+     * all. A weapon judged as a swap into armour made for another element mostly loses, Mythics
      * most of all.
      */
     private static List<ItemData> weaponStarts(Ctx c, Scored inc) {
@@ -224,15 +224,25 @@ final class SetSearch {
                 all.addAll(l);
             }
         });
+        // what you have first, then each element the starts miss, then the Mythics: all within max
+        for (ItemData info : all) {
+            if (out.size() >= max) {
+                break;
+            }
+            if (c.owned().containsKey(info.name()) && info.requirements().level() <= c.m()
+                    && names.add(info.name().toLowerCase(java.util.Locale.ROOT))) {
+                out.add(info);
+            }
+        }
         boolean[] covered = new boolean[Damage.ELEMENTS.length];
         for (ItemData w : all) {
             if (names.contains(w.name().toLowerCase(java.util.Locale.ROOT))) {
-                covered[element(w)] = true;                 // held, or a start from the pool already
+                covered[element(w)] = true;                 // held, or a start already
             }
         }
         covered[0] = true;
         for (ItemData info : elementBests(c, all, covered)) {
-            if (names.add(info.name().toLowerCase(java.util.Locale.ROOT))) {
+            if (out.size() < max && names.add(info.name().toLowerCase(java.util.Locale.ROOT))) {
                 out.add(info);
             }
         }
@@ -240,8 +250,7 @@ final class SetSearch {
             if (out.size() >= max) {
                 break;
             }
-            boolean mythic = info.tier().name().equals("MYTHIC");
-            if ((mythic || c.owned().containsKey(info.name())) && info.requirements().level() <= c.m()
+            if (info.tier().name().equals("MYTHIC") && info.requirements().level() <= c.m()
                     && names.add(info.name().toLowerCase(java.util.Locale.ROOT))) {
                 out.add(info);
             }

@@ -240,11 +240,11 @@ class SpellCalibrationTest {
         spells.add(bash);
         model.add("spells", spells);
         model.addProperty("spellCalibration", 1.0);
-        assertNull(Coach.calibrationChanges(m, model, new Damage.Breakdown(), 0.5), "5 % off: no rules write");
+        assertNull(Coach.calibrationChanges(m, model, new Damage.Breakdown()), "5 % off: no rules write");
         for (int i = 0; i < 200; i++) {
             Coach.book(m, "Bash", 1300, 1, 40, 1.5, 1000, 0, false);
         }
-        JsonObject change = Coach.calibrationChanges(m, model, new Damage.Breakdown(), 0.5);
+        JsonObject change = Coach.calibrationChanges(m, model, new Damage.Breakdown());
         assertNotNull(change);
         // the last ~200 casts: most of them at 1.3
         assertEquals(1.26, change.getAsJsonObject("model").getAsJsonArray("spells").get(0).getAsJsonObject()
@@ -359,7 +359,7 @@ class SpellCalibrationTest {
                 Coach.book(m, sp.name(), raw, 3, 40, 1.5, sp.perCast(), sp.duration(), summons);
                 if (c >= Coach.CAL_CASTS && c % 10 == 0) {
                     JsonObject change = Coach.calibrationChanges(m, Rules.get().getAsJsonObject("model"),
-                            w.detail().breakdown(), Rules.sub("model", "mainAttackWeight", 0.5));
+                            w.detail().breakdown());
                     if (change != null) {
                         Rules.update(change);
                     }

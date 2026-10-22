@@ -104,8 +104,9 @@ public final class Feedback {
         if (b.ehp() > a.ehp() * 1.05 && b.spellDps() <= a.spellDps()) {
             nudge(model, "survivalWeight", 0.4, nudged, L.t("wynnlabs.feedback.survival"));
         }
-        // a fighting goal (rules.model.xpLog 1: Damage, Safe, Boss) keeps XP a side gain: a ring
-        // worn for its XP does not teach the planner to want XP over damage
+        // every goal that counts XP with diminishing returns (rules.model.xpLog 1: Damage, Boss and
+        // also Safe, though Safe keeps its goal XP factor of 1 as it still levels) keeps XP a side
+        // gain: a ring worn for its XP does not teach the planner to want XP over damage or health
         if (b.xp() > a.xp() && Rules.sub("model", "xpLog", 0) <= 0) {
             nudge(model, "xpWeight", 1.0, nudged, L.t("wynnlabs.feedback.xp_bonus"));
         }

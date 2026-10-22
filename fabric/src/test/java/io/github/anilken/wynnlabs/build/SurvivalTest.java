@@ -226,6 +226,19 @@ class SurvivalTest {
         assertEquals(0, DeathCoach.floorRatio(noise, now));
     }
 
+    @Test
+    void aNaNInTheRulesFallsBackToTheDefault() {
+        // Math.min and Math.max hand a NaN on, so it passed every clamp after the read
+        JsonObject model = new JsonObject();
+        model.addProperty("summonAlive", Double.NaN);
+        model.addProperty("ehpFloorMin", Double.POSITIVE_INFINITY);
+        JsonObject r = new JsonObject();
+        r.add("model", model);
+        Rules.use(r);
+        assertEquals(0.6, TreeModel.summonAlive(), 1e-9);
+        assertEquals(0.4, Rules.sub("model", "ehpFloorMin", 0.4), 1e-9);
+    }
+
     private static DeathCoach.Death death(long time, double ehp, double seconds, List<String> mobs) {
         return new DeathCoach.Death(time, 0, 70, 0, 70, "", false, 0, ehp, 4000, seconds, 5, mobs, new ArrayList<>());
     }

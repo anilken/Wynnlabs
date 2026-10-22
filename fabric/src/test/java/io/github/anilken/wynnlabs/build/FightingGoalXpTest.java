@@ -65,6 +65,28 @@ class FightingGoalXpTest {
         assertEquals(1, hand.getAsJsonObject("model").get("goalXp").getAsDouble(), 1e-9);
     }
 
+    @Test
+    void theStepFromTwoKeepsWhatFeedbackTaught() {
+        // rules at 2 already have the survival model of 2: only the goal XP factor is new, and
+        // the summon calibration was fitted against summons that never died
+        JsonObject two = rules("{\"goalPreset\": \"DAMAGE\", \"model\": {\"survivalModel\": 2, \"goalXp\": 1,"
+                + " \"survivalWeight\": 0.33, \"survivalPower\": 0.4, \"ehpFloorScale\": 1.2, \"xpLog\": 0,"
+                + " \"summonCalibration\": 3.5}}");
+        Setup.upgrade(two);
+        JsonObject m = two.getAsJsonObject("model");
+        assertEquals(0.3, m.get("goalXp").getAsDouble(), 1e-9);
+        assertEquals(0.33, m.get("survivalWeight").getAsDouble(), 1e-9, "taught survival weight kept");
+        assertEquals(0.4, m.get("survivalPower").getAsDouble(), 1e-9);
+        assertEquals(1.2, m.get("ehpFloorScale").getAsDouble(), 1e-9);
+        assertEquals(0, m.get("xpLog").getAsDouble(), 1e-9);
+        assertEquals(1, m.get("summonCalibration").getAsDouble(), 1e-9, "summon calibration starts over");
+
+        // below 2 the whole list is reset as before
+        JsonObject one = rules("{\"goalPreset\": \"DAMAGE\", \"model\": {\"survivalModel\": 1, \"survivalWeight\": 0.33}}");
+        Setup.upgrade(one);
+        assertEquals(Setup.weights("DAMAGE")[0], one.getAsJsonObject("model").get("survivalWeight").getAsDouble(), 1e-9);
+    }
+
     private static Damage.Result result(double xp, double speed) {
         return new Damage.Result(1000, 100, 10, 1, 500, xp, speed, 50, new double[0], 500, 300);
     }

@@ -132,7 +132,8 @@ public final class Setup {
 
     /**
      * The goal weights' version: rules written before it get their goal's survival weights, health
-     * floor, XP curve and XP factor again ({@link #upgrade}); 3 brought the fighting goals' XP factor.
+     * floor, XP curve and XP factor again ({@link #upgrade}); 3 brought the fighting goals' XP factor
+     * (from 2 only that, and the summon calibration starts over).
      */
     static final int SURVIVAL_MODEL = 3;
 
@@ -192,10 +193,20 @@ public final class Setup {
             model.remove("survivalWeightBase");
         }
         List<String> keys = List.of(keys());
-        for (String k : new String[] {"survivalWeight", "survivalPower", "ehpFloorScale", "xpLog", "goalXp"}) {
+        int from = model.has("survivalModel") ? model.get("survivalModel").getAsInt() : 0;
+        // rules at 2 have this survival model already (and what feedback taught on top of it):
+        // 3 only brings the goal's XP factor; below 2 the whole list comes again
+        String[] reset = from >= 2 ? new String[] {"goalXp"}
+                : new String[] {"survivalWeight", "survivalPower", "ehpFloorScale", "xpLog", "goalXp"};
+        for (String k : reset) {
             if (!byHand.contains(k)) {
                 model.addProperty(k, w[keys.indexOf(k)]);
             }
+        }
+        // 3: summons hit only while alive and the whole main attack comes off the background, so
+        // a summon calibration fitted before means something else now: it starts over
+        if (from < 3 && model.has("summonCalibration") && !byHand.contains("summonCalibration")) {
+            model.addProperty("summonCalibration", 1.0);
         }
         model.addProperty("survivalModel", SURVIVAL_MODEL);
     }

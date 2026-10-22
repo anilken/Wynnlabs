@@ -59,11 +59,9 @@ class SummonCalibrationFloorTest {
         JsonObject measured = new JsonObject();
         Coach.bookBackground(measured, 362.0 * 600, 600);
         JsonObject model = Rules.get().getAsJsonObject("model");
-        double half = written(Coach.calibrationChanges(measured, model, b, 0.5));
-        double full = written(Coach.calibrationChanges(measured, model, b, 1.0));
+        double half = written(Coach.calibrationChanges(measured, model, b));
         assertTrue(half < 0.5, "362/s steady: summon calibration " + half);
         assertTrue(half >= 0.05, "never below the floor: " + half);
-        assertEquals(half, full, 1e-12, "the main attack weight does not move it");
     }
 
     @Test
@@ -78,10 +76,8 @@ class SummonCalibrationFloorTest {
         JsonObject measured = new JsonObject();
         Coach.bookBackground(measured, (main + 2 * raw) * 600, 600);
         JsonObject model = Rules.get().getAsJsonObject("model");
-        for (double weight : new double[] {0.25, 0.5, 1.0}) {
-            assertEquals(2.0, written(Coach.calibrationChanges(measured, model, b, weight)), 1e-9,
-                    "weight " + weight);
-        }
+        // whatever the goal's main attack weight: it is not an input any more
+        assertEquals(2.0, written(Coach.calibrationChanges(measured, model, b)), 1e-9);
     }
 
     @Test
