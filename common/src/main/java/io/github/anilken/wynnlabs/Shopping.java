@@ -262,7 +262,12 @@ final class Shopping {
                 if (Double.isNaN(best)) {
                     return;
                 }
-                s = (best / plan.result().objective() - 1) * 100 + Rules.communityBonus(info.name());
+                // both sides at the level it is worn (the health floor rises with it)
+                double base = plan.objectiveAt(Math.max(level, lv));
+                if (base <= 0) {
+                    return;
+                }
+                s = (best / base - 1) * 100 + Rules.communityBonus(info.name());
                 String rs = Build.slotOf(t, 0);
                 if (rs != null && Build.needsRespec(plan.pieces(), plan.allocation(), rs, cand,
                         Math.max(plan.earned(), (Math.min(Math.max(level, lv), 101) - 1) * 2))) {

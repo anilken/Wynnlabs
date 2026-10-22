@@ -304,14 +304,9 @@ final class Roadmap {
      * taken back (0.2: a fifth off for a full turn). Points added are free: you earn them.
      */
     static double judged(Build.Eval e, int[] prev, int m) {
+        // the effective health floor (what build-solver asks as min EHP) is part of the score
+        // itself now (Damage.ehpFloor), so the skill points are spread with it in mind too
         double o = e.result().objective();
-        // a floor for effective health (what build-solver asks as min EHP): below it the set
-        // pays by the square of the shortfall, so damage is not bought with paper armour
-        double floor = ehpFloor(m);
-        if (floor > 0 && e.result().ehp() < floor) {
-            double f = e.result().ehp() / floor;
-            o *= f * f;
-        }
         if (prev == null) {
             return o;
         }
@@ -320,26 +315,6 @@ final class Roadmap {
             back += Math.max(0, prev[i] - e.allocation()[i]);
         }
         return o * Math.max(0.5, 1 - Rules.sub("roadmap", "respecWeight", 0.2) * back / 100.0);
-    }
-
-    /** Levels and the effective health a set there should keep (about three quarters of what typical builds wear). */
-    private static final int[][] EHP_FLOOR = {{1, 0}, {50, 1500}, {60, 2500}, {70, 3500}, {80, 5000}, {90, 8000},
-        {100, 12000}, {110, 15000}, {120, 20000}};
-
-    /** The effective health floor at level m, scaled by rules.roadmap.ehpFloorScale (0 turns it off). */
-    static double ehpFloor(int m) {
-        double scale = Rules.sub("roadmap", "ehpFloorScale", 1.0);
-        if (scale <= 0) {
-            return 0;
-        }
-        for (int i = 1; i < EHP_FLOOR.length; i++) {
-            if (m <= EHP_FLOOR[i][0]) {
-                int[] a = EHP_FLOOR[i - 1];
-                int[] b = EHP_FLOOR[i];
-                return scale * (a[1] + (b[1] - a[1]) * (double) (m - a[0]) / (b[0] - a[0]));
-            }
-        }
-        return scale * EHP_FLOOR[EHP_FLOOR.length - 1][1];
     }
 
     /**

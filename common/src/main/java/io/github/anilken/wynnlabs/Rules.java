@@ -68,7 +68,7 @@ final class Rules {
                   {"name": "Totem", "index": 1, "cost": 30, "share": 0.2, "conv": {"neutral": 1.2, "fire": 0.3}}
                 ],
                 "mainAttackWeight": 0.5, "baseManaPer5s": 25, "baseMana": 100, "fightSeconds": 30, "manaStealFactor": 0.3, "maxCastsPer5s": 4,
-                "xpWeight": 1.0, "speedWeight": 0.3, "speedCeiling": 1.35, "nudgeCap": 1.5, "survivalWeight": 0.4, "regenWeight": 0.2, "negativeRegenWeight": 2.0, "manaWeight": 0.3, "skillPriority": ["INTELLIGENCE", "DEFENCE"], "skillPriorityShare": 0.6, "baseHealth": 100, "healthPerLevel": 5,
+                "xpWeight": 1.0, "speedWeight": 0.3, "speedCeiling": 1.35, "nudgeCap": 1.5, "survivalWeight": 0.2, "survivalPower": 0.25, "ehpFloorScale": 1.0, "xpLog": 1, "regenWeight": 0.2, "negativeRegenWeight": 2.0, "manaWeight": 0.3, "skillPriority": ["INTELLIGENCE", "DEFENCE"], "skillPriorityShare": 0.6, "baseHealth": 100, "healthPerLevel": 5,
                 "incomingElements": {"neutral": 0.5, "earth": 0.1, "thunder": 0.1, "water": 0.1, "fire": 0.1, "air": 0.1}
               },
               "grind": {"levelsBelow": 3, "levelsAbove": 3},
@@ -106,6 +106,7 @@ final class Rules {
         } catch (Exception e) {
             System.out.println("[WynnLabs] could not read rules.json: " + e);
         }
+        Setup.upgrade(base);                    // survival weights from before the health floor
         clampNudged(base);
         rules = base;
         version++;
@@ -153,6 +154,7 @@ final class Rules {
     static synchronized void use(JsonObject saved) {
         JsonObject base = GSON.fromJson(DEFAULTS, JsonObject.class);
         merge(base, saved.deepCopy());
+        Setup.upgrade(base);                    // survival weights from before the health floor
         clampNudged(base);
         rules = base;
         version++;
