@@ -18,6 +18,7 @@ final class ShotDriver {
 
     // the shared views as the run found them
     private final Map<String, Object> window;
+    private final Map<String, Object> windowPick;
     private final String windowSearch;
     private final Map<String, Object> endgame;
     private final Map<String, Object> craft;
@@ -26,7 +27,8 @@ final class ShotDriver {
     ShotDriver(RoadmapScreen screen) {
         this.screen = screen;
         window = Peek.save(BuildWindow.INSTANCE, "open", "view", "editingPlan", "overwriteId", "unseenGen", "awaitGen", "result",
-                "card", "fromHint", "chosen", "tuning", "listScroll", "type", "range", "renameId");
+                "card", "fromHint", "chosen", "tuning", "renameId");
+        windowPick = Peek.save(Peek.get(BuildWindow.INSTANCE, "pick"), "listScroll", "type", "range");
         var box = (net.minecraft.client.gui.components.EditBox) Peek.get(BuildWindow.INSTANCE, "search");
         windowSearch = box == null ? null : box.getValue();
         endgame = Peek.save(EndgameTab.INSTANCE, "view", "poolTab", "litRaid", "litCamp", "filter", "listScroll", "pinned", "poolScroll");
@@ -294,6 +296,7 @@ final class ShotDriver {
     /** The shared views back as the run found them. */
     void restore() {
         Peek.restore(BuildWindow.INSTANCE, window);
+        Peek.restore(Peek.get(BuildWindow.INSTANCE, "pick"), windowPick);
         var box = (net.minecraft.client.gui.components.EditBox) Peek.get(BuildWindow.INSTANCE, "search");
         if (box != null && windowSearch != null) {
             box.setValue(windowSearch);
