@@ -41,7 +41,9 @@ Code facts the fixes rest on (paths under `common/src/main/java/io/github/anilke
 ## Decisions
 
 **ADR-1: Fix the score's parts, not the search.**
-Status: accepted. Context: the three wrong picks (summon-led scores, Defence hoarding, Precious
+Status: accepted for wave 1; amended by algorithm-wave-2, which changes the search's weapon starts
+and the first milestone's candidate window (the chained Lv 90 set missed a Thunder set 3.4 %
+better, judged alike; see its ADR-2 and ADR-3). Context: the three wrong picks (summon-led scores, Defence hoarding, Precious
 rings) all come from a factor in `Damage.evaluate`, not from the search missing better builds.
 Decision: change the factors (alive share, floor shape, goal XP) and the two learners that feed
 them (Coach calibration, Feedback nudge), keep the search untouched, bump `modelVersion` once.
