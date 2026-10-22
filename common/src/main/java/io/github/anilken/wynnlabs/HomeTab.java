@@ -761,8 +761,7 @@ final class HomeTab {
         if (previewLong && v.index() == 4) {
             return "+142%";
         }
-        return Double.isNaN(v.gain()) ? L.t("wynnlabs.screen.pill_set")
-                : (v.gain() < -0.5 ? "−" : "+") + RoadmapScreen.pct(Math.round(Math.abs(v.gain())));
+        return Roadmap.pill(v.gain(), v.gear());
     }
 
     /** The name a slot shows: the upgrade's, else what is worn, else "empty". */

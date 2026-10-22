@@ -2175,14 +2175,11 @@ final class RoadmapScreen extends Screen {
     /** The full story of an upgrade, for its hover. */
     /**
      * The gain a row shows: what the selected milestone's build gains over what you wear now in
-     * that slot (Roadmap.Step.vsWorn), not just the step over the previous milestone's pick.
+     * that slot (Roadmap.Step.vsWorn), or the step over the previous milestone's pick when what
+     * you wear there is far below it (Roadmap.shownGain).
      */
     private double rowGain(Roadmap.Gear u) {
-        if (u == null || Double.isNaN(u.gain()) || steps.isEmpty() || Roadmap.fromBag(u)) {
-            return u == null ? Double.NaN : u.gain();
-        }
-        Roadmap.Step s = steps.get(Math.max(0, Math.min(selected, steps.size() - 1)));
-        return s.vsWorn().getOrDefault(u.slot(), u.gain());
+        return Roadmap.shownGain(steps, selected, u);
     }
 
     private List<Component> gearTip(Roadmap.Gear u) {
@@ -2215,11 +2212,14 @@ final class RoadmapScreen extends Screen {
                     : L.t("wynnlabs.home.tip_seen")).withStyle(doubt != null ? ChatFormatting.RED : ChatFormatting.DARK_GRAY));
         }
         double vsWorn = rowGain(u);
+        boolean step = !Double.isNaN(vsWorn) && Roadmap.showsStep(steps, selected, u);
         tip.add(Double.isNaN(vsWorn)
-                ? L.c("wynnlabs.home.tip_target").withStyle(ChatFormatting.AQUA)
+                ? L.c(Roadmap.isTarget(u) ? "wynnlabs.home.tip_target" : "wynnlabs.home.tip_new").withStyle(ChatFormatting.AQUA)
+                : step ? (vsWorn < 0 ? L.c("wynnlabs.home.tip_step_loss", Math.round(-vsWorn * 10) / 10.0).withStyle(ChatFormatting.RED)
+                        : L.c("wynnlabs.home.tip_step", Math.round(vsWorn * 10) / 10.0).withStyle(ChatFormatting.GREEN))
                 : vsWorn < 0 ? L.c("wynnlabs.home.tip_loss", Math.round(-vsWorn * 10) / 10.0).withStyle(ChatFormatting.RED)
                 : L.c("wynnlabs.home.tip_gain", Math.round(vsWorn * 10) / 10.0).withStyle(ChatFormatting.GREEN));
-        if (!Double.isNaN(u.gain()) && Math.abs(vsWorn - u.gain()) >= 0.5) {
+        if (!step && !Double.isNaN(u.gain()) && Math.abs(vsWorn - u.gain()) >= 0.5) {
             // at a later milestone the pick also builds on the picks before it
             tip.add(L.c("wynnlabs.home.tip_step", Math.round(u.gain() * 10) / 10.0).withStyle(ChatFormatting.DARK_GRAY));
         }

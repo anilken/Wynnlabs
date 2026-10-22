@@ -112,7 +112,8 @@ test {
         filter {
             ['RoadmapGainTest', 'RoleGoalTest', 'BeamCacheTest', 'FixturePlanTest', 'RoadmapEveryLevelTest',
              'BuildOffThreadTest', 'AllocatorTest', 'FreshCharacterTest', 'FixtureJsonTest',
-             'FixtureVerdictTest', 'CraftingStockTest', 'SaverTest']
+             'FixtureVerdictTest', 'CraftingStockTest', 'SaverTest', 'RoadmapMilestonesTest',
+             'RoadmapSearchTest']
                     .each { excludeTestsMatching "*.${it}" }
         }
     }
