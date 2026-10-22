@@ -213,7 +213,7 @@ public final class DamageReport {
         JsonObject bg = measured != null && measured.has("background") ? measured.getAsJsonObject("background") : null;
         j.addProperty("measuredPerSecond", bg == null ? 0 : r1(bg.get("perSecond").getAsDouble()));
         j.addProperty("measuredSeconds", bg == null ? 0 : Math.round(bg.get("seconds").getAsDouble()));
-        j.addProperty("modelMainAttackPerSecond", r1(b.mainTotal() * mainAttackWeight()));
+        j.addProperty("modelMainAttackPerSecond", r1(b.mainTotal()));
         j.addProperty("modelSummonsPerSecondUncalibrated", r1(b.summonRaw()[0]));
         j.addProperty("summonCalibration", Rules.sub("model", "summonCalibration", 1.0));
         j.addProperty("modelSummonsPerSecond", r1(b.summonTotal()));
@@ -240,7 +240,8 @@ public final class DamageReport {
         cmp.addProperty("note", "measured = damage numbers within 1.5 s after each cast (running mean of the last ~200);"
                 + " per spell, the background between casts (summons, Totem, main attack) is taken off and each"
                 + " cast is compared with the model's value at that cast; after " + Coach.CAL_CASTS + " casts a spell"
-                + " gets its own calibration, within 0.7-1.4 until steady (" + Coach.STEADY_CASTS + " casts), then 0.5-10");
+                + " gets its own calibration, within 0.7-1.4 until steady (" + Coach.STEADY_CASTS + " casts), then 0.5-10;"
+                + " the summons' calibration likewise, then 0.05-10, as summons that die or miss are heard far below the model");
         if (base != null) {
             cmp.add("spells", spellTable(base.breakdown(), Coach.measured()));
             cmp.add("background", backgroundJson(base.breakdown(), Coach.measured()));

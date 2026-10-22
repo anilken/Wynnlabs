@@ -34,7 +34,7 @@ public final class BeamCache {
      * coming back from disk. A method, not a field: a field added by a hot swap keeps no value.
      */
     static int modelVersion() {
-        return 7;
+        return 8;
     }
 
     /** The loaded entries and whose they are; access-ordered, so the oldest drop first. */
