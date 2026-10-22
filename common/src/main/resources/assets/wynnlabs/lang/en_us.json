@@ -271,6 +271,8 @@
   "wynnlabs.road.untradable": "Untradable",
   "wynnlabs.road.alternative": "%s (Lv. %s%s) +%s%%",
   "wynnlabs.road.target_note": "Community pick",
+  "wynnlabs.road.powder_row": "Add %s× %s %s powder, about %s",
+  "wynnlabs.road.powder_row_armour": "Add %s tier %s powder (any element gives the same health), about %s|Add %s tier %s powders (any element gives the same health), about %s",
   "wynnlabs.road.why_over": "impossible: needs %s assigned, 100 is the most even with the best gear",
   "wynnlabs.road.why_from_gear": "needs %s from gear",
   "wynnlabs.road.why_points": "impossible: needs %s points, %s earned (%s short)",

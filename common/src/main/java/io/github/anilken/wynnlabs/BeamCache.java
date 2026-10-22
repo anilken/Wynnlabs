@@ -103,7 +103,7 @@ final class BeamCache {
             }
             if (p == null && kn.length == 2) {
                 var info = GameState.current().allGear().filter(i -> i.name().equals(kn[1])).findFirst().orElse(null);
-                p = info == null ? null : Damage.piece(info);
+                p = info == null ? null : Roadmap.pieceOf(info);     // a copy you have, with its rolls
             }
             if (p == null || !p.key().equals(kn[0])) {
                 return null;

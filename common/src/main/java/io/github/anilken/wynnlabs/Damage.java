@@ -213,16 +213,24 @@ final class Damage {
      * rules.model.assumePowders 0 turns it off.
      */
     static List<String> assumedPowders(ItemData info, Map<String, Double> shares) {
-        int n = info.powderSlots();
+        return assumedPowders(info, shares, info.powderSlots(), null);
+    }
+
+    /**
+     * {@code n} assumed powders for a piece of {@code info}: a weapon's in {@code keep} (the
+     * element its own powders have) or else its strongest element; armour's in any element. Empty
+     * when powders are turned off or a weapon has no element to take.
+     */
+    private static List<String> assumedPowders(ItemData info, Map<String, Double> shares, int n, String keep) {
         if (n <= 0 || Rules.sub("model", "assumePowders", 1) <= 0) {
             return List.of();
         }
         String el = "earth";
         if (info.slot() != null && info.slot().isWeapon()) {
-            el = null;
+            el = keep == null ? null : keep.toLowerCase(Locale.ROOT);
             double best = 0;
             for (var e : shares.entrySet()) {
-                if (!e.getKey().equals("neutral") && e.getValue() > best) {
+                if (keep == null && !e.getKey().equals("neutral") && e.getValue() > best) {
                     best = e.getValue();
                     el = e.getKey();
                 }
@@ -235,6 +243,80 @@ final class Damage {
     }
 
     /**
+     * A piece you have with its empty powder slots filled the way {@link #piece(ItemData)} fills
+     * a piece you would buy (a weapon in the element its powders already have, else its own
+     * strongest; armour for health), so the road map weighs what you have and what you would buy
+     * alike. Its own powders stay. A piece from the item data, a crafted one or one with every
+     * slot taken comes back as it is. The /build "now" keeps the real state.
+     */
+    static Piece withAssumedPowders(Piece p) {
+        ItemView g = ownGear(p);
+        if (g == null || g.data().powderSlots() <= g.rolled().powders().size()) {
+            return p;
+        }
+        // a key of its own: Build's memo knows a set by its keys, and the piece scores otherwise now
+        Piece out = piece(g, p.key() + "|powdered", p.stack(), true);
+        return out == null ? p : out;
+    }
+
+    /**
+     * What {@link #withAssumedPowders} adds to a piece you have: {element, count, tier}, the
+     * element null for armour (its powders count for health in any element); null for none.
+     */
+    static Object[] addedPowders(Piece p) {
+        ItemView g = ownGear(p);
+        if (g == null) {
+            return null;
+        }
+        ItemData info = g.data();
+        List<String> real = g.rolled().powders();
+        List<String> add = assumedPowders(info, normalise(sharesOf(info)), info.powderSlots() - real.size(),
+                real.isEmpty() ? null : real.get(0));
+        if (add.isEmpty()) {
+            return null;
+        }
+        boolean weapon = info.slot() != null && info.slot().isWeapon();
+        return new Object[] {weapon ? add.get(0) : null, add.size(), powderTier(info.level())};
+    }
+
+    /**
+     * The powders the road map assumes in a piece on top of its own, as {count, tier}: a piece
+     * from the item data ({@code info}) has every slot filled, one you have its empty ones.
+     */
+    static int[] assumedCount(Piece p, ItemData info) {
+        if (p == null || p.crafted()) {
+            return new int[2];
+        }
+        if (p.stack() == null || p.stack().isEmpty()) {
+            int n = info == null ? 0 : assumedPowders(info, normalise(sharesOf(info))).size();
+            return new int[] {n, n == 0 ? 0 : powderTier(info.requirements().level())};
+        }
+        Object[] a = addedPowders(p);
+        return a == null ? new int[2] : new int[] {(int) a[1], (int) a[2]};
+    }
+
+    /** The identified gear behind a piece you have (its stack), or null. */
+    private static ItemView ownGear(Piece p) {
+        if (p == null || p.crafted() || p.stack() == null || p.stack().isEmpty()) {
+            return null;
+        }
+        Optional<ItemView> v = GameState.current().view(p.stack());
+        return v.isEmpty() || !v.get().isGear() || v.get().unidentified() || v.get().rolled() == null ? null : v.get();
+    }
+
+    /** A weapon's base damage by element, not normalised. */
+    private static Map<String, Double> sharesOf(ItemData info) {
+        Map<String, Double> shares = new HashMap<>();
+        info.base().damages().forEach(d -> {
+            String el = d.type().toLowerCase(Locale.ROOT);
+            if (List.of(ELEMENTS).contains(el)) {
+                shares.merge(el, (d.low() + d.high()) / 2.0, Double::sum);
+            }
+        });
+        return shares;
+    }
+
+    /**
      * The powders a weapon pick is judged with, for its tooltip: {element, count, tier}; null when
      * it gets none (no slots, neutral only, powders turned off) and for armour, whose powders only
      * count for health in any element.
@@ -243,14 +325,7 @@ final class Damage {
         if (info.slot() == null || !info.slot().isWeapon()) {
             return null;
         }
-        Map<String, Double> shares = new HashMap<>();
-        info.base().damages().forEach(d -> {
-            String el = d.type().toLowerCase(Locale.ROOT);
-            if (List.of(ELEMENTS).contains(el)) {
-                shares.merge(el, (d.low() + d.high()) / 2.0, Double::sum);
-            }
-        });
-        List<String> p = assumedPowders(info, normalise(shares));
+        List<String> p = assumedPowders(info, normalise(sharesOf(info)));
         return p.isEmpty() ? null : new Object[] {p.get(0), p.size(), powderTier(info.requirements().level())};
     }
 
@@ -295,6 +370,11 @@ final class Damage {
 
     /** The same from the mod's reading of an item; {@code stack} may be null (not one you carry). */
     static Piece piece(ItemView item, String key, ItemStack stack) {
+        return piece(item, key, stack, false);
+    }
+
+    /** {@code fill}: its empty powder slots filled too ({@link #withAssumedPowders}). */
+    private static Piece piece(ItemView item, String key, ItemStack stack, boolean fill) {
         Map<String, Double> stats = new HashMap<>();
         Map<SkillKind, Integer> reqs = new java.util.EnumMap<>(SkillKind.class);
         Map<String, Double> shares = new HashMap<>();
@@ -326,7 +406,16 @@ final class Damage {
             double dps = fixed.averageDps();
             Map<String, Double> sh = normalise(shares);
             double health = fixed.health();
-            var powders = g.rolled().powders();
+            List<String> powders = g.rolled().powders();
+            if (fill) {
+                List<String> add = assumedPowders(info, sh, info.powderSlots() - powders.size(),
+                        powders.isEmpty() ? null : powders.get(0));
+                if (!add.isEmpty()) {
+                    List<String> all = new java.util.ArrayList<>(powders);
+                    all.addAll(add);
+                    powders = all;
+                }
+            }
             if (!powders.isEmpty()) {
                 int ptier = powderTier(info.level());
                 if (info.slot() != null && info.slot().isWeapon()) {
