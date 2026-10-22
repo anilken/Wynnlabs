@@ -62,34 +62,33 @@ final class ShotDriver {
     }
 
     private static Plans.Pills planPills() {
-        return (Plans.Pills) Peek.get(RoadmapScreen.class, "planPills");
+        return (Plans.Pills) Peek.get(HomePage.class, "planPills");
     }
 
     /** {@code t} as a click on its rail entry opens it, with every view inside the menu back at its start. */
     void select(int t) {
         Peek.set(screen, "tab", t);
-        Peek.set(screen, "detail", null);
-        Peek.set(screen, "goalOpen", false);
-        for (String box : new String[] {"search", "treeSearch"}) {
-            var b = (net.minecraft.client.gui.components.EditBox) Peek.get(screen, box);
+        Peek.set(screen.home, "detail", null);
+        Peek.set(screen.home, "goalOpen", false);
+        for (var b : new net.minecraft.client.gui.components.EditBox[] {screen.bank.search, screen.tree.treeSearch}) {
             if (b != null) {
                 b.setFocused(false);
-                if (box.equals("search")) {
+                if (b == screen.bank.search) {
                     b.setValue("");
                 }
             }
         }
         screen.setFocused(null);
-        Peek.set(screen, "settingsCat", 0);
-        Peek.set(screen, "settingsScroll", 0);
-        Peek.set(screen, "settingsDetail", false);
-        Peek.set(screen, "bankFilter", 0);
-        Peek.set(screen, "bankScroll", 0);
-        Peek.set(screen, "bankPage", "");
-        Peek.set(screen, "questFilter", "RECOMMENDED");
-        Peek.set(screen, "questDetailTab", 0);
-        Peek.set(screen, "questScroll", 0);
-        Peek.set(screen, "treeScroll", 0);
+        Peek.set(screen.settings, "settingsCat", 0);
+        Peek.set(screen.settings, "settingsScroll", 0);
+        Peek.set(screen.settings, "settingsDetail", false);
+        Peek.set(screen.bank, "bankFilter", 0);
+        Peek.set(screen.bank, "bankScroll", 0);
+        Peek.set(screen.bank, "bankPage", "");
+        Peek.set(screen.questsTab, "questFilter", "RECOMMENDED");
+        Peek.set(screen.questsTab, "questDetailTab", 0);
+        Peek.set(screen.questsTab, "questScroll", 0);
+        Peek.set(screen.tree, "treeScroll", 0);
         // the shared views as the run found them (a type filter, a region from the last view gone), then closed
         restore();
         if (BuildWindow.INSTANCE.isOpen()) {
@@ -128,7 +127,7 @@ final class ShotDriver {
             }
             case "scroll" -> {
                 if (p[1].equals("tree")) {
-                    Peek.set(screen, "treeScroll", 100_000);
+                    Peek.set(screen.tree, "treeScroll", 100_000);
                 } else {
                     Peek.set(CraftingTab.INSTANCE, "scroll", 100_000);
                 }
@@ -155,18 +154,18 @@ final class ShotDriver {
                     return false;
                 }
                 if (p[1].equals("filter")) {
-                    Peek.set(screen, "bankFilter", Integer.parseInt(p[2]));
+                    Peek.set(screen.bank, "bankFilter", Integer.parseInt(p[2]));
                     return true;
                 }
                 String word = searchWord();
                 if (word == null) {
                     return false;
                 }
-                ((net.minecraft.client.gui.components.EditBox) Peek.get(screen, "search")).setValue(word);
+                screen.bank.search.setValue(word);
                 return true;
             }
             case "settings" -> {
-                Peek.set(screen, "settingsCat", Integer.parseInt(p[2]));
+                Peek.set(screen.settings, "settingsCat", Integer.parseInt(p[2]));
                 return true;
             }
             default -> throw new IllegalArgumentException("unknown step " + step);
@@ -228,10 +227,10 @@ final class ShotDriver {
             return false;
         }
         if (p[1].equals("tab")) {
-            if (Peek.get(screen, "questSelected") == null) {
+            if (Peek.get(screen.questsTab, "questSelected") == null) {
                 return false;
             }
-            Peek.set(screen, "questDetailTab", Integer.parseInt(p[2]));
+            Peek.set(screen.questsTab, "questDetailTab", Integer.parseInt(p[2]));
             return true;
         }
         List<QuestAdvisor.Suggestion> list;
@@ -243,8 +242,8 @@ final class ShotDriver {
         if (list.isEmpty()) {
             return false;
         }
-        Peek.set(screen, "questFilter", p[2]);
-        Peek.set(screen, "questSelected", null);
+        Peek.set(screen.questsTab, "questFilter", p[2]);
+        Peek.set(screen.questsTab, "questSelected", null);
         return true;
     }
 

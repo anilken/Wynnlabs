@@ -57,10 +57,10 @@ public class JMenuPreview implements FabricClientGameTest {
             ctx.waitFor(mc -> !Roadmap.isBuilding(), 20 * 60);
             ctx.waitTicks(20);
             // the goal list, open
-            ctx.runOnClient(mc -> flag(mc.screen, "goalOpen", true));
+            ctx.runOnClient(mc -> flag(((RoadmapScreen) mc.screen).home, "goalOpen", true));
             ctx.waitTicks(3);
             shot(ctx, out, "jmenu-goals");
-            ctx.runOnClient(mc -> flag(mc.screen, "goalOpen", false));
+            ctx.runOnClient(mc -> flag(((RoadmapScreen) mc.screen).home, "goalOpen", false));
             // every rail tab in the rail's order (jmenu-tab-<n>: the tab's number, not its place)
             Field railField = RoadmapScreen.class.getDeclaredField("RAIL");
             railField.setAccessible(true);
@@ -71,17 +71,17 @@ public class JMenuPreview implements FabricClientGameTest {
             }
             // the ability tree scrolled to its end: the last page and the ultimates
             ctx.runOnClient(mc -> set(mc.screen, "tab", 9));
-            ctx.runOnClient(mc -> set(mc.screen, "treeScroll", 100000));
+            ctx.runOnClient(mc -> set(((RoadmapScreen) mc.screen).tree, "treeScroll", 100000));
             ctx.waitTicks(3);
             shot(ctx, out, "jmenu-tree-end");
             // the settings' rules, with the typed emerald value
             ctx.runOnClient(mc -> set(mc.screen, "tab", 5));
             ctx.runOnClient(mc -> {
                 try {
-                    Field f = RoadmapScreen.class.getDeclaredField("SETTING_CATS");
+                    Field f = SettingsTab.class.getDeclaredField("SETTING_CATS");
                     f.setAccessible(true);
                     int i = java.util.Arrays.asList((String[]) f.get(null)).indexOf("rules");
-                    set(mc.screen, "settingsCat", Math.max(0, i));
+                    set(((RoadmapScreen) mc.screen).settings, "settingsCat", Math.max(0, i));
                 } catch (ReflectiveOperationException e) {
                     throw new RuntimeException(e);
                 }
@@ -92,11 +92,11 @@ public class JMenuPreview implements FabricClientGameTest {
             for (int scroll : new int[] {0, 100000}) {
                 ctx.runOnClient(mc -> {
                     try {
-                        Field f = RoadmapScreen.class.getDeclaredField("SETTING_CATS");
+                        Field f = SettingsTab.class.getDeclaredField("SETTING_CATS");
                         f.setAccessible(true);
                         int i = java.util.Arrays.asList((String[]) f.get(null)).indexOf("glow");
-                        set(mc.screen, "settingsCat", Math.max(0, i));
-                        set(mc.screen, "settingsScroll", scroll);
+                        set(((RoadmapScreen) mc.screen).settings, "settingsCat", Math.max(0, i));
+                        set(((RoadmapScreen) mc.screen).settings, "settingsScroll", scroll);
                     } catch (ReflectiveOperationException e) {
                         throw new RuntimeException(e);
                     }
@@ -343,9 +343,9 @@ public class JMenuPreview implements FabricClientGameTest {
                 QuestWiki.putLive("Jungle Fever", live);
                 try {
                     set(mc.screen, "tab", 2);
-                    Field f = mc.screen.getClass().getDeclaredField("questSelected");
+                    Field f = QuestsTab.class.getDeclaredField("questSelected");
                     f.setAccessible(true);
-                    f.set(mc.screen, "Jungle Fever");
+                    f.set(((RoadmapScreen) mc.screen).questsTab, "Jungle Fever");
                 } catch (ReflectiveOperationException e) {
                     throw new RuntimeException(e);
                 }
@@ -357,7 +357,7 @@ public class JMenuPreview implements FabricClientGameTest {
         ctx.runOnClient(mc -> {
             QuestWiki.putLive("Jungle Fever", same);
             try {
-                set(mc.screen, "questDetailTab", 3);
+                set(((RoadmapScreen) mc.screen).questsTab, "questDetailTab", 3);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
