@@ -306,7 +306,7 @@ final class MarketSlots {
     /** The item's market price after the fee, NaN when it has none. */
     private static double priced(String name) {
         Prices.Price p = GameState.current().price(name);
-        return p == null || p.typical() == null ? Double.NaN : p.typical() * (1 - AutoAdvice.marketFee() / 100.0);
+        return p == null || p.typical() == null ? Double.NaN : p.typical() * (1 - SellAdvice.marketFee() / 100.0);
     }
 
     /** Orders a stack needs: one per piece of gear or box, one for a stack of anything else. */

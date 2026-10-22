@@ -418,7 +418,7 @@ final class Advice {
             }
         }
         if (gear != null && own && Settings.on("powderHint")) {
-            String hint = AutoAdvice.powderHint(gear);
+            String hint = OtherItemAdvice.powderHint(gear);
             if (hint != null) {
                 if (out.isEmpty()) {
                     out.add(Component.empty());

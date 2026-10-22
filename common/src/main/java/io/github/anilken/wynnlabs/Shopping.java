@@ -191,8 +191,8 @@ final class Shopping {
         }
         for (Slot t : slots) {
             double weakest = Double.MAX_VALUE;
-            for (ItemStack w : AutoAdvice.worn(t)) {
-                double s = AutoAdvice.scoreAny(w);
+            for (ItemStack w : WornGear.worn(t)) {
+                double s = GearScore.scoreAny(w);
                 if (Double.isNaN(s)) {
                     s = -1;
                 }
@@ -296,7 +296,7 @@ final class Shopping {
                     return;
                 }
             } else {
-                s = AutoAdvice.score(info);
+                s = GearScore.score(info);
                 gain = s - current.get(t);
                 if (gain <= 0.5) {
                     return;

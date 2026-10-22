@@ -188,7 +188,7 @@ final class LiveGameState implements GameState {
     @Override
     public ItemStack armour(EquipmentSlot slot) {
         LocalPlayer p = player();
-        return p == null ? ItemStack.EMPTY : AutoAdvice.armour(p, slot);
+        return p == null ? ItemStack.EMPTY : WornGear.armour(p, slot);
     }
 
     @Override
