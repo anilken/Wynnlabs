@@ -198,8 +198,8 @@ class RoadmapGainTest {
         FixtureState.load(Fixtures.root().resolve("shaman-44")).install("en");
         List<Roadmap.Step> steps = Roadmap.build();
         for (Roadmap.Gear g : steps.get(0).gear()) {
-            if (g.slot().startsWith("RING")) {
-                continue;                           // a second copy of a worn ring is a real buy
+            if (g.slot().startsWith("RING") || Roadmap.isPowder(g)) {
+                continue;                           // a second copy of a worn ring is a real buy; a powder row powders what you wear
             }
             for (net.minecraft.world.item.ItemStack w : AutoAdvice.worn(g.info().slot())) {
                 String worn = ItemJson.clean(w.getHoverName().getString()).trim();

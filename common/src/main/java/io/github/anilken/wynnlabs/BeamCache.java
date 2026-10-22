@@ -30,7 +30,7 @@ final class BeamCache {
      * not a field: a field added by a hot swap keeps no value.
      */
     static int modelVersion() {
-        return 4;
+        return 5;
     }
 
     /** The loaded entries and whose they are; access-ordered, so the oldest drop first. */
@@ -103,7 +103,7 @@ final class BeamCache {
             }
             if (p == null && kn.length == 2) {
                 var info = GameState.current().allGear().filter(i -> i.name().equals(kn[1])).findFirst().orElse(null);
-                p = info == null ? null : Damage.piece(info);
+                p = info == null ? null : Roadmap.pieceOf(info);     // a copy you have, with its rolls
             }
             if (p == null || !p.key().equals(kn[0])) {
                 return null;
