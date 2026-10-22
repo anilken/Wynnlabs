@@ -554,10 +554,13 @@ final class QuestWiki {
 
     /** "[x, y, z] noktasındaki kapı…": a Turkish place's words come after it. */
     private static final Pattern AFTER = Pattern.compile("^\\s*[\\])]?\\s*(?:noktasında(?:ki)?|noktasına|konumunda(?:ki)?|konumuna)\\s+");
+    /** "Erisk, mağaranın sonunda [x, y, z] noktasında bulunur.": only a verb after it, the place starts the sentence. */
+    private static final Pattern THERE = Pattern.compile("^\\s*[\\])]?\\s*(?:noktasında|noktasına|konumunda|konumuna)\\s+\\S+(?:\\s+\\S+)?\\s*$");
 
     /**
      * What is at one of a line's places: the part of its sentence that names it. In Turkish the
-     * words after "[x, y, z] noktasındaki"; else the clause before the coordinates ("…, step on
+     * words after "[x, y, z] noktasındaki", or the sentence's first clause when only a verb
+     * follows ("…, [x, y, z] noktasında bulunur"); else the clause before the coordinates ("…, step on
      * the pressure plate at [x, y, z]"). A line with one place and nothing better: the whole line.
      */
     static String placeText(String line, int[] at) {
@@ -570,12 +573,13 @@ final class QuestWiki {
                 String after = sentence.substring(m.end());
                 Matcher a = AFTER.matcher(after);
                 String part;
-                if (a.find()) {
+                if (a.find() && !THERE.matcher(after).find()) {
                     part = after.substring(a.end());
                 } else {
                     String before = sentence.substring(0, m.start()).replaceAll("[\\[(]\\s*$", "");
                     String[] clauses = before.split(",\\s+|;\\s+");
-                    part = clauses[clauses.length - 1];
+                    // Turkish puts the subject first ("Erisk, mağaranın sonunda … bulunur"); English the place last
+                    part = clauses[THERE.matcher(after).find() ? 0 : clauses.length - 1];
                     if (placeText(part).length() < 6) {
                         part = before;
                     }
