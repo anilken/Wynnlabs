@@ -187,6 +187,8 @@ public final class TreeModel {
                 case "passiveDpsFactor" -> passiveTotal() > 0 ? 1 : 0;
                 // the conversions below are already per second
                 case "summonHitsPerSecond" -> 1;
+                // the alive share is already in the tree's summon numbers: not a second time
+                case "summonAlive" -> 1;
                 case "summonNeutral" -> passive[0];
                 case "summonEarth" -> passive[1];
                 case "summonThunder" -> passive[2];
@@ -411,6 +413,14 @@ public final class TreeModel {
     }
 
     /**
+     * Share of the time a summon is alive and hitting (rules.model.summonAlive, 0.6): puppets and
+     * hounds die, wait to be summoned again and walk to the next pack. A method, not a field.
+     */
+    static double summonAlive() {
+        return Math.max(0.05, Math.min(1, Rules.sub("model", "summonAlive", 0.6)));
+    }
+
+    /**
      * The overlay for the nodes in {@code taken}. {@code mainAttack} is the factor on the main
      * attack's weight (1 once an archetype node is in).
      */
@@ -448,7 +458,7 @@ public final class TreeModel {
                 continue;
             }
             int count = r.count() + (r.noun() == null ? 0 : more.getOrDefault(r.noun(), 0));
-            double times = r.rate() * count * (r.summon() ? 1 : AREA_UPTIME);
+            double times = r.rate() * count * (r.summon() ? summonAlive() : AREA_UPTIME);
             for (int i = 0; i < passive.length; i++) {
                 passive[i] += r.conv()[i] * times;
             }
@@ -573,7 +583,7 @@ public final class TreeModel {
             List<String> have = gs.unlockedAbilities() == null ? List.of() : List.copyOf(gs.unlockedAbilities());
             List<String> spells = spellNames(tree, cls);
             double cap = Rules.sub("model", "summonCap", 2.5);
-            String key = cls + "|" + arch + "|" + gs.level() + "|" + have + "|" + spells + "|" + cap + "|"
+            String key = cls + "|" + arch + "|" + gs.level() + "|" + have + "|" + spells + "|" + cap + "|" + summonAlive() + "|"
                     + System.identityHashCode(tree) + ":" + tree.size();
             Object[] last = lastRun;
             if (last != null && last[0].equals(key)) {

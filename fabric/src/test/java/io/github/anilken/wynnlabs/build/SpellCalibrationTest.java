@@ -383,7 +383,8 @@ class SpellCalibrationTest {
                 }
             }
             if (summons) {
-                double main = after.mainTotal() * Rules.sub("model", "mainAttackWeight", 0.5);
+                // the meter hears every main attack hit, not the goal's weight on it
+                double main = after.mainTotal();
                 double modelBg = main + after.summonTotal();
                 String line = String.format("%s between casts: measured %.0f/s, model %.0f/s (main %.0f + summons %.0f,"
                         + " summonCalibration %.2f)", who, bgRate, modelBg, main, after.summonTotal(),

@@ -799,14 +799,17 @@ public final class Damage {
         // Summons (Summoner's puppets and the like): spell hits on their own clock, no mana;
         // they take spell %, raw spell and element % like spells (Puppet Master: 16 % neutral,
         // 2 % earth, 2 % air per hit, up to 3 puppets × 2 hits/s). With the lasting spells they are
-        // what the damage meter hears between casts, and rules.model.summonCalibration scales them to it
+        // what the damage meter hears between casts, and rules.model.summonCalibration scales them to it.
+        // They hit only while alive (rules.model.summonAlive, 0.6): the tree's numbers have it in
+        // already (its overlay gives 1 here), the class profile's get it here, once either way
         double passive = 0;
         double summons = model("passiveDpsFactor", 0);
+        double alive = summons > 0 ? Math.max(0.05, Math.min(1, model("summonAlive", 0.6))) : 0;
         if (summons > 0) {
             double[] pc = {model("summonNeutral", 0.16), model("summonEarth", 0.02), model("summonThunder", 0),
                 model("summonWater", 0), model("summonFire", 0), model("summonAir", 0.02)};
             passive = hit(s, split(pc, shares), baseDps, skillBonus, true, summonEl) * model("summonHitsPerSecond", 6)
-                    * summons * multiplier;
+                    * summons * multiplier * alive;
         }
         double summonCal = model("summonCalibration", 1.0);
         double passiveRaw = passive + lastingDps;
@@ -815,7 +818,7 @@ public final class Damage {
             // the per-hit parts scaled the way the totals above are (the spells' calibration is in spellEl)
             double perSpell = shareSum > 0 ? 1 / shareSum * casts / 5.0 : 0;
             double perMain = model("mainAttackClassMult", 1.0) * HITS[tierNow] * multiplier;
-            double perSummon = summons > 0 ? model("summonHitsPerSecond", 6) * summons * multiplier : 0;
+            double perSummon = summons > 0 ? model("summonHitsPerSecond", 6) * summons * multiplier * alive : 0;
             for (int i = 0; i < ELEMENTS.length; i++) {
                 parts.spell()[i] = spellEl[i] * perSpell;
                 parts.main()[i] = mainEl[i] * perMain;

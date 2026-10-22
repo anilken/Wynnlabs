@@ -96,14 +96,14 @@ class TreeModelTest {
     void trapperSummonsAndTrapsHitOnTheirOwnClock() throws IOException {
         // Basaltic Trap detonates with Arrow Bomb: no clock of its own, no passive damage
         assertEquals(0, archer(List.of("Arrow Bomb", "Basaltic Trap"), 0).passiveTotal());
-        // the Hound bites every 0.25 s for 40 % of your DPS, plain damage
+        // the Hound bites every 0.25 s for 40 % of your DPS, plain damage, while alive (0.6 of the time)
         TreeModel.Overlay hound = archer(List.of("Arrow Shield", "Call of the Hound"), 0);
-        assertEquals(1.6, hound.passive[0], 1e-9);
-        assertEquals(1.6, hound.passiveTotal(), 1e-9);
+        assertEquals(1.6 * 0.6, hound.passive[0], 1e-9);
+        assertEquals(1.6 * 0.6, hound.passiveTotal(), 1e-9);
         assertEquals(1.0, hound.adjust("passiveDpsFactor", 0));
         assertEquals(1.0, hound.adjust("summonHitsPerSecond", 6));
         // a second Hound
-        assertEquals(3.2, archer(List.of("Arrow Shield", "Call of the Hound", "Canine Colleague"), 0).passive[0], 1e-9);
+        assertEquals(3.2 * 0.6, archer(List.of("Arrow Shield", "Call of the Hound", "Canine Colleague"), 0).passive[0], 1e-9);
         // the Snake spits every 1 s, a third earth
         TreeModel.Overlay snake = archer(List.of("Arrow Storm", "Bryophyte Roots", "Ivyroot Mamba"), 0);
         assertTrue(snake.passive[1] > 0.3, "earth from the Snake and the roots: " + java.util.Arrays.toString(snake.passive));
@@ -124,13 +124,14 @@ class TreeModelTest {
         List<TreeModel.Read> reads = TreeModel.read(tree("shaman"), "SHAMAN", SHAMAN_SPELLS);
         // the Totem is a spell (its damage is the spell's), so Puppet Master is the only summon
         TreeModel.Overlay o = TreeModel.overlay(44, reads, SHAMAN_SPELLS, List.of("Totem", "Puppet Master"), 1, 0);
-        // 3 puppets × 2 knives a second × (16 % neutral, 2 % earth, 2 % air): rules.model's old 6 hits of 0.16/0.02/0.02
-        assertEquals(0.96, o.passive[0], 1e-9);
-        assertEquals(0.12, o.passive[1], 1e-9);
-        assertEquals(0.12, o.passive[5], 1e-9);
+        // 3 puppets × 2 knives a second × (16 % neutral, 2 % earth, 2 % air): rules.model's old 6 hits of
+        // 0.16/0.02/0.02, both times the alive share (0.6) the profile's summons get in Damage too
+        assertEquals(0.96 * 0.6, o.passive[0], 1e-9);
+        assertEquals(0.12 * 0.6, o.passive[1], 1e-9);
+        assertEquals(0.12 * 0.6, o.passive[5], 1e-9);
         TreeModel.Overlay more = TreeModel.overlay(44, reads, SHAMAN_SPELLS,
                 List.of("Totem", "Puppet Master", "More Puppets", "Cheaper Totem"), 1, 0);
-        assertEquals(1.28, more.passive[0], 1e-9, "a fourth puppet");
+        assertEquals(1.28 * 0.6, more.passive[0], 1e-9, "a fourth puppet");
         assertEquals(-10.0, more.cost.get("Totem"));
     }
 
