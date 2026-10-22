@@ -132,20 +132,29 @@ class AcquisitionTest {
     }
 
     @Test
-    void eventCoversWorldEventsUnlessListed(@TempDir Path tmp) throws Exception {
-        ItemData event = boots("Event Boots", "NONE", Optional.empty());
-        ItemData listed = boots("Listed Event Boots", "NONE", Optional.empty());
+    void eventHidesSeasonalEventsNotWorldEvents(@TempDir Path tmp) throws Exception {
+        ItemData world = boots("World Event Boots", "NONE", Optional.empty());
+        ItemData seasonal = boots("Seasonal Boots", "NONE", Optional.empty());
         ItemData raid = boots("Raid Boots", "NONE", Optional.empty());
-        install(tmp, Map.of(event, List.of(new Obtain("WORLD_EVENT", Optional.of("Ancient Nemract"))),
-                        listed, List.of(new Obtain("WORLD_EVENT", Optional.of("Ancient Nemract"))),
+        install(tmp, Map.of(world, List.of(new Obtain("WORLD_EVENT", Optional.of("Ancient Nemract"))),
+                        seasonal, List.of(new Obtain("EVENT", Optional.of("Wynnterfest"))),
                         raid, List.of(new Obtain("RAID", Optional.of("Nest of the Grootslangs")))),
-                Map.of("Listed Event Boots", price(2000, 2500, 1_760_000_000_000L - 3_600_000L, 6),
+                Map.of("Seasonal Boots", price(2000, 2500, 1_760_000_000_000L - 3_600_000L, 6),
                         "Raid Boots", price(2000, 2500, 1_760_000_000_000L - 3_600_000L, 6)), List.of());
         List<String> bad = List.of("UNAVAILABLE", "RAID", "EVENT");
-        assertTrue(Shopping.excluded(event, bad));
-        assertFalse(Shopping.excluded(listed, bad));             // on the market: not "only from events"
-        assertTrue(Shopping.excluded(raid, bad));                // raid rewards stay hidden anywhere
-        assertFalse(Shopping.excluded(event, List.of("RAID")));
+        assertFalse(Shopping.excluded(world, bad));             // repeatable any time
+        assertTrue(Shopping.excluded(seasonal, bad));           // seasonal, listed or not
+        assertTrue(Shopping.excluded(raid, bad));               // raid rewards stay hidden anywhere
+        assertFalse(Shopping.excluded(seasonal, List.of("RAID")));
+    }
+
+    @Test
+    void aTownMerchantStaysFirst(@TempDir Path tmp) throws Exception {
+        ItemData ornament = boots("Merchant Boots", "NONE", Optional.empty());
+        install(tmp, Map.of(ornament, List.of(new Obtain("MERCHANT", Optional.of("Ragni")))),
+                Map.of("Merchant Boots", price(2000, 2500, 1_760_000_000_000L - 3_600_000L, 6)), List.of());
+        assertEquals("MERCHANT: Ragni", Shopping.sourceOf(ornament));
+        assertEquals(L.t("wynnlabs.shop.where_market"), Shopping.alsoFrom(ornament));
     }
 
     @Test

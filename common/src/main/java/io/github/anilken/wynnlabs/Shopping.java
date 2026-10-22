@@ -369,15 +369,16 @@ final class Shopping {
 
     /**
      * Where to get it, "TRADE_MARKET" or "MERCHANT: Ragni" style: the Trade Market first for a
-     * tradable piece listed there now (Cloak of Luminosity has listings, so a quest is not the
-     * way to it), else where it comes from in the world ({@link #origin}, shown as a second line,
-     * {@link #alsoFrom}).
+     * tradable piece listed there now that otherwise takes a quest, dungeon, raid or drop (Cloak
+     * of Luminosity has listings, so a quest is not the way to it); a town merchant's fixed price
+     * stays first. The other one is the second line ({@link #alsoFrom}).
      */
     private static String source(ItemData info) {
-        if (listed(info)) {
+        String o = origin(info);
+        if (listed(info) && !o.startsWith("MERCHANT")) {
             return "TRADE_MARKET";
         }
-        return origin(info);
+        return o;
     }
 
     /** A tradable piece with listings on the Trade Market now (its price is not only history). */
@@ -393,28 +394,30 @@ final class Shopping {
         return c != Prices.Confidence.NONE && c != Prices.Confidence.HISTORY;
     }
 
-    /** The world source in words when the row says the Trade Market ("Also: Ragni merchant"), else null. */
+    /**
+     * The second way to a piece listed on the Trade Market now, in words: the Trade Market under
+     * a town merchant, the world source under the Trade Market ("Also: Lights Out quest"); else null.
+     */
     static String alsoFrom(ItemData info) {
         if (!listed(info)) {
             return null;
         }
         String o = origin(info);
-        return o == null || o.startsWith("UNKNOWN") ? null : where(o);
+        if (o.startsWith("MERCHANT")) {
+            return where("TRADE_MARKET");
+        }
+        return o.startsWith("UNKNOWN") ? null : where(o);
     }
 
     /**
      * Whether rules.shopping.excludeSources keeps this piece off the list: its world source starts
-     * with an entry ("EVENT" covers world events too). The event switch says "only from events":
-     * a piece listed on the Trade Market now is not, so it stays.
+     * with an entry. "EVENT" is the seasonal events only; world events (WORLD_EVENT) can be done
+     * any time and are never hidden by it.
      */
     static boolean excluded(ItemData info, List<String> bad) {
         String o = origin(info);
-        if (o == null || bad.isEmpty()) {
-            return o == null;
-        }
         for (String b : bad) {
-            boolean event = b.equals("EVENT") && (o.startsWith("EVENT") || o.startsWith("WORLD_EVENT"));
-            if (event ? !listed(info) : o.startsWith(b)) {
+            if (o.startsWith(b)) {
                 return true;
             }
         }

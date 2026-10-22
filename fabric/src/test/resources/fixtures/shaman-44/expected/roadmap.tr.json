@@ -35,6 +35,13 @@
               "tradable": true
             },
             {
+              "name": "Ancient Jazerant",
+              "level": 36,
+              "gain": 4.8,
+              "from": "Improper Burial Rites etkinliği",
+              "tradable": true
+            },
+            {
               "name": "Sawdust",
               "level": 49,
               "gain": 3.1,
@@ -54,13 +61,6 @@
               "gain": 0.9,
               "from": "Isles of Fiction tüccarı",
               "tradable": false
-            },
-            {
-              "name": "Ringing Mail",
-              "level": 41,
-              "gain": 0.2,
-              "from": "mob'lardan düşer",
-              "tradable": true
             }
           ]
         },
@@ -127,14 +127,21 @@
         },
         {
           "slot": "RING",
-          "name": "Goblin-Silver Ring",
-          "level": 40,
-          "tier": "UNIQUE",
-          "gain": 1.0,
-          "from": "Goblin Village tüccarı",
-          "price": null,
+          "name": "Tainted Ruby",
+          "level": 37,
+          "tier": "RARE",
+          "gain": 3.1,
+          "from": "Improper Burial Rites etkinliği",
+          "price": "~62 EB · Eski fiyat",
           "tradable": true,
           "options": [
+            {
+              "name": "Tainted Ruby",
+              "level": 37,
+              "gain": 3.1,
+              "from": "Improper Burial Rites etkinliği",
+              "tradable": true
+            },
             {
               "name": "Goblin-Silver Ring",
               "level": 40,
@@ -176,87 +183,26 @@
               "gain": -2.4,
               "from": "mağara sandığı",
               "tradable": true
-            },
-            {
-              "name": "Goblin Hex Focus",
-              "level": 42,
-              "gain": -2.5,
-              "from": "Goblin Village tüccarı",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "BRACELET",
-          "name": "Union",
-          "level": 39,
-          "tier": "RARE",
-          "gain": 4.8,
-          "from": "mağara sandığı",
-          "price": null,
-          "tradable": true,
-          "options": [
-            {
-              "name": "Union",
-              "level": 39,
-              "gain": 4.8,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Tarod's Search",
-              "level": 47,
-              "gain": 2.4,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Trinket",
-              "level": 37,
-              "gain": 2.2,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Twist Band",
-              "level": 49,
-              "gain": 2.9,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Rime",
-              "level": 43,
-              "gain": 1.1,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Reminiscence",
-              "level": 41,
-              "gain": 4.1,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Marius' Lament",
-              "level": 49,
-              "gain": 1.3,
-              "from": "mağara sandığı",
-              "tradable": true
             }
           ]
         },
         {
           "slot": "NECKLACE",
-          "name": "Sting-Glass Necklace",
-          "level": 37,
-          "tier": "RARE",
-          "gain": 0.2,
-          "from": "Almuj tüccarı",
-          "price": null,
-          "tradable": false,
+          "name": "Dogfight",
+          "level": 42,
+          "tier": "LEGENDARY",
+          "gain": 4.6,
+          "from": "Trade Market",
+          "price": "~37 EB (medyan 10.5 LE)",
+          "tradable": true,
           "options": [
+            {
+              "name": "Dogfight",
+              "level": 42,
+              "gain": 4.6,
+              "from": "Trade Market",
+              "tradable": true
+            },
             {
               "name": "Sting-Glass Necklace",
               "level": 37,
@@ -265,30 +211,23 @@
               "tradable": false
             },
             {
-              "name": "Dogfight",
-              "level": 42,
-              "gain": -1.9,
-              "from": "Trade Market",
-              "tradable": true
-            },
-            {
               "name": "Willpower",
               "level": 42,
-              "gain": -2.1,
+              "gain": -2.0,
               "from": "mağara sandığı",
               "tradable": true
             },
             {
               "name": "Great Charm",
               "level": 40,
-              "gain": -2.2,
+              "gain": -2.1,
               "from": "mağara sandığı",
               "tradable": true
             },
             {
               "name": "Coarse Torc",
               "level": 43,
-              "gain": -4.1,
+              "gain": -4.0,
               "from": "mağara sandığı",
               "tradable": true
             }
@@ -310,338 +249,160 @@
       "gear": [
         {
           "slot": "RELIK",
-          "name": "Air Relic Relik",
-          "level": 45,
-          "tier": "RARE",
-          "gain": 2.3,
-          "from": "Relic Guardian düşürür",
+          "name": "Decaybound Spindle",
+          "level": 50,
+          "tier": "FABLED",
+          "gain": -0.1,
+          "from": "Rogue Wyrmling etkinliği",
           "price": null,
           "tradable": true,
           "options": [
             {
-              "name": "Air Relic Relik",
-              "level": 45,
+              "name": "Decaybound Spindle",
+              "level": 50,
               "gain": 3.6,
-              "from": "Relic Guardian düşürür",
+              "from": "Rogue Wyrmling etkinliği",
               "tradable": true
             },
             {
-              "name": "Tidebreaker",
-              "level": 55,
-              "gain": 9.2,
-              "from": "mob'lardan düşer",
+              "name": "Air Relic Relik",
+              "level": 45,
+              "gain": 0.0,
+              "from": "Relic Guardian düşürür",
               "tradable": true
             },
             {
               "name": "Water Relic Relik",
               "level": 45,
-              "gain": 2.1,
+              "gain": -1.6,
               "from": "Relic Guardian düşürür",
               "tradable": true
             },
             {
               "name": "Foreword",
               "level": 50,
-              "gain": -0.5,
-              "from": "Isles of Fiction tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Wintergreen",
-              "level": 54,
-              "gain": -1.0,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Holiday Spirit",
-              "level": 55,
-              "gain": 1.7,
+              "gain": -4.1,
               "from": "Isles of Fiction tüccarı",
               "tradable": true
             },
             {
               "name": "Discotek",
               "level": 49,
-              "gain": -1.5,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Tremolo",
-              "level": 36,
-              "gain": -18.9,
-              "from": "Sand-Swept Tomb zindan tüccarı",
-              "tradable": false
-            },
-            {
-              "name": "Multiplication",
-              "level": 40,
-              "gain": -19.6,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Cleansing Flame",
-              "level": 40,
-              "gain": -20.8,
+              "gain": -4.5,
               "from": "mob'lardan düşer",
               "tradable": true
             }
           ]
         },
         {
-          "slot": "LEGGINGS",
-          "name": "Winter's Essence",
-          "level": 44,
-          "tier": "LEGENDARY",
-          "gain": 0.5,
-          "from": "Trade Market",
-          "price": "~25 EB",
+          "slot": "HELMET",
+          "name": "Bloodied Wreath",
+          "level": 45,
+          "tier": "RARE",
+          "gain": 0.8,
+          "from": "Blazing Combustion etkinliği",
+          "price": null,
           "tradable": true,
           "options": [
             {
-              "name": "Winter's Essence",
-              "level": 44,
-              "gain": 2.9,
-              "from": "Trade Market",
+              "name": "Bloodied Wreath",
+              "level": 45,
+              "gain": 1.6,
+              "from": "Blazing Combustion etkinliği",
               "tradable": true
             },
             {
-              "name": "Nacreous",
-              "level": 51,
-              "gain": 8.6,
-              "from": "mob'lardan düşer",
+              "name": "Wooly Cap",
+              "level": 45,
+              "gain": 0.9,
+              "from": "Isles of Fiction tüccarı",
               "tradable": true
             },
             {
-              "name": "Moisture",
-              "level": 51,
-              "gain": 4.1,
-              "from": "mob'lardan düşer",
+              "name": "Avalanche",
+              "level": 43,
+              "gain": 0.5,
+              "from": "Fate of the Fallen görevi",
               "tradable": true
             },
             {
-              "name": "Waxed Overalls",
-              "level": 54,
-              "gain": 1.7,
-              "from": "Olux tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Troms' Climbing Trousers",
-              "level": 53,
+              "name": "Astigmatism",
+              "level": 48,
               "gain": 0.3,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Climbing Helmet",
+              "level": 42,
+              "gain": -0.3,
+              "from": "Ice Nations görevi",
+              "tradable": false
+            }
+          ]
+        },
+        {
+          "slot": "LEGGINGS",
+          "name": "Inclemency",
+          "level": 45,
+          "tier": "LEGENDARY",
+          "gain": 4.6,
+          "from": "Blazing Combustion etkinliği",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Inclemency",
+              "level": 45,
+              "gain": 4.1,
+              "from": "Blazing Combustion etkinliği",
+              "tradable": true
+            },
+            {
+              "name": "Holy Greaves",
+              "level": 40,
+              "gain": -1.3,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Chain Link",
               "level": 45,
-              "gain": -0.3,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Holy Greaves",
-              "level": 40,
-              "gain": -0.7,
+              "gain": -2.6,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Fleet",
               "level": 43,
-              "gain": -1.7,
+              "gain": -5.9,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Culex",
+              "level": 50,
+              "gain": -9.9,
               "from": "mob'lardan düşer",
               "tradable": true
             }
           ]
         },
         {
-          "slot": "RING",
-          "name": "Yellow Ornament",
-          "level": 50,
-          "tier": "RARE",
-          "gain": -0.2,
-          "from": "Trade Market",
-          "price": "~1.0 LE",
-          "tradable": true,
-          "options": [
-            {
-              "name": "Yellow Ornament",
-              "level": 50,
-              "gain": -0.2,
-              "from": "Trade Market",
-              "tradable": true
-            },
-            {
-              "name": "Sticky Decoder Ring",
-              "level": 41,
-              "gain": -1.4,
-              "from": "Rymek tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Decoder Ring",
-              "level": 41,
-              "gain": -1.5,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Blue Ornament",
-              "level": 45,
-              "gain": -2.4,
-              "from": "Isles of Fiction tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Horseshoe",
-              "level": 44,
-              "gain": -3.9,
-              "from": "Bucie tüccarı",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "BRACELET",
-          "name": "Red Ornament",
-          "level": 50,
-          "tier": "RARE",
-          "gain": 1.6,
-          "from": "Isles of Fiction tüccarı",
-          "price": null,
-          "tradable": true,
-          "options": [
-            {
-              "name": "Red Ornament",
-              "level": 50,
-              "gain": 1.4,
-              "from": "Isles of Fiction tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Mistletoe",
-              "level": 50,
-              "gain": -0.1,
-              "from": "Isles of Fiction tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Cupid",
-              "level": 50,
-              "gain": -0.2,
-              "from": "Isles of Fiction tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Reminiscence",
-              "level": 41,
-              "gain": -2.5,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Marius' Lament",
-              "level": 49,
-              "gain": -3.5,
-              "from": "mağara sandığı",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "NECKLACE",
-          "name": "Criistal",
-          "level": 49,
-          "tier": "LEGENDARY",
-          "gain": 4.4,
-          "from": "Ice Barrows zindan tüccarı",
-          "price": null,
-          "tradable": false,
-          "options": [
-            {
-              "name": "Criistal",
-              "level": 49,
-              "gain": 4.4,
-              "from": "Ice Barrows zindan tüccarı",
-              "tradable": false
-            },
-            {
-              "name": "Great Charm",
-              "level": 40,
-              "gain": -0.6,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Willpower",
-              "level": 42,
-              "gain": -0.7,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Dogfight",
-              "level": 42,
-              "gain": -0.9,
-              "from": "Trade Market",
-              "tradable": true
-            },
-            {
-              "name": "Wolf Crest",
-              "level": 46,
-              "gain": -1.0,
-              "from": "mağara sandığı",
-              "tradable": true
-            }
-          ]
-        },
-        {
           "slot": "RING2",
-          "name": "Yellow Ornament",
-          "level": 50,
+          "name": "Tainted Ruby",
+          "level": 37,
           "tier": "RARE",
-          "gain": 1.1,
-          "from": "Trade Market",
-          "price": "~1.0 LE",
+          "gain": 4.4,
+          "from": "Improper Burial Rites etkinliği",
+          "price": "~62 EB · Eski fiyat",
           "tradable": true,
           "options": [
             {
-              "name": "Yellow Ornament",
-              "level": 50,
-              "gain": 1.1,
-              "from": "Trade Market",
-              "tradable": true
-            },
-            {
-              "name": "Blue Ornament",
-              "level": 45,
-              "gain": -1.3,
-              "from": "Isles of Fiction tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Sticky Decoder Ring",
-              "level": 41,
-              "gain": -15.2,
-              "from": "Rymek tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Decoder Ring",
-              "level": 41,
-              "gain": -15.2,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Horseshoe",
-              "level": 44,
-              "gain": -16.9,
-              "from": "Bucie tüccarı",
+              "name": "Tainted Ruby",
+              "level": 37,
+              "gain": 4.4,
+              "from": "Improper Burial Rites etkinliği",
               "tradable": true
             }
           ]
@@ -668,7 +429,7 @@
           "name": "Lightshow",
           "level": 60,
           "tier": "LEGENDARY",
-          "gain": 62.9,
+          "gain": 105.6,
           "from": "mob'lardan düşer",
           "price": null,
           "tradable": true,
@@ -676,71 +437,71 @@
             {
               "name": "Lightshow",
               "level": 60,
-              "gain": 52.7,
+              "gain": 39.3,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Olux's Prized Relik",
               "level": 55,
-              "gain": 28.9,
+              "gain": 21.5,
               "from": "Olux tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Adrift",
+              "level": 63,
+              "gain": 8.1,
+              "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Anthem",
               "level": 62,
-              "gain": 20.6,
+              "gain": 3.5,
               "from": "Isles of Fiction tüccarı",
               "tradable": false
             },
             {
-              "name": "Adrift",
-              "level": 63,
-              "gain": 13.5,
+              "name": "Tidebreaker",
+              "level": 55,
+              "gain": -4.6,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Luster Purge",
               "level": 60,
-              "gain": 7.9,
+              "gain": -2.1,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
-              "name": "Tidebreaker",
-              "level": 55,
-              "gain": 3.6,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Thunder Relic Relik",
-              "level": 45,
-              "gain": 3.2,
-              "from": "Relic Guardian düşürür",
-              "tradable": true
-            },
-            {
-              "name": "Vibrato",
-              "level": 44,
-              "gain": -20.5,
-              "from": "mob'lardan düşer",
+              "name": "Poinsettia",
+              "level": 65,
+              "gain": -2.3,
+              "from": "Isles of Fiction tüccarı",
               "tradable": true
             },
             {
               "name": "Multiplication",
               "level": 40,
-              "gain": -22.9,
+              "gain": -27.0,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
-              "name": "Cleansing Flame",
-              "level": 40,
-              "gain": -23.8,
+              "name": "Vibrato",
+              "level": 44,
+              "gain": -28.8,
               "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Calamaro's Relik",
+              "level": 43,
+              "gain": -33.2,
+              "from": "Squid Village tüccarı",
               "tradable": true
             }
           ]
@@ -750,237 +511,72 @@
           "name": "Venison",
           "level": 54,
           "tier": "LEGENDARY",
-          "gain": 33.3,
+          "gain": 1.2,
           "from": "mob'lardan düşer",
           "price": null,
           "tradable": true,
-          "alternative": "Never-Ending Nightmare (Lv. 55, Isles of Fiction tüccarı)",
           "options": [
             {
               "name": "Venison",
               "level": 54,
-              "gain": 8.2,
+              "gain": -2.8,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Helmet of Blue Stone",
               "level": 62,
-              "gain": 10.6,
+              "gain": -2.2,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Never-Ending Nightmare",
               "level": 55,
-              "gain": 7.4,
+              "gain": -4.7,
               "from": "Isles of Fiction tüccarı",
               "tradable": false
-            },
-            {
-              "name": "Autumn Leaves",
-              "level": 59,
-              "gain": 6.0,
-              "from": "Isles of Fiction tüccarı",
-              "tradable": false
-            },
-            {
-              "name": "Illuminite",
-              "level": 55,
-              "gain": 1.4,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "The Judge",
-              "level": 52,
-              "gain": 1.3,
-              "from": "Troms tüccarı",
-              "tradable": true
             },
             {
               "name": "Avalanche",
               "level": 43,
-              "gain": -2.3,
+              "gain": -11.1,
               "from": "Fate of the Fallen görevi",
+              "tradable": true
+            },
+            {
+              "name": "Illuminite",
+              "level": 55,
+              "gain": -8.8,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Mask of Enlightenment",
+              "level": 57,
+              "gain": -6.8,
+              "from": "Iboju Village tüccarı",
+              "tradable": false
+            },
+            {
+              "name": "The Judge",
+              "level": 52,
+              "gain": -9.9,
+              "from": "Troms tüccarı",
               "tradable": true
             },
             {
               "name": "Climbing Helmet",
               "level": 42,
-              "gain": -2.9,
+              "gain": -13.5,
               "from": "Ice Nations görevi",
               "tradable": false
             },
             {
-              "name": "Strategist",
-              "level": 43,
-              "gain": -9.4,
-              "from": "Nodguj Nation tüccarı",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "LEGGINGS",
-          "name": "Lookout",
-          "level": 59,
-          "tier": "UNIQUE",
-          "gain": 4.3,
-          "from": "Gelibord tüccarı",
-          "price": null,
-          "tradable": true,
-          "options": [
-            {
-              "name": "Lookout",
-              "level": 59,
-              "gain": 7.3,
-              "from": "Gelibord tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Greaves of Honor",
-              "level": 58,
-              "gain": 4.5,
-              "from": "An Iron Heart Part II görevi",
-              "tradable": true
-            },
-            {
-              "name": "Nacreous",
-              "level": 51,
-              "gain": 4.8,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Bob's Lost Leggings",
-              "level": 58,
-              "gain": 3.2,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Kratke",
-              "level": 58,
-              "gain": 0.8,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Ife",
-              "level": 59,
-              "gain": 0.0,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Gleeman's Tale",
-              "level": 64,
-              "gain": -1.8,
-              "from": "Isles of Fiction tüccarı",
-              "tradable": false
-            },
-            {
-              "name": "Rusher",
-              "level": 40,
-              "gain": -5.7,
-              "from": "Dujgon Nation tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Fleet",
-              "level": 43,
-              "gain": -5.2,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Holy Greaves",
-              "level": 40,
-              "gain": -5.9,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "NECKLACE",
-          "name": "Green Ornament",
-          "level": 55,
-          "tier": "RARE",
-          "gain": 10.7,
-          "from": "Isles of Fiction tüccarı",
-          "price": null,
-          "tradable": true,
-          "options": [
-            {
-              "name": "Green Ornament",
-              "level": 55,
-              "gain": 10.7,
-              "from": "Isles of Fiction tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Constrict Collar",
-              "level": 45,
-              "gain": 0.8,
-              "from": "Prison of Souls sunağı",
-              "tradable": false
-            },
-            {
-              "name": "Nature's Gift",
-              "level": 61,
-              "gain": -2.5,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Zhight Weird Magic Necklace",
-              "level": 55,
-              "gain": -3.0,
-              "from": "Zhight Island tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Quartz Choker",
-              "level": 52,
-              "gain": -3.1,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Shiny Coin",
-              "level": 56,
-              "gain": -4.3,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Zhight Beaded Broach",
-              "level": 55,
-              "gain": -4.5,
-              "from": "Zhight Island tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Dogfight",
-              "level": 42,
-              "gain": -5.3,
-              "from": "Trade Market",
-              "tradable": true
-            },
-            {
-              "name": "Willpower",
-              "level": 42,
-              "gain": -5.6,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Great Charm",
-              "level": 40,
-              "gain": -5.6,
-              "from": "mağara sandığı",
+              "name": "The Scavenged",
+              "level": 41,
+              "gain": -15.9,
+              "from": "Canine Ambush etkinliği",
               "tradable": true
             }
           ]
@@ -990,7 +586,7 @@
           "name": "Matryoshka Shell",
           "level": 55,
           "tier": "LEGENDARY",
-          "gain": 0.6,
+          "gain": 1.8,
           "from": "Matryoshka Idol düşürür",
           "price": null,
           "tradable": false,
@@ -998,36 +594,334 @@
             {
               "name": "Matryoshka Shell",
               "level": 55,
-              "gain": 0.6,
+              "gain": 1.8,
               "from": "Matryoshka Idol düşürür",
               "tradable": false
             },
             {
-              "name": "Hurricane",
-              "level": 55,
-              "gain": 0.0,
-              "from": "Troms tüccarı",
+              "name": "Cloak of Luminosity",
+              "level": 64,
+              "gain": 7.9,
+              "from": "Trade Market",
               "tradable": true
             },
             {
-              "name": "Bob's Battle Chestplate",
-              "level": 45,
-              "gain": -0.1,
+              "name": "Millennium",
+              "level": 63,
+              "gain": 9.0,
               "from": "Trade Market",
+              "tradable": true
+            },
+            {
+              "name": "Odyssey",
+              "level": 61,
+              "gain": 0.9,
+              "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Drizzling Doublet",
               "level": 56,
-              "gain": -0.5,
+              "gain": 2.3,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
-              "name": "Sawdust",
-              "level": 49,
-              "gain": -2.5,
+              "name": "Bob's Battle Chestplate",
+              "level": 45,
+              "gain": 0.0,
               "from": "Trade Market",
+              "tradable": true
+            },
+            {
+              "name": "Opalite",
+              "level": 62,
+              "gain": 1.0,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Sundown Poncho",
+              "level": 40,
+              "gain": -6.0,
+              "from": "Sunrise Canyon sunağı",
+              "tradable": false
+            },
+            {
+              "name": "Gladiator",
+              "level": 40,
+              "gain": -3.8,
+              "from": "Isles of Fiction tüccarı",
+              "tradable": false
+            },
+            {
+              "name": "Enhanced Phosphene",
+              "level": 40,
+              "gain": -4.9,
+              "from": "Rymek tüccarı",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "BRACELET",
+          "name": "Zhight Powwow Bangle",
+          "level": 55,
+          "tier": "UNIQUE",
+          "gain": 5.8,
+          "from": "Zhight Island tüccarı",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Zhight Powwow Bangle",
+              "level": 55,
+              "gain": 5.8,
+              "from": "Zhight Island tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Purity Filter",
+              "level": 52,
+              "gain": 2.2,
+              "from": "Slimy Schism etkinliği",
+              "tradable": true
+            },
+            {
+              "name": "Blazing Bangle",
+              "level": 41,
+              "gain": 0.5,
+              "from": "Encroaching Conflagration etkinliği",
+              "tradable": true
+            },
+            {
+              "name": "Fellowship",
+              "level": 65,
+              "gain": -0.3,
+              "from": "Isles of Fiction tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Tarod's Search",
+              "level": 47,
+              "gain": -1.8,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Czytash's Compass",
+              "level": 55,
+              "gain": -1.8,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Mistletoe",
+              "level": 50,
+              "gain": -1.9,
+              "from": "Isles of Fiction tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Aggression",
+              "level": 44,
+              "gain": -4.3,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Reminiscence",
+              "level": 41,
+              "gain": -1.7,
+              "from": "mağara sandığı",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "RING",
+          "name": "Yellow Ornament",
+          "level": 50,
+          "tier": "RARE",
+          "gain": -1.5,
+          "from": "Isles of Fiction tüccarı",
+          "price": "~1.0 LE",
+          "tradable": true,
+          "options": [
+            {
+              "name": "Yellow Ornament",
+              "level": 50,
+              "gain": -1.5,
+              "from": "Isles of Fiction tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Mirror",
+              "level": 56,
+              "gain": -1.0,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Decoder Ring",
+              "level": 41,
+              "gain": -2.1,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Goblin-Silver Ring",
+              "level": 40,
+              "gain": -2.2,
+              "from": "Goblin Village tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Sticky Decoder Ring",
+              "level": 41,
+              "gain": -2.6,
+              "from": "Rymek tüccarı",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "RING2",
+          "name": "Yellow Ornament",
+          "level": 50,
+          "tier": "RARE",
+          "gain": 1.9,
+          "from": "Isles of Fiction tüccarı",
+          "price": "~1.0 LE",
+          "tradable": true,
+          "options": [
+            {
+              "name": "Yellow Ornament",
+              "level": 50,
+              "gain": 1.9,
+              "from": "Isles of Fiction tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Mirror",
+              "level": 56,
+              "gain": -0.3,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Goblin-Silver Ring",
+              "level": 40,
+              "gain": -1.4,
+              "from": "Goblin Village tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Decoder Ring",
+              "level": 41,
+              "gain": -1.4,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Sticky Decoder Ring",
+              "level": 41,
+              "gain": -1.9,
+              "from": "Rymek tüccarı",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "NECKLACE",
+          "name": "Green Ornament",
+          "level": 55,
+          "tier": "RARE",
+          "gain": 4.6,
+          "from": "Isles of Fiction tüccarı",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Green Ornament",
+              "level": 55,
+              "gain": 4.9,
+              "from": "Isles of Fiction tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Constrict Collar",
+              "level": 45,
+              "gain": 1.2,
+              "from": "Prison of Souls sunağı",
+              "tradable": false
+            },
+            {
+              "name": "Criistal",
+              "level": 49,
+              "gain": 0.6,
+              "from": "Ice Barrows zindan tüccarı",
+              "tradable": false
+            },
+            {
+              "name": "Jagged Bone Necklace",
+              "level": 51,
+              "gain": 0.0,
+              "from": "Encroaching Ablation etkinliği",
+              "tradable": true
+            },
+            {
+              "name": "Zhight Weird Magic Necklace",
+              "level": 55,
+              "gain": -0.5,
+              "from": "Zhight Island tüccarı",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "LEGGINGS",
+          "name": "Nacreous",
+          "level": 51,
+          "tier": "RARE",
+          "gain": 0.5,
+          "from": "mob'lardan düşer",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Nacreous",
+              "level": 51,
+              "gain": 0.9,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Lookout",
+              "level": 59,
+              "gain": 1.8,
+              "from": "Gelibord tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Greaves of Honor",
+              "level": 58,
+              "gain": 0.0,
+              "from": "An Iron Heart Part II görevi",
+              "tradable": true
+            },
+            {
+              "name": "Bob's Lost Leggings",
+              "level": 58,
+              "gain": -0.8,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Kratke",
+              "level": 58,
+              "gain": -3.0,
+              "from": "mob'lardan düşer",
               "tradable": true
             }
           ]
@@ -1058,11 +952,72 @@
       "level": 70,
       "gear": [
         {
+          "slot": "BRACELET",
+          "name": "Red Ornament",
+          "level": 50,
+          "tier": "RARE",
+          "gain": 5.3,
+          "from": "Isles of Fiction tüccarı",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Red Ornament",
+              "level": 50,
+              "gain": 5.3,
+              "from": "Isles of Fiction tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Growth",
+              "level": 68,
+              "gain": -0.4,
+              "from": "Efilim tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Cattail",
+              "level": 70,
+              "gain": -2.2,
+              "from": "Efilim tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Siwel's Guilt",
+              "level": 74,
+              "gain": -1.8,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Foam Bracer",
+              "level": 66,
+              "gain": -5.5,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Rayshyroth's Knowledge",
+              "level": 66,
+              "gain": -6.0,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Lazarus' Brace",
+              "level": 69,
+              "gain": -6.3,
+              "from": "Lazarus Pit görevi",
+              "tradable": true
+            }
+          ]
+        },
+        {
           "slot": "HELMET",
           "name": "Purified Helmet of the Legends",
           "level": 68,
           "tier": "RARE",
-          "gain": 0.6,
+          "gain": -0.9,
           "from": "Temple of the Legends görevi",
           "price": null,
           "tradable": false,
@@ -1070,7 +1025,7 @@
             {
               "name": "Purified Helmet of the Legends",
               "level": 68,
-              "gain": -0.4,
+              "gain": -0.5,
               "from": "Temple of the Legends görevi",
               "tradable": false
             },
@@ -1082,25 +1037,25 @@
               "tradable": true
             },
             {
+              "name": "Stifling Spores",
+              "level": 69,
+              "gain": -4.7,
+              "from": "Peculiar Grotto etkinliği",
+              "tradable": true
+            },
+            {
               "name": "Helmet of Blue Stone",
               "level": 62,
-              "gain": -5.1,
+              "gain": -4.9,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Never-Ending Nightmare",
               "level": 55,
-              "gain": -7.9,
+              "gain": -7.2,
               "from": "Isles of Fiction tüccarı",
               "tradable": false
-            },
-            {
-              "name": "Upgraded Orc Mask",
-              "level": 64,
-              "gain": -8.1,
-              "from": "All Roads to Peace görevi",
-              "tradable": true
             }
           ]
         },
@@ -1109,7 +1064,7 @@
           "name": "Admiral",
           "level": 67,
           "tier": "LEGENDARY",
-          "gain": 5.9,
+          "gain": 5.7,
           "from": "Galleon's Graveyard zindan tüccarı",
           "price": null,
           "tradable": false,
@@ -1117,22 +1072,22 @@
             {
               "name": "Admiral",
               "level": 67,
-              "gain": 7.6,
+              "gain": 6.5,
               "from": "Galleon's Graveyard zindan tüccarı",
               "tradable": false
             },
             {
-              "name": "Millennium",
-              "level": 63,
-              "gain": 0.9,
-              "from": "Trade Market",
+              "name": "Odyssey",
+              "level": 61,
+              "gain": 2.9,
+              "from": "mob'lardan düşer",
               "tradable": true
             },
             {
-              "name": "Odyssey",
-              "level": 61,
-              "gain": 0.8,
-              "from": "mob'lardan düşer",
+              "name": "Millennium",
+              "level": 63,
+              "gain": 1.3,
+              "from": "Trade Market",
               "tradable": true
             },
             {
@@ -1145,6 +1100,53 @@
             {
               "name": "Drizzling Doublet",
               "level": 56,
+              "gain": -3.9,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "LEGGINGS",
+          "name": "Lookout",
+          "level": 59,
+          "tier": "UNIQUE",
+          "gain": 3.5,
+          "from": "Gelibord tüccarı",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Lookout",
+              "level": 59,
+              "gain": 2.2,
+              "from": "Gelibord tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Reflection",
+              "level": 67,
+              "gain": 0.4,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Greaves of Honor",
+              "level": 58,
+              "gain": -1.1,
+              "from": "An Iron Heart Part II görevi",
+              "tradable": true
+            },
+            {
+              "name": "Bob's Lost Leggings",
+              "level": 58,
+              "gain": -1.4,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Kratke",
+              "level": 58,
               "gain": -4.0,
               "from": "mob'lardan düşer",
               "tradable": true
@@ -1311,53 +1313,6 @@
               "tradable": true
             }
           ]
-        },
-        {
-          "slot": "BOOTS",
-          "name": "Cosmic Walkers",
-          "level": 80,
-          "tier": "LEGENDARY",
-          "gain": 1.4,
-          "from": "??? görevi",
-          "price": null,
-          "tradable": false,
-          "options": [
-            {
-              "name": "Cosmic Walkers",
-              "level": 80,
-              "gain": 3.2,
-              "from": "??? görevi",
-              "tradable": false
-            },
-            {
-              "name": "Sodeta Boots",
-              "level": 66,
-              "gain": -0.6,
-              "from": "Lost Soles görevi",
-              "tradable": true
-            },
-            {
-              "name": "Stalagmites",
-              "level": 67,
-              "gain": -3.9,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Cursed Jackboots",
-              "level": 66,
-              "gain": -9.1,
-              "from": "Pirate Cove tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Mindwalkers",
-              "level": 69,
-              "gain": -10.8,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            }
-          ]
         }
       ],
       "abilities": [
@@ -1377,11 +1332,72 @@
       "level": 90,
       "gear": [
         {
+          "slot": "RELIK",
+          "name": "Thermals",
+          "level": 86,
+          "tier": "RARE",
+          "gain": 94.2,
+          "from": "Corkus tüccarı",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Thermals",
+              "level": 86,
+              "gain": 9.1,
+              "from": "Corkus tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Hardcore",
+              "level": 92,
+              "gain": 40.8,
+              "from": "Fallen Factory zindan tüccarı",
+              "tradable": false
+            },
+            {
+              "name": "Arbalest",
+              "level": 87,
+              "gain": 13.7,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Stormdrain",
+              "level": 88,
+              "gain": 15.8,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Guacamole",
+              "level": 88,
+              "gain": 9.6,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Sparkling Tones",
+              "level": 88,
+              "gain": 8.9,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Crimson",
+              "level": 91,
+              "gain": 5.5,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            }
+          ]
+        },
+        {
           "slot": "HELMET",
           "name": "Cosmic Visor",
           "level": 80,
           "tier": "LEGENDARY",
-          "gain": 2.0,
+          "gain": -0.1,
           "from": "??? görevi",
           "price": null,
           "tradable": false,
@@ -1389,57 +1405,97 @@
             {
               "name": "Cosmic Visor",
               "level": 80,
-              "gain": 2.0,
+              "gain": 0.8,
               "from": "??? görevi",
               "tradable": false
             },
             {
               "name": "Cranial Panel",
               "level": 85,
-              "gain": 2.7,
+              "gain": 0.0,
               "from": "Corkus tüccarı",
               "tradable": true
             },
             {
               "name": "Dragon Horned Helmet",
               "level": 80,
-              "gain": 0.0,
+              "gain": -3.4,
               "from": "Thanos tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Sequencer",
-              "level": 83,
-              "gain": -3.2,
-              "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Speaker",
               "level": 87,
-              "gain": -3.5,
+              "gain": -3.8,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Sequencer",
+              "level": 83,
+              "gain": -4.3,
               "from": "mob'lardan düşer",
               "tradable": true
             }
           ]
         },
         {
+          "slot": "BOOTS",
+          "name": "Cosmic Walkers",
+          "level": 80,
+          "tier": "LEGENDARY",
+          "gain": 25.8,
+          "from": "??? görevi",
+          "price": null,
+          "tradable": false,
+          "options": [
+            {
+              "name": "Cosmic Walkers",
+              "level": 80,
+              "gain": 27.4,
+              "from": "??? görevi",
+              "tradable": false
+            },
+            {
+              "name": "Achilles",
+              "level": 86,
+              "gain": 8.8,
+              "from": "Corrupted Underworld Crypt zindan tüccarı",
+              "tradable": false
+            },
+            {
+              "name": "Epilogue",
+              "level": 89,
+              "gain": 8.3,
+              "from": "Isles of Fiction tüccarı",
+              "tradable": false
+            },
+            {
+              "name": "Low World Greaves",
+              "level": 90,
+              "gain": 2.7,
+              "from": "Rodoroc tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Swashbuckler's Brogues",
+              "level": 70,
+              "gain": 1.8,
+              "from": "Isles of Fiction tüccarı",
+              "tradable": false
+            }
+          ]
+        },
+        {
           "slot": "RING",
-          "name": "Coolant",
-          "level": 86,
-          "tier": "RARE",
-          "gain": -4.3,
-          "from": "Relos tüccarı",
+          "name": "Ring of Wisdom",
+          "level": 80,
+          "tier": "UNIQUE",
+          "gain": -5.0,
+          "from": "Thanos tüccarı",
           "price": null,
           "tradable": true,
           "options": [
-            {
-              "name": "Coolant",
-              "level": 86,
-              "gain": -5.0,
-              "from": "Relos tüccarı",
-              "tradable": true
-            },
             {
               "name": "Ring of Wisdom",
               "level": 80,
@@ -1462,176 +1518,35 @@
               "tradable": true
             },
             {
-              "name": "Mercy",
-              "level": 71,
-              "gain": -8.9,
-              "from": "mağara sandığı",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "BRACELET",
-          "name": "Vanguard",
-          "level": 77,
-          "tier": "LEGENDARY",
-          "gain": 3.9,
-          "from": "Corrupted Infested Pit zindan tüccarı",
-          "price": null,
-          "tradable": false,
-          "options": [
-            {
-              "name": "Vanguard",
-              "level": 77,
-              "gain": 3.9,
-              "from": "Corrupted Infested Pit zindan tüccarı",
-              "tradable": false
-            },
-            {
-              "name": "Cattail",
-              "level": 70,
-              "gain": 2.3,
-              "from": "Efilim tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Siwel's Guilt",
-              "level": 74,
-              "gain": 0.9,
+              "name": "Worship",
+              "level": 84,
+              "gain": -8.5,
               "from": "mağara sandığı",
               "tradable": true
             },
             {
-              "name": "Back-Up Plan",
-              "level": 70,
-              "gain": -0.1,
-              "from": "Altar of Sanctification sunağı",
+              "name": "Bronze Basic Ring",
+              "level": 90,
+              "gain": -9.7,
+              "from": "challenge: legendary island",
               "tradable": false
-            },
-            {
-              "name": "Double Vision",
-              "level": 79,
-              "gain": -0.6,
-              "from": "Realm of Light V - The Realm of Light görevi",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "NECKLACE",
-          "name": "Royal Stormy Amulet",
-          "level": 75,
-          "tier": "LEGENDARY",
-          "gain": 6.8,
-          "from": "Cinfras tüccarı",
-          "price": null,
-          "tradable": true,
-          "options": [
-            {
-              "name": "Royal Stormy Amulet",
-              "level": 75,
-              "gain": 6.8,
-              "from": "Cinfras tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Royal Shocking Amulet",
-              "level": 75,
-              "gain": 6.6,
-              "from": "Cinfras tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Rough Diamond",
-              "level": 80,
-              "gain": 3.8,
-              "from": "Thanos tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Ensa's Faith",
-              "level": 73,
-              "gain": 3.1,
-              "from": "Corrupted Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Royal Dusty Amulet",
-              "level": 75,
-              "gain": 3.1,
-              "from": "Cinfras tüccarı",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "RELIK",
-          "name": "Arbalest",
-          "level": 87,
-          "tier": "LEGENDARY",
-          "gain": 4.1,
-          "from": "mob'lardan düşer",
-          "price": null,
-          "tradable": true,
-          "options": [
-            {
-              "name": "Arbalest",
-              "level": 87,
-              "gain": 3.7,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Stormdrain",
-              "level": 88,
-              "gain": 1.9,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Thermals",
-              "level": 86,
-              "gain": 0.0,
-              "from": "Corkus tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Guacamole",
-              "level": 88,
-              "gain": -3.5,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Sparkling Tones",
-              "level": 88,
-              "gain": -8.4,
-              "from": "mob'lardan düşer",
-              "tradable": true
             }
           ]
         },
         {
           "slot": "RING2",
-          "name": "Coolant",
-          "level": 86,
-          "tier": "RARE",
-          "gain": 0.4,
-          "from": "Relos tüccarı",
+          "name": "Ring of Wisdom",
+          "level": 80,
+          "tier": "UNIQUE",
+          "gain": 0.1,
+          "from": "Thanos tüccarı",
           "price": null,
           "tradable": true,
           "options": [
             {
-              "name": "Coolant",
-              "level": 86,
-              "gain": 0.4,
-              "from": "Relos tüccarı",
-              "tradable": true
-            },
-            {
               "name": "Ring of Wisdom",
               "level": 80,
-              "gain": 0.0,
+              "gain": 0.1,
               "from": "Thanos tüccarı",
               "tradable": true
             },
@@ -1650,10 +1565,111 @@
               "tradable": true
             },
             {
-              "name": "Mercy",
-              "level": 71,
-              "gain": -3.7,
+              "name": "Worship",
+              "level": 84,
+              "gain": -3.5,
               "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Bronze Basic Ring",
+              "level": 90,
+              "gain": -4.8,
+              "from": "challenge: legendary island",
+              "tradable": false
+            }
+          ]
+        },
+        {
+          "slot": "BRACELET",
+          "name": "Vanguard",
+          "level": 77,
+          "tier": "LEGENDARY",
+          "gain": 3.8,
+          "from": "Corrupted Infested Pit zindan tüccarı",
+          "price": null,
+          "tradable": false,
+          "options": [
+            {
+              "name": "Vanguard",
+              "level": 77,
+              "gain": 3.8,
+              "from": "Corrupted Infested Pit zindan tüccarı",
+              "tradable": false
+            },
+            {
+              "name": "Siwel's Guilt",
+              "level": 74,
+              "gain": 1.1,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Double Vision",
+              "level": 79,
+              "gain": -0.7,
+              "from": "Realm of Light V - The Realm of Light görevi",
+              "tradable": true
+            },
+            {
+              "name": "Jiandan Handwraps",
+              "level": 83,
+              "gain": -1.6,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Kayde",
+              "level": 85,
+              "gain": -1.7,
+              "from": "mağara sandığı",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "NECKLACE",
+          "name": "Royal Stormy Amulet",
+          "level": 75,
+          "tier": "LEGENDARY",
+          "gain": 8.0,
+          "from": "Cinfras tüccarı",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Royal Stormy Amulet",
+              "level": 75,
+              "gain": 6.9,
+              "from": "Cinfras tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Royal Blazing Amulet",
+              "level": 75,
+              "gain": 7.6,
+              "from": "Cinfras tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Royal Shocking Amulet",
+              "level": 75,
+              "gain": 6.6,
+              "from": "Cinfras tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Rough Diamond",
+              "level": 80,
+              "gain": 3.9,
+              "from": "Thanos tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Royal Dusty Amulet",
+              "level": 75,
+              "gain": 3.0,
+              "from": "Cinfras tüccarı",
               "tradable": true
             }
           ]
@@ -1677,57 +1693,58 @@
           "name": "Hard Light",
           "level": 96,
           "tier": "RARE",
-          "gain": 81.0,
+          "gain": 40.5,
           "from": "mob'lardan düşer",
           "price": null,
           "tradable": true,
+          "alternative": "Royal Hydrangea (Lv. 96, Corrupted Undergrowth Ruins zindan tüccarı)",
           "options": [
             {
               "name": "Hard Light",
               "level": 96,
-              "gain": 7.0,
+              "gain": 9.2,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Hardcore",
               "level": 92,
-              "gain": 19.4,
+              "gain": 29.2,
               "from": "Fallen Factory zindan tüccarı",
               "tradable": false
             },
             {
+              "name": "Resonance",
+              "level": 104,
+              "gain": 21.0,
+              "from": "Prelude to Annihilation etkinliği",
+              "tradable": true
+            },
+            {
               "name": "Fractal",
               "level": 105,
-              "gain": 3.1,
+              "gain": 16.1,
               "from": "raid: the nameless anomaly",
               "tradable": true
             },
             {
-              "name": "Cryoseism",
-              "level": 97,
-              "gain": -0.4,
+              "name": "Royal Hydrangea",
+              "level": 96,
+              "gain": 14.1,
+              "from": "Corrupted Undergrowth Ruins zindan tüccarı",
+              "tradable": false
+            },
+            {
+              "name": "Crimson",
+              "level": 91,
+              "gain": 5.5,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Stormdrain",
               "level": 88,
-              "gain": -0.9,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Royal Hydrangea",
-              "level": 96,
-              "gain": 0.2,
-              "from": "Corrupted Undergrowth Ruins zindan tüccarı",
-              "tradable": false
-            },
-            {
-              "name": "Guacamole",
-              "level": 88,
-              "gain": -7.7,
+              "gain": 2.8,
               "from": "mob'lardan düşer",
               "tradable": true
             }
@@ -1746,112 +1763,51 @@
             {
               "name": "Diamond Fusion Ring",
               "level": 95,
-              "gain": 3.7,
+              "gain": 4.8,
               "from": "challenge: legendary island",
               "tradable": false
             },
             {
               "name": "Intensity",
               "level": 100,
-              "gain": 3.4,
+              "gain": 4.8,
               "from": "The Qira Hive görevi",
               "tradable": false
             },
             {
+              "name": "Lifelike",
+              "level": 86,
+              "gain": -1.1,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Coolant",
+              "level": 86,
+              "gain": 1.3,
+              "from": "Relos tüccarı",
+              "tradable": true
+            },
+            {
               "name": "Gold Fusion Ring",
               "level": 95,
-              "gain": 0.5,
+              "gain": 1.6,
               "from": "challenge: legendary island",
               "tradable": false
             },
             {
-              "name": "Summa",
-              "level": 95,
-              "gain": -2.8,
-              "from": "Geyser Pit sunağı",
-              "tradable": false
-            },
-            {
-              "name": "Ring of Wisdom",
-              "level": 80,
-              "gain": -0.8,
-              "from": "Thanos tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Lifelike",
-              "level": 86,
-              "gain": -2.0,
+              "name": "Olive",
+              "level": 98,
+              "gain": -1.3,
               "from": "mağara sandığı",
               "tradable": true
             },
             {
               "name": "Silver Fusion Ring",
               "level": 95,
-              "gain": -2.1,
+              "gain": -0.9,
               "from": "challenge: legendary island",
               "tradable": false
-            }
-          ]
-        },
-        {
-          "slot": "NECKLACE",
-          "name": "Contrast",
-          "level": 100,
-          "tier": "LEGENDARY",
-          "gain": 12.1,
-          "from": "The Qira Hive görevi",
-          "price": null,
-          "tradable": false,
-          "options": [
-            {
-              "name": "Contrast",
-              "level": 100,
-              "gain": 8.4,
-              "from": "The Qira Hive görevi",
-              "tradable": false
-            },
-            {
-              "name": "Drain",
-              "level": 85,
-              "gain": -0.5,
-              "from": "Corrupted Underworld Crypt zindan tüccarı",
-              "tradable": false
-            },
-            {
-              "name": "Diamond Fusion Necklace",
-              "level": 95,
-              "gain": -3.3,
-              "from": "challenge: legendary island",
-              "tradable": false
-            },
-            {
-              "name": "Cosmium",
-              "level": 92,
-              "gain": -1.8,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Oaken Pendant",
-              "level": 105,
-              "gain": -0.7,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Umami",
-              "level": 104,
-              "gain": -2.3,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Adder Stone",
-              "level": 80,
-              "gain": -1.6,
-              "from": "mağara sandığı",
-              "tradable": true
             }
           ]
         },
@@ -1860,7 +1816,7 @@
           "name": "Diamond Fusion Ring",
           "level": 95,
           "tier": "LEGENDARY",
-          "gain": 2.9,
+          "gain": 3.0,
           "from": "challenge: legendary island",
           "price": null,
           "tradable": false,
@@ -1868,36 +1824,83 @@
             {
               "name": "Diamond Fusion Ring",
               "level": 95,
-              "gain": 2.7,
+              "gain": 2.8,
               "from": "challenge: legendary island",
               "tradable": false
+            },
+            {
+              "name": "Intensity",
+              "level": 100,
+              "gain": 2.0,
+              "from": "The Qira Hive görevi",
+              "tradable": false
+            },
+            {
+              "name": "Coolant",
+              "level": 86,
+              "gain": 0.4,
+              "from": "Relos tüccarı",
+              "tradable": true
             },
             {
               "name": "Gold Fusion Ring",
               "level": 95,
-              "gain": -0.1,
+              "gain": -0.2,
               "from": "challenge: legendary island",
               "tradable": false
             },
             {
-              "name": "Ring of Wisdom",
-              "level": 80,
-              "gain": -0.2,
-              "from": "Thanos tüccarı",
-              "tradable": true
-            },
-            {
               "name": "Lifelike",
               "level": 86,
-              "gain": -1.7,
+              "gain": -1.4,
+              "from": "mağara sandığı",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "NECKLACE",
+          "name": "Contrast",
+          "level": 100,
+          "tier": "LEGENDARY",
+          "gain": 10.0,
+          "from": "The Qira Hive görevi",
+          "price": null,
+          "tradable": false,
+          "options": [
+            {
+              "name": "Contrast",
+              "level": 100,
+              "gain": 11.9,
+              "from": "The Qira Hive görevi",
+              "tradable": false
+            },
+            {
+              "name": "Adder Stone",
+              "level": 80,
+              "gain": 2.7,
               "from": "mağara sandığı",
               "tradable": true
             },
             {
-              "name": "Summa",
+              "name": "Drain",
+              "level": 85,
+              "gain": 2.6,
+              "from": "Corrupted Underworld Crypt zindan tüccarı",
+              "tradable": false
+            },
+            {
+              "name": "Cosmium",
+              "level": 92,
+              "gain": 1.3,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Diamond Fusion Necklace",
               "level": 95,
-              "gain": -2.1,
-              "from": "Geyser Pit sunağı",
+              "gain": -0.4,
+              "from": "challenge: legendary island",
               "tradable": false
             }
           ]
