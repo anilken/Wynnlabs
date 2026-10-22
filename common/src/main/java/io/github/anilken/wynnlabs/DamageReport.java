@@ -55,6 +55,37 @@ final class DamageReport {
         return cached;
     }
 
+    private static Build.Plan baseFor;
+    private static int baseVersion;
+    private static Damage.Detail baseDetail;
+
+    /**
+     * The model's own numbers for what you wear, without the what-ifs: what the damage meter
+     * compares each cast with. Worked out once per build plan and rules change.
+     */
+    static synchronized Damage.Detail base() {
+        Build.Plan p = Build.plan();
+        if (p == null || p.current() == null) {
+            return null;
+        }
+        if (p != baseFor || Rules.version != baseVersion || baseDetail == null) {
+            baseDetail = cachedFor == p && cachedVersion == Rules.version && cached != null ? cached.detail()
+                    : p.currentDetail(null, null);
+            baseFor = p;
+            baseVersion = Rules.version;
+        }
+        return baseDetail;
+    }
+
+    /**
+     * The main attack's weight the plan was scored with: rules.model.mainAttackWeight as the
+     * ability tree you have has it (TreeModel: no archetype node yet weighs as for none).
+     */
+    static double mainAttackWeight() {
+        Build.Plan p = Build.plan();
+        return p == null ? Rules.sub("model", "mainAttackWeight", 0.5) : p.model("mainAttackWeight", 0.5);
+    }
+
     static Report compute(Build.Plan p) {
         Damage.Detail base = p.currentDetail(null, null);
         double now = base.breakdown().total();
@@ -133,6 +164,59 @@ final class DamageReport {
         return Math.round(v * 10) / 10.0;
     }
 
+    private static double r2(double v) {
+        return Math.round(v * 100) / 100.0;
+    }
+
+    /**
+     * Per spell, measured against the model: the casts seen, damage per cast after the background,
+     * hits per cast, the model's cast before and after calibration, and the measured ratio (each
+     * cast against the model at that cast). A lasting spell (Totem) is measured with the summons.
+     */
+    static JsonArray spellTable(Damage.Breakdown b, JsonObject measured) {
+        JsonObject all = measured != null && measured.has("spells") ? measured.getAsJsonObject("spells") : new JsonObject();
+        JsonArray out = new JsonArray();
+        for (Damage.SpellPart sp : b.spells()) {
+            JsonObject j = new JsonObject();
+            j.addProperty("spell", sp.name());
+            j.addProperty("number", sp.index());
+            j.addProperty("lasting", sp.lasting());
+            j.addProperty("modelPerCastUncalibrated", Math.round(sp.perCast()));
+            j.addProperty("calibration", sp.cal());
+            j.addProperty("modelPerCast", Math.round(sp.perCast() * sp.cal()));
+            JsonObject m = all.has(sp.name()) ? all.getAsJsonObject(sp.name()) : null;
+            j.addProperty("measuredCasts", m == null ? 0 : m.get("casts").getAsInt());
+            if (m != null) {
+                j.addProperty("measuredPerCast", Math.round(m.get("perCast").getAsDouble()));
+                j.addProperty("measuredPerCastWithBackground", Math.round(m.get("raw").getAsDouble()));
+                j.addProperty("hitsPerCast", r1(m.get("hits").getAsDouble()));
+                if (m.has("mana")) {
+                    j.addProperty("manaPerCast", r1(m.get("mana").getAsDouble()));
+                }
+                if (m.has("ratio")) {
+                    j.addProperty("measuredToModel", r2(m.get("ratio").getAsDouble()));
+                    j.addProperty("ratioCasts", m.get("ratioCasts").getAsInt());
+                    j.addProperty("steady", m.has("steady") && m.get("steady").getAsBoolean());
+                }
+            }
+            out.add(j);
+        }
+        return out;
+    }
+
+    /** The damage heard between casts against what the model puts there: summons, lasting spells, the main attack. */
+    static JsonObject backgroundJson(Damage.Breakdown b, JsonObject measured) {
+        JsonObject j = new JsonObject();
+        JsonObject bg = measured != null && measured.has("background") ? measured.getAsJsonObject("background") : null;
+        j.addProperty("measuredPerSecond", bg == null ? 0 : r1(bg.get("perSecond").getAsDouble()));
+        j.addProperty("measuredSeconds", bg == null ? 0 : Math.round(bg.get("seconds").getAsDouble()));
+        j.addProperty("modelMainAttackPerSecond", r1(b.mainTotal() * mainAttackWeight()));
+        j.addProperty("modelSummonsPerSecondUncalibrated", r1(b.summonRaw()[0]));
+        j.addProperty("summonCalibration", Rules.sub("model", "summonCalibration", 1.0));
+        j.addProperty("modelSummonsPerSecond", r1(b.summonTotal()));
+        return j;
+    }
+
     static JsonObject json() {
         JsonObject o = new JsonObject();
         Report r = get();
@@ -140,9 +224,10 @@ final class DamageReport {
         double model = modelPerCast();
         int casts = measuredCasts();
         double measured = measuredPerCast();
+        Damage.Detail base = base();
         cmp.addProperty("modelPerCast", Math.round(model));
         cmp.addProperty("spellCalibration", calibration());
-        cmp.addProperty("modelPerCastUncalibrated", calibration() > 0 ? Math.round(model / calibration()) : 0);
+        cmp.addProperty("modelPerCastUncalibrated", base == null ? 0 : Math.round(Coach.modelPerCast(base.breakdown())));
         cmp.addProperty("measuredCasts", casts);
         cmp.addProperty("measuredPerCast", Math.round(measured));
         if (model > 0 && casts > 0) {
@@ -150,7 +235,13 @@ final class DamageReport {
         }
         cmp.addProperty("enoughCasts", casts >= ENOUGH_CASTS);
         cmp.addProperty("note", "measured = damage numbers within 1.5 s after each cast (running mean of the last ~200);"
-                + " after " + ENOUGH_CASTS + " casts the model's spellCalibration follows it, kept within 0.7-1.4");
+                + " per spell, the background between casts (summons, Totem, main attack) is taken off and each"
+                + " cast is compared with the model's value at that cast; after " + Coach.CAL_CASTS + " casts a spell"
+                + " gets its own calibration, within 0.7-1.4 until steady (" + Coach.STEADY_CASTS + " casts), then 0.5-10");
+        if (base != null) {
+            cmp.add("spells", spellTable(base.breakdown(), Coach.measured()));
+            cmp.add("background", backgroundJson(base.breakdown(), Coach.measured()));
+        }
         o.add("computedVsMeasured", cmp);
         if (r == null) {
             o.addProperty("note", "no build plan yet (needs a character in game)");
@@ -161,7 +252,7 @@ final class DamageReport {
             bd.addProperty("mainAttackDps", r1(b.mainTotal()));
             bd.addProperty("summonDps", r1(b.summonTotal()));
             bd.addProperty("totalDps", r1(b.total()));
-            bd.addProperty("mainAttackWeight", Rules.sub("model", "mainAttackWeight", 0.5));
+            bd.addProperty("mainAttackWeight", mainAttackWeight());
             JsonObject els = new JsonObject();
             for (int i = 0; i < Damage.ELEMENTS.length; i++) {
                 JsonObject e = new JsonObject();

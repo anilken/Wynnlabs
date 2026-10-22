@@ -1478,6 +1478,9 @@ final class RoadmapScreen extends Screen {
                     u = second;
                 }
             }
+            if (u == null && type != null) {
+                u = up.get("POWDER:" + Build.slotOf(type, box.ring()));     // no new piece there: its powders
+            }
             out.add(new UpRow(box, type, worn, u));
         }
         return out;
@@ -2186,12 +2189,15 @@ final class RoadmapScreen extends Screen {
         List<Component> tip = new ArrayList<>();
         ChatFormatting tc = u.info().tier().colour();
         tip.add(Component.literal(u.info().name()).withStyle(tc).withStyle(UiFont::bold));
-        tip.add(L.c("wynnlabs.home.tip_from", u.source()).withStyle(ChatFormatting.DARK_AQUA));
-        String also = Roadmap.fromBag(u) ? null : Shopping.alsoFrom(u.info());   // the Trade Market first, the world source under it
+        // a powder row is a piece you have: its source line names the powders, and there is no other source
+        boolean powder = Roadmap.isPowder(u);
+        tip.add(powder ? Component.literal(u.source()).withStyle(ChatFormatting.AQUA)
+                : L.c("wynnlabs.home.tip_from", u.source()).withStyle(ChatFormatting.DARK_AQUA));
+        String also = Roadmap.fromBag(u) || powder ? null : Shopping.alsoFrom(u.info());   // the Trade Market first, the world source under it
         if (also != null && !also.equalsIgnoreCase(u.source())) {
             tip.add(Component.literal("   " + L.t("wynnlabs.homev.source_also", L.cap(also))).withStyle(ChatFormatting.DARK_GRAY));
         }
-        Object[] pw = Damage.powderHint(u.info());
+        Object[] pw = powder ? null : Damage.powderHint(u.info());
         if (pw != null) {
             String[] roman = {"I", "II", "III", "IV", "V", "VI", "VII"};
             String el = switch ((String) pw[0]) {
@@ -6129,7 +6135,7 @@ final class RoadmapScreen extends Screen {
             shareRow(g, x, sy + i * 11, colW, sources[i], values[i], total, SOURCE_COLOURS[i]);
         }
         // the build score weighs the main attack less: say by how much
-        double weight = Rules.sub("model", "mainAttackWeight", 0.5);
+        double weight = DamageReport.mainAttackWeight();
         desc(g, L.t("wynnlabs.damage.main_weight", dec(weight, 2)), x, sy + 36, colW);
         hits.add(new Hit(x, sy + 11, colW, 11, null, List.of(
                 L.c("wynnlabs.damage.src_main").withStyle(ChatFormatting.GOLD),

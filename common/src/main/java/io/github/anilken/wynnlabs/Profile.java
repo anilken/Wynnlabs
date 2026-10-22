@@ -67,6 +67,7 @@ final class Profile {
             }
             id = SAFE_ID.matcher(id).replaceAll("_");
             if (id.equals(current)) {
+                guessArchetype();
                 levelGuide(mc);
                 return;
             }
@@ -83,8 +84,15 @@ final class Profile {
                 Setup.newCharacter();
             } else if (!Rules.get().has("model")
                     || !Rules.get().getAsJsonObject("model").has("mainAttackClassMult")) {
-                // characters made before the per-class model settings: give them theirs once
-                ClassProfiles.apply(TreePlanner.chosen(), false);
+                // characters made before the per-class model settings: give them theirs once, for
+                // the archetype they lean to when the planner has none
+                ClassProfiles.apply(TreeModel.archetype(), false);
+            } else {
+                // spells read by an older parser (Totem as one tick): read again, calibration kept
+                JsonObject spells = ClassProfiles.spellsUpgrade(Rules.get());
+                if (spells != null) {
+                    Rules.update(spells);
+                }
             }
             lastLevel = -1;
             Wyn.selfTest();                         // which Wynntils features this version still has
@@ -178,6 +186,25 @@ final class Profile {
         o.addProperty("active", current);
         o.add("characters", arr);
         return o;
+    }
+
+    /** The level and unlocked nodes the archetype was last guessed for (0 before the first). */
+    private static int guessedFor;
+
+    /**
+     * A character with no archetype yet ({@link Setup#reguess}): looked at again on a level up
+     * or when the tree changes (a node bought), not every second.
+     */
+    private static void guessArchetype() {
+        if (Rules.sub("tree", "guess", 0) <= 0) {
+            return;
+        }
+        int key = java.util.Objects.hash(Wyn.level(), GameState.current().unlockedAbilities());
+        if (key == guessedFor) {
+            return;
+        }
+        guessedFor = key;
+        Setup.reguess();
     }
 
     // ---- level-up guide -------------------------------------------------------------------

@@ -1,5 +1,6 @@
 package io.github.anilken.wynnlabs;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -24,8 +25,9 @@ import java.util.Locale;
  * <ul>
  * <li>Ölmeden önce uyarı: from how fast health is falling, "~2 sn'de ölürsün" with the
  * potions you carry (Wynntils already draws a low-health vignette; this predicts).</li>
- * <li>Hasar ölçer: damage numbers shortly after each cast, against what the model expected;
- * after enough casts the model's spell damage is calibrated to what you really deal. Every
+ * <li>Hasar ölçer: damage numbers shortly after each cast, less the summons' and main
+ * attack's damage heard between casts, against what the model expected of that spell; after
+ * enough casts each spell, and the summons, are calibrated to what you really deal. Every
  * hit also goes to the live DPS meter ({@link DpsMeter}).</li>
  * <li>Mana koçu: casts that failed for mana while fighting.</li>
  * <li>Av: "/av &lt;eşya&gt;" counts kills and time until the item shows up in your bag, with
@@ -184,16 +186,72 @@ final class Coach {
 
     // ---- damage meter: what a cast really deals ----
 
+    // A cast's window: the damage numbers in it are the cast's (1.5 s; a spell that ticks keeps it
+    // open for its duration, up to 6 s, or until the next cast). Every hit outside a window while
+    // fighting is the background (summons, Totem, the main attack): its rate is measured, and
+    // what it would have dealt during a window is taken off that cast.
     private static long castAt;
+    private static long castUntil;
     private static double castDamage;
     private static boolean castOpen;
+    private static int castHits;
+    private static String castName;
+    private static double castExpected;     // the model's whole cast, uncalibrated, 0 when unknown
+    private static double castDuration;
+    private static boolean castLasting;
+    private static int castMana;
+    private static long lastHitAt;
+    private static long bgTickAt;
+    private static double bgDamage;
+    private static double bgMillis;
 
-    /** A spell was cast (Wynntils' event, through {@link WynntilsEvents}). */
-    static void onCast() {
-        closeCast();
-        castAt = System.currentTimeMillis();
+    /** Casts and fight seconds the per-spell and summon calibrations wait for, and widen after. */
+    static final int CAL_CASTS = 30;
+    static final int STEADY_CASTS = 50;
+    static final double STEADY_SECONDS = 300;
+
+    /**
+     * A spell was cast (Wynntils' event, through {@link WynntilsEvents}): its number (1-4, 0
+     * unknown), its name and the mana it took.
+     */
+    static void onCast(int spell, String name, int mana) {
+        long now = System.currentTimeMillis();
+        closeCast(now);
+        castAt = now;
+        castUntil = now + 1500;
         castDamage = 0;
+        castHits = 0;
+        castName = name == null || name.isEmpty() ? "spell " + spell : name;
+        castExpected = 0;
+        castDuration = 0;
+        castLasting = false;
+        castMana = mana;
         castOpen = true;
+        // what the model expects of this spell now, before the calibration we apply ourselves
+        try {
+            Damage.Detail d = DamageReport.base();
+            Damage.SpellPart sp = d == null ? null : spellPart(d.breakdown(), spell);
+            if (sp != null) {
+                castName = sp.name();
+                castExpected = sp.perCast();
+                castDuration = sp.duration();
+                castLasting = sp.lasting();
+                if (!sp.lasting() && sp.duration() > 0) {
+                    castUntil = now + (long) Math.max(1500, Math.min(6000, sp.duration() * 1000 + 500));
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+    }
+
+    /** The model's spell of this number (1-4) that deals damage, or null. */
+    static Damage.SpellPart spellPart(Damage.Breakdown b, int index) {
+        for (Damage.SpellPart sp : b.spells()) {
+            if (sp.index() == index && index > 0) {
+                return sp;
+            }
+        }
+        return null;
     }
 
     /** Damage numbers shown: each value is one damage type of the hit. */
@@ -203,14 +261,34 @@ final class Coach {
             hit += v;
         }
         DpsMeter.LIVE.hit(hit);                 // every hit counts for the live meter
-        if (!castOpen || System.currentTimeMillis() - castAt > 1500) {
-            return;
+        long now = System.currentTimeMillis();
+        lastHitAt = now;
+        if (castOpen && now <= castUntil) {
+            castDamage += hit;
+            castHits++;
+        } else {
+            bgDamage += hit;
         }
-        castDamage += hit;
+    }
+
+    /** Fight time outside a cast window, for the background rate; folded in now and then. */
+    private static void watchBackground(long now) {
+        long dt = bgTickAt == 0 ? 0 : Math.min(250, now - bgTickAt);
+        bgTickAt = now;
+        if (!castOpen && lastHitAt > 0 && now - lastHitAt < 3000) {
+            bgMillis += dt;
+        }
+        if (bgMillis >= 5000) {
+            JsonObject m = measured();
+            bookBackground(m, bgDamage, bgMillis / 1000.0);
+            bgDamage = 0;
+            bgMillis = 0;
+            saveMeasured(m);
+        }
     }
 
     /** A cast's window is over: book its damage (casts that hit nothing are not counted). */
-    private static void closeCast() {
+    private static void closeCast(long now) {
         if (!castOpen) {
             return;
         }
@@ -224,34 +302,231 @@ final class Coach {
         avg = n == 0 ? castDamage : avg + (castDamage - avg) / Math.min(n + 1, 200);   // running mean, last ~200
         m.addProperty("casts", n + 1);
         m.addProperty("avgPerCast", avg);
-        // what the model expected for one cast, without the calibration we apply ourselves
-        Build.Plan plan = Build.plan();
-        if (plan != null && plan.current() != null && plan.current().dmgPerCast() > 0) {
-            double cal = Rules.sub("model", "spellCalibration", 1.0);
-            double model = plan.current().dmgPerCast() / cal;
-            m.addProperty("modelPerCast", model);
-            if (n + 1 >= 30 && (n + 1) % 10 == 0) {
-                JsonObject change = calibrationChange(cal, avg, model);
-                if (change != null) {
-                    Rules.update(change);           // only a real change: every write rebuilds all advice
-                }
+        Damage.Detail d = DamageReport.base();
+        double perCast = d == null ? 0 : modelPerCast(d.breakdown());
+        if (perCast > 0) {
+            m.addProperty("modelPerCast", perCast);
+        }
+        double window = Math.max(0.05, (Math.min(now, castUntil) - castAt) / 1000.0);
+        book(m, castName, castDamage, castHits, castMana, window, castLasting ? 0 : castExpected, castDuration,
+                d != null && d.breakdown().summonRaw()[0] > 0);
+        if (d != null && n + 1 >= CAL_CASTS && (n + 1) % 10 == 0) {
+            // the main attack weighed as the plan scored it (the ability tree you have), so the
+            // background left for the summons is the one the model's summons are compared with
+            JsonObject change = calibrationChanges(m, Rules.get().getAsJsonObject("model"), d.breakdown(),
+                    DamageReport.mainAttackWeight());
+            if (change != null) {
+                Rules.update(change);           // only a real change: every write rebuilds all advice
             }
         }
         saveMeasured(m);
+    }
+
+    /** The model's average cast before calibration: the spells cast in turn, by their shares. */
+    static double modelPerCast(Damage.Breakdown b) {
+        double sum = 0;
+        double shares = 0;
+        for (Damage.SpellPart sp : b.spells()) {
+            if (!sp.lasting()) {
+                sum += sp.share() * sp.perCast();
+                shares += sp.share();
+            }
+        }
+        return shares > 0 ? sum / shares : 0;
+    }
+
+    /**
+     * Books one cast's window: the background's share of it taken off, and compared with the
+     * model's whole cast ({@code modelCast}, 0 when unknown or lasting) as far as a ticking spell
+     * lands within the window. With summons around, a cast is compared only once the background
+     * is known (20 s of fighting between casts), as until then their hits would count as the spell's.
+     */
+    static void book(JsonObject m, String spell, double raw, int hits, int mana, double windowSeconds, double modelCast,
+            double duration, boolean summonsAround) {
+        JsonObject bg = m.has("background") ? m.getAsJsonObject("background") : null;
+        double bgSeconds = bg == null ? 0 : bg.get("seconds").getAsDouble();
+        double net = net(raw, backgroundRate(m), windowSeconds);
+        double expected = modelCast <= 0 || summonsAround && bgSeconds < 20 ? 0
+                : modelCast * inWindow(windowSeconds, duration);
+        bookCast(m, spell, raw, net, hits, expected, mana);
+    }
+
+    /** A window's damage less what the background would have dealt in it. */
+    static double net(double windowDamage, double backgroundPerSecond, double windowSeconds) {
+        return Math.max(0, windowDamage - Math.max(0, backgroundPerSecond) * windowSeconds);
+    }
+
+    /** The share of a ticking spell's damage that lands within a window this long (1 for one go). */
+    static double inWindow(double windowSeconds, double duration) {
+        return duration <= 0 || windowSeconds >= duration ? 1 : windowSeconds / duration;
+    }
+
+    /** Damage a second between casts while fighting, 0 before any was measured. */
+    static double backgroundRate(JsonObject m) {
+        JsonObject bg = m.has("background") ? m.getAsJsonObject("background") : null;
+        return bg == null || bg.get("seconds").getAsDouble() < 5 ? 0 : bg.get("perSecond").getAsDouble();
+    }
+
+    /** Folds fight seconds outside cast windows and the damage in them into the background rate (last ~10 min). */
+    static void bookBackground(JsonObject m, double damage, double seconds) {
+        if (seconds <= 0) {
+            return;
+        }
+        JsonObject bg = m.has("background") ? m.getAsJsonObject("background") : new JsonObject();
+        double total = (bg.has("seconds") ? bg.get("seconds").getAsDouble() : 0) + seconds;
+        double rate = bg.has("perSecond") ? bg.get("perSecond").getAsDouble() : 0;
+        rate += (damage / seconds - rate) * seconds / Math.min(total, 600);
+        bg.addProperty("seconds", total);
+        bg.addProperty("perSecond", rate);
+        m.add("background", bg);
+    }
+
+    /**
+     * Books one cast under measured.spells.&lt;name&gt;: the window's damage, what is left of it
+     * after the background, its hits and mana, and when the model's value for it is known
+     * ({@code expected} &gt; 0) the ratio of the two, cast by cast, so a gear change does not make
+     * the old casts wrong. Running means over the last ~200 casts, with the ratio's spread.
+     */
+    static void bookCast(JsonObject m, String spell, double raw, double net, int hits, double expected, int mana) {
+        JsonObject all = m.has("spells") ? m.getAsJsonObject("spells") : new JsonObject();
+        JsonObject s = all.has(spell) ? all.getAsJsonObject(spell) : new JsonObject();
+        int n = (s.has("casts") ? s.get("casts").getAsInt() : 0) + 1;
+        double k = Math.min(n, 200);
+        s.addProperty("casts", n);
+        s.addProperty("raw", mean(s, "raw", raw, k));
+        s.addProperty("perCast", mean(s, "perCast", net, k));
+        s.addProperty("hits", mean(s, "hits", hits, k));
+        if (mana > 0) {
+            s.addProperty("mana", mean(s, "mana", mana, k));
+        }
+        if (expected > 0) {
+            int rn = (s.has("ratioCasts") ? s.get("ratioCasts").getAsInt() : 0) + 1;
+            double rk = Math.min(rn, 200);
+            double x = net / expected;
+            double old = s.has("ratio") ? s.get("ratio").getAsDouble() : x;
+            double mean = rn == 1 ? x : old + (x - old) / rk;
+            double var = s.has("ratioVar") ? s.get("ratioVar").getAsDouble() : 0;
+            var = rn == 1 ? 0 : var + ((x - old) * (x - mean) - var) / rk;
+            s.addProperty("ratioCasts", rn);
+            s.addProperty("ratio", mean);
+            s.addProperty("ratioVar", Math.max(0, var));
+            s.addProperty("model", expected);
+            // steady: enough casts, casts not all over the place (a few huge ones among nothing is a
+            // window catching something else) and a mean that no longer moves much; looser to
+            // lose than to win
+            double cv = mean > 0 ? Math.sqrt(Math.max(0, var)) / mean : 9;
+            double sem = cv / Math.sqrt(rk);
+            boolean steady = s.has("steady") && s.get("steady").getAsBoolean();
+            steady = rn >= STEADY_CASTS && (steady ? sem <= 0.2 && cv <= 1.3 : sem <= 0.1 && cv <= 1.0);
+            s.addProperty("steady", steady);
+        }
+        all.add(spell, s);
+        m.add("spells", all);
+    }
+
+    private static double mean(JsonObject s, String key, double x, double k) {
+        return s.has(key) ? s.get(key).getAsDouble() + (x - s.get(key).getAsDouble()) / k : x;
+    }
+
+    /**
+     * The rules change the measurements call for, or null: each spell's own calibration
+     * (rules.model.spells[i].cal), the summons' (summonCalibration: the background less the main
+     * attack, over the summons and lasting spells the model has) and the overall spellCalibration
+     * the spells without their own fall back to. Kept within 0.7-1.4 until steady (50 casts, or
+     * 5 minutes of fighting for summons), then 0.5-10; a value is written only when it moves by
+     * a tenth or more, as each write rebuilds all advice.
+     */
+    static JsonObject calibrationChanges(JsonObject m, JsonObject model, Damage.Breakdown b, double mainAttackWeight) {
+        JsonObject all = m.has("spells") ? m.getAsJsonObject("spells") : new JsonObject();
+        JsonObject out = new JsonObject();
+        double globalCal = model != null && model.has("spellCalibration") ? model.get("spellCalibration").getAsDouble() : 1.0;
+        // each spell on its own
+        if (model != null && model.has("spells") && model.get("spells").isJsonArray()) {
+            JsonArray spells = model.getAsJsonArray("spells").deepCopy();
+            boolean changed = false;
+            for (var e : spells) {
+                JsonObject sp = e.getAsJsonObject();
+                JsonObject meas = sp.has("name") && all.has(sp.get("name").getAsString())
+                        ? all.getAsJsonObject(sp.get("name").getAsString()) : null;
+                if (meas == null || ClassProfiles.lasting(sp) || !meas.has("ratioCasts")
+                        || meas.get("ratioCasts").getAsInt() < CAL_CASTS) {
+                    continue;
+                }
+                boolean steady = meas.has("steady") && meas.get("steady").getAsBoolean();
+                double target = bounded(meas.get("ratio").getAsDouble(), steady);
+                double current = sp.has("cal") ? sp.get("cal").getAsDouble() : globalCal;
+                if (moved(current, target)) {
+                    sp.addProperty("cal", target);
+                    changed = true;
+                }
+            }
+            if (changed) {
+                JsonObject m2 = new JsonObject();
+                m2.add("spells", spells);
+                out.add("model", m2);
+            }
+        }
+        // the overall fallback: the spells' ratios by their casts
+        double sum = 0;
+        int casts = 0;
+        for (var e : all.entrySet()) {
+            JsonObject s = e.getValue().getAsJsonObject();
+            if (s.has("ratioCasts")) {
+                int c = Math.min(200, s.get("ratioCasts").getAsInt());
+                sum += s.get("ratio").getAsDouble() * c;
+                casts += c;
+            }
+        }
+        if (casts >= CAL_CASTS) {
+            JsonObject g = calibrationChange(globalCal, sum / casts, 1.0);
+            if (g != null) {
+                model2(out).add("spellCalibration", g.getAsJsonObject("model").get("spellCalibration"));
+            }
+        }
+        // the summons, from the background between casts
+        JsonObject bg = m.has("background") ? m.getAsJsonObject("background") : null;
+        double summons = b == null ? 0 : b.summonRaw()[0];
+        if (bg != null && summons > 0 && bg.get("seconds").getAsDouble() >= 60) {
+            double main = b.mainTotal() * Math.max(0, mainAttackWeight);
+            double target = bounded((bg.get("perSecond").getAsDouble() - main) / summons,
+                    bg.get("seconds").getAsDouble() >= STEADY_SECONDS);
+            double current = model != null && model.has("summonCalibration") ? model.get("summonCalibration").getAsDouble() : 1.0;
+            if (moved(current, target)) {
+                model2(out).addProperty("summonCalibration", target);
+            }
+        }
+        return out.isEmpty() ? null : out;
+    }
+
+    private static JsonObject model2(JsonObject change) {
+        if (!change.has("model")) {
+            change.add("model", new JsonObject());
+        }
+        return change.getAsJsonObject("model");
+    }
+
+    /** A ratio rounded and kept within bounds: 0.7-1.4 until it is steady, then 0.5-10. */
+    static double bounded(double ratio, boolean steady) {
+        double r = steady ? Math.max(0.5, Math.min(10, ratio)) : Math.max(0.7, Math.min(1.4, ratio));
+        return Math.round(r * 100) / 100.0;
+    }
+
+    /** Worth writing: a tenth or more away from the stored value. */
+    private static boolean moved(double current, double target) {
+        return Math.abs(target - current) >= 0.1 * Math.max(0.1, current) - 1e-9;
     }
 
     private static JsonObject measuredCache;
     private static String measuredFor = "";
 
     /**
-     * The rules change that moves the spell calibration to what was measured, or null when the
-     * rounded value is the one already stored. Calibrates gently and within bounds: summons and
-     * damage over time land outside the cast window.
+     * The rules change that moves the overall spell calibration to what was measured, or null
+     * when the rounded value is not a tenth away from the one already stored. Kept within
+     * 0.7-1.4: it is the fallback for spells without a calibration of their own.
      */
     static JsonObject calibrationChange(double current, double avgPerCast, double modelPerCast) {
-        double ratio = Math.max(0.7, Math.min(1.4, avgPerCast / modelPerCast));
-        double rounded = Math.round(ratio * 100) / 100.0;
-        if (Math.abs(rounded - current) < 1e-9) {
+        double rounded = bounded(avgPerCast / modelPerCast, false);
+        if (!moved(current, rounded)) {
             return null;
         }
         JsonObject change = new JsonObject();
@@ -600,9 +875,10 @@ final class Coach {
         long now = System.currentTimeMillis();
         try {
             watchHealth(mc, now);
-            if (castOpen && now - castAt > 1500) {
-                closeCast();
+            if (castOpen && now > castUntil) {
+                closeCast(now);
             }
+            watchBackground(now);
             if (++tick % 20 == 0) {
                 watchHunt(mc, now);
                 watchSession(mc, now);

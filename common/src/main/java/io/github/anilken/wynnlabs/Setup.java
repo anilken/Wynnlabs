@@ -23,18 +23,48 @@ final class Setup {
 
     /**
      * A character seen for the first time: the archetype it already leans to (most unlocked
-     * nodes; the tree's first when nothing is unlocked yet) and the Damage goal.
+     * nodes; none yet below Lv 10 with no archetype node, see {@link TreePlanner#mostUnlocked})
+     * and the Damage goal. With none, rules.tree.guess asks {@link #reguess} to pick it once the
+     * first archetype node is bought.
      */
     static void newCharacter() {
         String arch = TreePlanner.mostUnlocked();
         JsonObject tree = new JsonObject();
         tree.addProperty("archetype", arch);
+        if (arch.isEmpty()) {
+            tree.addProperty("guess", 1);
+        }
         JsonObject change = new JsonObject();
         change.add("tree", tree);
         Rules.update(change);
         ClassProfiles.apply(arch, true);
         setGoal("DAMAGE");
         System.out.println("[WynnLabs] new character: archetype " + (arch.isEmpty() ? "-" : arch) + ", goal DAMAGE");
+    }
+
+    /**
+     * A character that leaned to no archetype yet (rules.tree.guess): once it does (an archetype
+     * node bought, or Lv 10 reached), the archetype is set and the class profile follows it, as
+     * for a new character. Returns the archetype set, or "" when nothing changed. Choosing an
+     * archetype yourself ends the guessing ({@link TreePlanner#cycle}).
+     */
+    static String reguess() {
+        if (Rules.sub("tree", "guess", 0) <= 0 || !TreePlanner.chosen().isEmpty()) {
+            return "";
+        }
+        String arch = TreePlanner.mostUnlocked();
+        if (arch.isEmpty()) {
+            return "";
+        }
+        JsonObject tree = new JsonObject();
+        tree.addProperty("archetype", arch);
+        tree.add("guess", com.google.gson.JsonNull.INSTANCE);
+        JsonObject change = new JsonObject();
+        change.add("tree", tree);
+        Rules.update(change);
+        ClassProfiles.apply(arch, false);
+        System.out.println("[WynnLabs] archetype now " + arch);
+        return arch;
     }
 
     static String goal() {

@@ -1,0 +1,143 @@
+{
+  "name": "archer-lv70",
+  "class": "ARCHER",
+  "archetype": "",
+  "level": 70,
+  "items": {
+    "HELMET": "Venison",
+    "CHESTPLATE": "Narima Pasukan",
+    "LEGGINGS": "Kratke",
+    "BOOTS": "Stalagmites",
+    "RING1": "Marble",
+    "BRACELET": "Tarod's Search",
+    "NECKLACE": "Devotion",
+    "WEAPON": "Ceiling"
+  },
+  "assigned": {
+    "STRENGTH": 55,
+    "DEXTERITY": 13,
+    "INTELLIGENCE": 9,
+    "DEFENCE": 33,
+    "AGILITY": 28
+  },
+  "recorded": {
+    "casts": 6,
+    "avgPerCast": 2325.2,
+    "modelPerCast": 1123.1
+  },
+  "rules": {
+    "spells": [
+      {
+        "name": "Arrow Bomb",
+        "index": 3,
+        "cost": 45,
+        "share": 0.333,
+        "conv": {
+          "neutral": 1.4,
+          "fire": 0.2
+        }
+      },
+      {
+        "name": "Escape",
+        "index": 2,
+        "cost": 20,
+        "share": 0.0,
+        "conv": {}
+      },
+      {
+        "name": "Arrow Storm",
+        "index": 1,
+        "cost": 35,
+        "share": 0.333,
+        "conv": {
+          "neutral": 1.0499999999999998,
+          "thunder": 0.15000000000000002
+        }
+      },
+      {
+        "name": "Arrow Shield",
+        "index": 4,
+        "cost": 30,
+        "share": 0.333,
+        "conv": {
+          "neutral": 0.6,
+          "air": 0.1
+        }
+      }
+    ],
+    "passiveDpsFactor": 0.0,
+    "mainAttackWeight": 0.3,
+    "mainAttackClassMult": 1.0,
+    "baseManaPer5s": 25,
+    "baseMana": 100,
+    "manaStealFactor": 0.6,
+    "maxCastsPer5s": 4,
+    "fightSeconds": 30
+  },
+  "tree": [
+    {
+      "name": "Arrow Bomb",
+      "text": [
+        "Click Combo: LEFT-RIGHT-RIGHT",
+        "Shoots a long-ranged arrow that explodes",
+        "and deals high damage over a large area.",
+        "(Self-damage for 10% of your DPS)",
+        " Mana Cost: 45",
+        " Total Damage: 160% (of your DPS)",
+        "( Damage: 140%)",
+        "( Fire: 20%)",
+        " Range: ±26 Blocks",
+        " Area of Effect: 4.5 Blocks (Circle-Shaped)"
+      ]
+    },
+    {
+      "name": "Escape",
+      "text": [
+        "Click Combo: LEFT-LEFT-LEFT",
+        "Throw yourself backward to avoid danger.",
+        "(Hold shift while escaping to cancel)",
+        " Mana Cost: 20"
+      ]
+    },
+    {
+      "name": "Arrow Storm",
+      "text": [
+        "Click Combo: LEFT-RIGHT-LEFT",
+        "Shoots a stream of 8 arrows,",
+        "dealing significant damage to close",
+        "mobs and pushing them away.",
+        " Mana Cost: 35",
+        " Total Damage: 40% (of your DPS, per arrow)",
+        "( Damage: 35%)",
+        "( Thunder: 5%)",
+        " Range: ±16 Blocks"
+      ]
+    },
+    {
+      "name": "Arrow Shield",
+      "text": [
+        "Click Combo: LEFT-LEFT-RIGHT",
+        "Forms a shield around you that slightly reduces",
+        "the damage you take. Being hit will consume one",
+        "charge of the shield. Enemies that get too close",
+        "will take damage and be knocked away. (3 charges)",
+        " Mana Cost: 30",
+        " Total Damage: 70% (of your DPS)",
+        "( Damage: 60%)",
+        "( Air: 10%)",
+        " Effect: 20% Resistance Bonus (❁)",
+        " Area of Effect: 2.3 Blocks (Circle-Shaped)",
+        " Duration: 60s"
+      ]
+    }
+  ],
+  "assumed": {
+    "note": "measured.json keeps only the average over all casts: how it splits between the spells and the damage between casts is assumed here",
+    "backgroundShare": 0.1,
+    "targets": {
+      "Arrow Bomb": 1.6,
+      "Arrow Storm": 1.0,
+      "Arrow Shield": 1.1
+    }
+  }
+}

@@ -31,7 +31,8 @@ final class Build {
 
     record Plan(Map<String, Damage.Piece> pieces, int[] allocation, Damage.Result result,
             Map<String, Damage.Piece> worn, int[] wornAllocation, Damage.Result current, int earned,
-            java.util.Set<String> carried, int[] wornTarget, Map<String, Damage.Piece> working, int level) {
+            java.util.Set<String> carried, int[] wornTarget, Map<String, Damage.Piece> working, int level,
+            TreeModel.Overlay tree) {
 
         boolean contains(ItemStack stack) {
             String key = ItemJson.keyOf(stack);
@@ -57,7 +58,16 @@ final class Build {
             if (extra != null) {
                 armour.add(extra);
             }
-            return Damage.detail(armour, working.get("WEAPON"), points == null ? wornAllocation : points, level);
+            // with the ability tree the plan was scored with ({@code tree}): the damage meter
+            // (Coach) measures summons and spells against these numbers, so its calibration
+            // corrects the very model that scores your gear, once
+            return TreeModel.with(tree, () -> Damage.detail(armour, working.get("WEAPON"),
+                    points == null ? wornAllocation : points, level));
+        }
+
+        /** rules.model.{@code key} as the plan's ability tree has it (a Summoner's main attack before its first node). */
+        double model(String key, double fallback) {
+            return TreeModel.with(tree, () -> TreeModel.adjust(key, Rules.sub("model", key, fallback)));
         }
 
         double gainPercent() {
@@ -235,7 +245,10 @@ final class Build {
         for (SkillKind s : SkillKind.values()) {
             assigned[s.ordinal()] = MenuWatcher.assigned(s);
         }
-        return signature(stacks, counts, assigned, Wyn.level(), Rules.version);
+        // a node bought changes the spells, their costs and the summons the plan is scored with
+        // (TreeModel), so it counts as a rules change here
+        return signature(stacks, counts, assigned, Wyn.level(),
+                Rules.version * 31 + java.util.Objects.hashCode(GameState.current().unlockedAbilities()));
     }
 
     /** The signature from plain values (tests call this). Null stands for an empty slot. */
@@ -261,12 +274,13 @@ final class Build {
     /**
      * Everything {@link #compute(Inputs)} needs from the game, read on the game thread: the level
      * and class, what you wear and carry as model pieces, the points you placed, and which worn
-     * pieces actually work (their requirements met). The pieces carry their stats; the
+     * pieces actually work (their requirements met), and the ability tree you have now as the
+     * model reads it ({@link TreeModel}, null when unknown). The pieces carry their stats; the
      * optimiser never reads the game.
      */
     record Inputs(int level, Klass cls, int earned, Map<String, Damage.Piece> worn,
                   Map<String, List<Damage.Piece>> cands, java.util.Set<String> carried, int[] assignedNow,
-                  Map<String, Damage.Piece> working) {}
+                  Map<String, Damage.Piece> working, TreeModel.Overlay tree) {}
 
     static Plan compute() {
         return compute(prepare());
@@ -344,14 +358,17 @@ final class Build {
                 working.put(slot, null);
             }
         }
-        return new Inputs(level, cls, earned, worn, cands, carried, assignedNow, working);
+        // the nodes you have now: the spells you can cast, their costs, your summons
+        TreeModel.Run tree = TreeModel.run();
+        return new Inputs(level, cls, earned, worn, cands, carried, assignedNow, working,
+                tree == null ? null : tree.at(level));
     }
 
     /** The plan from {@link #prepare}'s snapshot: the optimiser, safe off the game thread. */
     static Plan compute(Inputs in) {
         Damage.CLASS_FOR_THREAD.set(in.cls());
         try {
-            return computeFrom(in);
+            return TreeModel.with(in.tree(), () -> computeFrom(in));
         } finally {
             Damage.CLASS_FOR_THREAD.remove();
         }
@@ -466,7 +483,7 @@ final class Build {
             bestEval = new Eval(assignedNow.clone(), current);
         }
         return new Plan(best, bestEval.allocation(), bestEval.result(), worn, assignedNow, current, earned, carried,
-                wornBest == null ? bestEval.allocation() : wornBest.allocation(), working, level);
+                wornBest == null ? bestEval.allocation() : wornBest.allocation(), working, level, in.tree());
     }
 
     private static boolean fitsClass(ItemView item, Klass cls) {
@@ -1119,10 +1136,16 @@ final class Build {
         }
     }
 
-    /** A set as its slots and pieces in the map's order (the order the model sums them in), the level and the points. */
+    /**
+     * A set as its slots and pieces in the map's order (the order the model sums them in), the
+     * level, the points, the ability tree in force (TreeModel: another level's tree scores otherwise)
+     * and the rules (a calibration the damage meter writes mid-run scores otherwise too). A piece's
+     * key tells a copy you have with its rolls and filled powder slots from one you would buy.
+     */
     private static String memoKey(Map<String, Damage.Piece> build, int level, int earned) {
         StringBuilder k = new StringBuilder(256);
-        k.append(level).append('/').append(earned);
+        k.append(level).append('/').append(earned).append('/').append(TreeModel.key().hashCode())
+                .append('/').append(Rules.version);
         for (var e : build.entrySet()) {
             k.append(';').append(e.getKey()).append('=').append(e.getValue() == null ? "-" : e.getValue().key());
         }

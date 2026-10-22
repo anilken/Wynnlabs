@@ -74,7 +74,8 @@ class RoadmapMilestonesTest {
         List<Roadmap.Step> steps = Roadmap.build();
         assumeTrue(!steps.isEmpty() && !steps.get(0).build().isEmpty(), "no road map with a build plan");
         int[] prev = Roadmap.assignedPoints(GameState.current());
-        Map<String, Damage.Piece> start = new LinkedHashMap<>(Build.plan().pieces());
+        // the first milestone starts from what you have, its empty powder slots filled
+        Map<String, Damage.Piece> start = Roadmap.powdered(Build.plan().pieces());
         int checked = 0;
         for (Roadmap.Step s : steps) {
             int m = s.level();
@@ -83,8 +84,8 @@ class RoadmapMilestonesTest {
             assertTrue(full != null, "Lv " + m + ": the set fits");
             double fullJ = Roadmap.judged(full, prev, m);
             for (Roadmap.Gear g : s.gear()) {
-                if (Double.isNaN(g.gain())) {
-                    continue;
+                if (Double.isNaN(g.gain()) || Roadmap.isPowder(g)) {
+                    continue;                           // a powder row's gain is over the build as worn
                 }
                 // the build slot that holds the pick and held something else when the milestone began
                 String slot = null;

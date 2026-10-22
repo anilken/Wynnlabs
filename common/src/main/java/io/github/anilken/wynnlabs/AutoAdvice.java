@@ -959,16 +959,21 @@ final class AutoAdvice {
         if (free <= 0) {
             return null;
         }
-        boolean weapon = gear.data().slot().klass() != null;
-        List<String> order = Rules.list("powders", weapon ? "weapon" : "armour");
-        if (order.isEmpty()) {
+        List<String> pick = powderPicks(gear.data().slot().klass() != null, free);
+        if (pick.isEmpty()) {
             return null;
         }
+        return L.n("wynnlabs.auto.powder_hint", free, free, String.join(", ", pick));
+    }
+
+    /** The powders for {@code free} empty slots by rules.powders ("Water", "Thunder" …); empty when the rules name none. */
+    static List<String> powderPicks(boolean weapon, int free) {
+        List<String> order = Rules.list("powders", weapon ? "weapon" : "armour");
         List<String> pick = new ArrayList<>();
-        for (int i = 0; i < free; i++) {
+        for (int i = 0; i < free && !order.isEmpty(); i++) {
             pick.add(nice(order.get(i % order.size())));
         }
-        return L.n("wynnlabs.auto.powder_hint", free, free, String.join(", ", pick));
+        return pick;
     }
 
     static String nice(String upper) {

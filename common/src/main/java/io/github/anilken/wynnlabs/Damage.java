@@ -213,16 +213,24 @@ final class Damage {
      * rules.model.assumePowders 0 turns it off.
      */
     static List<String> assumedPowders(ItemData info, Map<String, Double> shares) {
-        int n = info.powderSlots();
+        return assumedPowders(info, shares, info.powderSlots(), null);
+    }
+
+    /**
+     * {@code n} assumed powders for a piece of {@code info}: a weapon's in {@code keep} (the
+     * element its own powders have) or else its strongest element; armour's in any element. Empty
+     * when powders are turned off or a weapon has no element to take.
+     */
+    private static List<String> assumedPowders(ItemData info, Map<String, Double> shares, int n, String keep) {
         if (n <= 0 || Rules.sub("model", "assumePowders", 1) <= 0) {
             return List.of();
         }
         String el = "earth";
         if (info.slot() != null && info.slot().isWeapon()) {
-            el = null;
+            el = keep == null ? null : keep.toLowerCase(Locale.ROOT);
             double best = 0;
             for (var e : shares.entrySet()) {
-                if (!e.getKey().equals("neutral") && e.getValue() > best) {
+                if (keep == null && !e.getKey().equals("neutral") && e.getValue() > best) {
                     best = e.getValue();
                     el = e.getKey();
                 }
@@ -235,6 +243,80 @@ final class Damage {
     }
 
     /**
+     * A piece you have with its empty powder slots filled the way {@link #piece(ItemData)} fills
+     * a piece you would buy (a weapon in the element its powders already have, else its own
+     * strongest; armour for health), so the road map weighs what you have and what you would buy
+     * alike. Its own powders stay. A piece from the item data, a crafted one or one with every
+     * slot taken comes back as it is. The /build "now" keeps the real state.
+     */
+    static Piece withAssumedPowders(Piece p) {
+        ItemView g = ownGear(p);
+        if (g == null || g.data().powderSlots() <= g.rolled().powders().size()) {
+            return p;
+        }
+        // a key of its own: Build's memo knows a set by its keys, and the piece scores otherwise now
+        Piece out = piece(g, p.key() + "|powdered", p.stack(), true);
+        return out == null ? p : out;
+    }
+
+    /**
+     * What {@link #withAssumedPowders} adds to a piece you have: {element, count, tier}, the
+     * element null for armour (its powders count for health in any element); null for none.
+     */
+    static Object[] addedPowders(Piece p) {
+        ItemView g = ownGear(p);
+        if (g == null) {
+            return null;
+        }
+        ItemData info = g.data();
+        List<String> real = g.rolled().powders();
+        List<String> add = assumedPowders(info, normalise(sharesOf(info)), info.powderSlots() - real.size(),
+                real.isEmpty() ? null : real.get(0));
+        if (add.isEmpty()) {
+            return null;
+        }
+        boolean weapon = info.slot() != null && info.slot().isWeapon();
+        return new Object[] {weapon ? add.get(0) : null, add.size(), powderTier(info.level())};
+    }
+
+    /**
+     * The powders the road map assumes in a piece on top of its own, as {count, tier}: a piece
+     * from the item data ({@code info}) has every slot filled, one you have its empty ones.
+     */
+    static int[] assumedCount(Piece p, ItemData info) {
+        if (p == null || p.crafted()) {
+            return new int[2];
+        }
+        if (p.stack() == null || p.stack().isEmpty()) {
+            int n = info == null ? 0 : assumedPowders(info, normalise(sharesOf(info))).size();
+            return new int[] {n, n == 0 ? 0 : powderTier(info.requirements().level())};
+        }
+        Object[] a = addedPowders(p);
+        return a == null ? new int[2] : new int[] {(int) a[1], (int) a[2]};
+    }
+
+    /** The identified gear behind a piece you have (its stack), or null. */
+    private static ItemView ownGear(Piece p) {
+        if (p == null || p.crafted() || p.stack() == null || p.stack().isEmpty()) {
+            return null;
+        }
+        Optional<ItemView> v = GameState.current().view(p.stack());
+        return v.isEmpty() || !v.get().isGear() || v.get().unidentified() || v.get().rolled() == null ? null : v.get();
+    }
+
+    /** A weapon's base damage by element, not normalised. */
+    private static Map<String, Double> sharesOf(ItemData info) {
+        Map<String, Double> shares = new HashMap<>();
+        info.base().damages().forEach(d -> {
+            String el = d.type().toLowerCase(Locale.ROOT);
+            if (List.of(ELEMENTS).contains(el)) {
+                shares.merge(el, (d.low() + d.high()) / 2.0, Double::sum);
+            }
+        });
+        return shares;
+    }
+
+    /**
      * The powders a weapon pick is judged with, for its tooltip: {element, count, tier}; null when
      * it gets none (no slots, neutral only, powders turned off) and for armour, whose powders only
      * count for health in any element.
@@ -243,14 +325,7 @@ final class Damage {
         if (info.slot() == null || !info.slot().isWeapon()) {
             return null;
         }
-        Map<String, Double> shares = new HashMap<>();
-        info.base().damages().forEach(d -> {
-            String el = d.type().toLowerCase(Locale.ROOT);
-            if (List.of(ELEMENTS).contains(el)) {
-                shares.merge(el, (d.low() + d.high()) / 2.0, Double::sum);
-            }
-        });
-        List<String> p = assumedPowders(info, normalise(shares));
+        List<String> p = assumedPowders(info, normalise(sharesOf(info)));
         return p.isEmpty() ? null : new Object[] {p.get(0), p.size(), powderTier(info.requirements().level())};
     }
 
@@ -295,6 +370,11 @@ final class Damage {
 
     /** The same from the mod's reading of an item; {@code stack} may be null (not one you carry). */
     static Piece piece(ItemView item, String key, ItemStack stack) {
+        return piece(item, key, stack, false);
+    }
+
+    /** {@code fill}: its empty powder slots filled too ({@link #withAssumedPowders}). */
+    private static Piece piece(ItemView item, String key, ItemStack stack, boolean fill) {
         Map<String, Double> stats = new HashMap<>();
         Map<SkillKind, Integer> reqs = new java.util.EnumMap<>(SkillKind.class);
         Map<String, Double> shares = new HashMap<>();
@@ -326,7 +406,16 @@ final class Damage {
             double dps = fixed.averageDps();
             Map<String, Double> sh = normalise(shares);
             double health = fixed.health();
-            var powders = g.rolled().powders();
+            List<String> powders = g.rolled().powders();
+            if (fill) {
+                List<String> add = assumedPowders(info, sh, info.powderSlots() - powders.size(),
+                        powders.isEmpty() ? null : powders.get(0));
+                if (!add.isEmpty()) {
+                    List<String> all = new java.util.ArrayList<>(powders);
+                    all.addAll(add);
+                    powders = all;
+                }
+            }
             if (!powders.isEmpty()) {
                 int ptier = powderTier(info.level());
                 if (info.slot() != null && info.slot().isWeapon()) {
@@ -464,8 +553,9 @@ final class Damage {
     }
 
     private static double model(String key, double fallback) {
-        // the road map's tuning strip (Tuning) leans a few weights; 1 everywhere else
-        double v = Rules.sub("model", key, fallback) * Tuning.weight(key);
+        // the road map's tuning strip (Tuning) leans a few weights; 1 everywhere else. The ability
+        // tree you have at the level worked out for (TreeModel) sets summons, mana and the main attack
+        double v = TreeModel.adjust(key, Rules.sub("model", key, fallback)) * Tuning.weight(key);
         // what deaths taught (DeathCoach, rules.model.survivalLearned, 1 to 2) is kept apart from
         // the goal's weights, so choosing a goal again does not wipe it
         if (key.equals("survivalWeight") || key.equals("survivalPower")) {
@@ -515,11 +605,15 @@ final class Damage {
      * Where a build's DPS comes from, per element (in {@link #ELEMENTS} order): spells, the main
      * attack and summons. Filled by the same pass as the Result, so {@code spell} adds up to its
      * spellDps and {@code main} to its mainDps (before mainAttackWeight and the attack speed feel).
+     * {@code spells}: each spell of rules.model.spells as the model sees one cast of it, for the
+     * damage meter to compare a cast with; {@code summonRaw}[0] the summon DPS before
+     * rules.model.summonCalibration (puppets and lasting spells such as Totem).
      */
-    record Breakdown(double[] spell, double[] main, double[] summon) {
+    record Breakdown(double[] spell, double[] main, double[] summon, List<SpellPart> spells, double[] summonRaw) {
 
         Breakdown() {
-            this(new double[ELEMENTS.length], new double[ELEMENTS.length], new double[ELEMENTS.length]);
+            this(new double[ELEMENTS.length], new double[ELEMENTS.length], new double[ELEMENTS.length],
+                    new java.util.ArrayList<>(), new double[1]);
         }
 
         double spellTotal() {
@@ -552,6 +646,15 @@ final class Damage {
             return t;
         }
     }
+
+    /**
+     * One spell as the model sees it: {@code perCast} the whole cast (all its hits and ticks, with
+     * Strength and crit) before calibration, {@code cal} the calibration it gets (its own
+     * rules.model.spells[i].cal, else spellCalibration). A lasting spell (Totem) counts with the
+     * summons; {@code duration} is how long its ticks run (0: one go).
+     */
+    record SpellPart(String name, int index, double share, double perCast, double cal, boolean lasting,
+            double duration) {}
 
     record Detail(Result result, Breakdown breakdown) {}
 
@@ -609,12 +712,20 @@ final class Damage {
         double multiplier = 1 + str / 100.0 + dex / 100.0 * (1 + stat(s, "criticalDamageBonus") / 100.0);
         double intReduction = 0.5 * intel / 80.8;
 
-        // Spells
+        // Spells: each takes its own calibration (rules.model.spells[i].cal, measured per spell by
+        // the damage meter, Coach), else the overall rules.model.spellCalibration
         double dmgSum = 0;
         double costSum = 0;
         double shareSum = 0;
+        double globalCal = model("spellCalibration", 1.0);
+        // lasting spells (Totem: a hit every 0.4 s for 30 s) deal alongside the casts, as summons
+        // do, and cost their mana once per duration
+        double lastingDps = 0;
+        double upkeepPer5 = 0;
+        double[] lastingEl = parts == null ? null : new double[ELEMENTS.length];
         JsonElement spellsEl = Rules.get().has("model") ? Rules.get().getAsJsonObject("model").get("spells") : null;
-        JsonArray spells = spellsEl != null && spellsEl.isJsonArray() ? spellsEl.getAsJsonArray() : new JsonArray();
+        // with the tree's cost changes and the spells not bought yet at this level (TreeModel)
+        JsonArray spells = TreeModel.spells(spellsEl != null && spellsEl.isJsonArray() ? spellsEl.getAsJsonArray() : new JsonArray());
         for (JsonElement e : spells) {
             JsonObject sp = e.getAsJsonObject();
             double share = sp.has("share") ? sp.get("share").getAsDouble() : 1;
@@ -628,11 +739,6 @@ final class Damage {
             }
             double[] el = spellEl == null ? null : new double[ELEMENTS.length];
             double dmg = hit(s, split(c, shares), baseDps, skillBonus, true, el);
-            if (el != null) {
-                for (int i = 0; i < el.length; i++) {
-                    spellEl[i] += share * el[i] * multiplier;
-                }
-            }
             int idx = sp.has("index") ? sp.get("index").getAsInt() : 0;
             String nth = idx == 1 ? "1st" : idx == 2 ? "2nd" : idx == 3 ? "3rd" : "4th";
             double cost = sp.has("cost") ? sp.get("cost").getAsDouble() : 30;
@@ -640,19 +746,42 @@ final class Damage {
             cost = (cost * (1 - intReduction) + stat(s, "raw" + nth + "SpellCost"))
                     * (1 + stat(s, nth + "SpellCost") / 100.0);
             cost = Math.max(1, cost);
-            dmgSum += share * dmg * multiplier;
+            double duration = sp.has("duration") ? sp.get("duration").getAsDouble() : 0;
+            boolean lasting = ClassProfiles.lasting(sp) && duration > 0;
+            double cal = sp.has("cal") ? sp.get("cal").getAsDouble() : globalCal;
+            if (parts != null) {
+                parts.spells().add(new SpellPart(sp.has("name") ? sp.get("name").getAsString() : nth, idx, share,
+                        dmg * multiplier, lasting ? 1 : cal, lasting, duration));
+            }
+            if (lasting) {
+                lastingDps += dmg * multiplier / duration;
+                upkeepPer5 += cost * 5.0 / duration;
+                if (el != null) {
+                    for (int i = 0; i < el.length; i++) {
+                        lastingEl[i] += el[i] * multiplier / duration;
+                    }
+                }
+                continue;
+            }
+            if (el != null) {
+                for (int i = 0; i < el.length; i++) {
+                    spellEl[i] += share * el[i] * multiplier * cal;
+                }
+            }
+            dmgSum += share * dmg * multiplier * cal;
             costSum += share * cost;
             shareSum += share;
         }
         // measured in game by the damage meter (Coach): what your casts really deal against the model
-        double dmgPerCast = (shareSum > 0 ? dmgSum / shareSum : 0) * model("spellCalibration", 1.0);
+        double dmgPerCast = shareSum > 0 ? dmgSum / shareSum : 0;
         double avgCost = shareSum > 0 ? costSum / shareSum : 30;
         double manaPer5 = model("baseManaPer5s", 25) + stat(s, "manaRegen")
-                + stat(s, "manaSteal") * 5.0 / 3.0 * model("manaStealFactor", 0.3);
+                + stat(s, "manaSteal") * 5.0 / 3.0 * model("manaStealFactor", 0.3) - upkeepPer5;
         // Over a fight of fightSeconds you spend your mana pool plus what comes back
         double fight = model("fightSeconds", 30);
         double pool = model("baseMana", 100) + stat(s, "rawMaxMana") + stat(s, "maxMana") + Math.floor(intel);
-        double casts = Math.min(model("maxCastsPer5s", 4), (pool + manaPer5 * fight / 5.0) / avgCost / (fight / 5.0));
+        double casts = Math.max(0, Math.min(model("maxCastsPer5s", 4),
+                (pool + manaPer5 * fight / 5.0) / avgCost / (fight / 5.0)));
         double spellDps = dmgPerCast * casts / 5.0;
 
         // Main attack: per hit times hits per second from the weapon's tier plus Attack Speed IDs
@@ -665,24 +794,30 @@ final class Damage {
 
         // Summons (Summoner's puppets and the like): spell hits on their own clock, no mana;
         // they take spell %, raw spell and element % like spells (Puppet Master: 16 % neutral,
-        // 2 % earth, 2 % air per hit, up to 3 puppets × 2 hits/s)
+        // 2 % earth, 2 % air per hit, up to 3 puppets × 2 hits/s). With the lasting spells they are
+        // what the damage meter hears between casts, and rules.model.summonCalibration scales them to it
         double passive = 0;
         double summons = model("passiveDpsFactor", 0);
         if (summons > 0) {
-            double[] pc = {model("summonNeutral", 0.16), model("summonEarth", 0.02), 0, 0, 0, model("summonAir", 0.02)};
+            double[] pc = {model("summonNeutral", 0.16), model("summonEarth", 0.02), model("summonThunder", 0),
+                model("summonWater", 0), model("summonFire", 0), model("summonAir", 0.02)};
             passive = hit(s, split(pc, shares), baseDps, skillBonus, true, summonEl) * model("summonHitsPerSecond", 6)
                     * summons * multiplier;
         }
+        double summonCal = model("summonCalibration", 1.0);
+        double passiveRaw = passive + lastingDps;
+        passive = passiveRaw * summonCal;
         if (parts != null) {
-            // the per-hit parts scaled the way the totals above are
-            double perSpell = shareSum > 0 ? model("spellCalibration", 1.0) / shareSum * casts / 5.0 : 0;
+            // the per-hit parts scaled the way the totals above are (the spells' calibration is in spellEl)
+            double perSpell = shareSum > 0 ? 1 / shareSum * casts / 5.0 : 0;
             double perMain = model("mainAttackClassMult", 1.0) * HITS[tierNow] * multiplier;
             double perSummon = summons > 0 ? model("summonHitsPerSecond", 6) * summons * multiplier : 0;
             for (int i = 0; i < ELEMENTS.length; i++) {
                 parts.spell()[i] = spellEl[i] * perSpell;
                 parts.main()[i] = mainEl[i] * perMain;
-                parts.summon()[i] = summonEl[i] * perSummon;
+                parts.summon()[i] = (summonEl[i] * perSummon + lastingEl[i]) * summonCal;
             }
+            parts.summonRaw()[0] = passiveRaw;
         }
         // Slow weapons feel sluggish on the main attack only: spells and summons do not care
         double feel = weapon == null ? 1.0 : weapon.stats().getOrDefault(FEEL, 1.0);

@@ -89,7 +89,15 @@ public final class WynntilsEvents {
 
     @SubscribeEvent
     public void onCast(SpellEvent.Cast e) {
-        Coach.onCast();
+        int spell = 0;
+        String name = "";
+        try {
+            spell = e.getSpellType().getSpellNumber();
+            name = e.getSpellType().getName();
+        } catch (Throwable ignored) {
+            // no spell type: the cast still opens a window, booked under no spell
+        }
+        Coach.onCast(spell, name, e.getManaCost());
     }
 
     @SubscribeEvent
