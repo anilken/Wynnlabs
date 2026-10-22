@@ -448,11 +448,12 @@ public final class Coach {
 
     /**
      * The rules change the measurements call for, or null: each spell's own calibration
-     * (rules.model.spells[i].cal), the summons' (summonCalibration: the background less the main
-     * attack, over the summons and lasting spells the model has) and the overall spellCalibration
-     * the spells without their own fall back to. Kept within 0.7-1.4 until steady (50 casts, or
-     * 5 minutes of fighting for summons), then 0.5-10; a value is written only when it moves by
-     * a tenth or more, as each write rebuilds all advice.
+     * (rules.model.spells[i].cal), the summons' (summonCalibration: the background less the whole
+     * modelled main attack, over the summons and lasting spells the model has) and the overall
+     * spellCalibration the spells without their own fall back to. Kept within 0.7-1.4 until steady
+     * (50 casts, or 5 minutes of fighting for summons), then 0.5-10 (summons 0.05-10); a value is
+     * written only when it moves by a tenth or more, as each write rebuilds all advice.
+     * {@code mainAttackWeight} is kept for callers and no longer used.
      */
     public static JsonObject calibrationChanges(JsonObject m, JsonObject model, Damage.Breakdown b, double mainAttackWeight) {
         JsonObject all = m.has("spells") ? m.getAsJsonObject("spells") : new JsonObject();
@@ -505,8 +506,10 @@ public final class Coach {
         JsonObject bg = m.has("background") ? m.getAsJsonObject("background") : null;
         double summons = b == null ? 0 : b.summonRaw()[0];
         if (bg != null && summons > 0 && bg.get("seconds").getAsDouble() >= 60) {
-            double main = b.mainTotal() * Math.max(0, mainAttackWeight);
-            double target = bounded((bg.get("perSecond").getAsDouble() - main) / summons,
+            // the meter hears every main attack hit: it comes off at its full modelled rate, not
+            // at the goal's weight (a score preference), so mainAttackWeight is not used here
+            double main = b.mainTotal();
+            double target = boundedSummon(Math.max(0, bg.get("perSecond").getAsDouble() - main) / summons,
                     bg.get("seconds").getAsDouble() >= STEADY_SECONDS);
             double current = model != null && model.has("summonCalibration") ? model.get("summonCalibration").getAsDouble() : 1.0;
             if (moved(current, target)) {
@@ -526,6 +529,15 @@ public final class Coach {
     /** A ratio rounded and kept within bounds: 0.7-1.4 until it is steady, then 0.5-10. */
     public static double bounded(double ratio, boolean steady) {
         double r = steady ? Math.max(0.5, Math.min(10, ratio)) : Math.max(0.7, Math.min(1.4, ratio));
+        return Math.round(r * 100) / 100.0;
+    }
+
+    /**
+     * The summons' calibration rounded and kept within bounds: 0.7-1.4 until it is steady, then
+     * 0.05-10, as summons that die or miss can be heard far below what the model gives them.
+     */
+    public static double boundedSummon(double ratio, boolean steady) {
+        double r = steady ? Math.max(0.05, Math.min(10, ratio)) : Math.max(0.7, Math.min(1.4, ratio));
         return Math.round(r * 100) / 100.0;
     }
 
