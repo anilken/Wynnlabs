@@ -281,6 +281,7 @@
   "wynnlabs.shop.where_dropped_by": "dropped by %s",
   "wynnlabs.shop.where_event": "%s event",
   "wynnlabs.shop.where_altar": "%s altar",
+  "wynnlabs.shop.where_bag": "your bag",
   "wynnlabs.shop.kind_merchant": "Merchant",
   "wynnlabs.shop.kind_event": "Event",
   "wynnlabs.shop.kind_dungeon": "Dungeon",

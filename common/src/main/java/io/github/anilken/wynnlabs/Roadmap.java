@@ -603,6 +603,147 @@ final class Roadmap {
         return best.build();
     }
 
+    /**
+     * The set pieces a milestone can put together, by set: what you have (worn, carried or
+     * banked, whatever its level or where it once dropped) and what the slot pools hold.
+     */
+    private static Map<String, List<ItemData>> setPieces(Map<Slot, List<ItemData>> cands, Map<Slot, List<ItemData>> pools,
+            java.util.Set<String> owned, int m) {
+        Map<String, List<ItemData>> out = new LinkedHashMap<>();
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        java.util.function.Consumer<ItemData> add = info -> {
+            if (info.set().isPresent() && info.slot() != null && !info.slot().isWeapon()
+                    && info.requirements().level() <= m && seen.add(info.name())) {
+                out.computeIfAbsent(info.set().get().name(), k -> new ArrayList<>()).add(info);
+            }
+        };
+        cands.values().forEach(l -> l.stream().filter(i -> owned.contains(i.name())).forEach(add));
+        pools.values().forEach(l -> l.forEach(add));
+        return out;
+    }
+
+    /**
+     * The searched set with whole sets changed at once ({@link #wholeSets}): a set bonus only
+     * shows with its pieces together, so a search that changes one piece at a time never puts a
+     * set on (nothing worn and the Wynnterfest ornaments in the bank: Glimmer, Growth … one by
+     * one) nor takes one off for pieces that beat it only together. For every set with two
+     * pieces or more ({@link #setPieces}): all of it on; for every set the build wears: that set
+     * off, each of its slots holding the pool's best.
+     */
+    private static List<Map<String, Damage.Piece>> setSeeds(Map<String, Damage.Piece> build,
+            Map<Slot, List<ItemData>> pools, Map<String, List<ItemData>> sets, Map<String, Integer> owned,
+            java.util.Set<String> fixed) {
+        Map<String, Map<String, Damage.Piece>> out = new LinkedHashMap<>();
+        String now = setKey(build);
+        java.util.function.Consumer<Map<String, Damage.Piece>> keep = seed -> {
+            String k = setKey(seed);
+            if (!k.equals(now) && !clashes(seed)) {
+                out.putIfAbsent(k, seed);
+            }
+        };
+        // a set put on whole
+        for (List<ItemData> pieces : sets.values()) {
+            Map<String, Damage.Piece> seed = new LinkedHashMap<>(build);
+            int on = 0;
+            List<String> hands = new ArrayList<>();
+            for (String h : new String[] {"RING1", "RING2"}) {
+                if (!fixed.contains(h)) {
+                    hands.add(h);
+                }
+            }
+            for (ItemData info : pieces) {
+                if (info.slot() == Slot.RING) {
+                    // a ring you have once fills one hand; one you have twice, or can buy, both
+                    int copies = pools.getOrDefault(Slot.RING, List.of()).contains(info) ? 2
+                            : Math.min(2, owned.getOrDefault(info.name(), 1));
+                    for (int c = 0; c < copies && !hands.isEmpty(); c++) {
+                        String h = hands.remove(0);
+                        if (!sameName(seed.get(h), info)) {
+                            seed.put(h, Damage.piece(info));
+                        }
+                        on++;
+                    }
+                    continue;
+                }
+                String slot = Build.slotOf(info.slot(), 0);
+                if (slot != null && !fixed.contains(slot)) {
+                    if (!sameName(seed.get(slot), info)) {      // the one you wear keeps its rolls
+                        seed.put(slot, Damage.piece(info));
+                    }
+                    on++;
+                }
+            }
+            if (on >= 2) {
+                keep.accept(seed);
+            }
+        }
+        // a set taken off whole
+        java.util.Set<String> worn = new java.util.LinkedHashSet<>();
+        build.values().forEach(p -> {
+            if (p != null) {
+                p.stats().keySet().stream().filter(k -> k.startsWith(Damage.SET)).forEach(worn::add);
+            }
+        });
+        for (String set : worn) {
+            Map<String, Damage.Piece> seed = new LinkedHashMap<>(build);
+            int ring = 0;
+            for (String slot : BEAM_ORDER) {
+                Damage.Piece p = seed.get(slot);
+                if (p == null || !p.stats().containsKey(set) || fixed.contains(slot) || slot.equals("WEAPON")) {
+                    continue;
+                }
+                Slot t = slot.startsWith("RING") ? Slot.RING : Slot.valueOf(slot);
+                List<ItemData> other = pools.getOrDefault(t, List.of()).stream()
+                        .filter(i -> i.set().map(si -> !set.equals(Damage.SET + si.name())).orElse(true)).toList();
+                if (other.isEmpty()) {
+                    continue;
+                }
+                // the two hands: the pool's best two, or its best twice
+                ItemData pick = other.get(t == Slot.RING ? Math.min(ring++, other.size() - 1) : 0);
+                seed.put(slot, Damage.piece(pick));
+            }
+            keep.accept(seed);
+        }
+        return new ArrayList<>(out.values());
+    }
+
+    private static boolean sameName(Damage.Piece p, ItemData info) {
+        return p != null && p.name().equalsIgnoreCase(info.name());
+    }
+
+    /**
+     * After the search: the best of {@link #setSeeds} replaces the build when it beats it by
+     * more than 0.2 %, a row for each slot it changes. The search itself is left as it was, so a
+     * milestone without a set to try comes out the same.
+     */
+    private static void wholeSets(Map<String, Damage.Piece> start, Map<String, Damage.Piece> build,
+            Map<String, String> placed, Map<Slot, List<ItemData>> pools, List<Gear> gear, int m, int earned, int[] prev,
+            List<Map<String, Damage.Piece>> seeds) {
+        Build.Eval cur = Build.allocate(build, m, earned);
+        if (cur == null || seeds.isEmpty()) {
+            return;
+        }
+        double bestJ = judged(cur, prev, m) * 1.002;
+        Map<String, Damage.Piece> best = null;
+        for (Map<String, Damage.Piece> seed : seeds) {
+            tick();
+            Build.Eval ev = Build.allocate(seed, m, earned);
+            if (ev != null && judged(ev, prev, m) > bestJ) {
+                bestJ = judged(ev, prev, m);
+                best = seed;
+            }
+        }
+        if (best == null) {
+            return;
+        }
+        TriConsumer tc = trace;
+        if (tc != null) {
+            tc.accept(m, Slot.RING, String.format(java.util.Locale.ROOT, "whole set %+.2f%% over the search",
+                    (bestJ / judged(cur, prev, m) - 1) * 100));
+        }
+        applySet(best, start, build, placed, pools, gear, m, earned, prev);
+    }
+
     /** Puts a set the beam chose into the milestone's build, a row for each slot it changes. */
     private static void applySet(Map<String, Damage.Piece> chosen, Map<String, Damage.Piece> start,
             Map<String, Damage.Piece> build, Map<String, String> placed, Map<Slot, List<ItemData>> pools,
@@ -1158,6 +1299,59 @@ final class Roadmap {
     }
 
     /**
+     * What the build plan puts on from your bag right now, as rows by slot type name ("LEGGINGS",
+     * "RING", {@link #RING2}, "RELIK" …): a piece you took off or carry that the best build you
+     * own wears, with the % your build gains with it over what you wear (the road map's rows are
+     * picks over that build, so they never name it, and an empty slot looked fine). Follows the
+     * plan, which is worked out again within seconds of a change in what you wear or carry, so
+     * it needs no new road map. Made once per plan.
+     */
+    static Map<String, Gear> bagRows() {
+        Build.Plan p = Build.plan();
+        if (p == null || p.worn() == null) {
+            return Map.of();
+        }
+        BagRows c = bagRows;
+        if (c != null && c.plan() == p && c.lang().equals(L.code())) {
+            return c.rows();
+        }
+        Map<String, String> placed = new LinkedHashMap<>();
+        Map<String, ItemData> infos = new HashMap<>();
+        p.pieces().forEach((slot, piece) -> {
+            Damage.Piece was = p.worn().get(slot);
+            if (piece == null || was != null && was.key().equals(piece.key())) {
+                return;
+            }
+            ItemData info = findGear(piece.name());
+            if (info == null) {
+                return;
+            }
+            String row = slot.equals("RING1") ? Slot.RING.name() : slot.equals("RING2") ? RING2 : info.slot().name();
+            placed.put(row, slot);
+            infos.put(row, info);
+        });
+        Map<String, Gear> rows = new LinkedHashMap<>();
+        if (!placed.isEmpty()) {
+            Versus v = versus(p.pieces(), p.worn(), placed, p.level(), p.earned());
+            String where = L.t("wynnlabs.shop.where_bag");
+            placed.keySet().forEach(row -> rows.put(row, new Gear(row, infos.get(row), v.gain().getOrDefault(row, Double.NaN),
+                    where, null, null, null, v.why().getOrDefault(row, List.of()), List.of(), List.of())));
+        }
+        bagRows = new BagRows(p, L.code(), java.util.Collections.unmodifiableMap(rows));
+        return bagRows.rows();
+    }
+
+    /** A row of {@link #bagRows}: its gain is against what you wear, not a milestone's. */
+    static boolean fromBag(Gear g) {
+        BagRows c = bagRows;
+        return c != null && g != null && c.rows().get(g.slot()) == g;
+    }
+
+    private record BagRows(Build.Plan plan, String lang, Map<String, Gear> rows) {}
+
+    private static volatile BagRows bagRows;
+
+    /**
      * The upgrade the damage model found for this slot at your level, from the character's road
      * map (built this session or read back from the last one); null when there is none. Lets
      * tooltips agree with the J menu. Never starts a build.
@@ -1502,7 +1696,8 @@ final class Roadmap {
         int level = problem0 == null ? planLevel : state.level();
         long budget = in.tuning().budget();
         // what you have (worn, carried, banked): it costs nothing under a budget
-        java.util.Set<String> owned = ownedNames(state);
+        Map<String, Integer> ownedCount = ownedCounts(state);
+        java.util.Set<String> owned = ownedCount.keySet();
         // (a ring by name is no proof: the second hand's copy is a buy)
         java.util.function.Predicate<ItemData> affordable = info -> budget <= 0
                 || info.slot() != Slot.RING && owned.contains(info.name())
@@ -1538,7 +1733,10 @@ final class Roadmap {
         state.allGear().forEach(info -> {
             Slot t = info.slot();
             int lv = info.requirements().level();
-            if (!best.containsKey(t) || lv > last || lv < level - 8 || badTiersLast.contains(info.tier().name())
+            // what you have is weighed below the level window too: the bag or bank may hold a set
+            // that only pays off whole (the Wynnterfest ornaments at Lv 50 on a Lv 72 build)
+            if (!best.containsKey(t) || lv > last || lv < level - 8 && !owned.contains(info.name())
+                    || badTiersLast.contains(info.tier().name())
                     || Shopping.walkPenalty(info) > Rules.sub("shopping", "maxWalkSpeedPenalty", 999)
                     || info.base().attackSpeed().isPresent()
                             && Rules.list("shopping", "excludeAttackSpeeds").contains(info.base().attackSpeed().get())) {
@@ -1738,7 +1936,7 @@ final class Roadmap {
                             sc -= Rules.sub("shopping", "respecPenaltyPercent", 3);
                         }
                         String srcP = Shopping.sourceOf(info);
-                        if (srcP != null && badSources.stream().anyMatch(srcP::startsWith)) {
+                        if (srcP != null && badSources.stream().anyMatch(srcP::startsWith) && !owned.contains(info.name())) {
                             trace(m, t, info, "skip: source " + srcP);
                             continue;               // never offer what cannot be obtained
                         }
@@ -1877,8 +2075,8 @@ final class Roadmap {
                     continue;
                 }
                 String source = Shopping.sourceOf(top);
-                if (source == null || badSources.stream().anyMatch(source::startsWith)) {
-                    continue;
+                if (source == null || badSources.stream().anyMatch(source::startsWith) && !owned.contains(top.name())) {
+                    continue;                       // what cannot be had, unless you have it already
                 }
                 String price = Prices.text(top.name(), false);
                 String altSource = alt == null ? null : Shopping.sourceOf(alt);
@@ -1971,6 +2169,8 @@ final class Roadmap {
                 if (fixed.isEmpty()) {
                     exactSearch(baseline, placed, pools, gear, m, earnedThen, prevAlloc);   // its ring pairs know no chosen hand
                 }
+                wholeSets(startSet, baseline, placed, pools, gear, m, earnedThen, prevAlloc,
+                        setSeeds(baseline, pools, setPieces(cands, pools, owned, m), ownedCount, fixed));
                 refine(baseline, placed, pools, gear, m, earnedThen, prevAlloc, fixed);
                 Build.Eval be = Build.allocate(baseline, m, earnedThen);
                 if (be != null) {
@@ -2094,26 +2294,33 @@ final class Roadmap {
         return new Computed(steps, ranked0, locked.stream().map(ItemData::name).toList(), problem, budgetCut, forId, level);
     }
 
-    /** The names of what you have: worn, carried and banked (a buy you need not make). */
-    private static java.util.Set<String> ownedNames(GameState state) {
-        java.util.Set<String> out = new java.util.HashSet<>();
+    /**
+     * What you have, by name and how many: worn, carried and banked (a buy you need not make; a
+     * ring you have twice can fill both hands).
+     */
+    private static Map<String, Integer> ownedCounts(GameState state) {
+        Map<String, Integer> out = new HashMap<>();
         try {
             for (Slot t : Slot.values()) {
                 if (t.isArmour() || t.isAccessory() || t.klass() != null) {
                     for (ItemStack w : AutoAdvice.worn(t)) {
                         if (!w.isEmpty()) {
-                            out.add(ItemJson.clean(w.getHoverName().getString()).trim());
+                            out.merge(ItemJson.clean(w.getHoverName().getString()).trim(), 1, Integer::sum);
                         }
                     }
                 }
             }
+            java.util.Set<ItemStack> seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+            for (Slot t : List.of(Slot.RING, Slot.BRACELET, Slot.NECKLACE)) {
+                seen.addAll(AutoAdvice.worn(t));            // a worn accessory sits in the bag too: once
+            }
             for (ItemStack s : state.inventory()) {
-                if (!s.isEmpty()) {
-                    out.add(ItemJson.clean(s.getHoverName().getString()).trim());
+                if (!s.isEmpty() && !seen.contains(s)) {
+                    out.merge(ItemJson.clean(s.getHoverName().getString()).trim(), s.getCount(), Integer::sum);
                 }
             }
             for (Vault.Group g : Vault.groups()) {
-                out.add(g.name());
+                out.merge(g.name(), Math.max(1, g.total()), Integer::sum);
             }
         } catch (Throwable t) {
             // a menu changed under us: what was read so far

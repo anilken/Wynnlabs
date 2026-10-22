@@ -403,6 +403,9 @@ final class RoadmapScreen extends Screen {
             Roadmap.Step at = steps.get(Math.min(selected, steps.size() - 1));
             Roadmap.keepWorn(out, at);
         }
+        // what the best build you own puts on from the bag, where the road map has no pick: the
+        // plan follows a piece taken off within seconds, the map only when built again
+        Roadmap.bagRows().forEach(out::putIfAbsent);
         return out;
     }
 
@@ -1430,6 +1433,19 @@ final class RoadmapScreen extends Screen {
         return out;
     }
 
+    /**
+     * Wynncraft's stand-in for an empty slot ("Leggings Slot", "Ring Slot"): nothing is worn
+     * there, so the stand shows the slot empty, not a tick on it.
+     */
+    private static boolean emptySlot(ItemStack s) {
+        if (s.isEmpty()) {
+            return true;
+        }
+        var v = GameState.current().view(s);
+        return (v.isEmpty() || !v.get().isGear() && !v.get().isCrafted())
+                && ItemJson.clean(s.getHoverName().getString()).trim().endsWith(" Slot");
+    }
+
     /** A slot's name on a row; the two rings as "Ring 1" and "Ring 2". */
     private static String boxLabel(Box box) {
         return L.t(box.label()) + (box.type() == Slot.RING ? " " + (box.ring() + 1) : "");
@@ -1448,7 +1464,7 @@ final class RoadmapScreen extends Screen {
             ItemStack worn = ItemStack.EMPTY;
             if (player != null && type != null) {
                 List<ItemStack> l = AutoAdvice.worn(type);
-                if (box.ring() < l.size()) {
+                if (box.ring() < l.size() && !emptySlot(l.get(box.ring()))) {
                     worn = l.get(box.ring());
                 }
             }
@@ -2162,7 +2178,7 @@ final class RoadmapScreen extends Screen {
      * that slot (Roadmap.Step.vsWorn), not just the step over the previous milestone's pick.
      */
     private double rowGain(Roadmap.Gear u) {
-        if (u == null || Double.isNaN(u.gain()) || steps.isEmpty()) {
+        if (u == null || Double.isNaN(u.gain()) || steps.isEmpty() || Roadmap.fromBag(u)) {
             return u == null ? Double.NaN : u.gain();
         }
         Roadmap.Step s = steps.get(Math.max(0, Math.min(selected, steps.size() - 1)));

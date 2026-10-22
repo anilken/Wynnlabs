@@ -66,6 +66,7 @@ wynnlabs.shop.where_cave_chest          inside "Next target: … (Lv. 50, cave c
 wynnlabs.shop.where_dropped_by          inside "Next target: … (Lv. 50, dropped by …)"; L.cap as a source line
 wynnlabs.shop.where_loot_chest          inside "Next target: … (Lv. 50, loot chest)"; L.cap as a source line
 wynnlabs.shop.where_mob_drop            inside "Next target: … (Lv. 50, dropped by mobs)"; L.cap as a source line
+wynnlabs.shop.where_bag                 inside "From: your bag" on the Home tab's row for a piece the build puts on from the bag
 wynnlabs.questadv.reason_at_level       joined with ", " after the XP; L.cap as a bullet
 wynnlabs.questadv.reason_comfortable    joined with ", " after the XP; L.cap as a bullet
 wynnlabs.questadv.reason_hard           joined with ", " after the XP; L.cap as a bullet
