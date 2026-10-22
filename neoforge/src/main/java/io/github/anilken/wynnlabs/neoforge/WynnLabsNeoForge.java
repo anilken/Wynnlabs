@@ -1,6 +1,6 @@
 package io.github.anilken.wynnlabs.neoforge;
 
-import io.github.anilken.wynnlabs.WynnLabs;
+import io.github.anilken.wynnlabs.api.WynnLabs;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;

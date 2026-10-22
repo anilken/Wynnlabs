@@ -260,7 +260,7 @@ tasks.register('checkDevTools') {
     keyJarProjects.each { path -> devJarTasks.each { name -> mustRunAfter "${path}:${name}" } }
     doLast {
         def devRoot = file('common/src/dev/java')
-        // io/github/anilken/wynnlabs/Shots.java -> io/github/anilken/wynnlabs/Shots(.class | $Inner.class)
+        // io/github/anilken/wynnlabs/dev/Shots.java -> io/github/anilken/wynnlabs/dev/Shots(.class | $Inner.class)
         def prefixes = fileTree(devRoot).include('**/*.java').files.collect {
             devRoot.toPath().relativize(it.toPath()).toString().replace(File.separatorChar, '/' as char).replaceFirst(/\.java$/, '')
         }
@@ -490,9 +490,9 @@ tasks.register('checkWynntilsImports') {
     description = 'Fails when a Java file other than the Wynntils bridge files refers to com.wynntils.'
     doLast {
         // in common only; the loader modules may not name Wynntils at all
-        def allowed = ['common/src/main/java/io/github/anilken/wynnlabs/Wyn.java',
-                       'common/src/main/java/io/github/anilken/wynnlabs/WynntilsItems.java',
-                       'common/src/main/java/io/github/anilken/wynnlabs/WynntilsEvents.java'] as Set
+        def allowed = ['common/src/main/java/io/github/anilken/wynnlabs/game/Wyn.java',
+                       'common/src/main/java/io/github/anilken/wynnlabs/game/WynntilsItems.java',
+                       'common/src/main/java/io/github/anilken/wynnlabs/game/WynntilsEvents.java'] as Set
         def hits = []
         sourceRoots.each { root ->
             fileTree(root).include('**/*.java').each { f ->

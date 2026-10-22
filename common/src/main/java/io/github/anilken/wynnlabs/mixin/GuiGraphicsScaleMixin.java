@@ -16,7 +16,7 @@ public abstract class GuiGraphicsScaleMixin {
 
     @Inject(method = "guiWidth", at = @At("HEAD"), cancellable = true)
     private void wynnlabs$width(CallbackInfoReturnable<Integer> cir) {
-        int w = io.github.anilken.wynnlabs.MenuScale.tooltipWidth();
+        int w = io.github.anilken.wynnlabs.ui.MenuScale.tooltipWidth();
         if (w > 0) {
             cir.setReturnValue(w);
         }
@@ -24,7 +24,7 @@ public abstract class GuiGraphicsScaleMixin {
 
     @Inject(method = "guiHeight", at = @At("HEAD"), cancellable = true)
     private void wynnlabs$height(CallbackInfoReturnable<Integer> cir) {
-        int h = io.github.anilken.wynnlabs.MenuScale.tooltipHeight();
+        int h = io.github.anilken.wynnlabs.ui.MenuScale.tooltipHeight();
         if (h > 0) {
             cir.setReturnValue(h);
         }

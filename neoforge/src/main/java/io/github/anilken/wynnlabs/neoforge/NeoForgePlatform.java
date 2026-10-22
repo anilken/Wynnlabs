@@ -1,6 +1,6 @@
 package io.github.anilken.wynnlabs.neoforge;
 
-import io.github.anilken.wynnlabs.Platform;
+import io.github.anilken.wynnlabs.core.Platform;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;

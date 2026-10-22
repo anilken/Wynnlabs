@@ -1,6 +1,6 @@
 package io.github.anilken.wynnlabs.mixin;
 
-import io.github.anilken.wynnlabs.GroundGlow;
+import io.github.anilken.wynnlabs.ui.GroundGlow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -15,10 +15,10 @@ public class MinecraftGlowMixin {
 
     @Inject(method = "shouldEntityAppearGlowing", at = @At("HEAD"), cancellable = true)
     private void wynninv$groundGlow(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        long t = io.github.anilken.wynnlabs.Perf.start();
+        long t = io.github.anilken.wynnlabs.core.Perf.start();
         if (entity instanceof ItemEntity item && GroundGlow.colour(item) != null) {
             cir.setReturnValue(true);
         }
-        io.github.anilken.wynnlabs.Perf.end("glow.appears", t);
+        io.github.anilken.wynnlabs.core.Perf.end("glow.appears", t);
     }
 }

@@ -16,4 +16,4 @@ tree scrolled to its last page. A run takes about half a minute and opens a wind
 - Item icons are plain vanilla items: Wynntils' own stacks need Wynntils, which the dev
   client does not load. Layout, text and numbers are the real ones.
 
-The test is `fabric/src/gametest/java/io/github/anilken/wynnlabs/JMenuPreview.java`.
+The test is `fabric/src/gametest/java/io/github/anilken/wynnlabs/ui/JMenuPreview.java`.
