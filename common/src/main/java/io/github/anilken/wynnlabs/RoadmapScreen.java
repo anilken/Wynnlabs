@@ -3586,6 +3586,9 @@ final class RoadmapScreen extends Screen {
     /** The quest and stage the points list was last opened on: a new one starts at the stage you are on. */
     private String pointScrollKey = "";
     private int[] questDetailRect;
+    /** The steps tab: its first stage; a new quest or stage starts two steps above the one you are on. */
+    private int stepScroll;
+    private String stepScrollKey = "";
     private Map<String, List<QuestAdvisor.Suggestion>> questLists = new HashMap<>();
     private long questListsAt;
 
@@ -4157,7 +4160,16 @@ final class RoadmapScreen extends Screen {
             // stages: done ✔, current ▶ (with its first hints), the rest numbered; coordinates → "yol ›"
             int cur = questSelected.equals(tracked) ? QuestWiki.currentStage(info, task)
                     : q != null && "STARTED".equals(q.status()) ? QuestWiki.currentStage(info, q.task()) : -1;
-            for (int i = 0; i < info.stages().size() && iy + 10 <= bottom; i++) {
+            String key = questSelected + "|" + cur;
+            if (!key.equals(stepScrollKey)) {
+                stepScrollKey = key;
+                stepScroll = Math.max(0, cur - 2);
+            }
+            stepScroll = Math.max(0, Math.min(stepScroll, info.stages().size() - 1));
+            int stepsTop = iy;
+            int last = stepScroll;
+            for (int i = stepScroll; i < info.stages().size() && iy + 10 <= bottom; i++) {
+                last = i;
                 QuestWiki.Stage st = info.stages().get(i);
                 int mc = i < cur ? 0xFF5DCAA5 : i == cur ? 0xFFFAC775 : FAINT;
                 if (i < cur || i == cur) {
@@ -4207,13 +4219,30 @@ final class RoadmapScreen extends Screen {
                 hits.add(new Hit(ix, iy - 1, iw - 32, Kit.Ui.LINE_DENSE * stepRows, null, tip, null));
                 iy += Kit.Ui.LINE_DENSE * stepRows;
                 if (i == cur) {
-                    // the stage you are on: its first hints (more of them on a large page)
-                    int hintRows = layout.large() ? 5 : 2;
-                    for (int k = 0; k < st.hints().size() && k < hintRows && iy + 10 <= bottom; k++) {
-                        ink(g, fit(QuestWiki.shown(st.hints().get(k)), iw - 14), ix + 12, iy, MUTED);
-                        iy += Kit.Ui.LINE_DENSE;
+                    // the stage you are on: its hints wrapped, not cut, so a puzzle's last line (its
+                    // answer, often) shows too; more rows on a large page
+                    int hintRows = layout.large() ? 10 : 4;
+                    int used = 0;
+                    hints:
+                    for (String hint : st.hints()) {
+                        for (FormattedCharSequence line : font.split(Component.literal(QuestWiki.shown(hint)), iw - 14)) {
+                            if (used >= hintRows || iy + 10 > bottom) {
+                                break hints;
+                            }
+                            ink(g, line, ix + 12, iy, MUTED);
+                            iy += Kit.Ui.LINE_DENSE;
+                            used++;
+                        }
                     }
                 }
+            }
+            int count = info.stages().size();
+            if (stepScroll > 0 || last < count - 1) {
+                // more steps than fit: where you are in them, a thin bar at the right edge (the wheel scrolls)
+                int barH = Math.max(12, (bottom - stepsTop) * (last - stepScroll + 1) / count);
+                int barY = stepsTop + (bottom - stepsTop - barH) * stepScroll / Math.max(1, count - 1 - (last - stepScroll));
+                g.fill(x + w - 5, stepsTop, x + w - 3, bottom, 0x22000000);
+                g.fill(x + w - 5, Math.min(barY, bottom - barH), x + w - 3, Math.min(barY, bottom - barH) + barH, 0x88000000);
             }
         } else if (questDetailTab == 1) {
             // enemies: level, health, what they are weak to; ✔ when your build's element is one of them
@@ -6871,6 +6900,8 @@ final class RoadmapScreen extends Screen {
         if (tab == 2) {
             if (questDetailTab == 3 && questDetailRect != null && in(x, y, questDetailRect)) {
                 pointScroll = Math.max(0, pointScroll - 3 * (int) Math.signum(v));
+            } else if (questDetailTab == 0 && questDetailRect != null && in(x, y, questDetailRect)) {
+                stepScroll = Math.max(0, stepScroll - (int) Math.signum(v));
             } else {
                 questScroll = Math.max(0, questScroll - (int) Math.signum(v));
             }
