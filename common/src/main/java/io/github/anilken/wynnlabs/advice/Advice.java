@@ -290,7 +290,10 @@ public final class Advice {
         String tag = null;
         String caution = null;
         ItemView gear = gearOf(stack);
-        boolean own = Shopping.isOwn(stack);
+        // the Blacksmith's and the Trade Market's sell menus hold only your own items, nothing to buy
+        var menuKind = Wyn.container();
+        boolean own = Shopping.isOwn(stack)
+                || menuKind != null && (menuKind.blacksmithSell() || menuKind.marketSell());
         boolean inBank = !own && Vault.inOpenBank(stack);
         if (e == null && gear != null && !own && !inBank && showAdvice) {
             // In a shop, the Trade Market or a chest: is it on the shopping list?
