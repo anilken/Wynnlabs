@@ -1,6 +1,6 @@
 package io.github.anilken.wynnlabs.mixin;
 
-import io.github.anilken.wynnlabs.GroundGlow;
+import io.github.anilken.wynnlabs.ui.GroundGlow;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,11 +14,11 @@ public class EntityTeamColorMixin {
 
     @Inject(method = "getTeamColor", at = @At("HEAD"), cancellable = true)
     private void wynninv$groundGlowColour(CallbackInfoReturnable<Integer> cir) {
-        long t = io.github.anilken.wynnlabs.Perf.start();
+        long t = io.github.anilken.wynnlabs.core.Perf.start();
         try {
             wynninv$colour(cir);
         } finally {
-            io.github.anilken.wynnlabs.Perf.end("glow.colour", t);
+            io.github.anilken.wynnlabs.core.Perf.end("glow.colour", t);
         }
     }
 

@@ -6,9 +6,9 @@
   "environment": "client",
   "entrypoints": {
     "fabric-client-gametest": [
-      "io.github.anilken.wynnlabs.ShotsPreview",
-      "io.github.anilken.wynnlabs.JMenuPreview",
-      "io.github.anilken.wynnlabs.LayoutMatrix"
+      "io.github.anilken.wynnlabs.dev.ShotsPreview",
+      "io.github.anilken.wynnlabs.ui.JMenuPreview",
+      "io.github.anilken.wynnlabs.ui.LayoutMatrix"
     ]
   },
   "depends": {

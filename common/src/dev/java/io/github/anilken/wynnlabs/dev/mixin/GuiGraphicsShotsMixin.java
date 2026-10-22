@@ -17,6 +17,6 @@ public abstract class GuiGraphicsShotsMixin {
     @ModifyVariable(method = "drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIZ)V",
             at = @At("HEAD"), argsOnly = true)
     private FormattedCharSequence wynnlabs$hideName(FormattedCharSequence s) {
-        return io.github.anilken.wynnlabs.Shots.mask(s);
+        return io.github.anilken.wynnlabs.dev.Shots.mask(s);
     }
 }

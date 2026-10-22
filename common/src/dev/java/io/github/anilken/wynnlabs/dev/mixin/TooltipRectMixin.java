@@ -18,6 +18,6 @@ public abstract class TooltipRectMixin {
 
     @Inject(method = "renderTooltipBackground", at = @At("HEAD"))
     private static void wynnlabs$tooltipRect(GuiGraphics g, int x, int y, int w, int h, Identifier background, CallbackInfo ci) {
-        io.github.anilken.wynnlabs.Shots.tooltip(g.pose(), x - 12, y - 12, w + 24, h + 24);
+        io.github.anilken.wynnlabs.dev.Shots.tooltip(g.pose(), x - 12, y - 12, w + 24, h + 24);
     }
 }

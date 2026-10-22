@@ -1,6 +1,6 @@
 package io.github.anilken.wynnlabs.fabric;
 
-import io.github.anilken.wynnlabs.Platform;
+import io.github.anilken.wynnlabs.core.Platform;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
