@@ -158,6 +158,24 @@ class NowSetTest {
     @Test
     void theOrnamentsWornAreKept(@TempDir Path tmp) throws Exception {
         shaman(tmp, Where.WORN);
+        // "now" looks 20 levels down like every milestone: on the Damage goal (XP at 0.3) two
+        // Photon, Fantasy and the Zhight necklace (Lv 55-61) may take the ornaments' place, but
+        // only when they win on damage and health alone
+        Map<String, Damage.Piece> picked = new LinkedHashMap<>(now().build());
+        if (!accessories(picked).equals(ORNAMENTS)) {
+            Map<String, Damage.Piece> ornaments = new LinkedHashMap<>(picked);
+            ornaments.put("RING1", gear("Yellow Ornament"));
+            ornaments.put("RING2", gear("Yellow Ornament"));
+            ornaments.put("BRACELET", gear("Red Ornament"));
+            ornaments.put("NECKLACE", gear("Green Ornament"));
+            goalXp(0);
+            double p = Build.allocate(picked, 72, 142).result().objective();
+            double o = Build.allocate(ornaments, 72, 142).result().objective();
+            Fixtures.note(String.format(java.util.Locale.ROOT, "without XP: %s %.0f, ornaments %.0f", accessories(picked), p, o));
+            assertTrue(p >= o, "on the Damage goal the picks win without XP");
+        }
+        // where XP counts in full the worn set is not broken up one piece at a time
+        goalXp(1);
         Roadmap.Step s = now();
         assertEquals(ORNAMENTS, accessories(s.build()), "the set stays on");
         for (Roadmap.Gear g : s.gear()) {

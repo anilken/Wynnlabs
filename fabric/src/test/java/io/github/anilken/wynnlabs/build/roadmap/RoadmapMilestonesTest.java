@@ -152,36 +152,57 @@ class RoadmapMilestonesTest {
             Build.Eval full = Build.allocate(set, m, earned(m));
             assertTrue(full != null, "Lv " + m + ": the set fits");
             double fullJ = Roadmap.judged(full, prev, m);
+            java.util.Set<String> claimed = new java.util.HashSet<>();
             for (Roadmap.Gear g : s.gear()) {
                 if (Double.isNaN(g.gain()) || Roadmap.isPowder(g)) {
                     continue;                           // a powder row's gain is over the build as worn
                 }
-                // the build slot that holds the pick and held something else when the milestone began
-                String slot = null;
+                // the build slots that hold the pick and held something else when the milestone
+                // began, the row's own first (RING: the first hand). The same ring in both hands
+                // (Diamond Fusion at Lv 100) is two rows, one per hand, in the order the search
+                // filled them: either hand may be the "RING" row, but not both rows the same hand
+                List<String> slots = new ArrayList<>();
+                String own = g.slot().equals("RING") ? "RING1" : g.slot();
                 for (var e : set.entrySet()) {
                     Damage.Piece p = e.getValue();
                     Damage.Piece was = start.get(e.getKey());
                     if (p != null && p.name().equalsIgnoreCase(g.info().name()) && (was == null || !was.key().equals(p.key()))
-                            && (slot == null || e.getKey().equals(g.slot().equals("RING") ? "RING1" : g.slot()))) {
-                        slot = e.getKey();
+                            && !claimed.contains(e.getKey())) {
+                        slots.add(e.getKey().equals(own) ? 0 : slots.size(), e.getKey());
                     }
                 }
-                if (slot == null) {
+                double first = Double.NaN;
+                String hit = null;
+                for (String slot : slots) {
+                    Map<String, Damage.Piece> back = new LinkedHashMap<>(set);
+                    back.remove(slot);
+                    if (start.get(slot) != null) {
+                        back.put(slot, start.get(slot));
+                    }
+                    Build.Eval be = Exclusive.clash(back, slot, start.get(slot) == null ? null : Exclusive.group(start.get(slot))) == null
+                            ? Build.allocate(back, m, earned(m)) : null;
+                    if (be == null) {
+                        continue;                       // the slot cannot go back: the row keeps its own number
+                    }
+                    double expect = (fullJ / Roadmap.judged(be, prev, m) - 1) * 100;
+                    if (Double.isNaN(first)) {
+                        first = expect;
+                    }
+                    if (Math.abs(expect - g.gain()) <= 0.05) {
+                        hit = slot;
+                        first = expect;
+                        break;
+                    }
+                }
+                if (Double.isNaN(first)) {
                     continue;
                 }
-                Map<String, Damage.Piece> back = new LinkedHashMap<>(set);
-                back.remove(slot);
-                if (start.get(slot) != null) {
-                    back.put(slot, start.get(slot));
+                Fixtures.note(String.format("Lv %d %s %s: step %.1f, in the set %.1f (%s)", m, g.slot(), g.info().name(), g.gain(),
+                        first, hit));
+                assertEquals(first, g.gain(), 0.05, "Lv " + m + " " + g.slot() + " " + g.info().name());
+                if (slots.size() > 1 && hit != null && hit.startsWith("RING")) {
+                    claimed.add(hit);
                 }
-                Build.Eval be = Exclusive.clash(back, slot, start.get(slot) == null ? null : Exclusive.group(start.get(slot))) == null
-                        ? Build.allocate(back, m, earned(m)) : null;
-                if (be == null) {
-                    continue;                           // the slot cannot go back: the row keeps its own number
-                }
-                double expect = (fullJ / Roadmap.judged(be, prev, m) - 1) * 100;
-                Fixtures.note(String.format("Lv %d %s %s: step %.1f, in the set %.1f", m, g.slot(), g.info().name(), g.gain(), expect));
-                assertEquals(expect, g.gain(), 0.05, "Lv " + m + " " + g.slot() + " " + g.info().name());
                 checked++;
             }
             prev = Roadmap.carry(s.set(), set, m);

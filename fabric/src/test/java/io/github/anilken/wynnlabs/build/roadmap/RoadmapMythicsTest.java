@@ -208,7 +208,10 @@ class RoadmapMythicsTest {
                 String p = "Lv " + m + " " + name + ": ";
                 List<String> lines = relik.stream().filter(l -> l.startsWith(p)).toList();
                 assertFalse(lines.isEmpty(), "no line for " + p);
-                lines.forEach(l -> assertTrue(!l.startsWith(p + skip) && l.endsWith(around), l));
+                // never thrown out: built around where the set cannot give the points, ranked where
+                // it can (and maybe not among the best 6: the Lv 120 set after Dragon's Tear wears it)
+                String notBest = L.t("wynnlabs.road.trace_skip", L.t("wynnlabs.road.trace_not_best", 6));
+                lines.forEach(l -> assertTrue(l.endsWith(around) || !l.startsWith(p + skip) || l.equals(p + notBest), l));
                 String start = L.t("wynnlabs.road.trace_start_weapon", name.substring(0, name.indexOf(" Lv")));
                 assertTrue(notes.stream().anyMatch(l -> l.startsWith("Lv " + m + " ") && l.contains(start)),
                         "Lv " + m + ": no start around " + name);
