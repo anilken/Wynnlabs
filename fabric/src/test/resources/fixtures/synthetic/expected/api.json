@@ -694,8 +694,8 @@
         "marketPrice": 3100,
         "marketPriceText": "48 EB",
         "ruleAdvice": {
-          "verdict": "SELL",
-          "note": "Neolithic on the list is better (Lv. 20). Sell it on the Trade Market, ~48 EB"
+          "verdict": "KEEP",
+          "note": "You can wear it at Lv. 22"
         },
         "kind": "gear",
         "type": "HELMET",

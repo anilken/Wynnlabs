@@ -1442,8 +1442,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 1#9",
     "name": "Quartron's Eye",
-    "verdict": "SELL",
-    "note": "Marble on the list is better (Lv. 48). Sell it to the Blacksmith (market ~17 EB)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 49"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#10",
@@ -1556,20 +1556,20 @@
   {
     "where": "bank char:char0003:Character Bank p. 2#0",
     "name": "Ultramarine Boots",
-    "verdict": "SELL",
-    "note": "Kaleidoscope on the list is better (Lv. 47). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 61"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#1",
     "name": "Ultramarine Crown",
-    "verdict": "SELL",
-    "note": "Astigmatism on the list is better (Lv. 48). Sell it on the Trade Market: rolled 88%, it is worth more than the Blacksmith pays (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 59"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#2",
     "name": "Ultramarine Cape",
-    "verdict": "SELL",
-    "note": "Sawdust on the list is better (Lv. 49). Sell it to the Blacksmith (market ~30 EB)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 65"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#3",
@@ -1586,14 +1586,14 @@
   {
     "where": "bank char:char0003:Character Bank p. 2#5",
     "name": "Multitool",
-    "verdict": "SELL",
-    "note": "Reminiscence on the list is better (Lv. 41). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 76"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#6",
     "name": "Dragon's Eye Bracelet",
-    "verdict": "SELL",
-    "note": "Reminiscence on the list is better (Lv. 41). Sell it on the Trade Market; Fabled is valuable"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 60"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#36",
@@ -1688,14 +1688,14 @@
   {
     "where": "bank char:char0003:Character Bank p. 3#27",
     "name": "Fuse",
-    "verdict": "SELL",
-    "note": "Marble on the list is better (Lv. 48). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 75"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#28",
     "name": "Fuse",
-    "verdict": "SELL",
-    "note": "Marble on the list is better (Lv. 48). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 75"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#36",
@@ -1706,32 +1706,32 @@
   {
     "where": "bank char:char0003:Character Bank p. 4#9",
     "name": "Brainwash",
-    "verdict": "SELL",
-    "note": "Astigmatism on the list is better (Lv. 48). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 96"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#10",
     "name": "Sparkling Plate",
-    "verdict": "SELL",
-    "note": "Sawdust on the list is better (Lv. 49). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 99"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#27",
     "name": "Photon",
-    "verdict": "SELL",
-    "note": "Marble on the list is better (Lv. 48). Sell it on the Trade Market, ~1.4 LE"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 61"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#28",
     "name": "Ozoth's Breath",
-    "verdict": "SELL",
-    "note": "Marble on the list is better (Lv. 48). Rolled 95%: it sells for more than the cheapest listing (~21 EB), so list it on the Trade Market"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 49"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#29",
     "name": "Euouae",
-    "verdict": "SELL",
-    "note": "Reminiscence on the list is better (Lv. 41). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 75"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#30",
@@ -1742,8 +1742,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 4#37",
     "name": "Remikas' Sanctuary",
-    "verdict": "SELL",
-    "note": "Sawdust on the list is better (Lv. 49). Sell it to the Blacksmith (market ~9 EB)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 68"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#38",
@@ -1754,20 +1754,20 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#0",
     "name": "Hellion",
-    "verdict": "SELL",
-    "note": "Marble on the list is better (Lv. 48). Sell it on the Trade Market: rolled 81%, it is worth more than the Blacksmith pays (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 91"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#1",
     "name": "Hellion",
-    "verdict": "SELL",
-    "note": "Marble on the list is better (Lv. 48). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 91"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#2",
     "name": "Rycar's Bravado",
-    "verdict": "SELL",
-    "note": "Reminiscence on the list is better (Lv. 41). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 58"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#3",
@@ -1784,8 +1784,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#10",
     "name": "September",
-    "verdict": "SELL",
-    "note": "Sawdust on the list is better (Lv. 49). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 88"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#11",
@@ -1796,8 +1796,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#12",
     "name": "Flashing Boots",
-    "verdict": "SELL",
-    "note": "Kaleidoscope on the list is better (Lv. 47). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 87"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#13",
@@ -1856,8 +1856,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#40",
     "name": "Cirrus",
-    "verdict": "SELL",
-    "note": "Kaleidoscope on the list is better (Lv. 47). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 69"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#0",
@@ -1928,8 +1928,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#11",
     "name": "Shaggy Boots",
-    "verdict": "SELL",
-    "note": "Kaleidoscope on the list is better (Lv. 47). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 97"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#12",
@@ -1952,8 +1952,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#15",
     "name": "Tinderbox",
-    "verdict": "SELL",
-    "note": "Sawdust on the list is better (Lv. 49). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 93"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#44",

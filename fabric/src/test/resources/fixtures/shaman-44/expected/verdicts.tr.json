@@ -1442,8 +1442,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 1#9",
     "name": "Quartron's Eye",
-    "verdict": "SELL",
-    "note": "Listedeki Marble daha iyi (Lv. 48). Blacksmith'e sat (market ~17 EB)"
+    "verdict": "KEEP",
+    "note": "Lv. 49'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#10",
@@ -1556,20 +1556,20 @@
   {
     "where": "bank char:char0003:Character Bank p. 2#0",
     "name": "Ultramarine Boots",
-    "verdict": "SELL",
-    "note": "Listedeki Kaleidoscope daha iyi (Lv. 47). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 61'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#1",
     "name": "Ultramarine Crown",
-    "verdict": "SELL",
-    "note": "Listedeki Astigmatism daha iyi (Lv. 48). Trade Market'te sat: %88 roll, Blacksmith'in vereceğinden fazla eder (fiyat henüz yok)"
+    "verdict": "KEEP",
+    "note": "Lv. 59'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#2",
     "name": "Ultramarine Cape",
-    "verdict": "SELL",
-    "note": "Listedeki Sawdust daha iyi (Lv. 49). Blacksmith'e sat (market ~30 EB)"
+    "verdict": "KEEP",
+    "note": "Lv. 65'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#3",
@@ -1586,14 +1586,14 @@
   {
     "where": "bank char:char0003:Character Bank p. 2#5",
     "name": "Multitool",
-    "verdict": "SELL",
-    "note": "Listedeki Reminiscence daha iyi (Lv. 41). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 76'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#6",
     "name": "Dragon's Eye Bracelet",
-    "verdict": "SELL",
-    "note": "Listedeki Reminiscence daha iyi (Lv. 41). Trade Market'te sat, Fabled değerli"
+    "verdict": "KEEP",
+    "note": "Lv. 60'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#36",
@@ -1688,14 +1688,14 @@
   {
     "where": "bank char:char0003:Character Bank p. 3#27",
     "name": "Fuse",
-    "verdict": "SELL",
-    "note": "Listedeki Marble daha iyi (Lv. 48). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 75'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#28",
     "name": "Fuse",
-    "verdict": "SELL",
-    "note": "Listedeki Marble daha iyi (Lv. 48). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 75'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#36",
@@ -1706,32 +1706,32 @@
   {
     "where": "bank char:char0003:Character Bank p. 4#9",
     "name": "Brainwash",
-    "verdict": "SELL",
-    "note": "Listedeki Astigmatism daha iyi (Lv. 48). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 96'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#10",
     "name": "Sparkling Plate",
-    "verdict": "SELL",
-    "note": "Listedeki Sawdust daha iyi (Lv. 49). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 99'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#27",
     "name": "Photon",
-    "verdict": "SELL",
-    "note": "Listedeki Marble daha iyi (Lv. 48). Trade Market'te sat, ~1.4 LE"
+    "verdict": "KEEP",
+    "note": "Lv. 61'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#28",
     "name": "Ozoth's Breath",
-    "verdict": "SELL",
-    "note": "Listedeki Marble daha iyi (Lv. 48). %95 roll: en ucuz ilandan (~21 EB) fazlasına gider, Trade Market'e koy"
+    "verdict": "KEEP",
+    "note": "Lv. 49'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#29",
     "name": "Euouae",
-    "verdict": "SELL",
-    "note": "Listedeki Reminiscence daha iyi (Lv. 41). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 75'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#30",
@@ -1742,8 +1742,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 4#37",
     "name": "Remikas' Sanctuary",
-    "verdict": "SELL",
-    "note": "Listedeki Sawdust daha iyi (Lv. 49). Blacksmith'e sat (market ~9 EB)"
+    "verdict": "KEEP",
+    "note": "Lv. 68'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#38",
@@ -1754,20 +1754,20 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#0",
     "name": "Hellion",
-    "verdict": "SELL",
-    "note": "Listedeki Marble daha iyi (Lv. 48). Trade Market'te sat: %81 roll, Blacksmith'in vereceğinden fazla eder (fiyat henüz yok)"
+    "verdict": "KEEP",
+    "note": "Lv. 91'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#1",
     "name": "Hellion",
-    "verdict": "SELL",
-    "note": "Listedeki Marble daha iyi (Lv. 48). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 91'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#2",
     "name": "Rycar's Bravado",
-    "verdict": "SELL",
-    "note": "Listedeki Reminiscence daha iyi (Lv. 41). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 58'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#3",
@@ -1784,8 +1784,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#10",
     "name": "September",
-    "verdict": "SELL",
-    "note": "Listedeki Sawdust daha iyi (Lv. 49). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 88'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#11",
@@ -1796,8 +1796,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#12",
     "name": "Flashing Boots",
-    "verdict": "SELL",
-    "note": "Listedeki Kaleidoscope daha iyi (Lv. 47). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 87'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#13",
@@ -1856,8 +1856,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#40",
     "name": "Cirrus",
-    "verdict": "SELL",
-    "note": "Listedeki Kaleidoscope daha iyi (Lv. 47). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 69'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#0",
@@ -1928,8 +1928,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#11",
     "name": "Shaggy Boots",
-    "verdict": "SELL",
-    "note": "Listedeki Kaleidoscope daha iyi (Lv. 47). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 97'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#12",
@@ -1952,8 +1952,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#15",
     "name": "Tinderbox",
-    "verdict": "SELL",
-    "note": "Listedeki Sawdust daha iyi (Lv. 49). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 93'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#44",
