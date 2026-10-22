@@ -2252,58 +2252,55 @@
       "level": 110,
       "gear": [
         {
+          "slot": "RELIK",
+          "name": "Immolation",
+          "level": 101,
+          "tier": "MYTHIC",
+          "gain": 34.1,
+          "from": "mob'lardan düşer",
+          "price": null,
+          "tradable": true,
+          "options": []
+        },
+        {
           "slot": "HELMET",
           "name": "Ornate Shadow Cowl",
           "level": 103,
           "tier": "FABLED",
-          "gain": 16.9,
+          "gain": 36.7,
           "from": "Lutho tüccarı",
           "price": null,
           "tradable": false,
-          "options": [
-            {
-              "name": "Ornate Shadow Cowl",
-              "level": 103,
-              "gain": 1.7,
-              "from": "Lutho tüccarı",
-              "tradable": false
-            },
-            {
-              "name": "Deviance",
-              "level": 108,
-              "gain": -4.1,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Skyfloat",
-              "level": 94,
-              "gain": -4.2,
-              "from": "Ahmsord tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Myopia",
-              "level": 103,
-              "gain": -5.3,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Alpenglow",
-              "level": 98,
-              "gain": -6.3,
-              "from": "mağara sandığı",
-              "tradable": true
-            }
-          ]
+          "options": []
+        },
+        {
+          "slot": "LEGGINGS",
+          "name": "Heat Sink",
+          "level": 92,
+          "tier": "LEGENDARY",
+          "gain": 10.9,
+          "from": "Fallen Factory zindan tüccarı",
+          "price": null,
+          "tradable": false,
+          "options": []
+        },
+        {
+          "slot": "BOOTS",
+          "name": "Unifier",
+          "level": 110,
+          "tier": "UNIQUE",
+          "gain": 49.3,
+          "from": "mob'lardan düşer",
+          "price": null,
+          "tradable": true,
+          "options": []
         },
         {
           "slot": "RING",
           "name": "Dragon's Tear",
           "level": 107,
           "tier": "RARE",
-          "gain": 3.2,
+          "gain": 2.2,
           "from": "mağara sandığı",
           "price": null,
           "tradable": true,
@@ -2311,23 +2308,16 @@
             {
               "name": "Dragon's Tear",
               "level": 107,
-              "gain": 5.4,
+              "gain": 4.7,
               "from": "mağara sandığı",
               "tradable": true
             },
             {
               "name": "Summa",
               "level": 95,
-              "gain": -0.8,
+              "gain": 2.3,
               "from": "Geyser Pit sunağı",
               "tradable": false
-            },
-            {
-              "name": "Prime",
-              "level": 109,
-              "gain": -0.9,
-              "from": "mağara sandığı",
-              "tradable": true
             },
             {
               "name": "Gold Fusion Ring",
@@ -2337,9 +2327,16 @@
               "tradable": false
             },
             {
+              "name": "Prime",
+              "level": 109,
+              "gain": -2.5,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
               "name": "Bronze Basic Ring",
               "level": 90,
-              "gain": -3.4,
+              "gain": -2.7,
               "from": "challenge: legendary island",
               "tradable": false
             }
@@ -2350,7 +2347,7 @@
           "name": "Dragon's Tear",
           "level": 107,
           "tier": "RARE",
-          "gain": 3.2,
+          "gain": 2.2,
           "from": "mağara sandığı",
           "price": null,
           "tradable": true,
@@ -2358,21 +2355,14 @@
             {
               "name": "Dragon's Tear",
               "level": 107,
-              "gain": 4.3,
-              "from": "mağara sandığı",
-              "tradable": true
-            },
-            {
-              "name": "Prime",
-              "level": 109,
-              "gain": -1.1,
+              "gain": 3.5,
               "from": "mağara sandığı",
               "tradable": true
             },
             {
               "name": "Summa",
               "level": 95,
-              "gain": -1.6,
+              "gain": 1.3,
               "from": "Geyser Pit sunağı",
               "tradable": false
             },
@@ -2384,10 +2374,17 @@
               "tradable": false
             },
             {
-              "name": "Rune of Safe Passage",
-              "level": 92,
+              "name": "Prime",
+              "level": 109,
+              "gain": -2.6,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Bronze Basic Ring",
+              "level": 90,
               "gain": -3.6,
-              "from": "Corrupted Ice Barrows zindan tüccarı",
+              "from": "challenge: legendary island",
               "tradable": false
             }
           ]
@@ -2397,7 +2394,7 @@
           "name": "Diamond Fusion Bracelet",
           "level": 95,
           "tier": "LEGENDARY",
-          "gain": 0.4,
+          "gain": 3.8,
           "from": "challenge: legendary island",
           "price": null,
           "tradable": false,
@@ -2405,35 +2402,28 @@
             {
               "name": "Diamond Fusion Bracelet",
               "level": 95,
-              "gain": 1.5,
+              "gain": 4.9,
               "from": "challenge: legendary island",
               "tradable": false
             },
             {
               "name": "Gold Fusion Bracelet",
               "level": 95,
-              "gain": -1.2,
+              "gain": 1.8,
               "from": "challenge: legendary island",
               "tradable": false
             },
             {
               "name": "Roots of Unity",
               "level": 107,
-              "gain": -2.7,
+              "gain": -0.5,
               "from": "mağara sandığı",
               "tradable": true
             },
             {
-              "name": "Pride",
-              "level": 93,
-              "gain": -4.0,
-              "from": "Maex tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Hyperbloom",
-              "level": 108,
-              "gain": -4.3,
+              "name": "Deliberation",
+              "level": 106,
+              "gain": -2.9,
               "from": "mağara sandığı",
               "tradable": true
             }
@@ -2455,105 +2445,149 @@
       "level": 120,
       "gear": [
         {
-          "slot": "LEGGINGS",
-          "name": "Omniverse",
-          "level": 112,
-          "tier": "UNIQUE",
-          "gain": 4.7,
+          "slot": "BOOTS",
+          "name": "Boreal",
+          "level": 93,
+          "tier": "MYTHIC",
+          "gain": 38.7,
           "from": "mob'lardan düşer",
           "price": null,
           "tradable": true,
           "options": [
             {
-              "name": "Omniverse",
-              "level": 112,
-              "gain": 8.0,
+              "name": "Boreal",
+              "level": 93,
+              "gain": -1.4,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
-              "name": "Inhumanity",
-              "level": 118,
-              "gain": 5.9,
+              "name": "Hellstorm Striders",
+              "level": 108,
+              "gain": -0.4,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
-              "name": "Neutrino",
+              "name": "Skidbladnir",
               "level": 100,
-              "gain": 4.9,
+              "gain": -0.6,
+              "from": "Corrupted Galleon's Graveyard zindan tüccarı",
+              "tradable": false
+            },
+            {
+              "name": "Bunker",
+              "level": 112,
+              "gain": -5.6,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
-              "name": "Havoc Focus",
-              "level": 109,
-              "gain": 5.4,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Aleph Null",
-              "level": 105,
-              "gain": 5.8,
-              "from": "raid: the nameless anomaly",
-              "tradable": true
-            },
-            {
-              "name": "Glow Worm",
-              "level": 106,
-              "gain": 1.0,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Skyline",
-              "level": 111,
-              "gain": 4.8,
+              "name": "Euphonia",
+              "level": 113,
+              "gain": -6.3,
               "from": "mob'lardan düşer",
               "tradable": true
             }
           ]
         },
         {
-          "slot": "RELIK",
-          "name": "Transfiguration",
-          "level": 117,
-          "tier": "MYTHIC",
-          "gain": 25.6,
-          "from": "mob'lardan düşer",
+          "slot": "RING",
+          "name": "Messenger",
+          "level": 118,
+          "tier": "LEGENDARY",
+          "gain": 5.4,
+          "from": "mağara sandığı",
           "price": null,
           "tradable": true,
-          "options": []
+          "options": [
+            {
+              "name": "Messenger",
+              "level": 118,
+              "gain": -2.8,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Insomniac",
+              "level": 111,
+              "gain": 1.6,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Prime",
+              "level": 109,
+              "gain": 0.7,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Warming Solace",
+              "level": 112,
+              "gain": -3.7,
+              "from": "mağara sandığı",
+              "tradable": true
+            }
+          ]
         },
         {
-          "slot": "CHESTPLATE",
-          "name": "Dondasch",
-          "level": 100,
+          "slot": "RING2",
+          "name": "Messenger",
+          "level": 118,
           "tier": "LEGENDARY",
-          "gain": 3.9,
-          "from": "Aerie of the Recluse sunağı",
+          "gain": 5.4,
+          "from": "mağara sandığı",
           "price": null,
-          "tradable": false,
-          "options": []
+          "tradable": true,
+          "options": [
+            {
+              "name": "Messenger",
+              "level": 118,
+              "gain": 5.4,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Insomniac",
+              "level": 111,
+              "gain": 1.7,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Prime",
+              "level": 109,
+              "gain": 0.6,
+              "from": "mağara sandığı",
+              "tradable": true
+            },
+            {
+              "name": "Warming Solace",
+              "level": 112,
+              "gain": -3.1,
+              "from": "mağara sandığı",
+              "tradable": true
+            }
+          ]
         },
         {
-          "slot": "RING",
-          "name": "Prime",
-          "level": 109,
-          "tier": "UNIQUE",
-          "gain": 8.6,
+          "slot": "BRACELET",
+          "name": "Clandestine",
+          "level": 119,
+          "tier": "LEGENDARY",
+          "gain": 3.2,
           "from": "mağara sandığı",
           "price": null,
           "tradable": true,
           "options": []
         },
         {
-          "slot": "RING2",
-          "name": "Prime",
-          "level": 109,
-          "tier": "UNIQUE",
-          "gain": 8.6,
+          "slot": "NECKLACE",
+          "name": "Valediction",
+          "level": 120,
+          "tier": "LEGENDARY",
+          "gain": 6.9,
           "from": "mağara sandığı",
           "price": null,
           "tradable": true,

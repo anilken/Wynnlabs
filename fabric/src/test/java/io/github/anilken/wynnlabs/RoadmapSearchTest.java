@@ -166,7 +166,7 @@ class RoadmapSearchTest {
         alone.put("WEAPON", Damage.piece(quake));
         assertNull(Build.allocate(alone, m, earned), "the Mythic alone in the water set cannot be worn");
         assertTrue(Build.whyNot(alone, earned, Build.reach(wide.values().stream().flatMap(List::stream)
-                .map(Damage::piece).toList())).contains("10 strength"), "it needs 10 Strength from gear, not impossible");
+                .map(Damage::piece).toList())).contains("10 Strength"), "it needs 10 Strength from gear, not impossible");
         Roadmap.Ctx c = new Roadmap.Ctx(new LinkedHashMap<>(build), pools, wide, Map.of(), Map.of(), java.util.Set.of(),
                 new LinkedHashMap<>(build), java.util.Set.of(), m, earned, null, new java.util.concurrent.ConcurrentHashMap<>());
         Build.Eval cur = Build.allocate(build, m, earned);

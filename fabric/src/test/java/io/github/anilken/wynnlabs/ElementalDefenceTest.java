@@ -69,6 +69,6 @@ class ElementalDefenceTest {
                 Map.of(io.github.anilken.wynnlabs.model.SkillKind.INTELLIGENCE, 110), 0, Map.of(), 0));
         why = Build.whyNot(b, 200);
         assertNotNull(why);
-        assertTrue(why.contains("110 intelligence"), why);
+        assertTrue(why.contains("110 Intelligence"), why);
     }
 }
