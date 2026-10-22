@@ -191,7 +191,7 @@ public final class RoadmapScreen extends Screen {
      * Wynntils' tooltip of a piece you do not own marks every requirement unmet: its guide stack
      * has no instance, so nothing says what you meet (an owned one gets that from the server).
      * The marks are set again here from your level, class and skill points (assigned plus
-     * gear); a quest stays as it was. Null when the stack is not one of these.
+     * gear) and your quest book. Null when the stack is not one of these.
      */
     private List<Component> requirementTooltip(ItemStack stack) {
         ItemData info = iconInfo.get(stack);
@@ -207,7 +207,18 @@ public final class RoadmapScreen extends Screen {
                 }
             }
             if (info.requirements().quest().isPresent()) {
-                flags.add(null);                    // not known here: left as Wynntils drew it
+                // from your quest book (a stack with no instance always showed ✘ here); a quest
+                // the book does not list stays as Wynntils drew it
+                String want = info.requirements().quest().get().replace('’', '\'').trim()
+                        .toLowerCase(java.util.Locale.ROOT);
+                Boolean done = null;
+                for (io.github.anilken.wynnlabs.quests.QuestBook.Entry q : GameState.current().quests()) {
+                    if (q.name().replace('’', '\'').trim().toLowerCase(java.util.Locale.ROOT).equals(want)) {
+                        done = "COMPLETED".equals(q.status());
+                        break;
+                    }
+                }
+                flags.add(done);
             }
             if (info.requirements().klass().isPresent()) {
                 flags.add(info.requirements().klass().get() == GameState.current().classType());
