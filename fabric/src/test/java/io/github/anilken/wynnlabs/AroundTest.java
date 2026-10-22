@@ -68,7 +68,8 @@ class AroundTest {
                     case "cheap" -> {
                         assertTrue(c.score() >= top * (1 - Roadmap.CHEAP_WITHIN), "cheap is within 3 % of the best");
                         for (Roadmap.Candidate o : b) {
-                            if (o != c && o.score() >= top * (1 - Roadmap.CHEAP_WITHIN)) {
+                            // a set with no known price is left out of the cheap label (NaN)
+                            if (o != c && o.score() >= top * (1 - Roadmap.CHEAP_WITHIN) && !Double.isNaN(o.price())) {
                                 assertTrue(c.price() < o.price(), "cheap is the cheapest of them");
                             }
                         }

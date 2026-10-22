@@ -63,6 +63,15 @@ final class Build {
         double gainPercent() {
             return current.objective() <= 0 ? 0 : (result.objective() / current.objective() - 1) * 100;
         }
+
+        /**
+         * The planned build's score at another level: a piece you wear later is judged at its
+         * level on both sides, or the health floor of that level alone would sink it.
+         */
+        double objectiveAt(int lv) {
+            return lv == level ? result.objective()
+                    : Damage.evaluate(armour(pieces), pieces.get("WEAPON"), allocation, lv).objective();
+        }
     }
 
     private static volatile Plan plan;

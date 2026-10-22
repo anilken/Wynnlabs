@@ -97,7 +97,10 @@ final class Tuning {
         return switch (key) {
             // the damage total's exponent and how much effective health counts
             case "damageWeight" -> c.focus == DAMAGE ? 1.15 : c.focus == TANKY ? 0.85 : 1.0;
-            case "survivalWeight" -> c.focus == DAMAGE ? 0.5 : c.focus == TANKY ? 2.5 : 1.0;
+            // the goal already sets how much health counts: Damage leans a little, not by half again
+            case "survivalWeight" -> c.focus == DAMAGE ? 0.75 : c.focus == TANKY ? 2.5 : 1.0;
+            case "survivalPower" -> c.focus == DAMAGE ? 0.75 : c.focus == TANKY ? 1.5 : 1.0;
+            case "ehpFloorScale" -> c.focus == DAMAGE ? 0.9 : c.focus == TANKY ? 1.25 : 1.0;
             // mana: keeping up the casts, and what mana steal brings back
             case "manaWeight" -> c.mana ? 3.0 : 1.0;
             case "manaStealFactor" -> c.mana ? 2.0 : 1.0;
