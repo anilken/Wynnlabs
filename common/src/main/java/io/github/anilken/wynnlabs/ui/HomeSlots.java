@@ -1,5 +1,6 @@
 package io.github.anilken.wynnlabs.ui;
 
+import io.github.anilken.wynnlabs.build.BuildSources;
 import io.github.anilken.wynnlabs.build.roadmap.Roadmap;
 import io.github.anilken.wynnlabs.core.L;
 import io.github.anilken.wynnlabs.endgame.ItemIcons;
@@ -271,6 +272,18 @@ final class HomeSlots extends HomePart {
             int bx = badgeRight ? sx + s - 7 : sx - 3;
             Kit.seal(g, bx, sy - 3, 10, 10, CHOSEN);
             Art.icon(g, "lock", bx + 1, sy - 2, 8, CHOSEN_TEXT);
+        } else if (!show.isEmpty()) {
+            // where the shown piece comes from, on the slot's outer top corner; a suggested piece
+            // already in the bag or bank shows the bank (the lookups behind both are cached)
+            boolean worn = v.mark() == Mark.DONE || !v.showsPlanned() && v.gear() == null;
+            String name = v.showsPlanned() && v.planned() != null ? v.planned().name()
+                    : v.gear() != null ? v.gear().info().name()
+                    : ItemJson.clean(v.worn().getHoverName().getString()).trim();
+            String icon = !worn && BuildSources.haveNames().contains(name)
+                    ? "building-bank" : BuildWindow.sourceIcon(name);
+            int bx = badgeRight ? sx + s - 7 : sx - 3;
+            Kit.seal(g, bx, sy - 3, 10, 10, Theme.PAPER_DEEP);
+            Art.icon(g, icon, bx + 1, sy - 2, 8, Theme.INK);
         }
         int is = large ? 32 : 16;
         int o = (s - is) / 2;
