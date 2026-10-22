@@ -300,7 +300,7 @@ final class Today {
                 Slot.NECKLACE)) {
             int lowest = Integer.MAX_VALUE;
             String name = null;
-            for (ItemStack st : AutoAdvice.worn(t)) {
+            for (ItemStack st : WornGear.worn(t)) {
                 var g = WynntilsItems.view(st).filter(ItemView::isGear);
                 int lv = g.map(v -> v.data().level()).orElse(0);
                 if (lv < lowest) {
@@ -313,7 +313,7 @@ final class Today {
             j.addProperty("level", lowest == Integer.MAX_VALUE ? 0 : lowest);
             o.add(t.name(), j);
         }
-        var w = WynntilsItems.view(AutoAdvice.bestWeapon()).filter(ItemView::isGear);
+        var w = WynntilsItems.view(WornGear.bestWeapon()).filter(ItemView::isGear);
         JsonObject j = new JsonObject();
         j.addProperty("name", w.map(v -> v.data().name()).orElse(""));
         j.addProperty("level", w.map(v -> v.data().level()).orElse(0));
