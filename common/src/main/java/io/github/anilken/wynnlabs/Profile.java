@@ -87,6 +87,12 @@ final class Profile {
                 // characters made before the per-class model settings: give them theirs once, for
                 // the archetype they lean to when the planner has none
                 ClassProfiles.apply(TreeModel.archetype(), false);
+            } else {
+                // spells read by an older parser (Totem as one tick): read again, calibration kept
+                JsonObject spells = ClassProfiles.spellsUpgrade(Rules.get());
+                if (spells != null) {
+                    Rules.update(spells);
+                }
             }
             lastLevel = -1;
             Wyn.selfTest();                         // which Wynntils features this version still has

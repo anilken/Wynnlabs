@@ -1,0 +1,140 @@
+{
+  "name": "mage-lv107",
+  "class": "MAGE",
+  "archetype": "Arcanist",
+  "level": 107,
+  "items": {
+    "HELMET": "Skyfloat",
+    "CHESTPLATE": "Thermosphere",
+    "LEGGINGS": "Quick-Strike Leggings",
+    "BOOTS": "Slayer",
+    "RING1": "Aliez",
+    "BRACELET": "Vindicator",
+    "NECKLACE": "Contrast",
+    "WEAPON": "Fatal"
+  },
+  "assigned": {
+    "STRENGTH": 18,
+    "DEXTERITY": 60,
+    "INTELLIGENCE": 0,
+    "DEFENCE": 62,
+    "AGILITY": 60
+  },
+  "recorded": {
+    "casts": 87,
+    "avgPerCast": 13971.9,
+    "modelPerCast": 5027.2
+  },
+  "rules": {
+    "spells": [
+      {
+        "name": "Meteor",
+        "index": 3,
+        "cost": 50,
+        "share": 0.5,
+        "conv": {
+          "neutral": 3.3,
+          "earth": 0.7
+        }
+      },
+      {
+        "name": "Teleport",
+        "index": 2,
+        "cost": 25,
+        "share": 0.0,
+        "conv": {}
+      },
+      {
+        "name": "Heal",
+        "index": 1,
+        "cost": 35,
+        "share": 0.0,
+        "conv": {}
+      },
+      {
+        "name": "Ice Snake",
+        "index": 4,
+        "cost": 30,
+        "share": 0.5,
+        "conv": {
+          "neutral": 1.2,
+          "water": 0.55
+        }
+      }
+    ],
+    "spellCalibration": 1.4,
+    "passiveDpsFactor": 0.0,
+    "mainAttackWeight": 0.3,
+    "mainAttackClassMult": 1.0,
+    "baseManaPer5s": 27.0,
+    "baseMana": 100,
+    "manaStealFactor": 0.6,
+    "maxCastsPer5s": 4,
+    "fightSeconds": 30
+  },
+  "tree": [
+    {
+      "name": "Meteor",
+      "text": [
+        "Click Combo: RIGHT-LEFT-LEFT",
+        "Conjures a slow but powerful meteor",
+        "from the sky, dealing massive",
+        "damage over a large area.",
+        " Mana Cost: 50",
+        " Total Damage: 400% (of your DPS)",
+        "( Damage: 330%)",
+        "( Earth: 70%)",
+        " Range: 18 Blocks",
+        " Area of Effect: 5 Blocks (Circle-Shaped)"
+      ]
+    },
+    {
+      "name": "Teleport",
+      "text": [
+        "Click Combo: RIGHT-RIGHT-RIGHT",
+        "Instantly teleport in the",
+        "direction you're facing.",
+        " Mana Cost: 25",
+        " Range: 16 Blocks"
+      ]
+    },
+    {
+      "name": "Heal",
+      "text": [
+        "Click Combo: RIGHT-LEFT-RIGHT",
+        "Heals you and nearby allies in",
+        "a large area around you.",
+        "(When healing others, you can't heal",
+        "more than 50% of their max health)",
+        " Mana Cost: 35",
+        " Total Heal: 15% (of your max health)",
+        " Range: 5 Blocks",
+        " Duration: 0.6s"
+      ]
+    },
+    {
+      "name": "Ice Snake",
+      "text": [
+        "Click Combo: RIGHT-RIGHT-LEFT",
+        "Conjures a fast-moving ice snake that",
+        "damages and slows enemies.",
+        " Mana Cost: 30",
+        " Total Damage: 175% (of your DPS)",
+        "( Damage: 120%)",
+        "( Water: 55%)",
+        " Range: 32 Blocks",
+        " Area of Effect: 2 Blocks (Circle-Shaped)",
+        " Effect: 40% Slowness () to Enemies",
+        " Duration: 3s"
+      ]
+    }
+  ],
+  "assumed": {
+    "note": "measured.json keeps only the average over all casts: how it splits between the spells and the damage between casts is assumed here",
+    "backgroundShare": 0.1,
+    "targets": {
+      "Meteor": 1.5,
+      "Ice Snake": 1.2
+    }
+  }
+}
