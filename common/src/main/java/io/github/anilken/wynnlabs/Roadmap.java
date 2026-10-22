@@ -484,6 +484,8 @@ final class Roadmap {
             l.forEach(i -> k.append(i.name()).append(','));
         });
         k.append('|').append(Rules.hash());
+        // the scoring model: results an older one chose are not reused
+        k.append("|model:").append(BeamCache.modelVersion());
         if (!fixed.isEmpty()) {
             k.append("|fixed:").append(fixed);      // the chosen items' slots; without any the key is as it was
         }

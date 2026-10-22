@@ -23,6 +23,16 @@ final class BeamCache {
 
     private BeamCache() {}
 
+    /**
+     * The scoring model the kept results were made with, part of every key: raised whenever the
+     * way sets are scored changes (survival floor, skill point search, set bonuses, prices), so a
+     * set chosen by an older model is searched again instead of coming back from disk. A method,
+     * not a field: a field added by a hot swap keeps no value.
+     */
+    static int modelVersion() {
+        return 2;
+    }
+
     /** The loaded entries and whose they are; access-ordered, so the oldest drop first. */
     private static Map<String, Map<String, String>> entries = new LinkedHashMap<>(16, 0.75f, true);
     private static String loadedFor;
