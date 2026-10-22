@@ -1,5 +1,6 @@
 package io.github.anilken.wynnlabs.ui;
 
+import io.github.anilken.wynnlabs.build.BuildSources;
 import io.github.anilken.wynnlabs.build.roadmap.Roadmap;
 import io.github.anilken.wynnlabs.core.L;
 import io.github.anilken.wynnlabs.endgame.ItemIcons;
@@ -271,6 +272,30 @@ final class HomeSlots extends HomePart {
             int bx = badgeRight ? sx + s - 7 : sx - 3;
             Kit.seal(g, bx, sy - 3, 10, 10, CHOSEN);
             Art.icon(g, "lock", bx + 1, sy - 2, 8, CHOSEN_TEXT);
+        } else if (!show.isEmpty()) {
+            // where the shown piece comes from, on the slot's outer top corner; a suggested piece
+            // already in the bag or bank shows the bank (the lookups behind both are cached)
+            boolean worn = v.mark() == Mark.DONE || !v.showsPlanned() && v.gear() == null;
+            String name = v.showsPlanned() && v.planned() != null ? v.planned().name()
+                    : v.gear() != null ? v.gear().info().name()
+                    : ItemJson.clean(v.worn().getHoverName().getString()).trim();
+            String icon = !worn && BuildSources.haveNames().contains(name)
+                    ? "building-bank" : BuildWindow.sourceIcon(name);
+            // each kind of place its own colour, a light icon on it, so the kind reads at a glance
+            int fill = switch (icon) {
+                case "coin" -> Theme.GOLD_DEEP;          // Trade Market
+                case "shopping-cart" -> Theme.LINK;      // a merchant
+                case "script" -> Theme.ACCENT;           // a quest
+                case "box" -> Theme.WARN;                // a chest
+                case "sword" -> Theme.BAD;               // mobs
+                case "skull" -> Theme.WOOD_EDGE;         // a dungeon
+                case "trophy" -> Theme.TIER_MYTHIC;      // this week's raid pool
+                case "building-bank" -> Theme.GOOD;      // already yours
+                default -> Theme.INK_3;                  // unknown
+            };
+            int bx = badgeRight ? sx + s - 10 : sx - 5;
+            Kit.seal(g, bx, sy - 5, 15, 15, fill);
+            Art.icon(g, icon, bx + 2, sy - 3, 11, Theme.CREAM);
         }
         int is = large ? 32 : 16;
         int o = (s - is) / 2;
