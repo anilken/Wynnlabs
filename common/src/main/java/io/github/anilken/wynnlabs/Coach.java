@@ -311,8 +311,10 @@ final class Coach {
         book(m, castName, castDamage, castHits, castMana, window, castLasting ? 0 : castExpected, castDuration,
                 d != null && d.breakdown().summonRaw()[0] > 0);
         if (d != null && n + 1 >= CAL_CASTS && (n + 1) % 10 == 0) {
+            // the main attack weighed as the plan scored it (the ability tree you have), so the
+            // background left for the summons is the one the model's summons are compared with
             JsonObject change = calibrationChanges(m, Rules.get().getAsJsonObject("model"), d.breakdown(),
-                    Rules.sub("model", "mainAttackWeight", 0.5));
+                    DamageReport.mainAttackWeight());
             if (change != null) {
                 Rules.update(change);           // only a real change: every write rebuilds all advice
             }

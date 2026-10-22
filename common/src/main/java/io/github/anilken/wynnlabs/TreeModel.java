@@ -50,11 +50,15 @@ final class TreeModel {
 
     // ---- the overlay in force -----------------------------------------------------------------
 
-    /** The overlay per thread, made on first use (a field set where it is declared stays null after a hot swap). */
-    private static volatile ThreadLocal<Overlay> slot;
+    /**
+     * What is in force per thread, made on first use (a field set where it is declared stays null
+     * after a hot swap): an {@link Overlay}, {@link Boolean#FALSE} for none on purpose (the rules
+     * as they are), or nothing set: then the build plan's own ({@link Build.Plan#tree}).
+     */
+    private static volatile ThreadLocal<Object> slot;
 
-    private static ThreadLocal<Overlay> slot() {
-        ThreadLocal<Overlay> t = slot;
+    private static ThreadLocal<Object> slot() {
+        ThreadLocal<Object> t = slot;
         if (t == null) {
             synchronized (TreeModel.class) {
                 if (slot == null) {
@@ -66,16 +70,29 @@ final class TreeModel {
         return t;
     }
 
-    /** The overlay in force on this thread, or null (the rules as they are). */
+    /**
+     * The overlay in force on this thread, or null (the rules as they are). With none set, the
+     * tree the build plan was scored with: a verdict, a shop or bank pick that weighs a piece
+     * against the plan scores both with the same summons, spells and costs, the ones the damage
+     * meter measures against.
+     */
     static Overlay active() {
-        ThreadLocal<Overlay> t = slot;
-        return t == null ? null : t.get();
+        ThreadLocal<Object> t = slot;
+        Object o = t == null ? null : t.get();
+        if (o instanceof Overlay ov) {
+            return ov;
+        }
+        if (o != null) {
+            return null;                            // none, on purpose
+        }
+        Build.Plan p = Build.plan();
+        return p == null ? null : p.tree();
     }
 
     /** Runs {@code body} with {@code o} in force on this thread (null: none), the one before restored after. */
     static <T> T with(Overlay o, Supplier<T> body) {
-        ThreadLocal<Overlay> t = slot();
-        Overlay before = t.get();
+        ThreadLocal<Object> t = slot();
+        Object before = t.get();
         use(o);
         try {
             return body.get();
@@ -88,16 +105,9 @@ final class TreeModel {
         }
     }
 
-    /** Puts {@code o} in force on this thread; inside a {@link #with}, which restores the one before. */
+    /** Puts {@code o} in force on this thread (null: none); inside a {@link #with}, which restores the one before. */
     static void use(Overlay o) {
-        if (o == null) {
-            ThreadLocal<Overlay> t = slot;
-            if (t != null) {
-                t.remove();
-            }
-        } else {
-            slot().set(o);
-        }
+        slot().set(o == null ? Boolean.FALSE : o);
     }
 
     /** A model weight (rules.model.{@code key}, {@code v}) as the overlay in force has it. */
@@ -311,6 +321,8 @@ final class TreeModel {
         for (AbilityNode n : tree) {
             String t = text(n);
             String low = t.toLowerCase(Locale.ROOT);
+            // a spell's own damage is never passive here: the Totem's ticks are its rules.model.spells
+            // entry's (a lasting spell, counted with the summons there), so they are counted once
             boolean spell = spellNode(n, cls) || spells.contains(n.name().toLowerCase(Locale.ROOT));
             boolean ultimate = n.type() != null && n.type().contains("ULTIMATE");
             String costSpell = null;

@@ -1141,19 +1141,22 @@ final class Roadmap {
         StringBuilder k = new StringBuilder();
         k.append(c.m()).append('|').append(c.earned()).append('|').append(java.util.Arrays.toString(c.prev())).append('|');
         k.append(setKey(c.start())).append('|').append(setKey(build)).append('|');
+        // each item as the piece the search judges it as: a copy you have with its own rolls and
+        // filled powder slots, or a fresh one to buy (the name alone kept a set chosen for another roll)
         c.pools().forEach((t, l) -> {
             k.append(t.name()).append(':');
-            l.forEach(i -> k.append(i.name()).append(','));
+            l.forEach(i -> k.append(i.name()).append('#').append(c.piece(i).key().hashCode()).append(','));
         });
         k.append("|wide:");
         c.wide().forEach((t, l) -> {
             k.append(t.name()).append(':');
-            l.forEach(i -> k.append(i.name()).append(','));
+            l.forEach(i -> k.append(i.name()).append('#').append(c.piece(i).key().hashCode()).append(','));
         });
         k.append("|sets:");
         c.sets().forEach((n, l) -> {
             k.append(n).append('{');
-            l.forEach(i -> k.append(i.name()).append(c.buyable().contains(i.name()) ? "$" : "")
+            l.forEach(i -> k.append(i.name()).append('#').append(c.piece(i).key().hashCode())
+                    .append(c.buyable().contains(i.name()) ? "$" : "")
                     .append(c.owned().getOrDefault(i.name(), 0)).append(','));
             k.append('}');
         });
@@ -2561,6 +2564,8 @@ final class Roadmap {
                 p.worn().forEach((slot, piece) -> plan.append(slot).append('~').append(piece == null ? "-" : piece.key()).append(';'));
             }
             plan.append(java.util.Arrays.toString(p.wornAllocation()));
+            // the ability tree the plan was scored with: a node bought changes every milestone's model
+            plan.append('|').append(p.tree() == null ? "" : p.tree().key());
         }
         // the map's text (where a piece comes from, the reasons) is written in the language of
         // the day it was built: a switch to English left "mob'lardan düşer" on the rows. A map an
@@ -2892,7 +2897,12 @@ final class Roadmap {
             boolean listingsMatter = m - level <= (int) Rules.sub("shopping", "aheadLevels", 5);
             List<Gear> gear = new ArrayList<>(steps.isEmpty() ? lockRows : List.of());   // the chosen items: rows of the first milestone
             if (steps.isEmpty() && plan != null) {
-                gear.addAll(powderRows(plan.pieces(), m, earnedThen));     // and the powders your own pieces lack
+                // and the powders your own pieces lack, but for a piece a chosen item replaces
+                for (Gear g : powderRows(plan.pieces(), m, earnedThen)) {
+                    if (!fixed.contains(g.slot().substring("POWDER:".length()))) {
+                        gear.add(g);
+                    }
+                }
             }
             boolean preferMarket = Rules.sub("shopping", "preferTradeMarket", 1) > 0;
             // With a build plan, everything is judged by the damage model: the % the build gains

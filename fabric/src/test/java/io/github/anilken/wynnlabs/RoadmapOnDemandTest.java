@@ -151,8 +151,9 @@ class RoadmapOnDemandTest {
         }
         assertNull(Roadmap.stale(), "nothing changed: current");
         assertTrue(Roadmap.lastNames().isEmpty(), "a read-back map fetches no prices");
-        assertNotNull(Roadmap.lastUpgrade(Slot.valueOf(read.get(0).gear().get(0).slot().replace("2", ""))),
-                "the tooltip advice uses it");
+        // the first piece row (a powder row names no slot kind of its own)
+        Roadmap.Gear first = read.get(0).gear().stream().filter(g -> !Roadmap.isPowder(g)).findFirst().orElseThrow();
+        assertNotNull(Roadmap.lastUpgrade(Slot.valueOf(first.slot().replace("2", ""))), "the tooltip advice uses it");
         // the next session at another level: shown at once, out of date
         Roadmap.forget();
         fx.atLevel(50);

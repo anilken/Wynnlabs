@@ -77,6 +77,15 @@ final class DamageReport {
         return baseDetail;
     }
 
+    /**
+     * The main attack's weight the plan was scored with: rules.model.mainAttackWeight as the
+     * ability tree you have has it (TreeModel: no archetype node yet weighs as for none).
+     */
+    static double mainAttackWeight() {
+        Build.Plan p = Build.plan();
+        return p == null ? Rules.sub("model", "mainAttackWeight", 0.5) : p.model("mainAttackWeight", 0.5);
+    }
+
     static Report compute(Build.Plan p) {
         Damage.Detail base = p.currentDetail(null, null);
         double now = base.breakdown().total();
@@ -201,7 +210,7 @@ final class DamageReport {
         JsonObject bg = measured != null && measured.has("background") ? measured.getAsJsonObject("background") : null;
         j.addProperty("measuredPerSecond", bg == null ? 0 : r1(bg.get("perSecond").getAsDouble()));
         j.addProperty("measuredSeconds", bg == null ? 0 : Math.round(bg.get("seconds").getAsDouble()));
-        j.addProperty("modelMainAttackPerSecond", r1(b.mainTotal() * Rules.sub("model", "mainAttackWeight", 0.5)));
+        j.addProperty("modelMainAttackPerSecond", r1(b.mainTotal() * mainAttackWeight()));
         j.addProperty("modelSummonsPerSecondUncalibrated", r1(b.summonRaw()[0]));
         j.addProperty("summonCalibration", Rules.sub("model", "summonCalibration", 1.0));
         j.addProperty("modelSummonsPerSecond", r1(b.summonTotal()));
@@ -243,7 +252,7 @@ final class DamageReport {
             bd.addProperty("mainAttackDps", r1(b.mainTotal()));
             bd.addProperty("summonDps", r1(b.summonTotal()));
             bd.addProperty("totalDps", r1(b.total()));
-            bd.addProperty("mainAttackWeight", Rules.sub("model", "mainAttackWeight", 0.5));
+            bd.addProperty("mainAttackWeight", mainAttackWeight());
             JsonObject els = new JsonObject();
             for (int i = 0; i < Damage.ELEMENTS.length; i++) {
                 JsonObject e = new JsonObject();

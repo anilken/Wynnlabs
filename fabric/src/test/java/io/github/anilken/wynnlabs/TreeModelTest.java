@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -226,7 +225,8 @@ class TreeModelTest {
             checked++;
         }
         assertTrue(checked > 0, "no later milestone with another tree");
-        assertNull(TreeModel.active(), "no overlay left after the run");
+        // no milestone's overlay left after the run: the build plan's own (today's tree) again
+        assertTrue(TreeModel.active() == Build.plan().tree(), "no milestone's overlay left after the run");
     }
 
     // ---- the class profile -------------------------------------------------------------------

@@ -6135,7 +6135,7 @@ final class RoadmapScreen extends Screen {
             shareRow(g, x, sy + i * 11, colW, sources[i], values[i], total, SOURCE_COLOURS[i]);
         }
         // the build score weighs the main attack less: say by how much
-        double weight = Rules.sub("model", "mainAttackWeight", 0.5);
+        double weight = DamageReport.mainAttackWeight();
         desc(g, L.t("wynnlabs.damage.main_weight", dec(weight, 2)), x, sy + 36, colW);
         hits.add(new Hit(x, sy + 11, colW, 11, null, List.of(
                 L.c("wynnlabs.damage.src_main").withStyle(ChatFormatting.GOLD),
