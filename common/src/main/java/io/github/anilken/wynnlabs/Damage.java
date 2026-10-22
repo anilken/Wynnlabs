@@ -515,11 +515,15 @@ final class Damage {
      * Where a build's DPS comes from, per element (in {@link #ELEMENTS} order): spells, the main
      * attack and summons. Filled by the same pass as the Result, so {@code spell} adds up to its
      * spellDps and {@code main} to its mainDps (before mainAttackWeight and the attack speed feel).
+     * {@code spells}: each spell of rules.model.spells as the model sees one cast of it, for the
+     * damage meter to compare a cast with; {@code summonRaw}[0] the summon DPS before
+     * rules.model.summonCalibration (puppets and lasting spells such as Totem).
      */
-    record Breakdown(double[] spell, double[] main, double[] summon) {
+    record Breakdown(double[] spell, double[] main, double[] summon, List<SpellPart> spells, double[] summonRaw) {
 
         Breakdown() {
-            this(new double[ELEMENTS.length], new double[ELEMENTS.length], new double[ELEMENTS.length]);
+            this(new double[ELEMENTS.length], new double[ELEMENTS.length], new double[ELEMENTS.length],
+                    new java.util.ArrayList<>(), new double[1]);
         }
 
         double spellTotal() {
@@ -552,6 +556,15 @@ final class Damage {
             return t;
         }
     }
+
+    /**
+     * One spell as the model sees it: {@code perCast} the whole cast (all its hits and ticks, with
+     * Strength and crit) before calibration, {@code cal} the calibration it gets (its own
+     * rules.model.spells[i].cal, else spellCalibration). A lasting spell (Totem) counts with the
+     * summons; {@code duration} is how long its ticks run (0: one go).
+     */
+    record SpellPart(String name, int index, double share, double perCast, double cal, boolean lasting,
+            double duration) {}
 
     record Detail(Result result, Breakdown breakdown) {}
 
@@ -609,10 +622,17 @@ final class Damage {
         double multiplier = 1 + str / 100.0 + dex / 100.0 * (1 + stat(s, "criticalDamageBonus") / 100.0);
         double intReduction = 0.5 * intel / 80.8;
 
-        // Spells
+        // Spells: each takes its own calibration (rules.model.spells[i].cal, measured per spell by
+        // the damage meter, Coach), else the overall rules.model.spellCalibration
         double dmgSum = 0;
         double costSum = 0;
         double shareSum = 0;
+        double globalCal = model("spellCalibration", 1.0);
+        // lasting spells (Totem: a hit every 0.4 s for 30 s) deal alongside the casts, as summons
+        // do, and cost their mana once per duration
+        double lastingDps = 0;
+        double upkeepPer5 = 0;
+        double[] lastingEl = parts == null ? null : new double[ELEMENTS.length];
         JsonElement spellsEl = Rules.get().has("model") ? Rules.get().getAsJsonObject("model").get("spells") : null;
         JsonArray spells = spellsEl != null && spellsEl.isJsonArray() ? spellsEl.getAsJsonArray() : new JsonArray();
         for (JsonElement e : spells) {
@@ -628,11 +648,6 @@ final class Damage {
             }
             double[] el = spellEl == null ? null : new double[ELEMENTS.length];
             double dmg = hit(s, split(c, shares), baseDps, skillBonus, true, el);
-            if (el != null) {
-                for (int i = 0; i < el.length; i++) {
-                    spellEl[i] += share * el[i] * multiplier;
-                }
-            }
             int idx = sp.has("index") ? sp.get("index").getAsInt() : 0;
             String nth = idx == 1 ? "1st" : idx == 2 ? "2nd" : idx == 3 ? "3rd" : "4th";
             double cost = sp.has("cost") ? sp.get("cost").getAsDouble() : 30;
@@ -640,19 +655,42 @@ final class Damage {
             cost = (cost * (1 - intReduction) + stat(s, "raw" + nth + "SpellCost"))
                     * (1 + stat(s, nth + "SpellCost") / 100.0);
             cost = Math.max(1, cost);
-            dmgSum += share * dmg * multiplier;
+            double duration = sp.has("duration") ? sp.get("duration").getAsDouble() : 0;
+            boolean lasting = ClassProfiles.lasting(sp) && duration > 0;
+            double cal = sp.has("cal") ? sp.get("cal").getAsDouble() : globalCal;
+            if (parts != null) {
+                parts.spells().add(new SpellPart(sp.has("name") ? sp.get("name").getAsString() : nth, idx, share,
+                        dmg * multiplier, lasting ? 1 : cal, lasting, duration));
+            }
+            if (lasting) {
+                lastingDps += dmg * multiplier / duration;
+                upkeepPer5 += cost * 5.0 / duration;
+                if (el != null) {
+                    for (int i = 0; i < el.length; i++) {
+                        lastingEl[i] += el[i] * multiplier / duration;
+                    }
+                }
+                continue;
+            }
+            if (el != null) {
+                for (int i = 0; i < el.length; i++) {
+                    spellEl[i] += share * el[i] * multiplier * cal;
+                }
+            }
+            dmgSum += share * dmg * multiplier * cal;
             costSum += share * cost;
             shareSum += share;
         }
         // measured in game by the damage meter (Coach): what your casts really deal against the model
-        double dmgPerCast = (shareSum > 0 ? dmgSum / shareSum : 0) * model("spellCalibration", 1.0);
+        double dmgPerCast = shareSum > 0 ? dmgSum / shareSum : 0;
         double avgCost = shareSum > 0 ? costSum / shareSum : 30;
         double manaPer5 = model("baseManaPer5s", 25) + stat(s, "manaRegen")
-                + stat(s, "manaSteal") * 5.0 / 3.0 * model("manaStealFactor", 0.3);
+                + stat(s, "manaSteal") * 5.0 / 3.0 * model("manaStealFactor", 0.3) - upkeepPer5;
         // Over a fight of fightSeconds you spend your mana pool plus what comes back
         double fight = model("fightSeconds", 30);
         double pool = model("baseMana", 100) + stat(s, "rawMaxMana") + stat(s, "maxMana") + Math.floor(intel);
-        double casts = Math.min(model("maxCastsPer5s", 4), (pool + manaPer5 * fight / 5.0) / avgCost / (fight / 5.0));
+        double casts = Math.max(0, Math.min(model("maxCastsPer5s", 4),
+                (pool + manaPer5 * fight / 5.0) / avgCost / (fight / 5.0)));
         double spellDps = dmgPerCast * casts / 5.0;
 
         // Main attack: per hit times hits per second from the weapon's tier plus Attack Speed IDs
@@ -665,7 +703,8 @@ final class Damage {
 
         // Summons (Summoner's puppets and the like): spell hits on their own clock, no mana;
         // they take spell %, raw spell and element % like spells (Puppet Master: 16 % neutral,
-        // 2 % earth, 2 % air per hit, up to 3 puppets × 2 hits/s)
+        // 2 % earth, 2 % air per hit, up to 3 puppets × 2 hits/s). With the lasting spells they are
+        // what the damage meter hears between casts, and rules.model.summonCalibration scales them to it
         double passive = 0;
         double summons = model("passiveDpsFactor", 0);
         if (summons > 0) {
@@ -673,16 +712,20 @@ final class Damage {
             passive = hit(s, split(pc, shares), baseDps, skillBonus, true, summonEl) * model("summonHitsPerSecond", 6)
                     * summons * multiplier;
         }
+        double summonCal = model("summonCalibration", 1.0);
+        double passiveRaw = passive + lastingDps;
+        passive = passiveRaw * summonCal;
         if (parts != null) {
-            // the per-hit parts scaled the way the totals above are
-            double perSpell = shareSum > 0 ? model("spellCalibration", 1.0) / shareSum * casts / 5.0 : 0;
+            // the per-hit parts scaled the way the totals above are (the spells' calibration is in spellEl)
+            double perSpell = shareSum > 0 ? 1 / shareSum * casts / 5.0 : 0;
             double perMain = model("mainAttackClassMult", 1.0) * HITS[tierNow] * multiplier;
             double perSummon = summons > 0 ? model("summonHitsPerSecond", 6) * summons * multiplier : 0;
             for (int i = 0; i < ELEMENTS.length; i++) {
                 parts.spell()[i] = spellEl[i] * perSpell;
                 parts.main()[i] = mainEl[i] * perMain;
-                parts.summon()[i] = summonEl[i] * perSummon;
+                parts.summon()[i] = (summonEl[i] * perSummon + lastingEl[i]) * summonCal;
             }
+            parts.summonRaw()[0] = passiveRaw;
         }
         // Slow weapons feel sluggish on the main attack only: spells and summons do not care
         double feel = weapon == null ? 1.0 : weapon.stats().getOrDefault(FEEL, 1.0);

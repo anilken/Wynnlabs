@@ -1,0 +1,141 @@
+{
+  "name": "shaman-lv72",
+  "class": "SHAMAN",
+  "archetype": "Summoner",
+  "level": 72,
+  "items": {
+    "HELMET": "Purified Helmet of the Legends",
+    "CHESTPLATE": "Admiral",
+    "LEGGINGS": "Greaves of Honor",
+    "BOOTS": "Sodeta Boots",
+    "RING1": "Yellow Ornament",
+    "BRACELET": "Red Ornament",
+    "NECKLACE": "Green Ornament",
+    "WEAPON": "Lightshow"
+  },
+  "assigned": {
+    "STRENGTH": 26,
+    "DEXTERITY": 28,
+    "INTELLIGENCE": 18,
+    "DEFENCE": 40,
+    "AGILITY": 30
+  },
+  "recorded": {
+    "casts": 1340,
+    "avgPerCast": 10348.6,
+    "modelPerCast": 1477.6
+  },
+  "rules": {
+    "spells": [
+      {
+        "name": "Totem",
+        "index": 1,
+        "cost": 30,
+        "share": 0.333,
+        "conv": {
+          "neutral": 0.06,
+          "air": 0.06
+        }
+      },
+      {
+        "name": "Haul",
+        "index": 2,
+        "cost": 15,
+        "share": 0.0,
+        "conv": {}
+      },
+      {
+        "name": "Uproot",
+        "index": 4,
+        "cost": 30,
+        "share": 0.333,
+        "conv": {
+          "neutral": 0.8,
+          "earth": 0.3,
+          "thunder": 0.2
+        }
+      },
+      {
+        "name": "Aura",
+        "index": 3,
+        "cost": 40,
+        "share": 0.333,
+        "conv": {
+          "neutral": 1.5,
+          "water": 0.3
+        }
+      }
+    ],
+    "spellCalibration": 1.4,
+    "passiveDpsFactor": 1.0,
+    "mainAttackWeight": 0.23,
+    "mainAttackClassMult": 1.05,
+    "baseManaPer5s": 30.9,
+    "baseMana": 117,
+    "manaStealFactor": 0.33,
+    "maxCastsPer5s": 4,
+    "fightSeconds": 30
+  },
+  "tree": [
+    {
+      "name": "Totem",
+      "text": [
+        "Click Combo: RIGHT-LEFT-RIGHT",
+        "Summon a Totem that damages",
+        "enemies around it every 0.4s.",
+        " Mana Cost: 30",
+        " Total Damage: 12% (of your DPS)",
+        "( Damage: 6%)",
+        "( Air: 6%)",
+        " Duration: 30s",
+        " Area of Effect: 8 Blocks (Circle-Shaped)"
+      ]
+    },
+    {
+      "name": "Haul",
+      "text": [
+        "Click Combo: RIGHT-RIGHT-RIGHT",
+        "Leap towards your Totem.",
+        " Mana Cost: 15"
+      ]
+    },
+    {
+      "name": "Uproot",
+      "text": [
+        "Click Combo: RIGHT-RIGHT-LEFT",
+        "Emits a rapid projectile that will",
+        "explode and knock enemies away.",
+        "(Hold shift to pull instead)",
+        " Mana Cost: 30",
+        " Total Damage: 130% (of your DPS)",
+        "( Damage: 80%)",
+        "( Earth: 30%)",
+        "( Thunder: 20%)",
+        " Range: 18 Blocks",
+        " Area of Effect: 5 Blocks (Circle-Shaped)"
+      ]
+    },
+    {
+      "name": "Aura",
+      "text": [
+        "Click Combo: RIGHT-LEFT-LEFT",
+        "Radiates an aura from your Totem",
+        "that damages enemies.",
+        " Mana Cost: 40",
+        " Total Damage: 180% (of your DPS)",
+        "( Damage: 150%)",
+        "( Water: 30%)",
+        " Duration: 1.4s",
+        " Range: 16 Blocks"
+      ]
+    }
+  ],
+  "assumed": {
+    "note": "measured.json keeps only the average over all casts: how it splits between the spells and the damage between casts is assumed here",
+    "backgroundShare": 0.55,
+    "targets": {
+      "Aura": 2.0,
+      "Uproot": 1.4
+    }
+  }
+}

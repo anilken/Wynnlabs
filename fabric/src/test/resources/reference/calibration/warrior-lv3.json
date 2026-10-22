@@ -1,0 +1,136 @@
+{
+  "name": "warrior-lv3",
+  "class": "WARRIOR",
+  "archetype": "",
+  "level": 4,
+  "items": {
+    "HELMET": "Thinking Cap",
+    "CHESTPLATE": "Scarab",
+    "BOOTS": "Sargasso",
+    "WEAPON": "Aloof"
+  },
+  "assigned": {
+    "STRENGTH": 4,
+    "DEXTERITY": 0,
+    "INTELLIGENCE": 0,
+    "DEFENCE": 0,
+    "AGILITY": 0
+  },
+  "recorded": {
+    "casts": 34,
+    "avgPerCast": 29.4,
+    "modelPerCast": 28.6
+  },
+  "rules": {
+    "spells": [
+      {
+        "name": "Bash",
+        "index": 1,
+        "cost": 40,
+        "share": 0.333,
+        "conv": {
+          "neutral": 1.7,
+          "earth": 0.3
+        }
+      },
+      {
+        "name": "Charge",
+        "index": 2,
+        "cost": 25,
+        "share": 0.0,
+        "conv": {}
+      },
+      {
+        "name": "Uppercut",
+        "index": 3,
+        "cost": 40,
+        "share": 0.333,
+        "conv": {
+          "neutral": 2.6,
+          "earth": 0.4,
+          "thunder": 0.4
+        }
+      },
+      {
+        "name": "War Scream",
+        "index": 4,
+        "cost": 30,
+        "share": 0.333,
+        "conv": {
+          "neutral": 0.75,
+          "fire": 0.25
+        }
+      }
+    ],
+    "spellCalibration": 1.0,
+    "passiveDpsFactor": 0.0,
+    "mainAttackWeight": 0.75,
+    "mainAttackClassMult": 1.0,
+    "baseManaPer5s": 23.3,
+    "baseMana": 101,
+    "manaStealFactor": 1.0,
+    "maxCastsPer5s": 4,
+    "fightSeconds": 30
+  },
+  "tree": [
+    {
+      "name": "Bash",
+      "text": [
+        "Click Combo: RIGHT-LEFT-RIGHT",
+        "Violently bash the ground, dealing",
+        "high damage in a large area.",
+        " Mana Cost: 40",
+        " Total Damage: 200% (of your DPS)",
+        "( Damage: 170%)",
+        "( Earth: 30%)",
+        " Area of Effect: 4 Blocks (Circle-Shaped)",
+        " Range: 3 Blocks"
+      ]
+    },
+    {
+      "name": "Charge",
+      "text": [
+        "Click Combo: RIGHT-RIGHT-RIGHT",
+        "Charge forward at a high speed.",
+        "(Hold shift while charging to cancel)",
+        " Mana Cost: 25"
+      ]
+    },
+    {
+      "name": "Uppercut",
+      "text": [
+        "Click Combo: RIGHT-LEFT-LEFT",
+        "Hurls enemies upwards and",
+        "deals massive damage.",
+        " Mana Cost: 40",
+        " Total Damage: 340% (of your DPS)",
+        "( Damage: 260%)",
+        "( Earth: 40%)",
+        "( Thunder: 40%)",
+        " Area of Effect: 1-4 Blocks (Cone-Shaped)",
+        " Range: 6.5 Blocks"
+      ]
+    },
+    {
+      "name": "War Scream",
+      "text": [
+        "Click Combo: RIGHT-RIGHT-LEFT",
+        "Emits a roar that deals damage, pulls",
+        "nearby enemies and gives you and",
+        "nearby players resistance.",
+        " Mana Cost: 30",
+        " Total Damage: 100% (of your DPS)",
+        "( Damage: 75%)",
+        "( Fire: 25%)",
+        " Effect: 20% Resistance Bonus (❁) to Allies",
+        " Area of Effect: 12 Blocks (Circle-Shaped)",
+        " Duration: 30s"
+      ]
+    }
+  ],
+  "assumed": {
+    "note": "measured.json keeps only the average over all casts: how it splits between the spells and the damage between casts is assumed here",
+    "backgroundShare": 0.05,
+    "targets": {}
+  }
+}

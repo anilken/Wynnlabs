@@ -85,6 +85,12 @@ final class Profile {
                     || !Rules.get().getAsJsonObject("model").has("mainAttackClassMult")) {
                 // characters made before the per-class model settings: give them theirs once
                 ClassProfiles.apply(TreePlanner.chosen(), false);
+            } else {
+                // spells read by an older parser (Totem as one tick): read again, calibration kept
+                JsonObject spells = ClassProfiles.spellsUpgrade(Rules.get());
+                if (spells != null) {
+                    Rules.update(spells);
+                }
             }
             lastLevel = -1;
             Wyn.selfTest();                         // which Wynntils features this version still has
