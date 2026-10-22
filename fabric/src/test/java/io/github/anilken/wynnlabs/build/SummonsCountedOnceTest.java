@@ -43,7 +43,7 @@ class SummonsCountedOnceTest {
     }
 
     /** The recording as a Lv 44 Summoner with the class profile read from the tree, its plan made. */
-    private static Build.Plan summoner() throws IOException {
+    static Build.Plan summoner() throws IOException {
         List<AbilityNode> nodes = TreeModelTest.tree("shaman");
         List<String> have = TreeModelTest.summonerAt44(nodes);
         FixtureState.load(shaman44()).withTree(nodes, have).install("en");
@@ -61,7 +61,7 @@ class SummonsCountedOnceTest {
     }
 
     /** A build's pieces but the weapon, in the order the plan sums them. */
-    private static List<Damage.Piece> armour(java.util.Map<String, Damage.Piece> build) {
+    static List<Damage.Piece> armour(java.util.Map<String, Damage.Piece> build) {
         List<Damage.Piece> out = new java.util.ArrayList<>();
         build.forEach((k, v) -> {
             if (!k.equals("WEAPON") && v != null) {
@@ -71,7 +71,7 @@ class SummonsCountedOnceTest {
         return out;
     }
 
-    private static Damage.SpellPart totem(Damage.Breakdown b) {
+    static Damage.SpellPart totem(Damage.Breakdown b) {
         Damage.SpellPart found = null;
         int n = 0;
         for (Damage.SpellPart sp : b.spells()) {
@@ -141,11 +141,12 @@ class SummonsCountedOnceTest {
         double raw = base.breakdown().summonRaw()[0];
         double weight = DamageReport.mainAttackWeight();
         assertEquals(plan.model("mainAttackWeight", 0.5), weight, 1e-12);
-        double main = base.breakdown().mainTotal() * weight;
+        // the meter hears every main attack hit, whatever the goal's weight on it
+        double main = base.breakdown().mainTotal();
         // the summons really deal 1.6 times the model's: the background between casts says so
         JsonObject measured = new JsonObject();
         Coach.bookBackground(measured, (main + 1.6 * raw) * 400, 400);
-        JsonObject change = Coach.calibrationChanges(measured, Rules.get().getAsJsonObject("model"), base.breakdown(), weight);
+        JsonObject change = Coach.calibrationChanges(measured, Rules.get().getAsJsonObject("model"), base.breakdown());
         assertNotNull(change);
         assertEquals(1.6, change.getAsJsonObject("model").get("summonCalibration").getAsDouble(), 1e-9);
         Rules.update(change);
@@ -156,10 +157,9 @@ class SummonsCountedOnceTest {
         assertEquals(raw, after.summonRaw()[0], 1e-6 * raw, "the uncalibrated summons stay the tree's");
         assertEquals(1.6 * raw, after.summonTotal(), 1e-6 * raw, "the calibration applied once");
         // what the model now puts between casts is what was heard, so measuring again changes nothing
-        assertEquals(main + 1.6 * raw, after.mainTotal() * DamageReport.mainAttackWeight() + after.summonTotal(),
+        assertEquals(main + 1.6 * raw, after.mainTotal() + after.summonTotal(),
                 1e-6 * (main + raw));
-        JsonObject twice = Coach.calibrationChanges(measured, Rules.get().getAsJsonObject("model"), after,
-                DamageReport.mainAttackWeight());
+        JsonObject twice = Coach.calibrationChanges(measured, Rules.get().getAsJsonObject("model"), after);
         assertTrue(twice == null || !twice.has("model") || !twice.getAsJsonObject("model").has("summonCalibration"),
                 "no second correction on top of the first: " + twice);
         // and the road map's scoring at today's level sees the same calibrated summons

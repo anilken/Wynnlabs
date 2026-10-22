@@ -73,25 +73,11 @@ public final class Feedback {
         if (e == null) {
             return;
         }
-        Damage.Result a = before.result();
-        Damage.Result b = e.result();
         List<String> nudged = new ArrayList<>();
-        JsonObject model = new JsonObject();
-        if (b.ehp() > a.ehp() * 1.05 && b.spellDps() <= a.spellDps()) {
-            nudge(model, "survivalWeight", 0.4, nudged, L.t("wynnlabs.feedback.survival"));
-        }
-        if (b.xp() > a.xp()) {
-            nudge(model, "xpWeight", 1.0, nudged, L.t("wynnlabs.feedback.xp_bonus"));
-        }
-        if (b.speed() > a.speed()) {
-            nudge(model, "speedWeight", 0.3, nudged, L.t("wynnlabs.feedback.speed"));
-        }
-        if (b.mainDps() > a.mainDps() * 1.05 && b.spellDps() <= a.spellDps()) {
-            // capped against the archetype's own weight: a Summoner's main attack stays a side act
-            // (the one you lean to when the planner has none, as the class profile is made for)
-            double def = ClassProfiles.mainAttackWeight(Wyn.classType().name(), TreeModel.archetype());
-            nudge(model, "mainAttackWeight", def, nudged, L.t("wynnlabs.feedback.main_attack"));
-        }
+        // capped against the archetype's own weight: a Summoner's main attack stays a side act
+        // (the one you lean to when the planner has none, as the class profile is made for)
+        double mainDef = ClassProfiles.mainAttackWeight(Wyn.classType().name(), TreeModel.archetype());
+        JsonObject model = nudges(before.result(), e.result(), mainDef, nudged);
         // the log keeps the model weights nudged, not their names in the language of the day
         log(slot, chosen.name(), suggested == null ? null : suggested.name(), "override", new ArrayList<>(model.keySet()));
         if (nudged.isEmpty()) {
@@ -106,6 +92,31 @@ public final class Feedback {
                     .append(L.c("wynnlabs.feedback.noted", chosen.name(), String.join(", ", nudged))
                             .withStyle(ChatFormatting.GRAY)), false);
         }
+    }
+
+    /**
+     * The model weights a swap nudges, from the planned result {@code a} and the one with your
+     * choice {@code b}; {@code mainDef} is the main attack weight's default. Each label goes to
+     * {@code nudged}.
+     */
+    public static JsonObject nudges(Damage.Result a, Damage.Result b, double mainDef, List<String> nudged) {
+        JsonObject model = new JsonObject();
+        if (b.ehp() > a.ehp() * 1.05 && b.spellDps() <= a.spellDps()) {
+            nudge(model, "survivalWeight", 0.4, nudged, L.t("wynnlabs.feedback.survival"));
+        }
+        // every goal that counts XP with diminishing returns (rules.model.xpLog 1: Damage, Boss and
+        // also Safe, though Safe keeps its goal XP factor of 1 as it still levels) keeps XP a side
+        // gain: a ring worn for its XP does not teach the planner to want XP over damage or health
+        if (b.xp() > a.xp() && Rules.sub("model", "xpLog", 0) <= 0) {
+            nudge(model, "xpWeight", 1.0, nudged, L.t("wynnlabs.feedback.xp_bonus"));
+        }
+        if (b.speed() > a.speed()) {
+            nudge(model, "speedWeight", 0.3, nudged, L.t("wynnlabs.feedback.speed"));
+        }
+        if (b.mainDps() > a.mainDps() * 1.05 && b.spellDps() <= a.spellDps()) {
+            nudge(model, "mainAttackWeight", mainDef, nudged, L.t("wynnlabs.feedback.main_attack"));
+        }
+        return model;
     }
 
     public static void nudge(JsonObject model, String key, double def, List<String> nudged, String label) {

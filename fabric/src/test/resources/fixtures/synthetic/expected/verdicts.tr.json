@@ -39,7 +39,7 @@
     "where": "bag 13",
     "name": "Ado Saki",
     "verdict": "WEAR",
-    "note": "Bu yuva boş (build +%600). Beceri: Int 10→8, Def 4→25, Agi 0→5"
+    "note": "Bu yuva boş (build +%149). Beceri: Int 10→8, Def 4→25, Agi 0→5"
   },
   {
     "where": "bag 14",
@@ -56,8 +56,8 @@
   {
     "where": "bag 16",
     "name": "Brainy Beanie",
-    "verdict": "SELL",
-    "note": "Listedeki Neolithic daha iyi (Lv. 20). Trade Market'te sat, ~48 EB"
+    "verdict": "KEEP",
+    "note": "Lv. 22'te giyebilirsin"
   },
   {
     "where": "bag 17",
@@ -87,7 +87,7 @@
     "where": "bag 21",
     "name": "Gnocchi",
     "verdict": "WEAR",
-    "note": "Confusing Cap yerine (build +%600). Beceri: Int 10→8, Def 4→25, Agi 0→5"
+    "note": "Confusing Cap yerine (build +%149). Beceri: Int 10→8, Def 4→25, Agi 0→5"
   },
   {
     "where": "bag 22",
@@ -129,7 +129,7 @@
     "where": "bank acct:Account Bank p. 1#0",
     "name": "Cave In",
     "verdict": "SELL",
-    "note": "Listedeki Cruel Sun daha iyi (Lv. 24). Trade Market'te sat, ~1.6 LE"
+    "note": "Listedeki Grindcore daha iyi (Lv. 25). Trade Market'te sat, ~1.6 LE"
   },
   {
     "where": "bank acct:Account Bank p. 1#1",

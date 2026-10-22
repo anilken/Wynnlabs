@@ -97,7 +97,9 @@ final class GearAdvice {
             }
             Shopping.Pick target = Shopping.best(type);
             // the list's pick is this very item: the copy you have is the one to wear, not to sell
-            if (target != null && !target.info().name().equals(info.name()) && weakerThanPick(facts, gear, target)) {
+            // and only a pick from its own level or later: an early pick is outgrown before this one fits
+            if (target != null && !target.info().name().equals(info.name())
+                    && target.info().requirements().level() >= itemLevel && weakerThanPick(facts, gear, target)) {
                 return SellAdvice.sell(gear, L.t("wynnlabs.auto.list_pick_better", target.info().name(),
                         target.info().requirements().level()));
             }

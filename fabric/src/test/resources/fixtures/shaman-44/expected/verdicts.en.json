@@ -69,7 +69,7 @@
     "where": "bag 15",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Sundown Poncho -1.6%). Sell it to the Blacksmith (untradable)"
+    "note": "No outcome helps your build (best: Sundown Poncho -5.2%). Sell it to the Blacksmith (untradable)"
   },
   {
     "where": "bag 16",
@@ -273,7 +273,7 @@
     "where": "bank acct:Account Bank p. 1#26",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Reveal it at the Trade Market first (~640-656 E), then list it there · No prices yet. No outcome helps your build (best: Panic Attack -53.9%)"
+    "note": "Reveal it at the Trade Market first (~640-656 E), then list it there · No prices yet. No outcome helps your build (best: Panic Attack -10.5%)"
   },
   {
     "where": "bank acct:Account Bank p. 1#27",
@@ -1442,8 +1442,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 1#9",
     "name": "Quartron's Eye",
-    "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (market ~17 EB)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 49"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#10",
@@ -1556,8 +1556,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 2#0",
     "name": "Ultramarine Boots",
-    "verdict": "SELL",
-    "note": "Kaleidoscope on the list is better (Lv. 47). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 61"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#1",
@@ -1568,8 +1568,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 2#2",
     "name": "Ultramarine Cape",
-    "verdict": "SELL",
-    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (market ~30 EB)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 65"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#3",
@@ -1659,7 +1659,7 @@
     "where": "bank char:char0003:Character Bank p. 3#5",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -5.7%)"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -2.9%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#6",
@@ -1688,14 +1688,14 @@
   {
     "where": "bank char:char0003:Character Bank p. 3#27",
     "name": "Fuse",
-    "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 75"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#28",
     "name": "Fuse",
-    "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 75"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#36",
@@ -1712,8 +1712,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 4#10",
     "name": "Sparkling Plate",
-    "verdict": "SELL",
-    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 99"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#27",
@@ -1724,8 +1724,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 4#28",
     "name": "Ozoth's Breath",
-    "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Rolled 95%: it sells for more than the cheapest listing (~21 EB), so list it on the Trade Market"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 49"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#29",
@@ -1742,8 +1742,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 4#37",
     "name": "Remikas' Sanctuary",
-    "verdict": "SELL",
-    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (market ~9 EB)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 68"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#38",
@@ -1784,8 +1784,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#10",
     "name": "September",
-    "verdict": "SELL",
-    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 88"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#11",
@@ -1796,8 +1796,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#12",
     "name": "Flashing Boots",
-    "verdict": "SELL",
-    "note": "Kaleidoscope on the list is better (Lv. 47). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 87"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#13",
@@ -1856,8 +1856,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#40",
     "name": "Cirrus",
-    "verdict": "SELL",
-    "note": "Kaleidoscope on the list is better (Lv. 47). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 69"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#0",
@@ -1874,8 +1874,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#2",
     "name": "Unidentified Leggings",
-    "verdict": "KEEP",
-    "note": "Identify it when you get close to Lv. 51"
+    "verdict": "SELL",
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Skien Leggings -9.0%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#3",
@@ -1887,7 +1887,7 @@
     "where": "bank char:char0003:Character Bank p. 6#4",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -5.7%)"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -2.9%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#5",
@@ -1928,8 +1928,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#11",
     "name": "Shaggy Boots",
-    "verdict": "SELL",
-    "note": "Kaleidoscope on the list is better (Lv. 47). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 97"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#12",
@@ -1952,8 +1952,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#15",
     "name": "Tinderbox",
-    "verdict": "SELL",
-    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 93"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#44",

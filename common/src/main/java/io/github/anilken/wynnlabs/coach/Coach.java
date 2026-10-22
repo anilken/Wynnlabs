@@ -329,10 +329,9 @@ public final class Coach {
         book(m, castName, castDamage, castHits, castMana, window, castLasting ? 0 : castExpected, castDuration,
                 d != null && d.breakdown().summonRaw()[0] > 0);
         if (d != null && n + 1 >= CAL_CASTS && (n + 1) % 10 == 0) {
-            // the main attack weighed as the plan scored it (the ability tree you have), so the
-            // background left for the summons is the one the model's summons are compared with
-            JsonObject change = calibrationChanges(m, Rules.get().getAsJsonObject("model"), d.breakdown(),
-                    DamageReport.mainAttackWeight());
+            // the whole modelled main attack comes off the background (the meter hears every hit),
+            // so what is left is compared with the model's summons
+            JsonObject change = calibrationChanges(m, Rules.get().getAsJsonObject("model"), d.breakdown());
             if (change != null) {
                 Rules.update(change);           // only a real change: every write rebuilds all advice
             }
@@ -448,13 +447,13 @@ public final class Coach {
 
     /**
      * The rules change the measurements call for, or null: each spell's own calibration
-     * (rules.model.spells[i].cal), the summons' (summonCalibration: the background less the main
-     * attack, over the summons and lasting spells the model has) and the overall spellCalibration
-     * the spells without their own fall back to. Kept within 0.7-1.4 until steady (50 casts, or
-     * 5 minutes of fighting for summons), then 0.5-10; a value is written only when it moves by
-     * a tenth or more, as each write rebuilds all advice.
+     * (rules.model.spells[i].cal), the summons' (summonCalibration: the background less the whole
+     * modelled main attack, over the summons and lasting spells the model has) and the overall
+     * spellCalibration the spells without their own fall back to. Kept within 0.7-1.4 until steady
+     * (50 casts, or 5 minutes of fighting for summons), then 0.5-10 (summons 0.05-10); a value is
+     * written only when it moves by a tenth or more, as each write rebuilds all advice.
      */
-    public static JsonObject calibrationChanges(JsonObject m, JsonObject model, Damage.Breakdown b, double mainAttackWeight) {
+    public static JsonObject calibrationChanges(JsonObject m, JsonObject model, Damage.Breakdown b) {
         JsonObject all = m.has("spells") ? m.getAsJsonObject("spells") : new JsonObject();
         JsonObject out = new JsonObject();
         double globalCal = model != null && model.has("spellCalibration") ? model.get("spellCalibration").getAsDouble() : 1.0;
@@ -505,8 +504,10 @@ public final class Coach {
         JsonObject bg = m.has("background") ? m.getAsJsonObject("background") : null;
         double summons = b == null ? 0 : b.summonRaw()[0];
         if (bg != null && summons > 0 && bg.get("seconds").getAsDouble() >= 60) {
-            double main = b.mainTotal() * Math.max(0, mainAttackWeight);
-            double target = bounded((bg.get("perSecond").getAsDouble() - main) / summons,
+            // the meter hears every main attack hit: it comes off at its full modelled rate, not
+            // at the goal's weight (a score preference)
+            double main = b.mainTotal();
+            double target = boundedSummon(Math.max(0, bg.get("perSecond").getAsDouble() - main) / summons,
                     bg.get("seconds").getAsDouble() >= STEADY_SECONDS);
             double current = model != null && model.has("summonCalibration") ? model.get("summonCalibration").getAsDouble() : 1.0;
             if (moved(current, target)) {
@@ -526,6 +527,15 @@ public final class Coach {
     /** A ratio rounded and kept within bounds: 0.7-1.4 until it is steady, then 0.5-10. */
     public static double bounded(double ratio, boolean steady) {
         double r = steady ? Math.max(0.5, Math.min(10, ratio)) : Math.max(0.7, Math.min(1.4, ratio));
+        return Math.round(r * 100) / 100.0;
+    }
+
+    /**
+     * The summons' calibration rounded and kept within bounds: 0.7-1.4 until it is steady, then
+     * 0.05-10, as summons that die or miss can be heard far below what the model gives them.
+     */
+    public static double boundedSummon(double ratio, boolean steady) {
+        double r = steady ? Math.max(0.05, Math.min(10, ratio)) : Math.max(0.7, Math.min(1.4, ratio));
         return Math.round(r * 100) / 100.0;
     }
 

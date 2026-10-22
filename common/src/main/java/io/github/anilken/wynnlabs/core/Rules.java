@@ -72,7 +72,7 @@ public final class Rules {
                   {"name": "Totem", "index": 1, "cost": 30, "share": 0.2, "conv": {"neutral": 1.2, "fire": 0.3}}
                 ],
                 "mainAttackWeight": 0.5, "baseManaPer5s": 25, "baseMana": 100, "fightSeconds": 30, "manaStealFactor": 0.3, "maxCastsPer5s": 4,
-                "xpWeight": 1.0, "speedWeight": 0.3, "speedCeiling": 1.35, "nudgeCap": 1.5, "survivalWeight": 0.2, "survivalPower": 0.25, "ehpFloorScale": 1.0, "xpLog": 1, "regenWeight": 0.2, "negativeRegenWeight": 2.0, "manaWeight": 0.3, "skillPriority": ["INTELLIGENCE", "DEFENCE"], "skillPriorityShare": 0.6, "baseHealth": 100, "healthPerLevel": 5,
+                "xpWeight": 1.0, "speedWeight": 0.3, "speedCeiling": 1.35, "nudgeCap": 1.5, "survivalWeight": 0.2, "survivalPower": 0.25, "ehpFloorScale": 1.0, "xpLog": 1, "regenWeight": 0.2, "negativeRegenWeight": 2.0, "manaWeight": 0.3, "skillPriority": ["INTELLIGENCE", "DEFENCE"], "skillPriorityShare": 0.6, "baseHealth": 100, "healthPerLevel": 5, "summonAlive": 0.6,
                 "incomingElements": {"neutral": 0.5, "earth": 0.1, "thunder": 0.1, "water": 0.1, "fire": 0.1, "air": 0.1}
               },
               "grind": {"levelsBelow": 3, "levelsAbove": 3},
@@ -283,9 +283,21 @@ public final class Rules {
         return hash;
     }
 
+    /**
+     * A number from the rules, or {@code fallback} when it is missing, not a number or not finite
+     * (a NaN slipped past every clamp after it: Math.min and Math.max hand NaN on).
+     */
     public static double sub(String group, String key, double fallback) {
         JsonObject g = rules.getAsJsonObject(group);
-        return g != null && g.has(key) && g.get(key).isJsonPrimitive() ? g.get(key).getAsDouble() : fallback;
+        if (g == null || !g.has(key) || !g.get(key).isJsonPrimitive()) {
+            return fallback;
+        }
+        try {
+            double v = g.get(key).getAsDouble();
+            return Double.isFinite(v) ? v : fallback;
+        } catch (NumberFormatException | UnsupportedOperationException e) {
+            return fallback;
+        }
     }
 
     /**

@@ -561,27 +561,54 @@ public final class Damage {
         // tree you have at the level worked out for (TreeModel) sets summons, mana and the main attack
         double v = TreeModel.adjust(key, Rules.sub("model", key, fallback)) * Tuning.weight(key);
         // what deaths taught (DeathCoach, rules.model.survivalLearned, 1 to 2) is kept apart from
-        // the goal's weights, so choosing a goal again does not wipe it
+        // the goal's weights, so choosing a goal again does not wipe it; read capped by the goal
+        // (deathCap), the stored lesson stays whole
         if (key.equals("survivalWeight") || key.equals("survivalPower")) {
-            v *= Math.max(1, Math.min(2, Rules.sub("model", "survivalLearned", 1)));
+            v *= Math.max(1, Math.min(deathCap(), Rules.sub("model", "survivalLearned", 1)));
         }
         return v;
+    }
+
+    /**
+     * How far what deaths taught may raise survival and the health floor: 1.2× on the Damage
+     * goal (a few deaths should not turn a damage build into a tank), 2× on the others. Applied
+     * when read, so switching goal brings the full lesson back.
+     */
+    static double deathCap() {
+        return "DAMAGE".equals(Setup.goal()) ? 1.2 : 2;
     }
 
     /**
      * The elemental effective health a build should keep at this level before damage counts in
      * full: the table below (about what dies in the open world at that level, a Lv 69-72 Shaman
      * died again and again at 5.5-7k), times the goal's rules.model.ehpFloorScale (Damage 1,
-     * Tank 1.6), raised by what recent deaths say (rules.model.deathFloorRatio, at most 2×) and
-     * scaled by rules.roadmap.ehpFloorScale (0 turns it off).
+     * Tank 1.6), raised by what recent deaths say (rules.model.deathFloorRatio, at most
+     * {@link #deathCap()}× the table) and scaled by rules.roadmap.ehpFloorScale (0 turns it off).
      */
     static double ehpFloor(int level) {
         double scale = Rules.sub("roadmap", "ehpFloorScale", 1.0);
         if (scale <= 0) {
             return 0;
         }
-        double deaths = Math.min(2, Rules.sub("model", "deathFloorRatio", 0));
+        double deaths = Math.min(deathCap(), Rules.sub("model", "deathFloorRatio", 0));
         return scale * ehpTable(level) * Math.max(model("ehpFloorScale", 1.0), deaths);
+    }
+
+    /**
+     * What a build below the health floor keeps of its life factor: 1 at the floor and above,
+     * then m + (1 - m)·exp(-a·(1 - r)²) for r = health / floor, so it leaves the floor with no
+     * kink (a 1 % shortfall costs next to nothing), falls fastest around 65 % and never goes under
+     * m (rules.model.ehpFloorMin, 0.4; sharpness rules.model.ehpFloorSharpness, 4). The cube it
+     * replaced fell to nothing, and the search poured every point into Defence to climb out.
+     */
+    static double floorFactor(double ehp, double floor) {
+        if (floor <= 0 || ehp >= floor) {
+            return 1;
+        }
+        double r = Math.max(0, ehp / floor);
+        double m = Math.max(0.05, Math.min(1, model("ehpFloorMin", 0.4)));
+        double a = Math.max(0.1, model("ehpFloorSharpness", 4));
+        return m + (1 - m) * Math.exp(-a * (1 - r) * (1 - r));
     }
 
     /** The floor's table for a Damage build: level, elemental effective health, straight lines between. */
@@ -799,14 +826,17 @@ public final class Damage {
         // Summons (Summoner's puppets and the like): spell hits on their own clock, no mana;
         // they take spell %, raw spell and element % like spells (Puppet Master: 16 % neutral,
         // 2 % earth, 2 % air per hit, up to 3 puppets × 2 hits/s). With the lasting spells they are
-        // what the damage meter hears between casts, and rules.model.summonCalibration scales them to it
+        // what the damage meter hears between casts, and rules.model.summonCalibration scales them to it.
+        // They hit only while alive (rules.model.summonAlive, 0.6): the tree's numbers have it in
+        // already (its overlay gives 1 here), the class profile's get it here, once either way
         double passive = 0;
         double summons = model("passiveDpsFactor", 0);
+        double alive = summons > 0 ? Math.max(0.05, Math.min(1, model("summonAlive", 0.6))) : 0;
         if (summons > 0) {
             double[] pc = {model("summonNeutral", 0.16), model("summonEarth", 0.02), model("summonThunder", 0),
                 model("summonWater", 0), model("summonFire", 0), model("summonAir", 0.02)};
             passive = hit(s, split(pc, shares), baseDps, skillBonus, true, summonEl) * model("summonHitsPerSecond", 6)
-                    * summons * multiplier;
+                    * summons * multiplier * alive;
         }
         double summonCal = model("summonCalibration", 1.0);
         double passiveRaw = passive + lastingDps;
@@ -815,7 +845,7 @@ public final class Damage {
             // the per-hit parts scaled the way the totals above are (the spells' calibration is in spellEl)
             double perSpell = shareSum > 0 ? 1 / shareSum * casts / 5.0 : 0;
             double perMain = model("mainAttackClassMult", 1.0) * HITS[tierNow] * multiplier;
-            double perSummon = summons > 0 ? model("summonHitsPerSecond", 6) * summons * multiplier : 0;
+            double perSummon = summons > 0 ? model("summonHitsPerSecond", 6) * summons * multiplier * alive : 0;
             for (int i = 0; i < ELEMENTS.length; i++) {
                 parts.spell()[i] = spellEl[i] * perSpell;
                 parts.main()[i] = mainEl[i] * perMain;
@@ -875,13 +905,10 @@ public final class Damage {
         if (power > 0) {
             fLife *= Math.pow(ehpElemental / regenScale, power);
         }
-        // below the floor for this level a build pays by the cube of the shortfall
-        // (rules.model.ehpFloorPower), so damage is not bought with paper armour: the skill
-        // points, the road map and the build plan all see it, as it is part of the score
-        double floor = ehpFloor(level);
-        if (floor > 0 && ehpElemental < floor) {
-            fLife *= Math.pow(ehpElemental / floor, model("ehpFloorPower", 3));
-        }
+        // below the floor for this level a build pays a smooth, bounded share (floorFactor), so
+        // damage is not bought with paper armour: the skill points, the road map and the build
+        // plan all see it, as it is part of the score
+        fLife *= floorFactor(ehpElemental, ehpFloor(level));
         // Mana comfort: being able to keep casting is worth more than the DPS number shows
         double fMana = Math.max(0.3, 1 + model("manaWeight", 0.3) * Math.log(Math.max(0.2, casts)));
         // A role besides damage (the Tank and Healer goals): heals in every class are a share of

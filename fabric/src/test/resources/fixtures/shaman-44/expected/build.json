@@ -75,7 +75,7 @@
   },
   "earnedPoints": 86,
   "planned": {
-    "objective": 9187.5,
+    "objective": 5348.8,
     "spellDps": 504.0,
     "mainAttackDps": 856.3,
     "damagePerCast": 1160,
@@ -84,18 +84,18 @@
     "effectiveHealth": 2072,
     "effectiveHealthElemental": 2216,
     "parts": {
-      "damage": 1632.837,
+      "damage": 1260.091,
       "life": 2.536,
       "mana": 1.233,
       "speed": 1.168,
-      "xp": 1.541,
+      "xp": 1.162,
       "attackSpeedFeel": 1.0
     },
     "xpBonus": 60.0,
     "walkSpeed": 51.0
   },
   "current": {
-    "objective": 9187.5,
+    "objective": 5348.8,
     "spellDps": 504.0,
     "mainAttackDps": 856.3,
     "damagePerCast": 1160,
@@ -104,11 +104,11 @@
     "effectiveHealth": 2072,
     "effectiveHealthElemental": 2216,
     "parts": {
-      "damage": 1632.837,
+      "damage": 1260.091,
       "life": 2.536,
       "mana": 1.233,
       "speed": 1.168,
-      "xp": 1.541,
+      "xp": 1.162,
       "attackSpeedFeel": 1.0
     },
     "xpBonus": 60.0,

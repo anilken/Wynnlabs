@@ -39,7 +39,7 @@
     "where": "bag 13",
     "name": "Ado Saki",
     "verdict": "WEAR",
-    "note": "This slot is empty (build +600%). Skills: Int 10→8, Def 4→25, Agi 0→5"
+    "note": "This slot is empty (build +149%). Skills: Int 10→8, Def 4→25, Agi 0→5"
   },
   {
     "where": "bag 14",
@@ -56,8 +56,8 @@
   {
     "where": "bag 16",
     "name": "Brainy Beanie",
-    "verdict": "SELL",
-    "note": "Neolithic on the list is better (Lv. 20). Sell it on the Trade Market, ~48 EB"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 22"
   },
   {
     "where": "bag 17",
@@ -87,7 +87,7 @@
     "where": "bag 21",
     "name": "Gnocchi",
     "verdict": "WEAR",
-    "note": "Instead of Confusing Cap (build +600%). Skills: Int 10→8, Def 4→25, Agi 0→5"
+    "note": "Instead of Confusing Cap (build +149%). Skills: Int 10→8, Def 4→25, Agi 0→5"
   },
   {
     "where": "bag 22",
@@ -129,7 +129,7 @@
     "where": "bank acct:Account Bank p. 1#0",
     "name": "Cave In",
     "verdict": "SELL",
-    "note": "Cruel Sun on the list is better (Lv. 24). Sell it on the Trade Market, ~1.6 LE"
+    "note": "Grindcore on the list is better (Lv. 25). Sell it on the Trade Market, ~1.6 LE"
   },
   {
     "where": "bank acct:Account Bank p. 1#1",

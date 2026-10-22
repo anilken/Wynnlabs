@@ -69,7 +69,7 @@
     "where": "bag 15",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Sundown Poncho %-1.6). Blacksmith'e sat (takas edilemez)"
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Sundown Poncho %-5.2). Blacksmith'e sat (takas edilemez)"
   },
   {
     "where": "bag 16",
@@ -273,7 +273,7 @@
     "where": "bank acct:Account Bank p. 1#26",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Önce Trade Market'te göster (~640-656 E), sonra listele · Fiyat henüz yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Panic Attack %-53.9)"
+    "note": "Önce Trade Market'te göster (~640-656 E), sonra listele · Fiyat henüz yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Panic Attack %-10.5)"
   },
   {
     "where": "bank acct:Account Bank p. 1#27",
@@ -1442,8 +1442,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 1#9",
     "name": "Quartron's Eye",
-    "verdict": "SELL",
-    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (market ~17 EB)"
+    "verdict": "KEEP",
+    "note": "Lv. 49'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#10",
@@ -1556,8 +1556,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 2#0",
     "name": "Ultramarine Boots",
-    "verdict": "SELL",
-    "note": "Listedeki Kaleidoscope daha iyi (Lv. 47). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 61'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#1",
@@ -1568,8 +1568,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 2#2",
     "name": "Ultramarine Cape",
-    "verdict": "SELL",
-    "note": "Listedeki Solid Quartz Chestplate daha iyi (Lv. 43). Blacksmith'e sat (market ~30 EB)"
+    "verdict": "KEEP",
+    "note": "Lv. 65'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#3",
@@ -1659,7 +1659,7 @@
     "where": "bank char:char0003:Character Bank p. 3#5",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-5.7)"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-2.9)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#6",
@@ -1688,14 +1688,14 @@
   {
     "where": "bank char:char0003:Character Bank p. 3#27",
     "name": "Fuse",
-    "verdict": "SELL",
-    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 75'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#28",
     "name": "Fuse",
-    "verdict": "SELL",
-    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 75'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#36",
@@ -1712,8 +1712,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 4#10",
     "name": "Sparkling Plate",
-    "verdict": "SELL",
-    "note": "Listedeki Solid Quartz Chestplate daha iyi (Lv. 43). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 99'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#27",
@@ -1724,8 +1724,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 4#28",
     "name": "Ozoth's Breath",
-    "verdict": "SELL",
-    "note": "Listedeki Precious daha iyi (Lv. 41). %95 roll: en ucuz ilandan (~21 EB) fazlasına gider, Trade Market'e koy"
+    "verdict": "KEEP",
+    "note": "Lv. 49'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#29",
@@ -1742,8 +1742,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 4#37",
     "name": "Remikas' Sanctuary",
-    "verdict": "SELL",
-    "note": "Listedeki Solid Quartz Chestplate daha iyi (Lv. 43). Blacksmith'e sat (market ~9 EB)"
+    "verdict": "KEEP",
+    "note": "Lv. 68'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#38",
@@ -1784,8 +1784,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#10",
     "name": "September",
-    "verdict": "SELL",
-    "note": "Listedeki Solid Quartz Chestplate daha iyi (Lv. 43). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 88'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#11",
@@ -1796,8 +1796,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#12",
     "name": "Flashing Boots",
-    "verdict": "SELL",
-    "note": "Listedeki Kaleidoscope daha iyi (Lv. 47). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 87'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#13",
@@ -1856,8 +1856,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#40",
     "name": "Cirrus",
-    "verdict": "SELL",
-    "note": "Listedeki Kaleidoscope daha iyi (Lv. 47). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 69'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#0",
@@ -1874,8 +1874,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#2",
     "name": "Unidentified Leggings",
-    "verdict": "KEEP",
-    "note": "Lv. 51'e yaklaşınca tanımla"
+    "verdict": "SELL",
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Skien Leggings %-9.0)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#3",
@@ -1887,7 +1887,7 @@
     "where": "bank char:char0003:Character Bank p. 6#4",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-5.7)"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-2.9)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#5",
@@ -1928,8 +1928,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#11",
     "name": "Shaggy Boots",
-    "verdict": "SELL",
-    "note": "Listedeki Kaleidoscope daha iyi (Lv. 47). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 97'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#12",
@@ -1952,8 +1952,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#15",
     "name": "Tinderbox",
-    "verdict": "SELL",
-    "note": "Listedeki Solid Quartz Chestplate daha iyi (Lv. 43). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "verdict": "KEEP",
+    "note": "Lv. 93'te giyebilirsin"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#44",

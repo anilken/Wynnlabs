@@ -396,7 +396,7 @@
         "key": "gearbox:CHESTPLATE:LEGENDARY:36-40",
         "ruleAdvice": {
           "verdict": "SELL",
-          "note": "No outcome helps your build (best: Sundown Poncho -1.6%). Sell it to the Blacksmith (untradable)"
+          "note": "No outcome helps your build (best: Sundown Poncho -5.2%). Sell it to the Blacksmith (untradable)"
         },
         "kind": "gearbox",
         "type": "CHESTPLATE",
@@ -1222,7 +1222,7 @@
     },
     "earnedPoints": 86,
     "planned": {
-      "objective": 9187.5,
+      "objective": 5348.8,
       "spellDps": 504.0,
       "mainAttackDps": 856.3,
       "damagePerCast": 1160,
@@ -1231,18 +1231,18 @@
       "effectiveHealth": 2072,
       "effectiveHealthElemental": 2216,
       "parts": {
-        "damage": 1632.837,
+        "damage": 1260.091,
         "life": 2.536,
         "mana": 1.233,
         "speed": 1.168,
-        "xp": 1.541,
+        "xp": 1.162,
         "attackSpeedFeel": 1.0
       },
       "xpBonus": 60.0,
       "walkSpeed": 51.0
     },
     "current": {
-      "objective": 9187.5,
+      "objective": 5348.8,
       "spellDps": 504.0,
       "mainAttackDps": 856.3,
       "damagePerCast": 1160,
@@ -1251,11 +1251,11 @@
       "effectiveHealth": 2072,
       "effectiveHealthElemental": 2216,
       "parts": {
-        "damage": 1632.837,
+        "damage": 1260.091,
         "life": 2.536,
         "mana": 1.233,
         "speed": 1.168,
-        "xp": 1.541,
+        "xp": 1.162,
         "attackSpeedFeel": 1.0
       },
       "xpBonus": 60.0,
@@ -1284,7 +1284,7 @@
             "name": "Heavensent",
             "level": 42,
             "tier": "LEGENDARY",
-            "gain": 15.0,
+            "gain": 14.9,
             "from": "Add 2× Air V powder, about 10 EB",
             "price": null,
             "tradable": true,
@@ -1295,7 +1295,7 @@
             "name": "Solid Quartz Chestplate",
             "level": 43,
             "tier": "UNIQUE",
-            "gain": 7.3,
+            "gain": 5.5,
             "from": "Llevigar merchant",
             "price": "~3 EB · Past price",
             "tradable": true,
@@ -1303,14 +1303,14 @@
               {
                 "name": "Solid Quartz Chestplate",
                 "level": 43,
-                "gain": 8.8,
+                "gain": 6.1,
                 "from": "Llevigar merchant",
                 "tradable": true
               },
               {
                 "name": "Enhanced Phosphene",
                 "level": 40,
-                "gain": 7.4,
+                "gain": 7.1,
                 "from": "Rymek merchant",
                 "tradable": true
               },
@@ -1324,28 +1324,197 @@
               {
                 "name": "Dujgon Warrior Chestplate",
                 "level": 41,
-                "gain": 4.8,
+                "gain": 4.7,
                 "from": "Dujgon Nation merchant",
                 "tradable": true
               },
               {
                 "name": "Phosphene",
                 "level": 40,
-                "gain": 4.9,
+                "gain": 4.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Brook Keeper",
+                "level": 49,
+                "gain": 2.3,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Ancient Jazerant",
                 "level": 36,
-                "gain": 1.3,
+                "gain": 0.4,
                 "from": "Improper Burial Rites event",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "LEGGINGS",
+            "name": "Holy Greaves",
+            "level": 40,
+            "tier": "LEGENDARY",
+            "gain": 1.0,
+            "from": "dropped by mobs",
+            "price": "~17 EB · Past price",
+            "tradable": true,
+            "options": [
+              {
+                "name": "Holy Greaves",
+                "level": 40,
+                "gain": 7.2,
+                "from": "dropped by mobs",
                 "tradable": true
               },
               {
-                "name": "Brook Keeper",
+                "name": "Inclemency",
+                "level": 45,
+                "gain": 1.8,
+                "from": "Blazing Combustion event",
+                "tradable": true
+              },
+              {
+                "name": "Dilation",
+                "level": 31,
+                "gain": 0.4,
+                "from": "Tempo Town merchant",
+                "tradable": false
+              },
+              {
+                "name": "Mystical Tags",
+                "level": 40,
+                "gain": -0.8,
+                "from": "Isles of Fiction merchant",
+                "tradable": false
+              },
+              {
+                "name": "Enhanced Meditation Robe",
+                "level": 35,
+                "gain": -0.7,
+                "from": "Rymek merchant",
+                "tradable": true
+              },
+              {
+                "name": "Rusher",
+                "level": 40,
+                "gain": -0.4,
+                "from": "Dujgon Nation merchant",
+                "tradable": true
+              },
+              {
+                "name": "Cloud Guards",
                 "level": 49,
+                "gain": -2.7,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "RING",
+            "name": "Desert Winds",
+            "level": 33,
+            "tier": "LEGENDARY",
+            "gain": 7.5,
+            "from": "Blood-Encrusted Mastaba event",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Desert Winds",
+                "level": 33,
+                "gain": 1.9,
+                "from": "Blood-Encrusted Mastaba event",
+                "tradable": true
+              },
+              {
+                "name": "Folklore",
+                "level": 48,
+                "gain": 2.8,
+                "from": "Isles of Fiction merchant",
+                "tradable": false
+              },
+              {
+                "name": "Gouttes",
+                "level": 38,
+                "gain": 1.8,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Timelocked Dew",
+                "level": 28,
+                "gain": 1.6,
+                "from": "Tempo Town merchant",
+                "tradable": false
+              },
+              {
+                "name": "Blue Ornament",
+                "level": 45,
+                "gain": 1.8,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Timelocked Breath",
+                "level": 28,
+                "gain": 1.9,
+                "from": "Tempo Town merchant",
+                "tradable": false
+              },
+              {
+                "name": "Horseshoe",
+                "level": 44,
                 "gain": 1.7,
+                "from": "Bucie merchant",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "HELMET",
+            "name": "Avalanche",
+            "level": 43,
+            "tier": "RARE",
+            "gain": -0.9,
+            "from": "Fate of the Fallen quest",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Avalanche",
+                "level": 43,
+                "gain": 0.6,
+                "from": "Fate of the Fallen quest",
+                "tradable": true
+              },
+              {
+                "name": "Brise",
+                "level": 27,
+                "gain": -3.1,
+                "from": "Timelost Sanctum dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "New Moon",
+                "level": 37,
+                "gain": -3.1,
+                "from": "cave chest",
+                "tradable": false
+              },
+              {
+                "name": "Pelier",
+                "level": 42,
+                "gain": -5.7,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Pierced Helmet",
+                "level": 37,
+                "gain": -6.2,
                 "from": "dropped by mobs",
                 "tradable": true
               }
@@ -1356,7 +1525,7 @@
             "name": "Prologue",
             "level": 36,
             "tier": "LEGENDARY",
-            "gain": 32.3,
+            "gain": 26.4,
             "from": "Isles of Fiction merchant",
             "price": null,
             "tradable": false,
@@ -1364,158 +1533,177 @@
               {
                 "name": "Prologue",
                 "level": 36,
-                "gain": 35.2,
+                "gain": 13.1,
                 "from": "Isles of Fiction merchant",
                 "tradable": false
               },
               {
-                "name": "Kaleidoscope",
-                "level": 47,
-                "gain": 13.7,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
                 "name": "Lingering Twilight",
                 "level": 44,
-                "gain": 7.3,
+                "gain": 0.0,
                 "from": "cave chest",
                 "tradable": true
               },
               {
                 "name": "Ice Climbing Boots",
                 "level": 43,
-                "gain": 8.4,
+                "gain": -3.1,
                 "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Sacred",
+                "level": 40,
+                "gain": -4.0,
+                "from": "Llevigar merchant",
                 "tradable": true
               },
               {
                 "name": "Giant Step",
                 "level": 37,
-                "gain": 6.0,
+                "gain": -4.1,
                 "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Cerid's Ingenuity",
-                "level": 45,
-                "gain": 4.7,
-                "from": "Ice Barrows dungeon",
-                "tradable": true
-              },
-              {
-                "name": "Phlebotomy",
-                "level": 37,
-                "gain": -0.2,
-                "from": "Blood-Encrusted Mastaba event",
                 "tradable": true
               }
             ]
           },
           {
-            "slot": "RING",
-            "name": "Tainted Ruby",
-            "level": 37,
-            "tier": "RARE",
-            "gain": 1.8,
-            "from": "Improper Burial Rites event",
-            "price": "~62 EB · Past price",
+            "slot": "RING2",
+            "name": "Desert Winds",
+            "level": 33,
+            "tier": "LEGENDARY",
+            "gain": 2.8,
+            "from": "Blood-Encrusted Mastaba event",
+            "price": null,
             "tradable": true,
             "options": [
               {
-                "name": "Tainted Ruby",
-                "level": 37,
-                "gain": 1.9,
-                "from": "Improper Burial Rites event",
+                "name": "Desert Winds",
+                "level": 33,
+                "gain": 3.3,
+                "from": "Blood-Encrusted Mastaba event",
                 "tradable": true
               },
               {
-                "name": "Folklore",
-                "level": 48,
-                "gain": 2.5,
-                "from": "Isles of Fiction merchant",
-                "tradable": false
-              },
-              {
-                "name": "Marble",
-                "level": 48,
-                "gain": 1.6,
+                "name": "Gouttes",
+                "level": 38,
+                "gain": -3.1,
                 "from": "cave chest",
                 "tradable": true
               },
               {
-                "name": "Sticky Decoder Ring",
-                "level": 41,
-                "gain": 1.2,
+                "name": "Horseshoe",
+                "level": 44,
+                "gain": -3.1,
+                "from": "Bucie merchant",
+                "tradable": true
+              },
+              {
+                "name": "Timelocked Breath",
+                "level": 28,
+                "gain": -3.3,
+                "from": "Tempo Town merchant",
+                "tradable": false
+              },
+              {
+                "name": "Timelocked Dew",
+                "level": 28,
+                "gain": -3.6,
+                "from": "Tempo Town merchant",
+                "tradable": false
+              }
+            ]
+          },
+          {
+            "slot": "BRACELET",
+            "name": "Reservoir",
+            "level": 35,
+            "tier": "RARE",
+            "gain": 1.2,
+            "from": "cave chest",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Reservoir",
+                "level": 35,
+                "gain": 0.3,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Laen's Curiosity",
+                "level": 25,
+                "gain": 0.9,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Used Wolf Paw",
+                "level": 30,
+                "gain": -0.1,
                 "from": "Rymek merchant",
                 "tradable": true
               },
               {
-                "name": "Goblin-Silver Ring",
-                "level": 40,
-                "gain": 1.1,
-                "from": "Goblin Village merchant",
-                "tradable": true
+                "name": "Intuition",
+                "level": 30,
+                "gain": -0.3,
+                "from": "Tempo Town merchant",
+                "tradable": false
               },
               {
-                "name": "Blue Ornament",
-                "level": 45,
-                "gain": 0.6,
-                "from": "Isles of Fiction merchant",
-                "tradable": true
-              },
-              {
-                "name": "Decoder Ring",
-                "level": 41,
-                "gain": 0.6,
-                "from": "cave chest",
-                "tradable": true
+                "name": "Vitre",
+                "level": 29,
+                "gain": -0.6,
+                "from": "Timelost Sanctum dungeon merchant",
+                "tradable": false
               }
             ]
           },
           {
             "slot": "NECKLACE",
-            "name": "Dogfight",
-            "level": 42,
+            "name": "Desert Wretch",
+            "level": 34,
             "tier": "LEGENDARY",
-            "gain": 4.1,
-            "from": "Trade Market",
-            "price": "~37 EB (median 10.5 LE)",
+            "gain": 1.4,
+            "from": "Improper Burial Rites event",
+            "price": null,
             "tradable": true,
             "options": [
               {
-                "name": "Dogfight",
-                "level": 42,
-                "gain": 4.1,
-                "from": "Trade Market",
+                "name": "Desert Wretch",
+                "level": 34,
+                "gain": 1.3,
+                "from": "Improper Burial Rites event",
                 "tradable": true
               },
               {
-                "name": "Sting-Glass Necklace",
-                "level": 37,
-                "gain": -1.7,
+                "name": "Durum's Serenity",
+                "level": 25,
+                "gain": 1.3,
+                "from": "Bovine Barn altar",
+                "tradable": false
+              },
+              {
+                "name": "Crystal-Blend Pendant",
+                "level": 34,
+                "gain": -0.1,
                 "from": "Almuj merchant",
                 "tradable": false
               },
               {
-                "name": "Willpower",
+                "name": "Dogfight",
                 "level": 42,
-                "gain": -2.0,
-                "from": "cave chest",
+                "gain": -0.1,
+                "from": "Trade Market",
                 "tradable": true
               },
               {
-                "name": "Great Charm",
-                "level": 40,
-                "gain": -2.4,
-                "from": "cave chest",
-                "tradable": true
-              },
-              {
-                "name": "Coarse Torc",
-                "level": 43,
-                "gain": -3.5,
-                "from": "cave chest",
+                "name": "Mummy's Talisman",
+                "level": 35,
+                "gain": -1.1,
+                "from": "Encroaching Reanimation event",
                 "tradable": true
               }
             ]
@@ -1535,152 +1723,11 @@
         "level": 50,
         "gear": [
           {
-            "slot": "CHESTPLATE",
-            "name": "Sawdust",
-            "level": 49,
-            "tier": "LEGENDARY",
-            "gain": 0.6,
-            "from": "Trade Market",
-            "price": "~21 EB (median 29 EB)",
-            "tradable": true,
-            "options": [
-              {
-                "name": "Sawdust",
-                "level": 49,
-                "gain": 1.6,
-                "from": "Trade Market",
-                "tradable": true
-              },
-              {
-                "name": "Bob's Battle Chestplate",
-                "level": 45,
-                "gain": 1.3,
-                "from": "Trade Market",
-                "tradable": true
-              },
-              {
-                "name": "Narima Pasukan",
-                "level": 48,
-                "gain": -0.4,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Enhanced Phosphene",
-                "level": 40,
-                "gain": -0.4,
-                "from": "Rymek merchant",
-                "tradable": true
-              },
-              {
-                "name": "Loving Embrace",
-                "level": 50,
-                "gain": -0.5,
-                "from": "dropped by mobs",
-                "tradable": true
-              }
-            ]
-          },
-          {
-            "slot": "LEGGINGS",
-            "name": "Winter's Essence",
-            "level": 44,
-            "tier": "LEGENDARY",
-            "gain": 3.0,
-            "from": "Trade Market",
-            "price": "~25 EB",
-            "tradable": true,
-            "options": [
-              {
-                "name": "Winter's Essence",
-                "level": 44,
-                "gain": -3.6,
-                "from": "Trade Market",
-                "tradable": true
-              },
-              {
-                "name": "Holy Greaves",
-                "level": 40,
-                "gain": 0.3,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Chain Link",
-                "level": 45,
-                "gain": -0.6,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Inclemency",
-                "level": 45,
-                "gain": -3.8,
-                "from": "Blazing Combustion event",
-                "tradable": true
-              },
-              {
-                "name": "Glaciate",
-                "level": 48,
-                "gain": -4.2,
-                "from": "Frost Bite quest",
-                "tradable": true
-              }
-            ]
-          },
-          {
-            "slot": "RING",
-            "name": "Yellow Ornament",
-            "level": 50,
-            "tier": "RARE",
-            "gain": 0.5,
-            "from": "Isles of Fiction merchant",
-            "price": "~1.0 LE",
-            "tradable": true,
-            "options": [
-              {
-                "name": "Yellow Ornament",
-                "level": 50,
-                "gain": -15.0,
-                "from": "Isles of Fiction merchant",
-                "tradable": true
-              },
-              {
-                "name": "Folklore",
-                "level": 48,
-                "gain": 6.1,
-                "from": "Isles of Fiction merchant",
-                "tradable": false
-              },
-              {
-                "name": "Tainted Ruby",
-                "level": 37,
-                "gain": 0.0,
-                "from": "Improper Burial Rites event",
-                "tradable": true
-              },
-              {
-                "name": "Marble",
-                "level": 48,
-                "gain": -3.3,
-                "from": "cave chest",
-                "tradable": true
-              },
-              {
-                "name": "Mythos",
-                "level": 48,
-                "gain": -6.9,
-                "from": "Isles of Fiction merchant",
-                "tradable": false
-              }
-            ]
-          },
-          {
             "slot": "BRACELET",
             "name": "Mistletoe",
             "level": 50,
             "tier": "UNIQUE",
-            "gain": 52.4,
+            "gain": 1.6,
             "from": "Isles of Fiction merchant",
             "price": null,
             "tradable": true,
@@ -1688,83 +1735,151 @@
               {
                 "name": "Mistletoe",
                 "level": 50,
-                "gain": 28.9,
+                "gain": 3.7,
                 "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Purity Filter",
+                "level": 52,
+                "gain": 4.0,
+                "from": "Slimy Schism event",
+                "tradable": true
+              },
+              {
+                "name": "Czytash's Compass",
+                "level": 55,
+                "gain": 2.2,
+                "from": "cave chest",
                 "tradable": true
               },
               {
                 "name": "Cupid",
                 "level": 50,
-                "gain": 26.5,
+                "gain": 2.1,
                 "from": "Isles of Fiction merchant",
-                "tradable": true
-              },
-              {
-                "name": "Union",
-                "level": 39,
-                "gain": 26.4,
-                "from": "cave chest",
-                "tradable": true
-              },
-              {
-                "name": "Reminiscence",
-                "level": 41,
-                "gain": 25.1,
-                "from": "cave chest",
                 "tradable": true
               },
               {
                 "name": "Binding Brace",
                 "level": 50,
-                "gain": 22.3,
-                "from": "Prison of Souls altar",
-                "tradable": false
-              }
-            ]
-          },
-          {
-            "slot": "NECKLACE",
-            "name": "Constrict Collar",
-            "level": 45,
-            "tier": "RARE",
-            "gain": 1.8,
-            "from": "Prison of Souls altar",
-            "price": null,
-            "tradable": false,
-            "options": [
-              {
-                "name": "Constrict Collar",
-                "level": 45,
-                "gain": 2.2,
+                "gain": -1.2,
                 "from": "Prison of Souls altar",
                 "tradable": false
               },
               {
-                "name": "Criistal",
-                "level": 49,
-                "gain": 0.5,
-                "from": "Ice Barrows dungeon merchant",
-                "tradable": false
+                "name": "Vindicator",
+                "level": 30,
+                "gain": -1.5,
+                "from": "Trade Market",
+                "tradable": true
               },
               {
-                "name": "Oyster",
-                "level": 45,
-                "gain": -1.7,
+                "name": "Reminiscence",
+                "level": 41,
+                "gain": 1.3,
                 "from": "cave chest",
                 "tradable": true
               },
               {
-                "name": "Sting-Glass Necklace",
-                "level": 37,
-                "gain": -2.2,
-                "from": "Almuj merchant",
-                "tradable": false
+                "name": "Weighted Nimble Fingers",
+                "level": 41,
+                "gain": 0.6,
+                "from": "Rymek merchant",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "HELMET",
+            "name": "Megalophobia",
+            "level": 46,
+            "tier": "LEGENDARY",
+            "gain": 1.3,
+            "from": "Lonely Islet event",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Megalophobia",
+                "level": 46,
+                "gain": 3.4,
+                "from": "Lonely Islet event",
+                "tradable": true
               },
               {
-                "name": "Willpower",
-                "level": 42,
-                "gain": -2.3,
-                "from": "cave chest",
+                "name": "Battle Bishop",
+                "level": 50,
+                "gain": 2.2,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Wooly Cap",
+                "level": 45,
+                "gain": 0.9,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Astigmatism",
+                "level": 48,
+                "gain": -1.1,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Ghostly Cap",
+                "level": 48,
+                "gain": -1.9,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "CHESTPLATE",
+            "name": "Sawdust",
+            "level": 49,
+            "tier": "LEGENDARY",
+            "gain": 1.4,
+            "from": "Trade Market",
+            "price": "~21 EB (median 29 EB)",
+            "tradable": true,
+            "options": [
+              {
+                "name": "Sawdust",
+                "level": 49,
+                "gain": 2.8,
+                "from": "Trade Market",
+                "tradable": true
+              },
+              {
+                "name": "Bob's Battle Chestplate",
+                "level": 45,
+                "gain": 1.6,
+                "from": "Trade Market",
+                "tradable": true
+              },
+              {
+                "name": "Loving Embrace",
+                "level": 50,
+                "gain": 0.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Narima Pasukan",
+                "level": 48,
+                "gain": -0.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Enhanced Phosphene",
+                "level": 40,
+                "gain": -2.7,
+                "from": "Rymek merchant",
                 "tradable": true
               }
             ]
@@ -1791,7 +1906,7 @@
             "name": "Lightshow",
             "level": 60,
             "tier": "LEGENDARY",
-            "gain": 67.7,
+            "gain": 62.3,
             "from": "dropped by mobs",
             "price": null,
             "tradable": true,
@@ -1799,358 +1914,71 @@
               {
                 "name": "Lightshow",
                 "level": 60,
-                "gain": 53.2,
+                "gain": 49.5,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Void Catalyst",
+                "level": 59,
+                "gain": 32.5,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Anthem",
                 "level": 62,
-                "gain": 19.1,
+                "gain": 10.0,
                 "from": "Isles of Fiction merchant",
                 "tradable": false
               },
               {
-                "name": "Void Catalyst",
-                "level": 59,
-                "gain": 14.8,
+                "name": "Olux's Prized Relik",
+                "level": 55,
+                "gain": 9.1,
+                "from": "Olux merchant",
+                "tradable": true
+              },
+              {
+                "name": "Adrift",
+                "level": 63,
+                "gain": 4.2,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Luster Purge",
+                "level": 60,
+                "gain": 2.8,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Lethality",
                 "level": 65,
-                "gain": 9.2,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Olux's Prized Relik",
-                "level": 55,
-                "gain": 8.3,
-                "from": "Olux merchant",
-                "tradable": true
-              },
-              {
-                "name": "Luster Purge",
-                "level": 60,
-                "gain": 7.2,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Adrift",
-                "level": 63,
-                "gain": 1.2,
+                "gain": 1.8,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Cleansing Flame",
                 "level": 40,
-                "gain": -25.6,
+                "gain": -28.6,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Vibrato",
                 "level": 44,
-                "gain": -27.9,
+                "gain": -29.8,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
-                "name": "Upgraded Flare Blitz",
-                "level": 41,
-                "gain": -31.3,
-                "from": "Rymek merchant",
-                "tradable": true
-              }
-            ]
-          },
-          {
-            "slot": "HELMET",
-            "name": "Venison",
-            "level": 54,
-            "tier": "LEGENDARY",
-            "gain": 11.6,
-            "from": "dropped by mobs",
-            "price": null,
-            "tradable": true,
-            "alternative": "Autumn Leaves (Lv. 59, Isles of Fiction merchant)",
-            "options": [
-              {
-                "name": "Venison",
-                "level": 54,
-                "gain": 10.0,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Helmet of Blue Stone",
-                "level": 62,
-                "gain": 16.7,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Spectre",
-                "level": 65,
-                "gain": 15.2,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Autumn Leaves",
-                "level": 59,
-                "gain": 13.0,
-                "from": "Isles of Fiction merchant",
-                "tradable": false
-              },
-              {
-                "name": "Mask of Enlightenment",
-                "level": 57,
-                "gain": 9.8,
-                "from": "Iboju Village merchant",
-                "tradable": false
-              },
-              {
-                "name": "Mask of Hate",
-                "level": 57,
-                "gain": 8.2,
-                "from": "Iboju Village merchant",
-                "tradable": false
-              },
-              {
-                "name": "Never-Ending Nightmare",
-                "level": 55,
-                "gain": 8.6,
-                "from": "Isles of Fiction merchant",
-                "tradable": false
-              },
-              {
-                "name": "Climbing Helmet",
-                "level": 42,
-                "gain": -2.6,
-                "from": "Ice Nations quest",
-                "tradable": false
-              },
-              {
-                "name": "Pelier",
-                "level": 42,
-                "gain": -6.0,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Redrock Bandanna",
-                "level": 40,
-                "gain": -4.1,
-                "from": "Sunrise Canyon altar",
-                "tradable": false
-              }
-            ]
-          },
-          {
-            "slot": "LEGGINGS",
-            "name": "Lookout",
-            "level": 59,
-            "tier": "UNIQUE",
-            "gain": 60.3,
-            "from": "Gelibord merchant",
-            "price": null,
-            "tradable": true,
-            "options": [
-              {
-                "name": "Lookout",
-                "level": 59,
-                "gain": 8.5,
-                "from": "Gelibord merchant",
-                "tradable": true
-              },
-              {
-                "name": "Ceremonial Skirt",
-                "level": 65,
-                "gain": 12.4,
-                "from": "Isles of Fiction merchant",
-                "tradable": false
-              },
-              {
-                "name": "Kelight's Shield",
-                "level": 64,
-                "gain": 10.2,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Gleeman's Tale",
-                "level": 64,
-                "gain": 3.9,
-                "from": "Isles of Fiction merchant",
-                "tradable": false
-              },
-              {
-                "name": "Bob's Lost Leggings",
-                "level": 58,
-                "gain": 3.9,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Nacreous",
-                "level": 51,
-                "gain": 3.8,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Kratke",
-                "level": 58,
-                "gain": 3.9,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Holy Greaves",
-                "level": 40,
-                "gain": -5.5,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Shield",
-                "level": 40,
-                "gain": -8.5,
-                "from": "Nodguj Nation merchant",
-                "tradable": true
-              },
-              {
-                "name": "Red Ko Rhu",
+                "name": "Calamaro's Relik",
                 "level": 43,
-                "gain": -12.4,
-                "from": "dropped by mobs",
-                "tradable": true
-              }
-            ]
-          },
-          {
-            "slot": "BRACELET",
-            "name": "Zhight Powwow Bangle",
-            "level": 55,
-            "tier": "UNIQUE",
-            "gain": 4.4,
-            "from": "Zhight Island merchant",
-            "price": null,
-            "tradable": true,
-            "options": [
-              {
-                "name": "Zhight Powwow Bangle",
-                "level": 55,
-                "gain": 5.5,
-                "from": "Zhight Island merchant",
-                "tradable": true
-              },
-              {
-                "name": "Fellowship",
-                "level": 65,
-                "gain": 2.7,
-                "from": "Isles of Fiction merchant",
-                "tradable": true
-              },
-              {
-                "name": "Binding Brace",
-                "level": 50,
-                "gain": -1.9,
-                "from": "Prison of Souls altar",
-                "tradable": false
-              },
-              {
-                "name": "Reminiscence",
-                "level": 41,
-                "gain": 0.0,
-                "from": "cave chest",
-                "tradable": true
-              },
-              {
-                "name": "Red Ornament",
-                "level": 50,
-                "gain": -0.1,
-                "from": "Isles of Fiction merchant",
-                "tradable": true
-              },
-              {
-                "name": "Cupid",
-                "level": 50,
-                "gain": -0.8,
-                "from": "Isles of Fiction merchant",
-                "tradable": true
-              },
-              {
-                "name": "Czytash's Compass",
-                "level": 55,
-                "gain": -1.2,
-                "from": "cave chest",
-                "tradable": true
-              },
-              {
-                "name": "Weighted Nimble Fingers",
-                "level": 41,
-                "gain": -2.3,
-                "from": "Rymek merchant",
-                "tradable": true
-              },
-              {
-                "name": "Blazing Bangle",
-                "level": 41,
-                "gain": -2.4,
-                "from": "Encroaching Conflagration event",
-                "tradable": true
-              }
-            ]
-          },
-          {
-            "slot": "CHESTPLATE",
-            "name": "Matryoshka Shell",
-            "level": 55,
-            "tier": "LEGENDARY",
-            "gain": 1.8,
-            "from": "dropped by Matryoshka Idol",
-            "price": null,
-            "tradable": false,
-            "options": [
-              {
-                "name": "Matryoshka Shell",
-                "level": 55,
-                "gain": 1.8,
-                "from": "dropped by Matryoshka Idol",
-                "tradable": false
-              },
-              {
-                "name": "Hurricane",
-                "level": 55,
-                "gain": 0.0,
-                "from": "Troms merchant",
-                "tradable": true
-              },
-              {
-                "name": "Mail of the Sweltering",
-                "level": 60,
-                "gain": -0.1,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Dragon Skin",
-                "level": 57,
-                "gain": -5.5,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Dravarden",
-                "level": 56,
-                "gain": -7.1,
-                "from": "dropped by mobs",
+                "gain": -34.2,
+                "from": "Squid Village merchant",
                 "tradable": true
               }
             ]
@@ -2160,7 +1988,7 @@
             "name": "Stronghold",
             "level": 60,
             "tier": "LEGENDARY",
-            "gain": 2.7,
+            "gain": 8.3,
             "from": "A Burning Memory event",
             "price": null,
             "tradable": true,
@@ -2168,84 +1996,221 @@
               {
                 "name": "Stronghold",
                 "level": 60,
-                "gain": 4.9,
+                "gain": 9.8,
                 "from": "A Burning Memory event",
                 "tradable": true
               },
               {
                 "name": "Repose",
                 "level": 55,
-                "gain": -4.0,
+                "gain": -0.1,
                 "from": "Slimy Schism event",
-                "tradable": true
-              },
-              {
-                "name": "Bad Wolf",
-                "level": 60,
-                "gain": -4.5,
-                "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Abysso Galoshes",
                 "level": 60,
-                "gain": -6.9,
+                "gain": -2.9,
                 "from": "Beneath the Depths quest",
                 "tradable": false
               },
               {
+                "name": "Bad Wolf",
+                "level": 60,
+                "gain": -2.4,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
                 "name": "Reindeer Paws",
                 "level": 60,
-                "gain": -11.1,
+                "gain": -8.2,
                 "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Talaria",
+                "level": 59,
+                "gain": -8.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Adanac",
+                "level": 63,
+                "gain": -9.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Seven-League Boots",
+                "level": 44,
+                "gain": -13.4,
+                "from": "Trade Market",
+                "tradable": true
+              },
+              {
+                "name": "Sacred",
+                "level": 40,
+                "gain": -13.5,
+                "from": "Llevigar merchant",
+                "tradable": true
+              },
+              {
+                "name": "Ice Climbing Boots",
+                "level": 43,
+                "gain": -14.8,
+                "from": "dropped by mobs",
                 "tradable": true
               }
             ]
           },
           {
-            "slot": "RING",
-            "name": "Mirror",
-            "level": 56,
+            "slot": "HELMET",
+            "name": "Autumn Leaves",
+            "level": 59,
             "tier": "RARE",
-            "gain": 0.9,
-            "from": "cave chest",
+            "gain": 21.1,
+            "from": "Isles of Fiction merchant",
+            "price": null,
+            "tradable": false,
+            "options": []
+          },
+          {
+            "slot": "CHESTPLATE",
+            "name": "Hurricane",
+            "level": 55,
+            "tier": "RARE",
+            "gain": 1.9,
+            "from": "Troms merchant",
+            "price": "~1 E · Past price",
+            "tradable": true,
+            "options": []
+          },
+          {
+            "slot": "LEGGINGS",
+            "name": "Nacreous",
+            "level": 51,
+            "tier": "RARE",
+            "gain": 12.3,
+            "from": "dropped by mobs",
+            "price": null,
+            "tradable": true,
+            "options": []
+          },
+          {
+            "slot": "RING",
+            "name": "Yellow Ornament",
+            "level": 50,
+            "tier": "RARE",
+            "gain": 10.1,
+            "from": "Isles of Fiction merchant",
+            "price": "~1.0 LE",
+            "tradable": true,
+            "options": []
+          },
+          {
+            "slot": "RING2",
+            "name": "Yellow Ornament",
+            "level": 50,
+            "tier": "RARE",
+            "gain": 10.1,
+            "from": "Isles of Fiction merchant",
+            "price": "~1.0 LE",
+            "tradable": true,
+            "options": []
+          },
+          {
+            "slot": "BRACELET",
+            "name": "Red Ornament",
+            "level": 50,
+            "tier": "RARE",
+            "gain": 5.5,
+            "from": "Isles of Fiction merchant",
             "price": null,
             "tradable": true,
             "options": [
               {
-                "name": "Mirror",
-                "level": 56,
-                "gain": 1.5,
+                "name": "Red Ornament",
+                "level": 50,
+                "gain": 2.4,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Czytash's Compass",
+                "level": 55,
+                "gain": -0.2,
                 "from": "cave chest",
                 "tradable": true
               },
               {
-                "name": "Folklore",
-                "level": 48,
-                "gain": 0.4,
-                "from": "Isles of Fiction merchant",
-                "tradable": false
-              },
-              {
-                "name": "Mythos",
-                "level": 48,
-                "gain": 0.3,
-                "from": "Isles of Fiction merchant",
-                "tradable": false
-              },
-              {
-                "name": "Sticky Decoder Ring",
-                "level": 41,
-                "gain": -0.8,
-                "from": "Rymek merchant",
+                "name": "Twist Band",
+                "level": 49,
+                "gain": -1.0,
+                "from": "cave chest",
                 "tradable": true
               },
               {
-                "name": "Goblin-Silver Ring",
-                "level": 40,
-                "gain": -0.8,
-                "from": "Goblin Village merchant",
+                "name": "Marius' Lament",
+                "level": 49,
+                "gain": -1.2,
+                "from": "cave chest",
                 "tradable": true
+              },
+              {
+                "name": "Bovine Cuff",
+                "level": 55,
+                "gain": -1.6,
+                "from": "dropped by Mooington",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "NECKLACE",
+            "name": "Green Ornament",
+            "level": 55,
+            "tier": "RARE",
+            "gain": 10.9,
+            "from": "Isles of Fiction merchant",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Green Ornament",
+                "level": 55,
+                "gain": 12.7,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Zhight Weird Magic Necklace",
+                "level": 55,
+                "gain": 5.0,
+                "from": "Zhight Island merchant",
+                "tradable": true
+              },
+              {
+                "name": "Jagged Bone Necklace",
+                "level": 51,
+                "gain": 4.6,
+                "from": "Encroaching Ablation event",
+                "tradable": true
+              },
+              {
+                "name": "Constrict Collar",
+                "level": 45,
+                "gain": 4.0,
+                "from": "Prison of Souls altar",
+                "tradable": false
+              },
+              {
+                "name": "Purification Bead",
+                "level": 55,
+                "gain": 2.6,
+                "from": "Plague Laboratory altar",
+                "tradable": false
               }
             ]
           }
@@ -2275,11 +2240,72 @@
         "level": 70,
         "gear": [
           {
+            "slot": "HELMET",
+            "name": "Howler",
+            "level": 70,
+            "tier": "UNIQUE",
+            "gain": 8.4,
+            "from": "Cinfras merchant",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Howler",
+                "level": 70,
+                "gain": 8.7,
+                "from": "Cinfras merchant",
+                "tradable": true
+              },
+              {
+                "name": "Purified Helmet of the Legends",
+                "level": 68,
+                "gain": 7.5,
+                "from": "Temple of the Legends quest",
+                "tradable": false
+              },
+              {
+                "name": "Stifling Spores",
+                "level": 69,
+                "gain": 5.8,
+                "from": "Peculiar Grotto event",
+                "tradable": true
+              },
+              {
+                "name": "Silencer",
+                "level": 70,
+                "gain": 2.4,
+                "from": "Cinfras merchant",
+                "tradable": true
+              },
+              {
+                "name": "Clearsight Spectacles",
+                "level": 71,
+                "gain": 1.4,
+                "from": "Realm of Light IV - Finding the Light quest",
+                "tradable": true
+              },
+              {
+                "name": "Helmet of Blue Stone",
+                "level": 62,
+                "gain": -0.2,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Hollow",
+                "level": 75,
+                "gain": -0.2,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
             "slot": "LEGGINGS",
             "name": "Reflection",
             "level": 67,
             "tier": "UNIQUE",
-            "gain": 1.8,
+            "gain": 6.2,
             "from": "dropped by mobs",
             "price": null,
             "tradable": true,
@@ -2287,49 +2313,96 @@
               {
                 "name": "Reflection",
                 "level": 67,
-                "gain": 3.5,
+                "gain": 4.6,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Douglas Fir",
                 "level": 75,
-                "gain": 12.2,
+                "gain": 13.9,
                 "from": "Isles of Fiction merchant",
                 "tradable": true
               },
               {
                 "name": "Triumph",
                 "level": 75,
-                "gain": 3.4,
+                "gain": 1.4,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Kelight's Shield",
                 "level": 64,
-                "gain": 1.7,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Nacreous",
-                "level": 51,
-                "gain": -0.1,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Canopy",
-                "level": 69,
-                "gain": -1.6,
+                "gain": 0.4,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Leggings of Restoration",
                 "level": 74,
-                "gain": -1.7,
+                "gain": 0.3,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Dalaam",
+                "level": 67,
+                "gain": -0.6,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Lookout",
+                "level": 59,
+                "gain": -0.7,
+                "from": "Gelibord merchant",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "CHESTPLATE",
+            "name": "Admiral",
+            "level": 67,
+            "tier": "LEGENDARY",
+            "gain": 8.7,
+            "from": "Galleon's Graveyard dungeon merchant",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Admiral",
+                "level": 67,
+                "gain": 3.1,
+                "from": "Galleon's Graveyard dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Millennium",
+                "level": 63,
+                "gain": 0.0,
+                "from": "Trade Market",
+                "tradable": true
+              },
+              {
+                "name": "Adamantite",
+                "level": 70,
+                "gain": -2.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Cloak of Luminosity",
+                "level": 64,
+                "gain": -4.1,
+                "from": "Trade Market",
+                "tradable": true
+              },
+              {
+                "name": "Mudskipper",
+                "level": 70,
+                "gain": -4.3,
                 "from": "dropped by mobs",
                 "tradable": true
               }
@@ -2340,7 +2413,7 @@
             "name": "Photon",
             "level": 61,
             "tier": "UNIQUE",
-            "gain": 1.9,
+            "gain": 3.7,
             "from": "Trade Market",
             "price": "~1.4 LE (median 2.2 LE)",
             "tradable": true,
@@ -2348,144 +2421,130 @@
               {
                 "name": "Photon",
                 "level": 61,
-                "gain": 3.3,
+                "gain": -4.9,
                 "from": "Trade Market",
                 "tradable": true
               },
               {
-                "name": "Living Slime",
-                "level": 53,
-                "gain": 1.4,
-                "from": "Slimy Schism event",
-                "tradable": true
-              },
-              {
-                "name": "Mercy",
-                "level": 71,
-                "gain": 0.9,
+                "name": "Raindrop",
+                "level": 69,
+                "gain": -6.8,
                 "from": "cave chest",
-                "tradable": true
-              },
-              {
-                "name": "Glimmer",
-                "level": 67,
-                "gain": -0.1,
-                "from": "Efilim merchant",
                 "tradable": true
               },
               {
                 "name": "Agile Loop",
                 "level": 62,
-                "gain": -0.8,
+                "gain": -7.4,
                 "from": "Iboju Village merchant",
                 "tradable": true
               },
               {
-                "name": "Yellow Ornament",
+                "name": "Winter Solstice",
                 "level": 50,
-                "gain": -1.1,
+                "gain": -7.6,
                 "from": "Isles of Fiction merchant",
+                "tradable": false
+              },
+              {
+                "name": "Druid's Ring",
+                "level": 65,
+                "gain": -8.2,
+                "from": "cave chest",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "RING2",
+            "name": "Photon",
+            "level": 61,
+            "tier": "UNIQUE",
+            "gain": 3.7,
+            "from": "Trade Market",
+            "price": "~1.4 LE (median 2.2 LE)",
+            "tradable": true,
+            "options": [
+              {
+                "name": "Photon",
+                "level": 61,
+                "gain": -0.5,
+                "from": "Trade Market",
                 "tradable": true
               },
               {
-                "name": "Zhight Shiny Ring",
+                "name": "Raindrop",
+                "level": 69,
+                "gain": -2.7,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Agile Loop",
+                "level": 62,
+                "gain": -3.2,
+                "from": "Iboju Village merchant",
+                "tradable": true
+              },
+              {
+                "name": "Winter Solstice",
+                "level": 50,
+                "gain": -3.5,
+                "from": "Isles of Fiction merchant",
+                "tradable": false
+              },
+              {
+                "name": "Druid's Ring",
+                "level": 65,
+                "gain": -4.0,
+                "from": "cave chest",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "BRACELET",
+            "name": "Cattail",
+            "level": 70,
+            "tier": "UNIQUE",
+            "gain": 11.7,
+            "from": "Efilim merchant",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Cattail",
+                "level": 70,
+                "gain": 11.3,
+                "from": "Efilim merchant",
+                "tradable": true
+              },
+              {
+                "name": "Fantasy",
+                "level": 68,
+                "gain": 10.5,
+                "from": "Isles of Fiction merchant",
+                "tradable": false
+              },
+              {
+                "name": "Scalding Band",
+                "level": 63,
+                "gain": 7.6,
+                "from": "Iboju Village merchant",
+                "tradable": true
+              },
+              {
+                "name": "Zhight Powwow Bangle",
                 "level": 55,
-                "gain": -1.1,
+                "gain": 6.8,
                 "from": "Zhight Island merchant",
                 "tradable": true
-              }
-            ]
-          },
-          {
-            "slot": "HELMET",
-            "name": "Purified Helmet of the Legends",
-            "level": 68,
-            "tier": "RARE",
-            "gain": 7.3,
-            "from": "Temple of the Legends quest",
-            "price": null,
-            "tradable": false,
-            "options": [
+              },
               {
-                "name": "Purified Helmet of the Legends",
+                "name": "Growth",
                 "level": 68,
-                "gain": 0.2,
-                "from": "Temple of the Legends quest",
-                "tradable": false
-              },
-              {
-                "name": "Howler",
-                "level": 70,
-                "gain": 0.0,
-                "from": "Cinfras merchant",
-                "tradable": true
-              },
-              {
-                "name": "Stifling Spores",
-                "level": 69,
-                "gain": -4.6,
-                "from": "Peculiar Grotto event",
-                "tradable": true
-              },
-              {
-                "name": "Helmet of Blue Stone",
-                "level": 62,
-                "gain": -5.5,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Silencer",
-                "level": 70,
-                "gain": -8.5,
-                "from": "Cinfras merchant",
-                "tradable": true
-              }
-            ]
-          },
-          {
-            "slot": "CHESTPLATE",
-            "name": "Admiral",
-            "level": 67,
-            "tier": "LEGENDARY",
-            "gain": 11.3,
-            "from": "Galleon's Graveyard dungeon merchant",
-            "price": null,
-            "tradable": false,
-            "options": [
-              {
-                "name": "Admiral",
-                "level": 67,
-                "gain": 8.5,
-                "from": "Galleon's Graveyard dungeon merchant",
-                "tradable": false
-              },
-              {
-                "name": "Millennium",
-                "level": 63,
-                "gain": 0.7,
-                "from": "Trade Market",
-                "tradable": true
-              },
-              {
-                "name": "Antihero",
-                "level": 66,
-                "gain": 0.3,
-                "from": "Isles of Fiction merchant",
-                "tradable": false
-              },
-              {
-                "name": "Cloak of Luminosity",
-                "level": 64,
-                "gain": 0.0,
-                "from": "Trade Market",
-                "tradable": true
-              },
-              {
-                "name": "Adamantite",
-                "level": 70,
-                "gain": -3.3,
-                "from": "dropped by mobs",
+                "gain": 6.3,
+                "from": "Efilim merchant",
                 "tradable": true
               }
             ]
@@ -2495,7 +2554,7 @@
             "name": "Jagged Bone Necklace",
             "level": 51,
             "tier": "RARE",
-            "gain": 0.3,
+            "gain": 2.0,
             "from": "Encroaching Ablation event",
             "price": null,
             "tradable": true,
@@ -2503,36 +2562,36 @@
               {
                 "name": "Jagged Bone Necklace",
                 "level": 51,
-                "gain": -1.2,
+                "gain": 3.4,
                 "from": "Encroaching Ablation event",
-                "tradable": true
-              },
-              {
-                "name": "Troms Kid Badge",
-                "level": 63,
-                "gain": -2.6,
-                "from": "Out of my Mind quest",
-                "tradable": true
-              },
-              {
-                "name": "Talisman Charm",
-                "level": 70,
-                "gain": -2.8,
-                "from": "cave chest",
                 "tradable": true
               },
               {
                 "name": "Zhight Weird Magic Necklace",
                 "level": 55,
-                "gain": -3.2,
+                "gain": 3.1,
                 "from": "Zhight Island merchant",
+                "tradable": true
+              },
+              {
+                "name": "Troms Kid Badge",
+                "level": 63,
+                "gain": 2.8,
+                "from": "Out of my Mind quest",
                 "tradable": true
               },
               {
                 "name": "Fiery Torc",
                 "level": 69,
-                "gain": -4.3,
+                "gain": 2.4,
                 "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Chaotic Amulet",
+                "level": 63,
+                "gain": 1.7,
+                "from": "Iboju Village merchant",
                 "tradable": true
               }
             ]
@@ -2562,7 +2621,7 @@
             "name": "Ghorme Ndaizma",
             "level": 75,
             "tier": "RARE",
-            "gain": 35.2,
+            "gain": 34.1,
             "from": "Entamis Village merchant",
             "price": null,
             "tradable": true,
@@ -2570,49 +2629,49 @@
               {
                 "name": "Ghorme Ndaizma",
                 "level": 75,
-                "gain": 20.6,
+                "gain": 12.2,
                 "from": "Entamis Village merchant",
+                "tradable": true
+              },
+              {
+                "name": "Ascension",
+                "level": 72,
+                "gain": 5.5,
+                "from": "Cinfras merchant",
+                "tradable": true
+              },
+              {
+                "name": "Cotton Swab",
+                "level": 83,
+                "gain": 1.3,
+                "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Thanos Stonesinger",
                 "level": 82,
-                "gain": 9.7,
+                "gain": 0.0,
                 "from": "Thanos merchant",
                 "tradable": true
               },
               {
-                "name": "Dying Light",
+                "name": "Pas De Deux",
                 "level": 81,
-                "gain": 3.9,
+                "gain": -0.7,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Asphalt",
                 "level": 77,
-                "gain": 3.3,
+                "gain": -6.1,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
-                "name": "Ascension",
-                "level": 72,
-                "gain": 3.0,
-                "from": "Cinfras merchant",
-                "tradable": true
-              },
-              {
-                "name": "Stone Crunch",
-                "level": 74,
-                "gain": 0.8,
-                "from": "Cinfras merchant",
-                "tradable": true
-              },
-              {
-                "name": "Mvuke",
-                "level": 79,
-                "gain": 0.2,
+                "name": "Magic Bounce",
+                "level": 78,
+                "gain": -6.6,
                 "from": "dropped by mobs",
                 "tradable": true
               }
@@ -2623,7 +2682,7 @@
             "name": "Cosmic Visor",
             "level": 80,
             "tier": "LEGENDARY",
-            "gain": 29.8,
+            "gain": 17.4,
             "from": "??? quest",
             "price": null,
             "tradable": false,
@@ -2631,7 +2690,7 @@
               {
                 "name": "Cosmic Visor",
                 "level": 80,
-                "gain": -15.1,
+                "gain": -18.8,
                 "from": "??? quest",
                 "tradable": false
               },
@@ -2643,25 +2702,25 @@
                 "tradable": true
               },
               {
-                "name": "Gale's Sight",
-                "level": 80,
-                "gain": -0.5,
-                "from": "Corrupted Infested Pit dungeon",
+                "name": "Genesis",
+                "level": 78,
+                "gain": -9.4,
+                "from": "dropped by mobs",
                 "tradable": true
               },
               {
-                "name": "Howler",
-                "level": 70,
-                "gain": -3.3,
-                "from": "Cinfras merchant",
+                "name": "Spectre",
+                "level": 65,
+                "gain": -11.2,
+                "from": "dropped by mobs",
                 "tradable": true
               },
               {
-                "name": "Sparkling Visor",
-                "level": 80,
-                "gain": -4.0,
-                "from": "The Qira Hive quest",
-                "tradable": false
+                "name": "Stifling Spores",
+                "level": 69,
+                "gain": -11.6,
+                "from": "Peculiar Grotto event",
+                "tradable": true
               }
             ]
           },
@@ -2670,22 +2729,94 @@
             "name": "Cosmic Vest",
             "level": 80,
             "tier": "LEGENDARY",
-            "gain": 37.1,
+            "gain": 33.2,
             "from": "??? quest",
             "price": null,
             "tradable": false,
-            "options": []
+            "options": [
+              {
+                "name": "Cosmic Vest",
+                "level": 80,
+                "gain": -5.1,
+                "from": "??? quest",
+                "tradable": false
+              },
+              {
+                "name": "Andesite Aegis",
+                "level": 77,
+                "gain": 0.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Millennium",
+                "level": 63,
+                "gain": -7.1,
+                "from": "Trade Market",
+                "tradable": true
+              },
+              {
+                "name": "Gert Veryhard Chestclothes",
+                "level": 78,
+                "gain": -10.1,
+                "from": "Gert Camp merchant",
+                "tradable": false
+              },
+              {
+                "name": "Remikas' Sanctuary",
+                "level": 68,
+                "gain": -12.2,
+                "from": "Trade Market",
+                "tradable": true
+              }
+            ]
           },
           {
             "slot": "LEGGINGS",
             "name": "Cosmic Ward",
             "level": 80,
             "tier": "LEGENDARY",
-            "gain": 32.8,
+            "gain": 27.3,
             "from": "??? quest",
             "price": null,
             "tradable": false,
-            "options": []
+            "options": [
+              {
+                "name": "Cosmic Ward",
+                "level": 80,
+                "gain": 1.0,
+                "from": "??? quest",
+                "tradable": false
+              },
+              {
+                "name": "Post-Ultima",
+                "level": 76,
+                "gain": 0.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Coba",
+                "level": 78,
+                "gain": -1.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Charger",
+                "level": 72,
+                "gain": -2.8,
+                "from": "Cinfras merchant",
+                "tradable": true
+              },
+              {
+                "name": "Triumph",
+                "level": 75,
+                "gain": -3.2,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
           },
           {
             "slot": "BOOTS",
@@ -2700,37 +2831,37 @@
               {
                 "name": "Cosmic Walkers",
                 "level": 80,
-                "gain": 28.5,
+                "gain": 39.8,
                 "from": "??? quest",
                 "tradable": false
               },
               {
                 "name": "Dragulj Boots",
                 "level": 80,
-                "gain": 2.9,
+                "gain": 13.9,
                 "from": "Thanos merchant",
                 "tradable": true
               },
               {
                 "name": "Ventus Tail",
                 "level": 80,
-                "gain": 1.0,
+                "gain": 12.9,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Sodeta Boots",
                 "level": 66,
-                "gain": -2.1,
+                "gain": 6.3,
                 "from": "Lost Soles quest",
                 "tradable": true
               },
               {
-                "name": "Swashbuckler's Brogues",
-                "level": 70,
-                "gain": -3.4,
-                "from": "Isles of Fiction merchant",
-                "tradable": false
+                "name": "Way Back Home",
+                "level": 75,
+                "gain": 3.2,
+                "from": "dropped by mobs",
+                "tradable": true
               }
             ]
           },
@@ -2739,7 +2870,7 @@
             "name": "Ring of Wisdom",
             "level": 80,
             "tier": "UNIQUE",
-            "gain": 0.2,
+            "gain": -0.1,
             "from": "Thanos merchant",
             "price": null,
             "tradable": true,
@@ -2747,36 +2878,83 @@
               {
                 "name": "Ring of Wisdom",
                 "level": 80,
-                "gain": 1.1,
+                "gain": 0.4,
                 "from": "Thanos merchant",
                 "tradable": true
               },
               {
                 "name": "Detective's Ring",
                 "level": 74,
-                "gain": -0.6,
+                "gain": -0.2,
                 "from": "Murder Mystery quest",
                 "tradable": true
               },
               {
                 "name": "Ghost",
                 "level": 77,
-                "gain": -1.4,
+                "gain": -0.2,
                 "from": "cave chest",
                 "tradable": true
               },
               {
-                "name": "Aliez",
-                "level": 75,
-                "gain": -2.0,
+                "name": "Agile Loop",
+                "level": 62,
+                "gain": -0.4,
+                "from": "Iboju Village merchant",
+                "tradable": true
+              },
+              {
+                "name": "Voidshard",
+                "level": 70,
+                "gain": -1.6,
+                "from": "cave chest",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "BRACELET",
+            "name": "Fantasy",
+            "level": 68,
+            "tier": "RARE",
+            "gain": 2.4,
+            "from": "Isles of Fiction merchant",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Fantasy",
+                "level": 68,
+                "gain": -5.0,
+                "from": "Isles of Fiction merchant",
+                "tradable": false
+              },
+              {
+                "name": "Siwel's Guilt",
+                "level": 74,
+                "gain": -1.6,
                 "from": "cave chest",
                 "tradable": true
               },
               {
-                "name": "Soldier",
-                "level": 78,
-                "gain": -3.0,
-                "from": "cave chest",
+                "name": "Vanguard",
+                "level": 77,
+                "gain": -2.2,
+                "from": "Corrupted Infested Pit dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Fellowship",
+                "level": 65,
+                "gain": -4.0,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              },
+              {
+                "name": "Scalding Band",
+                "level": 63,
+                "gain": -4.4,
+                "from": "Iboju Village merchant",
                 "tradable": true
               }
             ]
@@ -2786,7 +2964,7 @@
             "name": "Royal Shocking Amulet",
             "level": 75,
             "tier": "LEGENDARY",
-            "gain": 4.3,
+            "gain": 4.6,
             "from": "Cinfras merchant",
             "price": null,
             "tradable": true,
@@ -2794,36 +2972,36 @@
               {
                 "name": "Royal Shocking Amulet",
                 "level": 75,
-                "gain": 5.3,
+                "gain": 4.4,
                 "from": "Cinfras merchant",
                 "tradable": true
               },
               {
                 "name": "Royal Blazing Amulet",
                 "level": 75,
-                "gain": 4.4,
+                "gain": 2.7,
                 "from": "Cinfras merchant",
+                "tradable": true
+              },
+              {
+                "name": "Sterling Silver",
+                "level": 80,
+                "gain": 0.0,
+                "from": "Thanos merchant",
                 "tradable": true
               },
               {
                 "name": "Royal Cyclone Amulet",
                 "level": 75,
-                "gain": 0.9,
+                "gain": 0.0,
                 "from": "Cinfras merchant",
                 "tradable": true
               },
               {
                 "name": "Royal Dusty Amulet",
                 "level": 75,
-                "gain": 0.9,
+                "gain": -0.2,
                 "from": "Cinfras merchant",
-                "tradable": true
-              },
-              {
-                "name": "Talisman Charm",
-                "level": 70,
-                "gain": -0.9,
-                "from": "cave chest",
                 "tradable": true
               }
             ]
@@ -2850,7 +3028,7 @@
             "name": "Loaded Question",
             "level": 90,
             "tier": "LEGENDARY",
-            "gain": 14.0,
+            "gain": 31.7,
             "from": "dropped by mobs",
             "price": null,
             "tradable": true,
@@ -2858,49 +3036,49 @@
               {
                 "name": "Loaded Question",
                 "level": 90,
-                "gain": 29.3,
+                "gain": 33.6,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Hardcore",
                 "level": 92,
-                "gain": 16.3,
+                "gain": 22.5,
                 "from": "Fallen Factory dungeon merchant",
                 "tradable": false
               },
               {
-                "name": "Stormdrain",
-                "level": 88,
-                "gain": 0.7,
-                "from": "dropped by mobs",
+                "name": "Thermals",
+                "level": 86,
+                "gain": 2.9,
+                "from": "Corkus merchant",
                 "tradable": true
               },
               {
                 "name": "Crimson",
                 "level": 91,
-                "gain": 2.5,
+                "gain": 5.2,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Mouth of Fate",
                 "level": 92,
-                "gain": -1.4,
+                "gain": 1.2,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
-                "name": "Imperious",
-                "level": 92,
-                "gain": -2.3,
+                "name": "Stormdrain",
+                "level": 88,
+                "gain": 0.9,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
                 "name": "Arbalest",
                 "level": 87,
-                "gain": -5.5,
+                "gain": -2.3,
                 "from": "dropped by mobs",
                 "tradable": true
               }
@@ -2911,7 +3089,7 @@
             "name": "The Modulator",
             "level": 88,
             "tier": "RARE",
-            "gain": 16.2,
+            "gain": 25.4,
             "from": "Corkus merchant",
             "price": null,
             "tradable": true,
@@ -2919,37 +3097,37 @@
               {
                 "name": "The Modulator",
                 "level": 88,
-                "gain": -19.2,
+                "gain": -13.3,
                 "from": "Corkus merchant",
                 "tradable": true
               },
               {
                 "name": "Cranial Panel",
                 "level": 85,
-                "gain": -14.0,
+                "gain": -5.6,
                 "from": "Corkus merchant",
                 "tradable": true
               },
               {
-                "name": "Third Eye",
-                "level": 88,
-                "gain": -23.1,
+                "name": "Sequencer",
+                "level": 83,
+                "gain": -15.6,
                 "from": "dropped by mobs",
                 "tradable": true
+              },
+              {
+                "name": "Ossuary",
+                "level": 84,
+                "gain": -17.7,
+                "from": "Corrupted Underworld Crypt dungeon merchant",
+                "tradable": false
               },
               {
                 "name": "Phoenix Prince's Crown",
                 "level": 90,
-                "gain": -23.2,
+                "gain": -18.1,
                 "from": "discovery: lost avos city",
                 "tradable": false
-              },
-              {
-                "name": "Skywatcher",
-                "level": 84,
-                "gain": -23.7,
-                "from": "dropped by mobs",
-                "tradable": true
               }
             ]
           },
@@ -2958,7 +3136,7 @@
             "name": "Gale's Freedom",
             "level": 87,
             "tier": "RARE",
-            "gain": 10.6,
+            "gain": 16.0,
             "from": "The Qira Hive quest",
             "price": null,
             "tradable": false,
@@ -2966,155 +3144,170 @@
               {
                 "name": "Gale's Freedom",
                 "level": 87,
-                "gain": -2.0,
+                "gain": 2.6,
                 "from": "The Qira Hive quest",
                 "tradable": false
               },
               {
-                "name": "Warming Heart",
-                "level": 90,
-                "gain": 0.5,
-                "from": "Isles of Fiction merchant",
-                "tradable": true
+                "name": "Golden Scarab",
+                "level": 88,
+                "gain": 3.2,
+                "from": "Corrupted Sand-Swept Tomb dungeon merchant",
+                "tradable": false
               },
               {
                 "name": "Toy Maker",
                 "level": 85,
-                "gain": -6.6,
+                "gain": 1.3,
                 "from": "Isles of Fiction merchant",
                 "tradable": true
               },
               {
-                "name": "Andesite Aegis",
-                "level": 77,
-                "gain": -9.7,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Darkiron Aegis",
-                "level": 90,
-                "gain": -10.1,
-                "from": "Rodoroc merchant",
+                "name": "Dragon Hide Plate",
+                "level": 82,
+                "gain": -2.4,
+                "from": "The Thanos Depository quest",
                 "tradable": true
               }
             ]
           },
           {
             "slot": "LEGGINGS",
-            "name": "Nuance",
-            "level": 90,
-            "tier": "RARE",
-            "gain": 12.5,
-            "from": "dropped by mobs",
+            "name": "Wooly Long Johns",
+            "level": 87,
+            "tier": "UNIQUE",
+            "gain": 30.9,
+            "from": "Thesead merchant",
             "price": null,
             "tradable": true,
             "options": [
               {
-                "name": "Nuance",
-                "level": 90,
-                "gain": 0.2,
-                "from": "dropped by mobs",
+                "name": "Wooly Long Johns",
+                "level": 87,
+                "gain": 20.6,
+                "from": "Thesead merchant",
                 "tradable": true
               },
               {
-                "name": "Ehoole Drakeskin",
-                "level": 82,
-                "gain": -3.0,
-                "from": "Thanos merchant",
-                "tradable": true
-              },
-              {
-                "name": "Dizzy Spell",
-                "level": 88,
-                "gain": -4.6,
-                "from": "dropped by mobs",
-                "tradable": true
+                "name": "Tophet",
+                "level": 85,
+                "gain": 9.2,
+                "from": "Corrupted Underworld Crypt dungeon merchant",
+                "tradable": false
               }
             ]
           },
           {
             "slot": "BOOTS",
-            "name": "Epilogue",
-            "level": 89,
+            "name": "Achilles",
+            "level": 86,
             "tier": "LEGENDARY",
-            "gain": 30.2,
-            "from": "Isles of Fiction merchant",
+            "gain": 34.5,
+            "from": "Corrupted Underworld Crypt dungeon merchant",
             "price": null,
             "tradable": false,
+            "options": []
+          },
+          {
+            "slot": "RING",
+            "name": "Coolant",
+            "level": 86,
+            "tier": "RARE",
+            "gain": 8.1,
+            "from": "Relos merchant",
+            "price": null,
+            "tradable": true,
+            "options": []
+          },
+          {
+            "slot": "RING2",
+            "name": "Harden Core",
+            "level": 84,
+            "tier": "RARE",
+            "gain": 4.5,
+            "from": "cave chest",
+            "price": null,
+            "tradable": true,
             "options": [
               {
-                "name": "Epilogue",
-                "level": 89,
-                "gain": 34.4,
-                "from": "Isles of Fiction merchant",
-                "tradable": false
-              },
-              {
-                "name": "Dust Skaters",
-                "level": 87,
-                "gain": 14.8,
-                "from": "Corrupted Sand-Swept Tomb dungeon merchant",
-                "tradable": false
-              },
-              {
-                "name": "Tachyon",
-                "level": 88,
-                "gain": 14.7,
-                "from": "lootrun: the corkus traversal",
+                "name": "Harden Core",
+                "level": 84,
+                "gain": -3.0,
+                "from": "cave chest",
                 "tradable": true
               },
               {
-                "name": "Dragulj Boots",
-                "level": 80,
-                "gain": 9.0,
-                "from": "Thanos merchant",
+                "name": "Lifelike",
+                "level": 86,
+                "gain": -0.3,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Microchip",
+                "level": 85,
+                "gain": -0.8,
+                "from": "Relos merchant",
+                "tradable": true
+              },
+              {
+                "name": "Detective's Ring",
+                "level": 74,
+                "gain": -1.6,
+                "from": "Murder Mystery quest",
+                "tradable": true
+              },
+              {
+                "name": "Coolant",
+                "level": 86,
+                "gain": -2.2,
+                "from": "Relos merchant",
                 "tradable": true
               }
             ]
           },
           {
             "slot": "BRACELET",
-            "name": "Sacramentalia",
-            "level": 89,
-            "tier": "LEGENDARY",
-            "gain": 1.4,
-            "from": "Corrupted Sand-Swept Tomb dungeon merchant",
+            "name": "Veneration",
+            "level": 80,
+            "tier": "FABLED",
+            "gain": 9.5,
+            "from": "raid: orphion's nexus of light",
             "price": null,
-            "tradable": false,
+            "tradable": true,
             "options": [
-              {
-                "name": "Sacramentalia",
-                "level": 89,
-                "gain": 1.1,
-                "from": "Corrupted Sand-Swept Tomb dungeon merchant",
-                "tradable": false
-              },
               {
                 "name": "Veneration",
                 "level": 80,
-                "gain": 2.2,
+                "gain": 9.9,
                 "from": "raid: orphion's nexus of light",
                 "tradable": true
               },
               {
-                "name": "Vanguard",
-                "level": 77,
-                "gain": 1.1,
-                "from": "Corrupted Infested Pit dungeon merchant",
+                "name": "Sacramentalia",
+                "level": 89,
+                "gain": 0.7,
+                "from": "Corrupted Sand-Swept Tomb dungeon merchant",
                 "tradable": false
               },
               {
-                "name": "Siwel's Guilt",
-                "level": 74,
-                "gain": -0.8,
+                "name": "Euouae",
+                "level": 75,
+                "gain": -1.3,
                 "from": "cave chest",
                 "tradable": true
               },
               {
                 "name": "Silversplint",
                 "level": 89,
-                "gain": -2.1,
+                "gain": -3.5,
+                "from": "Eltom merchant",
+                "tradable": true
+              },
+              {
+                "name": "Diamond Cuff",
+                "level": 88,
+                "gain": -3.7,
                 "from": "Eltom merchant",
                 "tradable": true
               }
@@ -3135,199 +3328,11 @@
         "level": 100,
         "gear": [
           {
-            "slot": "RELIK",
-            "name": "Arkhalis",
-            "level": 98,
-            "tier": "RARE",
-            "gain": 1.0,
-            "from": "dropped by mobs",
-            "price": null,
-            "tradable": true,
-            "options": [
-              {
-                "name": "Arkhalis",
-                "level": 98,
-                "gain": -5.7,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Royal Hydrangea",
-                "level": 96,
-                "gain": -5.6,
-                "from": "Corrupted Undergrowth Ruins dungeon merchant",
-                "tradable": false
-              },
-              {
-                "name": "Hardcore",
-                "level": 92,
-                "gain": -7.2,
-                "from": "Fallen Factory dungeon merchant",
-                "tradable": false
-              },
-              {
-                "name": "Mephistophelian",
-                "level": 98,
-                "gain": -7.7,
-                "from": "Prelude to Annihilation event",
-                "tradable": true
-              },
-              {
-                "name": "Mouth of Fate",
-                "level": 92,
-                "gain": -15.8,
-                "from": "dropped by mobs",
-                "tradable": true
-              }
-            ]
-          },
-          {
-            "slot": "HELMET",
-            "name": "Aquamarine",
-            "level": 100,
-            "tier": "UNIQUE",
-            "gain": 4.8,
-            "from": "dropped by mobs",
-            "price": null,
-            "tradable": true,
-            "options": [
-              {
-                "name": "Aquamarine",
-                "level": 100,
-                "gain": 4.7,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Sparkweaver",
-                "level": 96,
-                "gain": -4.0,
-                "from": "The Qira Hive quest",
-                "tradable": false
-              },
-              {
-                "name": "Cranial Panel",
-                "level": 85,
-                "gain": -4.1,
-                "from": "Corkus merchant",
-                "tradable": true
-              },
-              {
-                "name": "Ambertoise Shell",
-                "level": 88,
-                "gain": -5.3,
-                "from": "The Qira Hive quest",
-                "tradable": false
-              },
-              {
-                "name": "Phoenix Prince's Crown",
-                "level": 90,
-                "gain": -6.0,
-                "from": "discovery: lost avos city",
-                "tradable": false
-              }
-            ]
-          },
-          {
-            "slot": "LEGGINGS",
-            "name": "Trench Scourer",
-            "level": 94,
-            "tier": "RARE",
-            "gain": 19.6,
-            "from": "The Qira Hive quest",
-            "price": null,
-            "tradable": false,
-            "options": [
-              {
-                "name": "Trench Scourer",
-                "level": 94,
-                "gain": -3.5,
-                "from": "The Qira Hive quest",
-                "tradable": false
-              },
-              {
-                "name": "Vaward",
-                "level": 99,
-                "gain": 0.0,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Siliquartz Blend",
-                "level": 87,
-                "gain": -3.6,
-                "from": "Corkus merchant",
-                "tradable": true
-              },
-              {
-                "name": "Neutrino",
-                "level": 100,
-                "gain": -9.1,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Cadence",
-                "level": 94,
-                "gain": -13.1,
-                "from": "dropped by mobs",
-                "tradable": true
-              }
-            ]
-          },
-          {
-            "slot": "BOOTS",
-            "name": "Achilles",
-            "level": 86,
-            "tier": "LEGENDARY",
-            "gain": 19.5,
-            "from": "Corrupted Underworld Crypt dungeon merchant",
-            "price": null,
-            "tradable": false,
-            "options": [
-              {
-                "name": "Achilles",
-                "level": 86,
-                "gain": 4.5,
-                "from": "Corrupted Underworld Crypt dungeon merchant",
-                "tradable": false
-              },
-              {
-                "name": "Skidbladnir",
-                "level": 100,
-                "gain": -1.6,
-                "from": "Corrupted Galleon's Graveyard dungeon merchant",
-                "tradable": false
-              },
-              {
-                "name": "Dust Skaters",
-                "level": 87,
-                "gain": -3.2,
-                "from": "Corrupted Sand-Swept Tomb dungeon merchant",
-                "tradable": false
-              },
-              {
-                "name": "Mesosphere",
-                "level": 91,
-                "gain": -10.1,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Ensa's Ideals",
-                "level": 84,
-                "gain": -30.7,
-                "from": "dropped by mobs",
-                "tradable": true
-              }
-            ]
-          },
-          {
             "slot": "RING",
             "name": "Diamond Fusion Ring",
             "level": 95,
             "tier": "LEGENDARY",
-            "gain": 0.6,
+            "gain": 3.9,
             "from": "challenge: legendary island",
             "price": null,
             "tradable": false,
@@ -3335,37 +3340,171 @@
               {
                 "name": "Diamond Fusion Ring",
                 "level": 95,
-                "gain": 3.9,
+                "gain": 5.4,
                 "from": "challenge: legendary island",
                 "tradable": false
               },
               {
                 "name": "Intensity",
                 "level": 100,
-                "gain": 1.9,
+                "gain": 4.4,
                 "from": "The Qira Hive quest",
                 "tradable": false
               },
               {
                 "name": "Gold Fusion Ring",
                 "level": 95,
-                "gain": 1.1,
+                "gain": 2.7,
                 "from": "challenge: legendary island",
                 "tradable": false
               },
               {
-                "name": "Worship",
-                "level": 84,
-                "gain": -0.5,
+                "name": "Rune of Safe Passage",
+                "level": 92,
+                "gain": 0.9,
+                "from": "Corrupted Ice Barrows dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Silver Fusion Ring",
+                "level": 95,
+                "gain": 0.3,
+                "from": "challenge: legendary island",
+                "tradable": false
+              },
+              {
+                "name": "Byte",
+                "level": 91,
+                "gain": -0.3,
+                "from": "Fallen Factory dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Gloomstone",
+                "level": 85,
+                "gain": -0.3,
                 "from": "cave chest",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "RELIK",
+            "name": "Hardcore",
+            "level": 92,
+            "tier": "RARE",
+            "gain": 13.9,
+            "from": "Fallen Factory dungeon merchant",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Hardcore",
+                "level": 92,
+                "gain": -3.8,
+                "from": "Fallen Factory dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Arkhalis",
+                "level": 98,
+                "gain": -0.1,
+                "from": "dropped by mobs",
                 "tradable": true
               },
               {
-                "name": "Harden Core",
-                "level": 84,
-                "gain": -0.7,
-                "from": "cave chest",
+                "name": "Mephistophelian",
+                "level": 98,
+                "gain": -12.5,
+                "from": "Prelude to Annihilation event",
                 "tradable": true
+              },
+              {
+                "name": "Royal Hydrangea",
+                "level": 96,
+                "gain": -14.3,
+                "from": "Corrupted Undergrowth Ruins dungeon merchant",
+                "tradable": false
+              },
+              {
+                "name": "Hard Light",
+                "level": 96,
+                "gain": -16.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "CHESTPLATE",
+            "name": "Dondasch",
+            "level": 100,
+            "tier": "LEGENDARY",
+            "gain": 2.9,
+            "from": "Aerie of the Recluse altar",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Dondasch",
+                "level": 100,
+                "gain": 4.4,
+                "from": "Aerie of the Recluse altar",
+                "tradable": false
+              },
+              {
+                "name": "Tisaun's Valor",
+                "level": 87,
+                "gain": -10.1,
+                "from": "Corrupted Sand-Swept Tomb dungeon",
+                "tradable": true
+              },
+              {
+                "name": "Toy Maker",
+                "level": 85,
+                "gain": -15.3,
+                "from": "Isles of Fiction merchant",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "LEGGINGS",
+            "name": "Eradian Cuissards",
+            "level": 95,
+            "tier": "LEGENDARY",
+            "gain": 5.7,
+            "from": "Maar Ashpit event",
+            "price": null,
+            "tradable": true,
+            "options": [
+              {
+                "name": "Eradian Cuissards",
+                "level": 95,
+                "gain": 0.8,
+                "from": "Maar Ashpit event",
+                "tradable": true
+              },
+              {
+                "name": "Neutrino",
+                "level": 100,
+                "gain": -11.8,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Ehoole Drakeskin",
+                "level": 82,
+                "gain": -13.5,
+                "from": "Thanos merchant",
+                "tradable": true
+              },
+              {
+                "name": "Static-Charged Leggings",
+                "level": 82,
+                "gain": -26.6,
+                "from": "The Qira Hive quest",
+                "tradable": false
               }
             ]
           },
@@ -3382,84 +3521,84 @@
               {
                 "name": "Diamond Fusion Ring",
                 "level": 95,
-                "gain": 1.1,
+                "gain": -0.6,
+                "from": "challenge: legendary island",
+                "tradable": false
+              },
+              {
+                "name": "Gold Fusion Ring",
+                "level": 95,
+                "gain": -3.1,
                 "from": "challenge: legendary island",
                 "tradable": false
               },
               {
                 "name": "Intensity",
                 "level": 100,
-                "gain": -0.8,
+                "gain": -3.6,
                 "from": "The Qira Hive quest",
                 "tradable": false
               },
               {
-                "name": "Gold Fusion Ring",
-                "level": 95,
-                "gain": -1.5,
-                "from": "challenge: legendary island",
+                "name": "Rune of Safe Passage",
+                "level": 92,
+                "gain": -4.6,
+                "from": "Corrupted Ice Barrows dungeon merchant",
                 "tradable": false
               },
               {
-                "name": "Worship",
-                "level": 84,
-                "gain": -2.5,
-                "from": "cave chest",
-                "tradable": true
-              },
-              {
-                "name": "Summa",
+                "name": "Silver Fusion Ring",
                 "level": 95,
-                "gain": -2.8,
-                "from": "Geyser Pit altar",
+                "gain": -5.3,
+                "from": "challenge: legendary island",
                 "tradable": false
               }
             ]
           },
           {
             "slot": "BRACELET",
-            "name": "Veneration",
-            "level": 80,
-            "tier": "FABLED",
-            "gain": 7.6,
-            "from": "raid: orphion's nexus of light",
+            "name": "Diamond Fusion Bracelet",
+            "level": 95,
+            "tier": "LEGENDARY",
+            "gain": 2.4,
+            "from": "challenge: legendary island",
             "price": null,
-            "tradable": true,
+            "tradable": false,
             "options": [
-              {
-                "name": "Veneration",
-                "level": 80,
-                "gain": -1.4,
-                "from": "raid: orphion's nexus of light",
-                "tradable": true
-              },
               {
                 "name": "Diamond Fusion Bracelet",
                 "level": 95,
-                "gain": 0.0,
+                "gain": 4.5,
                 "from": "challenge: legendary island",
                 "tradable": false
               },
               {
                 "name": "Gold Fusion Bracelet",
                 "level": 95,
-                "gain": -2.6,
+                "gain": 2.0,
                 "from": "challenge: legendary island",
                 "tradable": false
               },
               {
-                "name": "Diamond Cuff",
-                "level": 88,
-                "gain": -4.4,
-                "from": "Eltom merchant",
-                "tradable": true
+                "name": "Silver Fusion Bracelet",
+                "level": 95,
+                "gain": -1.9,
+                "from": "challenge: legendary island",
+                "tradable": false
               },
               {
-                "name": "Hamsey's Brilliance",
-                "level": 96,
-                "gain": -4.8,
-                "from": "cave chest",
-                "tradable": true
+                "name": "Prowess",
+                "level": 100,
+                "gain": -3.4,
+                "from": "The Qira Hive quest",
+                "tradable": false
+              },
+              {
+                "name": "Gold Static Bracelet",
+                "level": 95,
+                "gain": -7.1,
+                "from": "challenge: legendary island",
+                "tradable": false
               }
             ]
           },
@@ -3468,7 +3607,7 @@
             "name": "Contrast",
             "level": 100,
             "tier": "LEGENDARY",
-            "gain": 7.0,
+            "gain": 11.1,
             "from": "The Qira Hive quest",
             "price": null,
             "tradable": false,
@@ -3476,36 +3615,36 @@
               {
                 "name": "Contrast",
                 "level": 100,
-                "gain": 8.1,
+                "gain": 11.4,
                 "from": "The Qira Hive quest",
-                "tradable": false
-              },
-              {
-                "name": "Drain",
-                "level": 85,
-                "gain": -1.9,
-                "from": "Corrupted Underworld Crypt dungeon merchant",
-                "tradable": false
-              },
-              {
-                "name": "Pulse Starter",
-                "level": 91,
-                "gain": -2.0,
-                "from": "Corrupted Ice Barrows dungeon merchant",
                 "tradable": false
               },
               {
                 "name": "Rough Diamond",
                 "level": 80,
-                "gain": -3.5,
+                "gain": -1.6,
                 "from": "Thanos merchant",
                 "tradable": true
               },
               {
                 "name": "Diamond Fusion Necklace",
                 "level": 95,
-                "gain": -4.8,
+                "gain": -2.3,
                 "from": "challenge: legendary island",
+                "tradable": false
+              },
+              {
+                "name": "Lightning Flash",
+                "level": 82,
+                "gain": -3.5,
+                "from": "The Qira Hive quest",
+                "tradable": false
+              },
+              {
+                "name": "Bottled Thunderstorm",
+                "level": 81,
+                "gain": -5.0,
+                "from": "The Qira Hive quest",
                 "tradable": false
               }
             ]
@@ -3528,55 +3667,11 @@
         "level": 110,
         "gear": [
           {
-            "slot": "RELIK",
-            "name": "Immolation",
-            "level": 101,
-            "tier": "MYTHIC",
-            "gain": 34.1,
-            "from": "dropped by mobs",
-            "price": null,
-            "tradable": true,
-            "options": []
-          },
-          {
-            "slot": "HELMET",
-            "name": "Ornate Shadow Cowl",
-            "level": 103,
-            "tier": "FABLED",
-            "gain": 36.7,
-            "from": "Lutho merchant",
-            "price": null,
-            "tradable": false,
-            "options": []
-          },
-          {
-            "slot": "LEGGINGS",
-            "name": "Heat Sink",
-            "level": 92,
-            "tier": "LEGENDARY",
-            "gain": 10.9,
-            "from": "Fallen Factory dungeon merchant",
-            "price": null,
-            "tradable": false,
-            "options": []
-          },
-          {
-            "slot": "BOOTS",
-            "name": "Unifier",
-            "level": 110,
-            "tier": "UNIQUE",
-            "gain": 49.3,
-            "from": "dropped by mobs",
-            "price": null,
-            "tradable": true,
-            "options": []
-          },
-          {
             "slot": "RING",
             "name": "Dragon's Tear",
             "level": 107,
             "tier": "RARE",
-            "gain": 2.2,
+            "gain": 2.0,
             "from": "cave chest",
             "price": null,
             "tradable": true,
@@ -3584,63 +3679,37 @@
               {
                 "name": "Dragon's Tear",
                 "level": 107,
-                "gain": 4.7,
+                "gain": 3.4,
                 "from": "cave chest",
                 "tradable": true
               },
               {
                 "name": "Summa",
                 "level": 95,
-                "gain": 2.3,
+                "gain": -2.8,
                 "from": "Geyser Pit altar",
                 "tradable": false
               },
               {
-                "name": "Gold Fusion Ring",
-                "level": 95,
-                "gain": -2.3,
-                "from": "challenge: legendary island",
-                "tradable": false
+                "name": "Accelerando",
+                "level": 106,
+                "gain": -1.6,
+                "from": "cave chest",
+                "tradable": true
               },
               {
                 "name": "Prime",
                 "level": 109,
-                "gain": -2.5,
+                "gain": -1.7,
                 "from": "cave chest",
                 "tradable": true
               },
               {
-                "name": "Bronze Basic Ring",
-                "level": 90,
-                "gain": -2.7,
-                "from": "challenge: legendary island",
-                "tradable": false
-              }
-            ]
-          },
-          {
-            "slot": "RING2",
-            "name": "Dragon's Tear",
-            "level": 107,
-            "tier": "RARE",
-            "gain": 2.2,
-            "from": "cave chest",
-            "price": null,
-            "tradable": true,
-            "options": [
-              {
-                "name": "Dragon's Tear",
-                "level": 107,
-                "gain": 3.5,
+                "name": "Greenrock Ring",
+                "level": 115,
+                "gain": -1.8,
                 "from": "cave chest",
                 "tradable": true
-              },
-              {
-                "name": "Summa",
-                "level": 95,
-                "gain": 1.3,
-                "from": "Geyser Pit altar",
-                "tradable": false
               },
               {
                 "name": "Gold Fusion Ring",
@@ -3650,58 +3719,105 @@
                 "tradable": false
               },
               {
-                "name": "Prime",
-                "level": 109,
-                "gain": -2.6,
+                "name": "Recalibration",
+                "level": 111,
+                "gain": -2.0,
                 "from": "cave chest",
+                "tradable": true
+              }
+            ]
+          },
+          {
+            "slot": "LEGGINGS",
+            "name": "Ornate Shadow Cover",
+            "level": 103,
+            "tier": "FABLED",
+            "gain": 4.3,
+            "from": "Lutho merchant",
+            "price": null,
+            "tradable": false,
+            "options": [
+              {
+                "name": "Ornate Shadow Cover",
+                "level": 103,
+                "gain": 0.2,
+                "from": "Lutho merchant",
+                "tradable": false
+              },
+              {
+                "name": "Aleph Null",
+                "level": 105,
+                "gain": -6.4,
+                "from": "raid: the nameless anomaly",
                 "tradable": true
               },
               {
-                "name": "Bronze Basic Ring",
+                "name": "Rodoroc's Guard",
+                "level": 94,
+                "gain": -7.4,
+                "from": "Rodoroc merchant",
+                "tradable": true
+              },
+              {
+                "name": "Vaward",
+                "level": 99,
+                "gain": -8.0,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Tera",
                 "level": 90,
-                "gain": -3.6,
-                "from": "challenge: legendary island",
+                "gain": -10.5,
+                "from": "Geyser Pit altar",
                 "tradable": false
               }
             ]
           },
           {
-            "slot": "BRACELET",
-            "name": "Diamond Fusion Bracelet",
-            "level": 95,
-            "tier": "LEGENDARY",
-            "gain": 3.8,
-            "from": "challenge: legendary island",
+            "slot": "RING2",
+            "name": "Dragon's Tear",
+            "level": 107,
+            "tier": "RARE",
+            "gain": 2.0,
+            "from": "cave chest",
             "price": null,
-            "tradable": false,
+            "tradable": true,
             "options": [
               {
-                "name": "Diamond Fusion Bracelet",
-                "level": 95,
-                "gain": 4.9,
-                "from": "challenge: legendary island",
-                "tradable": false
-              },
-              {
-                "name": "Gold Fusion Bracelet",
-                "level": 95,
-                "gain": 1.8,
-                "from": "challenge: legendary island",
-                "tradable": false
-              },
-              {
-                "name": "Roots of Unity",
+                "name": "Dragon's Tear",
                 "level": 107,
-                "gain": -0.5,
+                "gain": 3.0,
                 "from": "cave chest",
                 "tradable": true
               },
               {
-                "name": "Deliberation",
-                "level": 106,
-                "gain": -2.9,
+                "name": "Prime",
+                "level": 109,
+                "gain": -1.4,
                 "from": "cave chest",
                 "tradable": true
+              },
+              {
+                "name": "Accelerando",
+                "level": 106,
+                "gain": -1.9,
+                "from": "cave chest",
+                "tradable": true
+              },
+              {
+                "name": "Summa",
+                "level": 95,
+                "gain": -2.1,
+                "from": "Geyser Pit altar",
+                "tradable": false
+              },
+              {
+                "name": "Gold Fusion Ring",
+                "level": 95,
+                "gain": -2.1,
+                "from": "challenge: legendary island",
+                "tradable": false
               }
             ]
           }
@@ -3721,153 +3837,65 @@
         "level": 120,
         "gear": [
           {
-            "slot": "BOOTS",
-            "name": "Boreal",
-            "level": 93,
+            "slot": "RELIK",
+            "name": "Transfiguration",
+            "level": 117,
             "tier": "MYTHIC",
-            "gain": 38.7,
+            "gain": 14.3,
             "from": "dropped by mobs",
             "price": null,
             "tradable": true,
             "options": [
               {
-                "name": "Boreal",
-                "level": 93,
-                "gain": -1.4,
+                "name": "Transfiguration",
+                "level": 117,
+                "gain": 17.0,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
-                "name": "Hellstorm Striders",
-                "level": 108,
-                "gain": -0.4,
+                "name": "Vine Lash",
+                "level": 116,
+                "gain": -10.8,
                 "from": "dropped by mobs",
                 "tradable": true
               },
               {
-                "name": "Skidbladnir",
-                "level": 100,
-                "gain": -0.6,
-                "from": "Corrupted Galleon's Graveyard dungeon merchant",
-                "tradable": false
-              },
-              {
-                "name": "Bunker",
-                "level": 112,
-                "gain": -5.6,
-                "from": "dropped by mobs",
-                "tradable": true
-              },
-              {
-                "name": "Euphonia",
-                "level": 113,
-                "gain": -6.3,
-                "from": "dropped by mobs",
-                "tradable": true
-              }
-            ]
-          },
-          {
-            "slot": "RING",
-            "name": "Messenger",
-            "level": 118,
-            "tier": "LEGENDARY",
-            "gain": 5.4,
-            "from": "cave chest",
-            "price": null,
-            "tradable": true,
-            "options": [
-              {
-                "name": "Messenger",
+                "name": "Overstimulation",
                 "level": 118,
-                "gain": -2.8,
-                "from": "cave chest",
+                "gain": -12.7,
+                "from": "dropped by mobs",
                 "tradable": true
               },
               {
-                "name": "Insomniac",
-                "level": 111,
-                "gain": 1.6,
-                "from": "cave chest",
+                "name": "Incoherence",
+                "level": 114,
+                "gain": -10.5,
+                "from": "dropped by mobs",
                 "tradable": true
               },
               {
-                "name": "Prime",
-                "level": 109,
-                "gain": 0.7,
-                "from": "cave chest",
+                "name": "Fractal",
+                "level": 105,
+                "gain": -14.1,
+                "from": "raid: the nameless anomaly",
                 "tradable": true
               },
               {
-                "name": "Warming Solace",
-                "level": 112,
-                "gain": -3.7,
-                "from": "cave chest",
+                "name": "Final Flight",
+                "level": 104,
+                "gain": -17.5,
+                "from": "dropped by mobs",
+                "tradable": true
+              },
+              {
+                "name": "Flaming Soul",
+                "level": 120,
+                "gain": -14.8,
+                "from": "dropped by mobs",
                 "tradable": true
               }
             ]
-          },
-          {
-            "slot": "RING2",
-            "name": "Messenger",
-            "level": 118,
-            "tier": "LEGENDARY",
-            "gain": 5.4,
-            "from": "cave chest",
-            "price": null,
-            "tradable": true,
-            "options": [
-              {
-                "name": "Messenger",
-                "level": 118,
-                "gain": 5.4,
-                "from": "cave chest",
-                "tradable": true
-              },
-              {
-                "name": "Insomniac",
-                "level": 111,
-                "gain": 1.7,
-                "from": "cave chest",
-                "tradable": true
-              },
-              {
-                "name": "Prime",
-                "level": 109,
-                "gain": 0.6,
-                "from": "cave chest",
-                "tradable": true
-              },
-              {
-                "name": "Warming Solace",
-                "level": 112,
-                "gain": -3.1,
-                "from": "cave chest",
-                "tradable": true
-              }
-            ]
-          },
-          {
-            "slot": "BRACELET",
-            "name": "Clandestine",
-            "level": 119,
-            "tier": "LEGENDARY",
-            "gain": 3.2,
-            "from": "cave chest",
-            "price": null,
-            "tradable": true,
-            "options": []
-          },
-          {
-            "slot": "NECKLACE",
-            "name": "Valediction",
-            "level": 120,
-            "tier": "LEGENDARY",
-            "gain": 6.9,
-            "from": "cave chest",
-            "price": null,
-            "tradable": true,
-            "options": []
           }
         ],
         "abilities": [],

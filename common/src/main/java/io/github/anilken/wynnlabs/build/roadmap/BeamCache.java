@@ -29,12 +29,13 @@ public final class BeamCache {
 
     /**
      * The scoring model the kept results were made with, part of every key: raised whenever the
-     * way sets are scored changes (survival floor, skill point search, set bonuses, prices, the
-     * ability tree per milestone), so a set chosen by an older model is searched again instead of
-     * coming back from disk. A method, not a field: a field added by a hot swap keeps no value.
+     * way sets are scored or searched changes (survival floor, skill point search, set bonuses,
+     * prices, the ability tree per milestone, the search's starts), so a set chosen by an older
+     * model is searched again instead of coming back from disk. A method, not a field: a field
+     * added by a hot swap keeps no value.
      */
     static int modelVersion() {
-        return 7;
+        return 9;
     }
 
     /** The loaded entries and whose they are; access-ordered, so the oldest drop first. */

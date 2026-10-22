@@ -169,14 +169,17 @@ final class MilestonePlanner {
         // Dexterity costs nothing off-skill where the spread holds 80 of it anyway
         List<String> badTiersLast = CandidateRules.badTiers(last);
 
-        // Candidates per slot, once
+        // Candidates per slot, once. Your own level looks as far down as every later milestone
+        // (rules.shopping.milestoneWindow, 20): with 8, a Lv 70 searched alone never saw the
+        // Lv 60 Stronghold, Photon and Lightshow the chained map wears there (11 % behind it)
+        int window = (int) Rules.sub("shopping", "milestoneWindow", 20);
         Map<Slot, List<ItemData>> cands = new EnumMap<>(Slot.class);
         state.allGear().forEach(info -> {
             Slot t = info.slot();
             int lv = info.requirements().level();
             // what you have is weighed below the level window too: the bag or bank may hold a set
             // that only pays off whole (the Wynnterfest ornaments at Lv 50 on a Lv 72 build)
-            if (!best.containsKey(t) || lv > last || lv < level - 8 && !owned.contains(info.name())
+            if (!best.containsKey(t) || lv > last || lv < level - window && !owned.contains(info.name())
                     || badTiersLast.contains(info.tier().name())
                     || Shopping.walkPenalty(info) > Rules.sub("shopping", "maxWalkSpeedPenalty", 999)
                     || info.base().attackSpeed().isPresent()

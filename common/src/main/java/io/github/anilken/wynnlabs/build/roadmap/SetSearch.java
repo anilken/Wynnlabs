@@ -190,9 +190,11 @@ final class SetSearch {
 
     /**
      * The weapons a set is built around: the first rules.roadmap.weaponStarts of the weapon pool
-     * (6 from the endgame level on, 3 before), then every Mythic and every weapon you have that
-     * the milestone allows, at most rules.roadmap.weaponStartsMax (16). A weapon judged as a
-     * swap into armour made for another element mostly loses, Mythics most of all.
+     * (6 from the endgame level on, 3 before), every weapon you have that the milestone allows,
+     * for each element none of those (nor the weapon held) is of its strongest weapon alone
+     * ({@link #elementBests}), then every Mythic, at most rules.roadmap.weaponStartsMax (16) in
+     * all. A weapon judged as a swap into armour made for another element mostly loses, Mythics
+     * most of all.
      */
     private static List<ItemData> weaponStarts(Ctx c, Scored inc) {
         if (c.fixed().contains("WEAPON")) {
@@ -222,17 +224,93 @@ final class SetSearch {
                 all.addAll(l);
             }
         });
+        // what you have first, then each element the starts miss, then the Mythics: all within max
         for (ItemData info : all) {
             if (out.size() >= max) {
                 break;
             }
-            boolean mythic = info.tier().name().equals("MYTHIC");
-            if ((mythic || c.owned().containsKey(info.name())) && info.requirements().level() <= c.m()
+            if (c.owned().containsKey(info.name()) && info.requirements().level() <= c.m()
+                    && names.add(info.name().toLowerCase(java.util.Locale.ROOT))) {
+                out.add(info);
+            }
+        }
+        boolean[] covered = new boolean[Damage.ELEMENTS.length];
+        for (ItemData w : all) {
+            if (names.contains(w.name().toLowerCase(java.util.Locale.ROOT))) {
+                covered[element(w)] = true;                 // held, or a start already
+            }
+        }
+        covered[0] = true;
+        for (ItemData info : elementBests(c, all, covered)) {
+            if (out.size() < max && names.add(info.name().toLowerCase(java.util.Locale.ROOT))) {
+                out.add(info);
+            }
+        }
+        for (ItemData info : all) {
+            if (out.size() >= max) {
+                break;
+            }
+            if (info.tier().name().equals("MYTHIC") && info.requirements().level() <= c.m()
                     && names.add(info.name().toLowerCase(java.util.Locale.ROOT))) {
                 out.add(info);
             }
         }
         return out;
+    }
+
+    /**
+     * For each element not {@code covered}, the weapon that does most on its own: each of its
+     * weapons the milestone allows, with no armour and the skill points spread for it alone, by
+     * its plain score (the first name on a tie), in the elements' order. The weapon pool is
+     * ranked by a swap into the last milestone's set, where a weapon that wants other skills
+     * cannot be worn at all, so an element can drop out of it whole: the chained map at Lv 90
+     * held only Fire, Water and Earth weapons and never tried Loaded Question (the Thunder set
+     * around it judged 3.4 % over the one it kept, against the same points).
+     */
+    private static List<ItemData> elementBests(Ctx c, List<ItemData> weapons, boolean[] covered) {
+        String[] els = Damage.ELEMENTS;
+        ItemData[] best = new ItemData[els.length];
+        double[] score = new double[els.length];
+        for (ItemData info : weapons) {
+            int el = element(info);
+            if (covered[el] || info.requirements().level() > c.m()) {
+                continue;
+            }
+            Map<String, Damage.Piece> alone = new LinkedHashMap<>();
+            alone.put("WEAPON", c.piece(info));
+            Roadmap.tick();
+            Build.Eval e = Build.allocate(alone, c.m(), c.earned());
+            if (e == null) {
+                continue;
+            }
+            double o = e.result().objective();
+            if (best[el] == null || o > score[el] || o == score[el] && info.name().compareTo(best[el].name()) < 0) {
+                best[el] = info;
+                score[el] = o;
+            }
+        }
+        List<ItemData> out = new ArrayList<>();
+        for (ItemData info : best) {
+            if (info != null) {
+                out.add(info);
+            }
+        }
+        return out;
+    }
+
+    /** A weapon's element: its strongest elemental damage ({@link Damage#ELEMENTS}' index), 0 with none. */
+    private static int element(ItemData info) {
+        int at = 0;
+        int most = 0;
+        for (var d : info.base().damages()) {
+            for (int i = 1; i < Damage.ELEMENTS.length; i++) {
+                if (Damage.ELEMENTS[i].equalsIgnoreCase(d.type()) && d.low() + d.high() > most) {
+                    most = d.low() + d.high();
+                    at = i;
+                }
+            }
+        }
+        return at;
     }
 
     /**

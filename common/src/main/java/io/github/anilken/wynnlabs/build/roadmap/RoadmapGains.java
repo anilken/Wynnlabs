@@ -98,8 +98,9 @@ final class RoadmapGains {
      * milestone's piece, or empty), not as the set stood when the pick went in. Picks that pay off
      * together (a set's pieces, one carrying another's skill points) showed −17 % one after
      * another while the whole set was well ahead; a pick that really costs the set something still
-     * shows it. A row whose slot cannot go back alone (the set no longer fits, empty or not) goes
-     * back with one other change of the milestone ({@link #withPartner}); one that cannot even so
+     * shows it. A row whose slot cannot go back alone (the set no longer fits) goes back with one
+     * other change of the milestone ({@link #withPartner}), never to an empty slot where something
+     * was (a set without its weapon says nothing about the weapon); one that cannot even so
      * keeps its number, a target's (NaN) too. Runs on the finished set, after the search's.
      */
     static void stepsInSet(List<Gear> gear, Map<String, Damage.Piece> set, Map<String, Damage.Piece> start,
@@ -120,10 +121,9 @@ final class RoadmapGains {
             if (was != null && was.key().equals(pick.key())) {
                 continue;
             }
+            // never the slot left empty where something was: a Lv 70 set with no weapon at all
+            // (Void Catalyst's 40 Dexterity no longer fit) made Lightshow read +2104 %
             double without = withSlot(set, slot, was, m, earned, prev);
-            if (Double.isNaN(without) && was != null) {
-                without = withSlot(set, slot, null, m, earned, prev);
-            }
             if (Double.isNaN(without)) {
                 // the pick carries what another of the milestone's changes needs (a new weapon's
                 // skill points): it goes back together with that one, and the row shows what the

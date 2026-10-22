@@ -130,8 +130,12 @@ public final class Setup {
             "xpLog"};
     }
 
-    /** The survival weights' version: rules written before it get their goal's survival weights again ({@link #upgrade}). */
-    static final int SURVIVAL_MODEL = 2;
+    /**
+     * The goal weights' version: rules written before it get their goal's survival weights, health
+     * floor, XP curve and XP factor again ({@link #upgrade}); 3 brought the fighting goals' XP factor
+     * (from 2 only that, and the summon calibration starts over).
+     */
+    static final int SURVIVAL_MODEL = 3;
 
     /**
      * A preset's model weights: survival, regen, mana, heal, damage, survival power, then the
@@ -150,20 +154,21 @@ public final class Setup {
             // a healer keeps casting heals: max health × Healing Efficiency × casts, then survival
             case "HEALER" -> new double[] {0.5, 0.3, 0.6, 1.5, 0.3, 0.4, 1, 1, 1, 0, 0, 1.3, 0};
             // one big target: the hit per cast, walk speed and XP matter less
-            case "BOSS" -> new double[] {0.3, 0.2, 0.3, 0, 1.0, 0.3, 0.5, 0.5, 0.6, 1.2, 0, 1.15, 1};
+            case "BOSS" -> new double[] {0.3, 0.2, 0.3, 0, 1.0, 0.3, 0.3, 0.5, 0.6, 1.2, 0, 1.15, 1};
             // many weak targets: run from pack to pack and keep casting
             case "MOBBING" -> new double[] {0.25, 0.3, 0.6, 0, 1.0, 0.25, 1, 2.3, 2.0, 0, 0, 1.0, 0};
             // levelling: XP bonus and walk speed, enough damage and health to keep killing
             case "XP" -> new double[] {0.25, 0.2, 0.3, 0, 0.8, 0.2, 3, 2.0, 1.7, 0, 0, 1.0, 0};
             // loot runs: Loot Bonus and Loot Quality
             case "LOOT" -> new double[] {0.25, 0.2, 0.3, 0, 0.8, 0.2, 0.5, 1.3, 1.4, 0, 2.0, 1.0, 0};
-            default -> new double[] {0.2, 0.2, 0.3, 0, 1.0, 0.25, 1, 1, 1, 0, 0, 1.0, 1};
+            // fighting: XP is a side gain (0.3), or XP rings outweigh damage when feedback raised it
+            default -> new double[] {0.2, 0.2, 0.3, 0, 1.0, 0.25, 0.3, 1, 1, 0, 0, 1.0, 1};
         };
     }
 
     /**
      * As the rules are read: rules from before {@link #SURVIVAL_MODEL} get their goal's survival
-     * weights, health floor and XP curve (a weight set by hand, rules.model.byHand, stays). A
+     * weights, health floor, XP curve and XP factor (a weight set by hand, rules.model.byHand, stays). A
      * survival weight the death coach had raised over its base becomes rules.model.survivalLearned,
      * so that lesson is kept.
      */
@@ -188,10 +193,20 @@ public final class Setup {
             model.remove("survivalWeightBase");
         }
         List<String> keys = List.of(keys());
-        for (String k : new String[] {"survivalWeight", "survivalPower", "ehpFloorScale", "xpLog"}) {
+        int from = model.has("survivalModel") ? model.get("survivalModel").getAsInt() : 0;
+        // rules at 2 have this survival model already (and what feedback taught on top of it):
+        // 3 only brings the goal's XP factor; below 2 the whole list comes again
+        String[] reset = from >= 2 ? new String[] {"goalXp"}
+                : new String[] {"survivalWeight", "survivalPower", "ehpFloorScale", "xpLog", "goalXp"};
+        for (String k : reset) {
             if (!byHand.contains(k)) {
                 model.addProperty(k, w[keys.indexOf(k)]);
             }
+        }
+        // 3: summons hit only while alive and the whole main attack comes off the background, so
+        // a summon calibration fitted before means something else now: it starts over
+        if (from < 3 && model.has("summonCalibration") && !byHand.contains("summonCalibration")) {
+            model.addProperty("summonCalibration", 1.0);
         }
         model.addProperty("survivalModel", SURVIVAL_MODEL);
     }
