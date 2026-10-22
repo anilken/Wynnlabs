@@ -395,7 +395,11 @@ final class Advice {
                     .append(L.c("wynnlabs.advice.worn").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD)));
             // the J menu's damage model first (it also knows untradable merchant items), then the shopping list
             // the road map only when one was built (this session or the last); an old one says so
-            String note = road != null && !Double.isNaN(road.gain())
+            // a piece in the bag the advice says to wear instead of this one comes first: the
+            // shopping list and the road map only know what you could get, not what you carry
+            String beaten = beatenBy(gear.data().name());
+            String note = beaten != null ? L.t("wynnlabs.advice.worn_beaten", beaten)
+                    : road != null && !Double.isNaN(road.gain())
                     ? L.t("wynnlabs.advice.next_target_gain", road.info().name(), road.info().requirements().level(),
                             road.source(), Math.round(road.gain()))
                             + (Roadmap.stale() != null ? " (" + L.t("wynnlabs.advice.road_stale") + ")" : "")
@@ -496,6 +500,23 @@ final class Advice {
             shortList.add(L.cn("wynnlabs.advice.shift_more", dropped).withStyle(ChatFormatting.DARK_GRAY));
         }
         return shortList;
+    }
+
+    /**
+     * The name of a piece in the bag whose advice is to wear it instead of {@code worn} (its note
+     * names the worn piece: "Symbiont yerine …"), else null.
+     */
+    static String beatenBy(String worn) {
+        for (ItemStack s : GameState.current().inventory()) {
+            if (s == null || s.isEmpty() || AutoAdvice.isWorn(s)) {
+                continue;
+            }
+            Entry e = AutoAdvice.cached(s);
+            if (e != null && e.verdict() == Verdict.WEAR && e.note() != null && e.note().contains(worn)) {
+                return ItemJson.clean(s.getHoverName().getString());
+            }
+        }
+        return null;
     }
 
     /**

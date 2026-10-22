@@ -79,6 +79,7 @@
   "wynnlabs.advice.worn": "GİYİLİ",
   "wynnlabs.advice.next_target_gain": "Sıradaki hedef: %s (Lv. %s, %s, build +%%%s)",
   "wynnlabs.advice.nothing_better": "Listede bundan iyisi yok, iyi gidiyorsun",
+  "wynnlabs.advice.worn_beaten": "Çantandaki %s bunu geçiyor: onun üstüne gel",
   "wynnlabs.advice.next_target": "Sıradaki hedef: %s (Lv. %s, %s)",
   "wynnlabs.advice.bad_roll": ". Kötü roll (%%%s), ucuzsa yeniden tanımla",
   "wynnlabs.advice.quest_rank": "GÖREV #%s",
