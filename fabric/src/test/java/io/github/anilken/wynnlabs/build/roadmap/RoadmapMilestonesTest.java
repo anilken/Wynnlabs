@@ -4,6 +4,7 @@ import io.github.anilken.wynnlabs.build.Build;
 import io.github.anilken.wynnlabs.build.Damage;
 import io.github.anilken.wynnlabs.build.Exclusive;
 import io.github.anilken.wynnlabs.build.Tuning;
+import io.github.anilken.wynnlabs.core.Rules;
 import io.github.anilken.wynnlabs.game.FixtureState;
 import io.github.anilken.wynnlabs.game.Fixtures;
 import io.github.anilken.wynnlabs.game.GameState;
@@ -45,13 +46,23 @@ class RoadmapMilestonesTest {
         return Math.max(0, (Math.min(level, 101) - 1) * 2);
     }
 
-    @Test
-    void aChainedMilestoneKeepsUpWithOneSearchedFresh() throws Exception {
+    /** One milestone of the chained map beside the same milestone searched on its own. */
+    private record Pair(int level, Map<String, Damage.Piece> chained, Build.Eval chainedEval,
+            Map<String, Damage.Piece> fresh, Build.Eval freshEval, int[] prev, List<String> unseen) {}
+
+    /** The chained map's milestones, each with the map searched for that level alone (nowOnly); worked out once. */
+    private static List<Pair> pairs;
+
+    private static List<Pair> pairs() throws Exception {
+        if (pairs != null) {
+            return pairs;
+        }
         FixtureState.load(shaman()).install("en");
         List<Roadmap.Step> steps = Roadmap.build();
-        assumeTrue(!steps.isEmpty(), "no road map");
+        int[] prev = Roadmap.assignedPoints(GameState.current());
         FixtureState.uninstall();
-        List<String> bad = new ArrayList<>();
+        assumeTrue(!steps.isEmpty(), "no road map");
+        List<Pair> out = new ArrayList<>();
         for (Roadmap.Step s : steps) {
             if (s.set() == null) {
                 continue;
@@ -61,18 +72,68 @@ class RoadmapMilestonesTest {
             // milestone before it to follow
             FixtureState.load(shaman()).atLevel(m).install("en");
             Roadmap.Computed c = Roadmap.compute(new Roadmap.Inputs(List.of(), Tuning.Choice.PLAIN, true, 0), null);
+            // the chain's pieces a search at this level alone never looks at: below the window
+            // (rules.shopping.milestoneWindow) and not yours; the chain carried them from before
+            java.util.Set<String> owned = Roadmap.ownedCounts(GameState.current()).keySet();
+            int floor = m - (int) Rules.sub("shopping", "milestoneWindow", 20);
+            List<String> unseen = new ArrayList<>();
+            s.build().values().forEach(p -> {
+                if (p != null && p.level() < floor && !owned.contains(p.name())) {
+                    unseen.add(p.name() + " (Lv " + p.level() + ")");
+                }
+            });
             FixtureState.uninstall();
-            Build.Eval fresh = c == null || c.steps().isEmpty() ? null : c.steps().get(0).set();
-            if (fresh == null) {
-                continue;
+            Roadmap.Step f = c == null || c.steps().isEmpty() ? null : c.steps().get(0);
+            if (f != null && f.set() != null) {
+                out.add(new Pair(m, s.build(), s.set(), f.build(), f.set(), prev, unseen));
             }
-            double chained = Roadmap.judged(s.set(), null, m);
-            double alone = Roadmap.judged(fresh, null, m);
-            Fixtures.note(String.format("Lv %d: chained %.0f, fresh %.0f (%+.1f %%)", m, chained, alone, (chained / alone - 1) * 100));
+            prev = Roadmap.carry(s.set(), s.build(), m);
+        }
+        pairs = out;
+        return out;
+    }
+
+    @Test
+    void aChainedMilestoneKeepsUpWithOneSearchedFresh() throws Exception {
+        // both sets judged as the chain judges its own: against the last milestone's points and
+        // pieces (the respec charge, the keep bonus). A fresh set that drops Defence the chain
+        // built up pays for the reset, so the raw scores would compare a set the chain may not take
+        List<String> bad = new ArrayList<>();
+        for (Pair p : pairs()) {
+            double chained = Roadmap.judged(p.chained(), p.chainedEval(), p.prev(), p.level());
+            double alone = Roadmap.judged(p.fresh(), p.freshEval(), p.prev(), p.level());
+            Fixtures.note(String.format("Lv %d: chained %.0f, fresh %.0f (%+.1f %%), judged against the chain's points",
+                    p.level(), chained, alone, (chained / alone - 1) * 100));
             if (chained < alone * 0.97) {
-                bad.add(String.format("Lv %d: chained %.0f is more than 3 %% behind fresh %.0f", m, chained, alone));
+                bad.add(String.format("Lv %d: chained %.0f is more than 3 %% behind fresh %.0f", p.level(), chained, alone));
             }
         }
+        assertTrue(bad.isEmpty(), String.join("\n", bad));
+    }
+
+    @Test
+    void aMilestoneSearchedAloneKeepsUpWithTheChain() throws Exception {
+        // the build window's "now" searches your level alone: it has no milestones before it to
+        // build on, yet must not land far below the map's set for the same level (raw scores:
+        // each answers to its own points). Where the chain wears pieces from below the window
+        // that it carried along (Lv 120: the Diamond Fusion rings at Lv 95), the search alone
+        // cannot have them by rule: noted, not compared
+        List<String> bad = new ArrayList<>();
+        int compared = 0;
+        for (Pair p : pairs()) {
+            double chained = p.chainedEval().result().objective();
+            double alone = p.freshEval().result().objective();
+            Fixtures.note(String.format("Lv %d: alone %.0f, chained %.0f (%+.1f %%)%s", p.level(), alone, chained,
+                    (alone / chained - 1) * 100, p.unseen().isEmpty() ? "" : ", chained wears " + p.unseen()));
+            if (!p.unseen().isEmpty()) {
+                continue;
+            }
+            compared++;
+            if (alone < chained * 0.90) {
+                bad.add(String.format("Lv %d: alone %.0f is more than 10 %% behind chained %.0f", p.level(), alone, chained));
+            }
+        }
+        assertTrue(compared >= 6, "only " + compared + " milestones compared");
         assertTrue(bad.isEmpty(), String.join("\n", bad));
     }
 
