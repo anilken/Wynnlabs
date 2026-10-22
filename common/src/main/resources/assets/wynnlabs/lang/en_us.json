@@ -79,6 +79,7 @@
   "wynnlabs.advice.worn": "WORN",
   "wynnlabs.advice.next_target_gain": "Next target: %s (Lv. %s, %s, build +%s%%)",
   "wynnlabs.advice.nothing_better": "Nothing better on the list, you're doing well",
+  "wynnlabs.advice.worn_beaten": "Your %s in the bag beats it: hover over that one",
   "wynnlabs.advice.next_target": "Next target: %s (Lv. %s, %s)",
   "wynnlabs.advice.bad_roll": ". Bad roll (%s%%), reroll it if that's cheap",
   "wynnlabs.advice.quest_rank": "QUEST #%s",
