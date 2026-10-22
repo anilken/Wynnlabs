@@ -1,5 +1,5 @@
 {
-  "count": 23,
+  "count": 19,
   "items": [
     {
       "slot": "HELMET",
@@ -8,8 +8,8 @@
       "name": "Neolithic",
       "tier": "LEGENDARY",
       "level": 20,
-      "score": 162.4,
-      "gain": 162.4,
+      "score": 37.5,
+      "gain": 37.5,
       "skillRequirements": {
         "STRENGTH": 5,
         "DEFENCE": 10
@@ -22,33 +22,30 @@
       "slot": "HELMET",
       "rank": 2,
       "tradable": true,
-      "name": "Nether Cap",
+      "name": "Replica Hallowynn Mask",
       "tier": "RARE",
-      "level": 24,
-      "score": 76.4,
-      "gain": 76.4,
-      "skillRequirements": {
-        "DEFENCE": 10
-      },
+      "level": 22,
+      "score": 33.3,
+      "gain": 33.3,
       "source": "MERCHANT: Detlas",
       "restriction": "NONE",
-      "powderSlots": 1
+      "powderSlots": 0
     },
     {
       "slot": "HELMET",
       "rank": 3,
       "tradable": true,
-      "name": "Beachside Headwrap",
+      "name": "Bony Circlet",
       "tier": "RARE",
-      "level": 23,
-      "score": 73.7,
-      "gain": 73.7,
+      "level": 21,
+      "score": 31.4,
+      "gain": 31.4,
       "skillRequirements": {
-        "INTELLIGENCE": 5
+        "AGILITY": 6
       },
-      "source": "MERCHANT: Detlas",
+      "source": "LOOT_CHEST",
       "restriction": "NONE",
-      "powderSlots": 2
+      "powderSlots": 1
     },
     {
       "slot": "CHESTPLATE",
@@ -57,8 +54,8 @@
       "name": "Katoa's Warmth",
       "tier": "LEGENDARY",
       "level": 23,
-      "score": 96.4,
-      "gain": 96.4,
+      "score": 25.8,
+      "gain": 25.8,
       "skillRequirements": {
         "DEFENCE": 10
       },
@@ -73,8 +70,8 @@
       "name": "Arakadicus' Body",
       "tier": "LEGENDARY",
       "level": 21,
-      "score": 51.3,
-      "gain": 51.3,
+      "score": 24.4,
+      "gain": 24.4,
       "source": "MERCHANT: Detlas",
       "restriction": "NONE",
       "powderSlots": 1
@@ -83,14 +80,11 @@
       "slot": "CHESTPLATE",
       "rank": 3,
       "tradable": true,
-      "name": "Nether Tunic",
+      "name": "Tribal Tunic",
       "tier": "RARE",
-      "level": 25,
-      "score": 32.4,
-      "gain": 32.4,
-      "skillRequirements": {
-        "DEFENCE": 15
-      },
+      "level": 18,
+      "score": 19.7,
+      "gain": 19.7,
       "source": "NORMAL_MOB_DROP",
       "restriction": "NONE",
       "powderSlots": 1
@@ -102,8 +96,8 @@
       "name": "Lemon Legs",
       "tier": "LEGENDARY",
       "level": 18,
-      "score": 153.0,
-      "gain": 153.0,
+      "score": 64.8,
+      "gain": 64.8,
       "source": "DUNGEON: Decrepit Sewers",
       "restriction": "NONE",
       "powderSlots": 2
@@ -112,17 +106,14 @@
       "slot": "LEGGINGS",
       "rank": 2,
       "tradable": true,
-      "name": "Back Protector",
-      "tier": "UNIQUE",
-      "level": 24,
-      "score": 116.0,
-      "gain": 116.0,
-      "skillRequirements": {
-        "DEFENCE": 10
-      },
-      "source": "DUNGEON: Decrepit Sewers",
+      "name": "Tribal Pants",
+      "tier": "RARE",
+      "level": 18,
+      "score": 49.0,
+      "gain": 49.0,
+      "source": "LOOT_CHEST",
       "restriction": "NONE",
-      "powderSlots": 2
+      "powderSlots": 1
     },
     {
       "slot": "LEGGINGS",
@@ -131,8 +122,8 @@
       "name": "Conductor",
       "tier": "LEGENDARY",
       "level": 25,
-      "score": 105.8,
-      "gain": 105.8,
+      "score": 42.7,
+      "gain": 42.7,
       "skillRequirements": {
         "DEXTERITY": 10,
         "INTELLIGENCE": 5
@@ -148,8 +139,8 @@
       "name": "Almuj's Walker",
       "tier": "LEGENDARY",
       "level": 25,
-      "score": 221.7,
-      "gain": 221.7,
+      "score": 50.8,
+      "gain": 50.8,
       "source": "MERCHANT: Detlas",
       "restriction": "NONE",
       "powderSlots": 3
@@ -158,27 +149,11 @@
       "slot": "BOOTS",
       "rank": 2,
       "tradable": true,
-      "name": "Fire Relic Boots",
-      "tier": "RARE",
-      "level": 25,
-      "score": 96.2,
-      "gain": 96.2,
-      "skillRequirements": {
-        "DEFENCE": 15
-      },
-      "source": "LOOT_CHEST",
-      "restriction": "NONE",
-      "powderSlots": 2
-    },
-    {
-      "slot": "BOOTS",
-      "rank": 3,
-      "tradable": true,
       "name": "Cyclo",
       "tier": "LEGENDARY",
       "level": 21,
-      "score": 57.3,
-      "gain": 57.3,
+      "score": 45.4,
+      "gain": 45.4,
       "skillRequirements": {
         "DEXTERITY": 4,
         "AGILITY": 8
@@ -188,18 +163,28 @@
       "powderSlots": 1
     },
     {
+      "slot": "BOOTS",
+      "rank": 3,
+      "tradable": true,
+      "name": "Shajone",
+      "tier": "UNIQUE",
+      "level": 18,
+      "score": 26.9,
+      "gain": 26.9,
+      "source": "MERCHANT: Detlas",
+      "restriction": "NONE",
+      "powderSlots": 1
+    },
+    {
       "slot": "RING",
       "rank": 1,
       "tradable": true,
-      "name": "Zjarr",
-      "tier": "UNIQUE",
-      "level": 25,
-      "score": 24.0,
-      "gain": 24.0,
-      "skillRequirements": {
-        "DEFENCE": 10
-      },
-      "source": "NORMAL_MOB_DROP",
+      "name": "Major",
+      "tier": "RARE",
+      "level": 20,
+      "score": 9.5,
+      "gain": 9.5,
+      "source": "MERCHANT: Detlas",
       "restriction": "NONE",
       "powderSlots": 0
     },
@@ -210,8 +195,8 @@
       "name": "Lizard",
       "tier": "UNIQUE",
       "level": 18,
-      "score": 18.1,
-      "gain": 18.1,
+      "score": 8.9,
+      "gain": 8.9,
       "source": "DUNGEON: Decrepit Sewers",
       "restriction": "NONE",
       "powderSlots": 0
@@ -220,71 +205,15 @@
       "slot": "RING",
       "rank": 3,
       "tradable": true,
-      "name": "Warm Embrace",
-      "tier": "RARE",
+      "name": "Zjarr",
+      "tier": "UNIQUE",
       "level": 25,
-      "score": 15.6,
-      "gain": 15.6,
+      "score": 7.3,
+      "gain": 7.3,
       "skillRequirements": {
-        "INTELLIGENCE": 10,
         "DEFENCE": 10
       },
       "source": "NORMAL_MOB_DROP",
-      "restriction": "NONE",
-      "powderSlots": 0
-    },
-    {
-      "slot": "BRACELET",
-      "rank": 1,
-      "tradable": true,
-      "name": "Blackout",
-      "tier": "UNIQUE",
-      "level": 22,
-      "score": 37.2,
-      "gain": 37.2,
-      "skillRequirements": {
-        "DEFENCE": 5
-      },
-      "source": "MERCHANT: Detlas",
-      "restriction": "NONE",
-      "powderSlots": 0
-    },
-    {
-      "slot": "BRACELET",
-      "rank": 2,
-      "tradable": true,
-      "name": "Spider Bracelet",
-      "tier": "UNIQUE",
-      "level": 19,
-      "score": 22.7,
-      "gain": 22.7,
-      "source": "LOOT_CHEST",
-      "restriction": "NONE",
-      "powderSlots": 0
-    },
-    {
-      "slot": "BRACELET",
-      "rank": 3,
-      "tradable": true,
-      "name": "Sayleros' Brother's Misfortune",
-      "tier": "RARE",
-      "level": 22,
-      "score": 18.4,
-      "gain": 18.4,
-      "source": "MERCHANT: Detlas",
-      "restriction": "NONE",
-      "powderSlots": 0
-    },
-    {
-      "slot": "NECKLACE",
-      "rank": 1,
-      "tradable": true,
-      "name": "Jackal Crest",
-      "tier": "UNIQUE",
-      "level": 24,
-      "score": 11.4,
-      "gain": 11.4,
-      "source": "LOOT_CHEST",
       "restriction": "NONE",
       "powderSlots": 0
     },
@@ -296,8 +225,8 @@
       "name": "Durum's Serenity",
       "tier": "LEGENDARY",
       "level": 25,
-      "score": 46.6,
-      "gain": 46.6,
+      "score": 22.5,
+      "gain": 22.5,
       "skillRequirements": {
         "STRENGTH": 5,
         "INTELLIGENCE": 10
@@ -310,11 +239,28 @@
       "slot": "RELIK",
       "rank": 1,
       "tradable": true,
+      "name": "Grindcore",
+      "tier": "RARE",
+      "level": 25,
+      "score": 158.0,
+      "gain": 158.0,
+      "skillRequirements": {
+        "STRENGTH": 10,
+        "DEXTERITY": 10
+      },
+      "source": "DUNGEON: Decrepit Sewers",
+      "restriction": "NONE",
+      "powderSlots": 1
+    },
+    {
+      "slot": "RELIK",
+      "rank": 2,
+      "tradable": true,
       "name": "Cruel Sun",
       "tier": "LEGENDARY",
       "level": 24,
-      "score": 192.7,
-      "gain": 192.7,
+      "score": 157.1,
+      "gain": 157.1,
       "skillRequirements": {
         "DEFENCE": 15
       },
@@ -324,36 +270,16 @@
     },
     {
       "slot": "RELIK",
-      "rank": 2,
+      "rank": 3,
       "tradable": true,
       "name": "Intestine Lasso",
       "tier": "RARE",
       "level": 25,
-      "score": 131.4,
-      "gain": 131.4,
+      "score": 133.1,
+      "gain": 133.1,
       "source": "LOOT_CHEST",
       "restriction": "NONE",
       "powderSlots": 1
-    },
-    {
-      "slot": "RELIK",
-      "rank": 3,
-      "tradable": true,
-      "name": "Technicolor Phase",
-      "tier": "RARE",
-      "level": 21,
-      "score": 114.6,
-      "gain": 114.6,
-      "skillRequirements": {
-        "STRENGTH": 5,
-        "DEXTERITY": 5,
-        "INTELLIGENCE": 5,
-        "DEFENCE": 5,
-        "AGILITY": 5
-      },
-      "source": "DUNGEON: Decrepit Sewers",
-      "restriction": "NONE",
-      "powderSlots": 0
     }
   ],
   "note": "best gear per slot that beats what you wear, at most 5 levels ahead; score uses the rule weights with every stat at the middle of its range"

@@ -58,12 +58,12 @@
       "assigned": 0
     },
     "INTELLIGENCE": {
-      "target": 28,
+      "target": 33,
       "targetForBestBuild": 8,
       "assigned": 10
     },
     "DEFENCE": {
-      "target": 5,
+      "target": 0,
       "targetForBestBuild": 25,
       "assigned": 4
     },
@@ -75,7 +75,7 @@
   },
   "earnedPoints": 38,
   "planned": {
-    "objective": 56.5,
+    "objective": 151.1,
     "spellDps": 51.0,
     "mainAttackDps": 59.7,
     "damagePerCast": 123,
@@ -85,17 +85,17 @@
     "effectiveHealthElemental": 483,
     "parts": {
       "damage": 80.876,
-      "life": 0.469,
+      "life": 1.437,
       "mana": 1.219,
       "speed": 1.0,
-      "xp": 1.223,
+      "xp": 1.067,
       "attackSpeedFeel": 1.0
     },
     "xpBonus": 25.0,
     "walkSpeed": 0.0
   },
   "current": {
-    "objective": 8.1,
+    "objective": 60.6,
     "spellDps": 29.5,
     "mainAttackDps": 59.0,
     "damagePerCast": 101,
@@ -105,16 +105,16 @@
     "effectiveHealthElemental": 321,
     "parts": {
       "damage": 59.03,
-      "life": 0.117,
+      "life": 0.909,
       "mana": 1.114,
       "speed": 1.0,
-      "xp": 1.049,
+      "xp": 1.015,
       "attackSpeedFeel": 1.0
     },
     "xpBonus": 5.0,
     "walkSpeed": 0.0
   },
-  "gainPercent": 600.4,
+  "gainPercent": 149.3,
   "minPoints": {
     "STRENGTH": 0,
     "DEXTERITY": 0,
