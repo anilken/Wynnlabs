@@ -2190,6 +2190,10 @@ final class RoadmapScreen extends Screen {
         ChatFormatting tc = u.info().tier().colour();
         tip.add(Component.literal(u.info().name()).withStyle(tc).withStyle(UiFont::bold));
         tip.add(L.c("wynnlabs.home.tip_from", u.source()).withStyle(ChatFormatting.DARK_AQUA));
+        String also = Roadmap.fromBag(u) ? null : Shopping.alsoFrom(u.info());   // the Trade Market first, the world source under it
+        if (also != null && !also.equalsIgnoreCase(u.source())) {
+            tip.add(Component.literal("   " + L.t("wynnlabs.homev.source_also", L.cap(also))).withStyle(ChatFormatting.DARK_GRAY));
+        }
         Object[] pw = Damage.powderHint(u.info());
         if (pw != null) {
             String[] roman = {"I", "II", "III", "IV", "V", "VI", "VII"};

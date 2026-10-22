@@ -61,7 +61,7 @@ final class Roadmap {
             }
         }
         GameState.current().requestPrices(List.of(info.name()));
-        String pr = Prices.text(info.name(), false);
+        String pr = Prices.buyText(info.name());
         String price = pr == null ? null : pr.contains(" (") ? pr.substring(0, pr.indexOf(" (")) : pr;
         String src = Shopping.sourceOf(info);
         return new Option(info, gain, price, src == null ? "?" : Shopping.where(src), Cautions.of(info),
@@ -220,7 +220,7 @@ final class Roadmap {
             }
             Option first = before == null ? null : option(info, slot, start, before, level, earned);
             String src = Shopping.sourceOf(info);
-            rows.add(new Gear(row, info, Double.NaN, src == null ? "?" : Shopping.where(src), Prices.text(info.name(), false),
+            rows.add(new Gear(row, info, Double.NaN, src == null ? "?" : Shopping.where(src), Prices.buyText(info.name()),
                     null, null, detail, List.of(), first == null ? List.of() : List.of(first)));
             place(placed, row, slot);
         }
@@ -260,9 +260,7 @@ final class Roadmap {
                 if (info.requirements().level() > m || there != null && there.key().equals(cand.key()) || !affordable.test(info)) {
                     continue;
                 }
-                String src = Shopping.sourceOf(info);
-                if (src == null || badSources.stream().anyMatch(src::startsWith)
-                        || Exclusive.clash(baseline, slot, Exclusive.group(info)) != null) {
+                if (Shopping.excluded(info, badSources) || Exclusive.clash(baseline, slot, Exclusive.group(info)) != null) {
                     continue;
                 }
                 double obj = full(baseline, slot, cand, m, earned);
@@ -287,7 +285,7 @@ final class Roadmap {
         baseline.put(bestSlot, Damage.piece(best));
         place(placed, RING2, bestSlot);
         String src = Shopping.sourceOf(best);
-        return new Gear(RING2, best, bestGain, Shopping.where(src), Prices.text(best.name(), false), null, null,
+        return new Gear(RING2, best, bestGain, Shopping.where(src), Prices.buyText(best.name()), null, null,
                 new ArrayList<>(), List.of(), first == null ? List.of() : List.of(first));
     }
 
@@ -410,7 +408,7 @@ final class Roadmap {
                     break;
                 }
                 if (info == pick || info.name().equals(pick.name()) || info.requirements().level() > m
-                        || Exclusive.clash(build, slot, Exclusive.group(info)) != null) {
+                        || !panelAllows(info, m) || Exclusive.clash(build, slot, Exclusive.group(info)) != null) {
                     continue;
                 }
                 tried++;
@@ -427,7 +425,7 @@ final class Roadmap {
         if (before != null && after != null) {
             detail.addAll(explain(before, after));
         }
-        gear.add(new Gear(rowName, pick, gain, Shopping.where(src), Prices.text(pick.name(), false), null, null,
+        gear.add(new Gear(rowName, pick, gain, Shopping.where(src), Prices.buyText(pick.name()), null, null,
                 detail, List.of(), options));
         build.put(slot, Damage.piece(pick));
         place(placed, rowName, slot);
@@ -1411,6 +1409,37 @@ final class Roadmap {
     }
 
     /**
+     * Whether the comparison panel may show this piece at milestone {@code m}: the tiers and
+     * sources that milestone leaves out stay out of its panel too (a Mythic under "Hide Mythic
+     * upgrades" before the endgame level).
+     */
+    private static boolean panelAllows(ItemData info, int m) {
+        return !badTiers(m).contains(info.tier().name()) && !Shopping.excluded(info, badSources(m));
+    }
+
+    /**
+     * How much a piece's gain counts for while you would buy it soon: 1 when it is listed now
+     * (or its price is unknown); 0.9 for Wynnventory's cache (listed, no count), 0.85 for few
+     * or old listings, 0.6 when nothing is listed now (an old price, or none).
+     */
+    static double availability(Prices.Price p) {
+        if (p == null) {
+            return 1;
+        }
+        return switch (p.confidence()) {
+            case NONE, HISTORY -> 0.6;
+            case THIN, STALE -> 0.85;
+            case CACHE -> 0.9;
+            case OK -> 1;
+        };
+    }
+
+    /** A gain scaled by an availability factor: a gain shrinks, a loss grows. */
+    private static double scaled(double gain, double factor) {
+        return gain >= 0 ? gain * factor : gain / factor;
+    }
+
+    /**
      * The points the piece's requirements ask for in skills outside {@code preferred}, beyond
      * what the set already holds there ({@code cover}: assigned plus the gear's, per skill; null
      * counts every requirement point).
@@ -1889,10 +1918,14 @@ final class Roadmap {
         // what you have (worn, carried, banked): it costs nothing under a budget
         Map<String, Integer> ownedCount = ownedCounts(state);
         java.util.Set<String> owned = ownedCount.keySet();
-        // (a ring by name is no proof: the second hand's copy is a buy)
+        // (a ring by name is no proof: the second hand's copy is a buy). A price that is only
+        // history over the budget is no skip: it costs the piece a little in the ranking
+        // (overBudget) instead, since the market may well have it cheaper now
         java.util.function.Predicate<ItemData> affordable = info -> budget <= 0
                 || info.slot() != Slot.RING && owned.contains(info.name())
-                || cost(state, info) >= 0 && cost(state, info) <= budget;
+                || cost(state, info) >= 0 && (cost(state, info) <= budget || uncertainPrice(state, info));
+        java.util.function.Predicate<ItemData> overBudget = info -> budget > 0
+                && !(info.slot() != Slot.RING && owned.contains(info.name())) && cost(state, info) > budget;
         Klass cls = state.classType();
         Slot weapon = Slot.weaponOf(cls);
         List<Slot> slots = new ArrayList<>(List.of(SLOTS));
@@ -2033,6 +2066,7 @@ final class Roadmap {
                 String topSlot = null;
                 ItemData alt = null;
                 double altScore = topScore;
+                double altReal = Double.NaN;            // the alternative's own gain
                 List<Object[]> pool = new ArrayList<>();      // {info, % gain} for the alternatives
                 List<Object[]> ranked = new ArrayList<>();    // {info, % gain, gain for availability, slot, its factor}
                 int peek = (int) Rules.sub("shopping", "aheadLevels", 5);
@@ -2073,6 +2107,13 @@ final class Roadmap {
                         trace(m, t, info, "skip: above the milestone");
                         continue;
                     }
+                    // a quest the piece asks for that you have not done: not before its level
+                    // (Sodeta Boots want Lost Soles); from there on it stays, with a caution
+                    QuestBook.Entry quest = Shopping.questPending(state, info);
+                    if (quest != null && quest.level() > m) {
+                        trace(m, t, info, "skip: quest " + quest.name() + " is Lv " + quest.level());
+                        continue;
+                    }
                     int total = info.requirements().skills().stream().mapToInt(r -> r.points()).sum();
                     if (total > earnedThen) {
                         trace(m, t, info, "skip: needs " + total + " points > " + earnedThen);
@@ -2080,8 +2121,8 @@ final class Roadmap {
                     }
                     if (!future && info.set().isPresent()) {
                         // a set piece alone may rank below the best forty and still pay with its set
-                        String srcSet = Shopping.sourceOf(info);
-                        if (srcSet != null && badSources.stream().noneMatch(srcSet::startsWith)) {
+                        // by where it comes from in the world (a listed piece's source reads TRADE_MARKET)
+                        if (!Shopping.excluded(info, badSources)) {
                             setGear.add(info);
                         }
                     }
@@ -2142,9 +2183,8 @@ final class Roadmap {
                         if (slotUsed != null && Build.needsRespec(baseline, prevAlloc, slotUsed, Damage.piece(info), earnedThen)) {
                             sc -= Rules.sub("shopping", "respecPenaltyPercent", 3);
                         }
-                        String srcP = Shopping.sourceOf(info);
-                        if (srcP != null && badSources.stream().anyMatch(srcP::startsWith) && !owned.contains(info.name())) {
-                            trace(m, t, info, "skip: source " + srcP);
+                        if (Shopping.excluded(info, badSources) && !owned.contains(info.name())) {
+                            trace(m, t, info, "skip: source " + Shopping.origin(info));
                             continue;               // never offer what cannot be obtained
                         }
                         trace(m, t, info, String.format(java.util.Locale.ROOT, "ranked %.2f%% in %s", sc, slotUsed)
@@ -2159,17 +2199,20 @@ final class Roadmap {
                     }
                     // what you can actually get now counts: a market item with no listing at the moment
                     // (Wynnventory's live listings) only wins when it is clearly better than one that has
-                    double eff = sc;
+                    double factor = 1;
                     if (allocM != null && listingsMatter && Shopping.tradable(info)) {
-                        Prices.Price live = state.price(info.name());
-                        String src = Shopping.sourceOf(info);
-                        boolean merchant = src != null && (src.startsWith("MERCHANT") || src.startsWith("DUNGEON_MERCHANT"));
-                        if (!merchant && live != null && live.count() != null && live.count() == 0) {
-                            eff = sc * 0.6;
+                        String src = Shopping.origin(info);
+                        boolean merchant = src.startsWith("MERCHANT") || src.startsWith("DUNGEON_MERCHANT");
+                        if (!merchant) {
+                            factor = availability(state.price(info.name()));
                         }
                     }
+                    if (allocM != null && overBudget.test(info)) {
+                        factor *= Rules.sub("shopping", "overBudgetFactor", 0.8);   // its old price is over the budget
+                    }
+                    double eff = scaled(sc, factor);
                     if (allocM != null) {
-                        ranked.add(new Object[] {info, sc, eff, slotUsed, eff == sc ? 1.0 : 0.6});
+                        ranked.add(new Object[] {info, sc, eff, slotUsed, factor});
                     } else if (preferMarket && !Shopping.tradable(info)) {
                         if (eff > altScore) {
                             altScore = eff;
@@ -2195,6 +2238,7 @@ final class Roadmap {
                     int market = 0;
                     int other = 0;
                     String altSlot = null;
+                    List<Object[]> cleared = new ArrayList<>();     // {info, eff, gain, slot}: market picks over the bar
                     for (Object[] r : ranked) {
                         ItemData info = (ItemData) r[0];
                         boolean side = preferMarket && !Shopping.tradable(info);
@@ -2241,20 +2285,34 @@ final class Roadmap {
                             if (Build.needsRespec(baseline, prevAlloc, slotUsed, Damage.piece(info), earnedThen)) {
                                 full -= Rules.sub("shopping", "respecPenaltyPercent", 3);
                             }
-                            if (full < Rules.sub("shopping", "minGainPercent", 10)
-                                    && full < Build.gainThreshold(baseline.get(slotUsed), m)) {
-                                trace(m, t, info, String.format(java.util.Locale.ROOT, "skip: full %.2f%% under the bar %.2f%% (slot %s holds Lv %d)",
-                                        full, Build.gainThreshold(baseline.get(slotUsed), m), slotUsed,
+                            // for the choice only (the row shows the gain itself): an untradable
+                            // piece from a dungeon, its merchant, a raid or a quest takes a run of
+                            // its own, so it must clear the bar by this much more (Admiral wants
+                            // Redbeard's Hair); what you have needs no buy and counts a little extra
+                            double pickBy = full;
+                            if (owned.contains(info.name())) {
+                                pickBy += Rules.sub("shopping", "ownedBonusPercent", 2);
+                            } else if (Shopping.effort(info)) {
+                                pickBy -= Rules.sub("shopping", "untradableEffortPercent", 5);
+                            }
+                            if (pickBy < Rules.sub("shopping", "minGainPercent", 10)
+                                    && pickBy < Build.gainThreshold(baseline.get(slotUsed), m)) {
+                                trace(m, t, info, String.format(java.util.Locale.ROOT, "skip: full %.2f%% (%.2f%% to choose by) under the bar %.2f%% (slot %s holds Lv %d)",
+                                        full, pickBy, Build.gainThreshold(baseline.get(slotUsed), m), slotUsed,
                                         baseline.get(slotUsed) == null ? -1 : baseline.get(slotUsed).level()));
                                 continue;
                             }
                             trace(m, t, info, String.format(java.util.Locale.ROOT, "judged %.2f%% in %s", full, slotUsed));
-                            eff = full * (double) r[4];     // keeps the "no listings" factor
+                            eff = scaled(pickBy, (double) r[4]);     // keeps the "no listings" factor
                             sc = full;
+                        }
+                        if (!side) {
+                            cleared.add(new Object[] {info, eff, sc, slotUsed});
                         }
                         if (side) {
                             if (eff > altScore) {
                                 altScore = eff;
+                                altReal = sc;
                                 alt = info;
                                 altSlot = slotUsed;
                             }
@@ -2263,6 +2321,17 @@ final class Roadmap {
                             topReal = sc;
                             top = info;
                             topSlot = slotUsed;
+                        }
+                    }
+                    // close picks (rules.shopping.costTieBreakPercent of the best) are as good a
+                    // buy: what you have first, then the cheaper while you would buy it soon
+                    if (top != null && !emptyBuild) {
+                        Object[] pick = closest(cleared, topScore, owned, listingsMatter);
+                        if (pick != null && pick[0] != top) {
+                            trace(m, t, (ItemData) pick[0], "tie-break over " + top.name());
+                            top = (ItemData) pick[0];   // topScore stays the best's: as good a buy
+                            topReal = (double) pick[2];
+                            topSlot = (String) pick[3];
                         }
                     }
                     if (top == null && alt != null) {
@@ -2275,17 +2344,17 @@ final class Roadmap {
                 if (top == null && alt != null) {
                     top = alt;                  // nothing on the market beats what you wear
                     topScore = altScore;
-                    topReal = Double.NaN;
+                    topReal = altReal;          // its own gain, not the one it was chosen by
                     alt = null;
                 }
                 if (top == null) {
                     continue;
                 }
                 String source = Shopping.sourceOf(top);
-                if (source == null || badSources.stream().anyMatch(source::startsWith) && !owned.contains(top.name())) {
+                if (source == null || Shopping.excluded(top, badSources) && !owned.contains(top.name())) {
                     continue;                       // what cannot be had, unless you have it already
                 }
-                String price = Prices.text(top.name(), false);
+                String price = Prices.buyText(top.name());
                 String altSource = alt == null ? null : Shopping.sourceOf(alt);
                 double gain = allocM != null ? (Double.isNaN(topReal) ? topScore : topReal) : topScore - best.getOrDefault(t, 0.0);
                 if (emptyBuild) {
@@ -2303,7 +2372,7 @@ final class Roadmap {
                         .forEach(o -> {
                             ItemData gi = (ItemData) o[0];
                             state.requestPrices(List.of(gi.name()));
-                            String pr = Prices.text(gi.name(), false);
+                            String pr = Prices.buyText(gi.name());
                             String pShort = pr == null ? (Shopping.tradable(gi) ? "" : " · " + L.t("wynnlabs.road.untradable"))
                                     : " · " + (pr.contains(" (") ? pr.substring(0, pr.indexOf(" (")) : pr);
                             List<String> c = Cautions.of(gi);
@@ -2320,7 +2389,7 @@ final class Roadmap {
                         options.add(first);
                     }
                     pool.stream()
-                            .filter(o -> o[0] != chosen && o[2] != null)
+                            .filter(o -> o[0] != chosen && o[2] != null && panelAllows((ItemData) o[0], m))
                             .sorted((p1, p2) -> Double.compare((double) p2[1], (double) p1[1]))
                             .limit((long) Rules.sub("roadmap", "alternatives", 6))
                             .forEach(o -> {
@@ -2337,7 +2406,7 @@ final class Roadmap {
                         java.util.Set<String> shown = new java.util.HashSet<>();
                         options.forEach(op -> shown.add(op.info().name()));
                         pool.stream()
-                                .filter(o -> o[0] != chosen && o[2] != null
+                                .filter(o -> o[0] != chosen && o[2] != null && panelAllows((ItemData) o[0], m)
                                         && ((ItemData) o[0]).requirements().level() <= level
                                         && !shown.contains(((ItemData) o[0]).name()))
                                 .sorted((p1, p2) -> Double.compare((double) p2[1], (double) p1[1]))
@@ -2419,7 +2488,7 @@ final class Roadmap {
                     note = L.t("wynnlabs.road.target_note");
                 }
                 gear.add(new Gear(slotName, info, Double.NaN, src == null ? "?" : Shopping.where(src) + " · "
-                        + note, Prices.text(info.name(), false),
+                        + note, Prices.buyText(info.name()),
                         null, null, List.of(), List.of(), List.of()));
                 if (baseline != null) {
                     String slot = Build.slotOf(info.slot(), 0);
@@ -2504,10 +2573,10 @@ final class Roadmap {
     }
 
     /**
-     * What you have, by name and how many: worn, carried and banked (a buy you need not make; a
-     * ring you have twice can fill both hands).
+     * What you have, by name and how many: worn, carried and banked where you can reach it (a buy
+     * you need not make; a ring you have twice can fill both hands).
      */
-    private static Map<String, Integer> ownedCounts(GameState state) {
+    static Map<String, Integer> ownedCounts(GameState state) {
         Map<String, Integer> out = new HashMap<>();
         try {
             for (Slot t : Slot.values()) {
@@ -2528,8 +2597,13 @@ final class Roadmap {
                     out.merge(ItemJson.clean(s.getHoverName().getString()).trim(), s.getCount(), Integer::sum);
                 }
             }
+            // only banks you can open from here: a copy on another character's page is no
+            // buy you can skip
             for (Vault.Group g : Vault.groups()) {
-                out.merge(g.name(), Math.max(1, g.total()), Integer::sum);
+                if (g.reachable()) {
+                    int here = g.places().stream().filter(s -> Vault.reachable(s.page())).mapToInt(Vault.Stored::count).sum();
+                    out.merge(g.name(), Math.max(1, here), Integer::sum);
+                }
             }
         } catch (Throwable t) {
             // a menu changed under us: what was read so far
@@ -2538,17 +2612,65 @@ final class Roadmap {
     }
 
     /**
-     * What a piece costs on the Trade Market under a budget: its typical price, 0 for one that
-     * cannot be traded and has none (a quest reward), -1 for a tradable piece with no known price
+     * What a piece costs on the Trade Market under a budget: what buying it is likely to cost
+     * (Prices.Price#buyPrice: the middle of the market for an old price), 0 for one that cannot
+     * be traded and has none (a quest reward), -1 for a tradable piece with no known price
      * (never suggested under a budget).
      */
     static double cost(GameState state, ItemData info) {
         Prices.Price p = state.price(info.name());
-        Double v = p == null ? null : p.typical();
+        Double v = p == null ? null : p.buyPrice();
         if (v != null) {
             return v;
         }
         return Shopping.tradable(info) ? -1 : 0;
+    }
+
+    /** A tradable piece whose price is only history: nothing listed now, or only old listings. */
+    static boolean uncertainPrice(GameState state, ItemData info) {
+        Prices.Price p = state.price(info.name());
+        return Shopping.tradable(info) && p != null && p.typical() != null && p.uncertain();
+    }
+
+    /**
+     * The pick among {@code cleared} ({info, eff, gain, slot}, every market piece over the bar)
+     * within rules.shopping.costTieBreakPercent (15 %) of the best: what you have first, then,
+     * when {@code prices} (bought soon), the cheaper; else the best. Null when nothing is close.
+     */
+    private static Object[] closest(List<Object[]> cleared, double best, java.util.Set<String> owned, boolean prices) {
+        double within = Rules.sub("shopping", "costTieBreakPercent", 15) / 100.0;
+        if (within <= 0 || best <= 0) {
+            return null;
+        }
+        Object[] out = null;
+        for (Object[] c : cleared) {
+            if ((double) c[1] < best * (1 - within)) {
+                continue;
+            }
+            if (out == null || better(c, out, owned, prices)) {
+                out = c;
+            }
+        }
+        return out;
+    }
+
+    /** {@link #closest}'s order: what you have, then the cheaper (when {@code prices}), then the higher gain. */
+    private static boolean better(Object[] a, Object[] b, java.util.Set<String> owned, boolean prices) {
+        ItemData ia = (ItemData) a[0];
+        ItemData ib = (ItemData) b[0];
+        boolean oa = ia.slot() != Slot.RING && owned.contains(ia.name());
+        boolean ob = ib.slot() != Slot.RING && owned.contains(ib.name());
+        if (oa != ob) {
+            return oa;
+        }
+        if (prices && !oa) {
+            double ca = Shopping.buyCost(ia);
+            double cb = Shopping.buyCost(ib);
+            if (ca != cb) {
+                return ca < cb;
+            }
+        }
+        return (double) a[1] > (double) b[1];
     }
 
     /** What the buys in {@code set} cost: every piece outside {@code fixed} that you do not have. */
@@ -2562,6 +2684,11 @@ final class Roadmap {
             }
             ItemData info = findGear(p.name());
             double c = info == null ? 0 : cost(state, info);
+            if (info != null && uncertainPrice(state, info)) {
+                // an old price is a soft limit (the ranking pays for it): the set counts the
+                // lowest one seen, or a single such piece would undo the whole milestone
+                c = state.price(info.name()).typical();
+            }
             sum += c < 0 ? Double.POSITIVE_INFINITY : c;
         }
         return sum;

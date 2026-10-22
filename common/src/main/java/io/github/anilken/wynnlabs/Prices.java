@@ -90,7 +90,55 @@ final class Prices {
         Double middle() {
             return avg80 != null ? avg80 : median;
         }
+
+        /**
+         * How far the price can be trusted to buy at: NONE (no number at all), HISTORY (nothing
+         * listed now, an old price), STALE (the newest listing is 2+ days old), THIN (2 listings or
+         * fewer), CACHE (Wynnventory's cache: listed now, but no count or time), OK.
+         */
+        Confidence confidence() {
+            if (typical() == null) {
+                return Confidence.NONE;
+            }
+            if (count != null && count == 0) {
+                return Confidence.HISTORY;
+            }
+            if (listed != null && GameState.current().now() - listed >= 2 * 86_400_000L) {
+                return Confidence.STALE;
+            }
+            if (count != null && count <= 2) {
+                return Confidence.THIN;
+            }
+            return listed == null && count == null ? Confidence.CACHE : Confidence.OK;
+        }
+
+        /** No number, nothing listed now, or only old listings: a price to show as a past one. */
+        boolean uncertain() {
+            Confidence c = confidence();
+            return c == Confidence.NONE || c == Confidence.HISTORY || c == Confidence.STALE;
+        }
+
+        /**
+         * What buying it is likely to cost: the lowest listing while there are current ones; for
+         * an old price the middle of the market instead, since one cheap listing seen once (Aloof
+         * at 1 LE) is gone long ago. Null without a price.
+         */
+        Double buyPrice() {
+            Double low = typical();
+            if (low == null) {
+                return null;
+            }
+            Confidence c = confidence();
+            Double mid = middle();
+            if ((c == Confidence.HISTORY || c == Confidence.STALE) && mid != null) {
+                return Math.max(low, mid);
+            }
+            return low;
+        }
     }
+
+    /** {@link Price#confidence}, from the least to the most certain. */
+    enum Confidence { NONE, HISTORY, STALE, THIN, CACHE, OK }
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Map<String, Price> PRICES = new ConcurrentHashMap<>();
@@ -363,6 +411,25 @@ final class Prices {
             return L.t("wynnlabs.price.with_median", fmt(low), fmt(mid));
         }
         return "~" + fmt(low);
+    }
+
+    /**
+     * The price of a piece to buy, for the road map: {@link #text} while it is listed now; an
+     * old price as what buying it is likely to cost ({@link Price#buyPrice}) marked as a past
+     * price ("~5 EB · past price"). Never holds " (", so cutting at it keeps the mark.
+     */
+    static String buyText(String name) {
+        Price p = GameState.current().price(name);
+        if (p == null || !p.uncertain()) {
+            return text(name, false);
+        }
+        Double v = p.buyPrice();
+        return v == null ? null : past("~" + fmt(v));
+    }
+
+    /** "~5 EB · past price": a shown price marked as one from listings that may be gone. */
+    static String past(String shown) {
+        return L.t("wynnlabs.price.past_mark", shown);
     }
     private static final long MAX_AGE = 60 * 60 * 1000L;
 
