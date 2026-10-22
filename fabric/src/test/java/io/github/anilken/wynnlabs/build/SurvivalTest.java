@@ -168,7 +168,8 @@ class SurvivalTest {
         Damage.Piece xp = new Damage.Piece(null, "x", "x", Slot.RING, 80, Map.of("xpBonus", 300.0), Map.of(), 0,
                 Map.of(), 0);
         Rules.use(rules("{\"goalPreset\": \"DAMAGE\"}"));
-        assertEquals(1 + Math.log(4), Damage.evaluate(List.of(xp), weapon, points, 80).factors()[4], 1e-6);
+        // the Damage goal weighs XP at 0.3 of the XP weight (Setup.weights goalXp)
+        assertEquals(1 + 0.3 * Math.log(4), Damage.evaluate(List.of(xp), weapon, points, 80).factors()[4], 1e-6);
         Rules.use(rules("{\"goalPreset\": \"BALANCED\"}"));
         assertEquals(4, Damage.evaluate(List.of(xp), weapon, points, 80).factors()[4], 1e-6);
     }
