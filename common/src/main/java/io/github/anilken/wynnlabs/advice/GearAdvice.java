@@ -96,7 +96,8 @@ final class GearAdvice {
                 return SellAdvice.sell(gear, L.t("wynnlabs.auto.normal_weak_later", itemLevel));
             }
             Shopping.Pick target = Shopping.best(type);
-            if (target != null && weakerThanPick(facts, gear, target)) {
+            // the list's pick is this very item: the copy you have is the one to wear, not to sell
+            if (target != null && !target.info().name().equals(info.name()) && weakerThanPick(facts, gear, target)) {
                 return SellAdvice.sell(gear, L.t("wynnlabs.auto.list_pick_better", target.info().name(),
                         target.info().requirements().level()));
             }
