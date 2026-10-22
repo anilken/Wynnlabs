@@ -297,23 +297,96 @@ final class Roadmap {
     }
 
     /**
-     * A set's score with the respec charge: the skill points it takes away from the last
-     * milestone's set need a reset in town, and a road map that turns Strength into Agility
-     * into Intelligence every ten levels is no plan. rules.roadmap.respecWeight per 100 points
-     * taken back (0.2: a fifth off for a full turn). Points added are free: you earn them.
+     * A set's score with the respec charge and the keep bonus. The charge: the skill points it
+     * takes away from the last milestone's set need a reset in town, and a road map that turns
+     * Strength into Agility into Intelligence every ten levels is no plan. rules.roadmap.respecWeight
+     * per 100 points taken back (0.2) for every 10 levels between the two milestones (a level apart
+     * charges a tenth of it), half that once no new points come (past Lv 101) or against the points
+     * you placed yourself ("now"), and never more than rules.roadmap.respecFloor leaves (0.85): a
+     * set that is clearly better may change course. Points added are free: you earn them.
+     * The bonus: rules.roadmap.keepBonusPercent (1 %) for each piece the set keeps from the last
+     * milestone's, so of two sets about as good the one you mostly have already wins.
+     * {@code prev}: as {@link #carry} makes it, only skill points (the ones you placed), or null.
      */
     static double judged(Build.Eval e, int[] prev, int m) {
+        return judged(e, prev, m, e.result().pieces(), e.result().weapon());
+    }
+
+    /** {@link #judged} with {@code build}'s pieces, for a result that does not carry them (read back from disk). */
+    static double judged(Map<String, Damage.Piece> build, Build.Eval e, int[] prev, int m) {
+        List<Damage.Piece> pieces = new ArrayList<>();
+        build.forEach((slot, p) -> {
+            if (p != null && !slot.equals("WEAPON")) {
+                pieces.add(p);
+            }
+        });
+        return judged(e, prev, m, pieces, build.get("WEAPON"));
+    }
+
+    private static double judged(Build.Eval e, int[] prev, int m, List<Damage.Piece> pieces, Damage.Piece weapon) {
         // the effective health floor (what build-solver asks as min EHP) is part of the score
         // itself now (Damage.ehpFloor), so the skill points are spread with it in mind too
         double o = e.result().objective();
         if (prev == null) {
             return o;
         }
+        int n = SkillKind.values().length;
         int back = 0;
-        for (int i = 0; i < prev.length && i < e.allocation().length; i++) {
+        for (int i = 0; i < n && i < prev.length && i < e.allocation().length; i++) {
             back += Math.max(0, prev[i] - e.allocation()[i]);
         }
-        return o * Math.max(0.5, 1 - Rules.sub("roadmap", "respecWeight", 0.2) * back / 100.0);
+        int from = prev.length > n ? prev[n] : 0;           // 0: the points you placed yourself
+        double scale = from <= 0 ? 0.5 : Math.max(0, Math.min(1, (m - from) / 10.0));
+        if (from > 0 && Math.min(m, 101) - Math.min(from, 101) <= 1) {
+            scale *= 0.5;                                   // no new points: new gear can only move the old ones
+        }
+        double charge = Math.max(Rules.sub("roadmap", "respecFloor", 0.85),
+                1 - Rules.sub("roadmap", "respecWeight", 0.2) * scale * back / 100.0);
+        int kept = prev.length > n + 1 ? kept(prev, n + 1, pieces, weapon) : 0;
+        return o * charge * (1 + Rules.sub("roadmap", "keepBonusPercent", 1) / 100.0 * kept);
+    }
+
+    /** How many of the pieces are among the names hashed in {@code prev} from {@code at} on (each name once). */
+    private static int kept(int[] prev, int at, List<Damage.Piece> pieces, Damage.Piece weapon) {
+        int used = 0;                                       // bit i: prev[at + i] matched already
+        int n = 0;
+        int count = pieces == null ? 0 : pieces.size();
+        for (int k = 0; k <= count; k++) {
+            Damage.Piece p = k < count ? pieces.get(k) : weapon;
+            if (p == null) {
+                continue;
+            }
+            int h = p.name().hashCode();
+            for (int i = at; i < prev.length && i - at < 31; i++) {
+                if (prev[i] == h && (used & 1 << (i - at)) == 0) {
+                    used |= 1 << (i - at);
+                    n++;
+                    break;
+                }
+            }
+        }
+        return n;
+    }
+
+    /**
+     * What the next milestone's sets are judged against ({@link #judged}): this set's skill points
+     * by skill, then its milestone's level, then the hash of each piece's name (for the keep bonus).
+     */
+    static int[] carry(Build.Eval set, Map<String, Damage.Piece> build, int m) {
+        int n = SkillKind.values().length;
+        List<Integer> names = new ArrayList<>();
+        build.values().forEach(p -> {
+            if (p != null) {
+                names.add(p.name().hashCode());
+            }
+        });
+        int[] out = new int[n + 1 + names.size()];
+        System.arraycopy(set.allocation(), 0, out, 0, Math.min(n, set.allocation().length));
+        out[n] = m;
+        for (int i = 0; i < names.size(); i++) {
+            out[n + 1 + i] = names.get(i);
+        }
+        return out;
     }
 
     /**
@@ -962,6 +1035,60 @@ final class Roadmap {
     }
 
     /**
+     * Each row's step as what its pick adds to the milestone's finished {@code set}: the set
+     * judged with it and with the slot as the milestone started ({@code start}: the last
+     * milestone's piece, or empty), not as the set stood when the pick went in. Picks that pay off
+     * together (a set's pieces, one carrying another's skill points) showed −17 % one after
+     * another while the whole set was well ahead; a pick that really costs the set something still
+     * shows it. A row whose slot cannot go back (the set no longer fits, empty or not) keeps its
+     * number, a target's (NaN) too.
+     */
+    static void stepsInSet(List<Gear> gear, Map<String, Damage.Piece> set, Map<String, Damage.Piece> start,
+            Map<String, String> placed, int m, int earned, int[] prev) {
+        Build.Eval full = Build.allocate(set, m, earned);
+        if (full == null) {
+            return;
+        }
+        double fullJ = judged(full, prev, m);
+        for (int i = 0; i < gear.size(); i++) {
+            Gear g = gear.get(i);
+            String slot = placed.get(g.slot());
+            Damage.Piece pick = slot == null ? null : set.get(slot);
+            if (Double.isNaN(g.gain()) || pick == null || !pick.name().equalsIgnoreCase(g.info().name())) {
+                continue;
+            }
+            Damage.Piece was = start.get(slot);
+            if (was != null && was.key().equals(pick.key())) {
+                continue;
+            }
+            double without = withSlot(set, slot, was, m, earned, prev);
+            if (Double.isNaN(without) && was != null) {
+                without = withSlot(set, slot, null, m, earned, prev);
+            }
+            if (Double.isNaN(without) || without <= 0) {
+                continue;
+            }
+            gear.set(i, new Gear(g.slot(), g.info(), (fullJ / without - 1) * 100, g.source(), g.price(), g.alt(),
+                    g.altSource(), g.detail(), g.alternatives(), g.options()));
+        }
+    }
+
+    /** {@code set} judged with {@code p} in {@code slot} (null: empty); NaN when that cannot be worn. */
+    private static double withSlot(Map<String, Damage.Piece> set, String slot, Damage.Piece p, int m, int earned,
+            int[] prev) {
+        Map<String, Damage.Piece> trial = new LinkedHashMap<>(set);
+        trial.remove(slot);
+        if (p != null) {
+            if (Exclusive.clash(trial, slot, Exclusive.group(p)) != null) {
+                return Double.NaN;
+            }
+            trial.put(slot, p);
+        }
+        Build.Eval ev = Build.allocate(trial, m, earned);
+        return ev == null ? Double.NaN : judged(ev, prev, m);
+    }
+
+    /**
      * Every combination around the set the beam found: per slot what it holds and the best
      * rules.roadmap.exactPool - 1 (2) others by a single swap into it, the two rings as an
      * unordered pair (the same ring twice too). The beam scores half-built sets quickly and can
@@ -1201,6 +1328,13 @@ final class Roadmap {
                 Map<String, Damage.Piece> rest = new LinkedHashMap<>(build);
                 rest.put(slot, was);
                 back = Build.allocate(rest, m, earned);
+                if (back == null && was != null) {
+                    // what you wear there no longer fits the set (its skill points, two Black
+                    // Catalysts at Lv 90): the set without anything there, or alone the pick
+                    // looked like a loss
+                    rest.remove(slot);
+                    back = Build.allocate(rest, m, earned);
+                }
                 if (back != null && back.result().objective() > 0) {
                     together = (full.result().objective() / back.result().objective() - 1) * 100;
                 }
@@ -1217,6 +1351,78 @@ final class Roadmap {
             }
         }
         return new Versus(out, why);
+    }
+
+    /**
+     * The number a row's pill shows on milestone {@code selected}: the gain over what you wear in
+     * that slot ({@link Step#vsWorn}), unless {@link #showsStep}: then the step over the milestone
+     * before ({@link Gear#gain}). A piece from the bag shows its own number. NaN: nothing to
+     * compare with (a new slot, a target).
+     */
+    static double shownGain(List<Step> steps, int selected, Gear u) {
+        if (u == null || Double.isNaN(u.gain()) || steps.isEmpty() || fromBag(u) || showsStep(steps, selected, u)) {
+            return u == null ? Double.NaN : u.gain();
+        }
+        Step s = steps.get(Math.max(0, Math.min(selected, steps.size() - 1)));
+        return s.vsWorn().getOrDefault(u.slot(), u.gain());
+    }
+
+    /**
+     * Whether a row shows its step rather than its gain over what you wear: nothing is worn in
+     * that slot, or what is worn there is far below the milestone that picked the piece
+     * (rules.shopping.oldGearLevels + 4 levels or more). "+64092 %" over a Lv 1 wand says nothing
+     * about a Lv 120 relik; what it adds over the last milestone's pick does.
+     */
+    static boolean showsStep(List<Step> steps, int selected, Gear u) {
+        if (u == null || steps.isEmpty() || fromBag(u)) {
+            return false;
+        }
+        Step s = steps.get(Math.max(0, Math.min(selected, steps.size() - 1)));
+        int at = s.level();
+        for (Step x : steps) {
+            if (x.gear().stream().anyMatch(g -> g == u)) {
+                at = x.level();                         // the milestone that picked it
+                break;
+            }
+        }
+        Build.Plan plan = Build.plan();
+        if (plan == null) {
+            return false;
+        }
+        Map<String, Damage.Piece> worn = plan.worn() != null ? plan.worn() : plan.pieces();
+        // the build slot the piece is in (a ring pick may hold the other hand)
+        String slot = u.slot().equals(RING2) ? "RING2" : u.info().slot() == Slot.RING ? "RING1"
+                : u.info().slot().isWeapon() ? "WEAPON" : u.slot();
+        Damage.Piece here = s.build().get(slot);
+        if (here == null || !here.name().equalsIgnoreCase(u.info().name())) {
+            for (var e : s.build().entrySet()) {
+                if (e.getValue() != null && e.getValue().name().equalsIgnoreCase(u.info().name())) {
+                    slot = e.getKey();
+                    break;
+                }
+            }
+        }
+        Damage.Piece was = worn.get(slot);
+        return was == null || was.level() <= at - (int) Rules.sub("shopping", "oldGearLevels", 8) - 4;
+    }
+
+    /** A community target (rules.roadmap.targets): its row has no gain, it is there for the set. */
+    static boolean isTarget(Gear g) {
+        return g != null && Rules.list("roadmap", "targets").stream().anyMatch(n -> n.equalsIgnoreCase(g.info().name()));
+    }
+
+    /**
+     * A row's pill: "+12%", "−3%", past 999 "&gt;999%" (a number that large only says "much"), with
+     * no number "New" (nothing to compare with), or "Set" for a community target.
+     */
+    static String pill(double gain, Gear g) {
+        if (Double.isNaN(gain)) {
+            return L.t(isTarget(g) ? "wynnlabs.screen.pill_set" : "wynnlabs.screen.pill_new");
+        }
+        if (gain > 999) {
+            return ">" + L.t("wynnlabs.screen.pct", 999);
+        }
+        return (gain < -0.5 ? "−" : "+") + L.t("wynnlabs.screen.pct", Math.round(Math.abs(gain)));
     }
 
     /** How many reason lines {@link #why} gives at most. */
@@ -1459,7 +1665,7 @@ final class Roadmap {
     }
 
     /** The skill points you placed, by skill; null while the Character Info menu has not shown them. */
-    private static int[] assignedPoints(GameState state) {
+    static int[] assignedPoints(GameState state) {
         int[] a = new int[SkillKind.values().length];
         int sum = 0;
         for (SkillKind s : SkillKind.values()) {
@@ -1732,9 +1938,10 @@ final class Roadmap {
             plan.append(java.util.Arrays.toString(p.wornAllocation()));
         }
         // the map's text (where a piece comes from, the reasons) is written in the language of
-        // the day it was built: a switch to English left "mob'lardan düşer" on the rows
+        // the day it was built: a switch to English left "mob'lardan düşer" on the rows. A map an
+        // older scoring model made is out of date too
         return state.characterId() + ":" + state.level() + ":" + L.code() + ":" + Rules.hash() + ":"
-                + plan.toString().hashCode();
+                + plan.toString().hashCode() + ":m" + BeamCache.modelVersion();
     }
 
     private static void refresh() {
@@ -2514,6 +2721,9 @@ final class Roadmap {
                     budgetCut.add(m);
                 }
             }
+            if (baseline != null && startSet != null) {
+                stepsInSet(gear, baseline, startSet, placed, m, earnedThen, prevAlloc);
+            }
             if (m == level && in.builds() > 0 && baseline != null && startSet != null) {
                 phase(5);
                 ranked0 = rank(startSet, baseline, pools, fixed, level, earnedThen, in.builds(), budget, state, owned);
@@ -2557,7 +2767,7 @@ final class Roadmap {
             // skills (once per milestone; the candidates above are ranked with the quick one)
             Build.Eval set = baseline == null ? null : Build.allocateBest(baseline, m, earnedThen);
             if (set != null) {
-                prevAlloc = set.allocation();
+                prevAlloc = carry(set, baseline, m);
             }
             steps.add(new Step(m, gear, abil, places, m == level ? 0 : sp, rowGain, rowWhy,
                     baseline == null ? Map.of() : java.util.Collections.unmodifiableMap(new LinkedHashMap<>(baseline)),
@@ -2951,7 +3161,10 @@ final class Roadmap {
         o.addProperty("building", building);
         JsonArray arr = new JsonArray();
         Map<String, Gear> latest = new LinkedHashMap<>();
-        for (Step s : steps) {
+        // what each set was judged against: the points you placed, then the milestone before
+        int[] prev = assignedPoints(GameState.current());
+        for (int i = 0; i < steps.size(); i++) {
+            Step s = steps.get(i);
             for (Gear g : s.gear()) {
                 latest.put(g.slot(), g);
             }
@@ -2969,7 +3182,12 @@ final class Roadmap {
                 set.addProperty("spell", Math.round(s.set().result().spellDps()));
                 set.addProperty("ehp", Math.round(s.set().result().ehp()));
                 set.addProperty("build", Math.round(s.set().result().objective()));
+                // what the search chose it by: the build with the respec charge and the keep bonus
+                // against the milestone before (builds of two milestones are no measure of each
+                // other: XP counts nothing at the cap, the health floor rises, the points stop at 101)
+                set.addProperty("judged", Math.round(judged(s.build(), s.set(), prev, s.level())));
                 j.add("set", set);
+                prev = carry(s.set(), s.build(), s.level());
             }
             JsonArray rows = new JsonArray();
             for (var e : latest.entrySet()) {
@@ -2982,6 +3200,7 @@ final class Roadmap {
                 Double row = s.vsWorn().get(e.getKey());
                 r.addProperty("row", row == null ? null : Math.round(row * 10) / 10.0);
                 r.addProperty("step", Double.isNaN(g.gain()) ? null : Math.round(g.gain() * 10) / 10.0);
+                r.addProperty("pill", pill(shownGain(steps, i, g), g));      // what the J menu's row shows
                 JsonArray why = new JsonArray();
                 s.whyVsWorn().getOrDefault(e.getKey(), List.of()).forEach(why::add);
                 r.add("why", why);

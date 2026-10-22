@@ -60,7 +60,7 @@ final class Rules {
                 "excludeSources": ["UNAVAILABLE", "RAID", "EVENT"]
               },
               "rerollBelowPercent": 30,
-              "roadmap": {"targets": [], "targetNote": "topluluk önerisi"},
+              "roadmap": {"targets": [], "targetNote": "topluluk önerisi", "keepBonusPercent": 1},
               "model": {
                 "spells": [
                   {"name": "Aura", "index": 3, "cost": 40, "share": 0.55, "conv": {"neutral": 1.5, "water": 0.3}},

@@ -30,7 +30,7 @@ final class BeamCache {
      * not a field: a field added by a hot swap keeps no value.
      */
     static int modelVersion() {
-        return 2;
+        return 3;
     }
 
     /** The loaded entries and whose they are; access-ordered, so the oldest drop first. */
