@@ -1,6 +1,7 @@
 package io.github.anilken.wynnlabs;
 
 import io.github.anilken.wynnlabs.model.ItemData;
+import io.github.anilken.wynnlabs.model.SetData;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,9 +56,27 @@ final class Exclusive {
         if (g != null) {
             return g;
         }
-        return info.set().filter(s -> s.bonuses().values().stream()
-                        .anyMatch(b -> b.major().stream().anyMatch(m -> m.toLowerCase(Locale.ROOT).contains("illegal"))))
-                .map(s -> s.name()).orElse(null);
+        return info.set().filter(Exclusive::illegal).map(SetData::name).orElse(null);
+    }
+
+    /** {@link #group(ItemData)} for a piece: by its name, or its set when that set is marked illegal. */
+    static String group(Damage.Piece p) {
+        String g = p == null ? null : group(p.name());
+        if (g != null || p == null) {
+            return g;
+        }
+        for (String k : p.stats().keySet()) {
+            SetData s = k.startsWith(Damage.SET) ? Damage.SETS.get(k.substring(Damage.SET.length())) : null;
+            if (s != null && illegal(s)) {
+                return s.name();
+            }
+        }
+        return null;
+    }
+
+    private static boolean illegal(SetData s) {
+        return s.bonuses().values().stream()
+                .anyMatch(b -> b.major().stream().anyMatch(m -> m.toLowerCase(Locale.ROOT).contains("illegal")));
     }
 
     /**
@@ -70,7 +89,7 @@ final class Exclusive {
         }
         for (var e : build.entrySet()) {
             Damage.Piece p = e.getValue();
-            if (p != null && !e.getKey().equals(slot) && group.equals(group(p.name()))) {
+            if (p != null && !e.getKey().equals(slot) && group.equals(group(p))) {
                 return p.name();
             }
         }

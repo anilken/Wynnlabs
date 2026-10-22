@@ -524,6 +524,10 @@ public final class TooltipListener {
                 return false;
             }
             p = p.contains(" (") ? p.substring(0, p.indexOf(" (")) : p;   // just the price, short
+            Prices.Price known = GameState.current().price(g.data().name());
+            if (known != null && known.uncertain()) {
+                p = Prices.past(p);                 // nothing listed now, or only old listings
+            }
             // Line 0 is a hidden copy of the name; the visible header ("Dusk Painter [57.9%]",
             // with the emblem) is the next line holding it. The price goes at its end.
             int header = headerLine(out, g.data().name());

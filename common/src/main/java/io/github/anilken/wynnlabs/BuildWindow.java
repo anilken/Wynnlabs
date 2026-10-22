@@ -1320,7 +1320,7 @@ final class BuildWindow {
                 return "coin";
             }
         }
-        String src = Shopping.sourceOf(info);
+        String src = Shopping.origin(info);
         boolean known = src != null && !src.isBlank() && !src.toUpperCase(Locale.ROOT).startsWith("UNKNOWN");
         if (known) {
             return switch (Shopping.kind(src)) {
@@ -1351,7 +1351,7 @@ final class BuildWindow {
         if (info == null) {
             return null;
         }
-        String src = Shopping.sourceOf(info);
+        String src = Shopping.origin(info);
         if (src == null || src.isBlank() || src.toUpperCase(Locale.ROOT).startsWith("UNKNOWN")) {
             return null;
         }
@@ -1391,7 +1391,7 @@ final class BuildWindow {
         if (info == null) {
             return new Object[] {L.t("wynnlabs.results.price_unknown"), null};
         }
-        String src = Shopping.sourceOf(info);
+        String src = Shopping.origin(info);
         boolean tradable = Shopping.tradable(info);
         if (tradable) {
             Prices.Price p = GameState.current().price(name);

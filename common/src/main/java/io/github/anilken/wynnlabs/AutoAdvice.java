@@ -443,7 +443,8 @@ final class AutoAdvice {
         if (Double.isNaN(best)) {
             return true;                        // cannot be worn even then
         }
-        double gain = (best / plan.result().objective() - 1) * 100;
+        double base = plan.objectiveAt(lv);
+        double gain = base <= 0 ? -100 : (best / base - 1) * 100;
         return gain < target.gain();
     }
 
@@ -1096,7 +1097,8 @@ final class AutoAdvice {
                 best = v;
             }
         }
-        return Double.isNaN(best) ? Double.NaN : (best / plan.result().objective() - 1) * 100;
+        double base = plan.objectiveAt(lv);
+        return Double.isNaN(best) || base <= 0 ? Double.NaN : (best / base - 1) * 100;
     }
 
     /** The weakest worn piece: its score, name, the gear (null if crafted) and the stack. */
@@ -1234,7 +1236,7 @@ final class AutoAdvice {
 
     /** The set bonus for n pieces, scored with the rule weights. */
     private static double setScore(SetData set, int n) {
-        if (n < 2) {
+        if (n < 1) {
             return 0;
         }
         double s = 0;
@@ -1283,7 +1285,7 @@ final class AutoAdvice {
         }
         var set = info.set().get();
         int n = setCount(set.name(), replaced) + 1;
-        return ", set: " + set.cleanName() + " " + n + "/" + set.pieces();
+        return ", set: " + set.cleanName() + " " + n + "/" + set.full();
     }
 
     /**

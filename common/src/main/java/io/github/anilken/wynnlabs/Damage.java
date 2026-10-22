@@ -456,7 +456,42 @@ final class Damage {
 
     private static double model(String key, double fallback) {
         // the road map's tuning strip (Tuning) leans a few weights; 1 everywhere else
-        return Rules.sub("model", key, fallback) * Tuning.weight(key);
+        double v = Rules.sub("model", key, fallback) * Tuning.weight(key);
+        // what deaths taught (DeathCoach, rules.model.survivalLearned, 1 to 2) is kept apart from
+        // the goal's weights, so choosing a goal again does not wipe it
+        if (key.equals("survivalWeight") || key.equals("survivalPower")) {
+            v *= Math.max(1, Math.min(2, Rules.sub("model", "survivalLearned", 1)));
+        }
+        return v;
+    }
+
+    /**
+     * The elemental effective health a build should keep at this level before damage counts in
+     * full: the table below (about what dies in the open world at that level, a Lv 69-72 Shaman
+     * died again and again at 5.5-7k), times the goal's rules.model.ehpFloorScale (Damage 1,
+     * Tank 1.6), raised by what recent deaths say (rules.model.deathFloorRatio, at most 2×) and
+     * scaled by rules.roadmap.ehpFloorScale (0 turns it off).
+     */
+    static double ehpFloor(int level) {
+        double scale = Rules.sub("roadmap", "ehpFloorScale", 1.0);
+        if (scale <= 0) {
+            return 0;
+        }
+        double deaths = Math.min(2, Rules.sub("model", "deathFloorRatio", 0));
+        return scale * ehpTable(level) * Math.max(model("ehpFloorScale", 1.0), deaths);
+    }
+
+    /** The floor's table for a Damage build: level, elemental effective health, straight lines between. */
+    static double ehpTable(int level) {
+        int[][] t = {{1, 0}, {50, 2000}, {60, 4000}, {70, 6500}, {80, 9000}, {90, 12000}, {100, 16000},
+            {110, 20000}, {120, 25000}};
+        for (int i = 1; i < t.length; i++) {
+            if (level <= t[i][0]) {
+                return t[i - 1][1] + (t[i][1] - t[i - 1][1]) * (double) (Math.max(1, level) - t[i - 1][0])
+                        / (t[i][0] - t[i - 1][0]);
+            }
+        }
+        return t[t.length - 1][1];
     }
 
     /**
@@ -533,14 +568,15 @@ final class Damage {
             weapon.stats().forEach((k, v) -> s.merge(k, v, Double::sum));
             health += weapon.health();
         }
-        // Set bonuses: n pieces of one set add that set's bonus for n (Morph, Adventurer's, …)
+        // Set bonuses: n pieces of one set add that set's bonus for n (Morph, Adventurer's, …);
+        // a ring in both hands is two, and some sets pay from one piece (Goblin, Black Catalyst)
         for (var e : new java.util.ArrayList<>(s.entrySet())) {
             if (!e.getKey().startsWith(SET)) {
                 continue;
             }
             var set = SETS.get(e.getKey().substring(SET.length()));
             int n = (int) Math.round(e.getValue());
-            var bonus = set == null || n < 2 ? null : set.bonusFor(n);
+            var bonus = set == null || n < 1 ? null : set.bonusFor(n);
             if (bonus != null) {
                 bonus.minor().forEach(sv -> s.merge(sv.key(), (double) sv.value(), Double::sum));
             }
@@ -667,10 +703,14 @@ final class Damage {
         double speed = stat(s, "walkSpeed");
         // XP is worth nothing once you are at the level cap
         double xpWeight = level >= model("maxLevel", 120) ? 0 : model("xpWeight", 1.0) * model("goalXp", 1.0);
-        double fXp = 1 + xpWeight * xp / 100.0;
+        // the fighting goals (rules.model.xpLog 1: Damage, Safe, Boss) count XP with diminishing
+        // returns, so +300 % XP does not outweigh staying alive; the levelling goals keep it linear
+        double fXp = model("xpLog", 0) > 0
+                ? 1 + xpWeight * Math.log1p(Math.max(-0.9, xp / 100.0))
+                : 1 + xpWeight * xp / 100.0;
         // speed penalties count more than bonuses (rules.model.speedPenaltyWeight)
         double fSpeed = speedFactor(speed);
-        double fLife = Math.max(0.2, 1 + model("survivalWeight", 0.4)
+        double fLife = Math.max(0.2, 1 + model("survivalWeight", 0.2)
                 * Math.log(ehpElemental / (model("hpBase", 5) + model("hpPerLevel", 5) * level)));
         // Sustain: health regen (raw, raised by its %) and half the life steal, which only works
         // while hitting. Below zero the health drains even out of a fight, so it weighs far more
@@ -681,10 +721,18 @@ final class Damage {
                 ? Math.max(0.3, 1 + model("negativeRegenWeight", 2.0) * regen / regenScale)
                 : 1 + model("regenWeight", 0.2) * Math.min(1, regen / regenScale);
         fLife *= fRegen;
-        // a tank's health counts in full, not with the diminishing log above (rules.model.survivalPower)
-        double power = model("survivalPower", 0);
+        // health also counts as a power of itself (rules.model.survivalPower, set by the goal: 0.25
+        // for Damage up to 1 for a Tank), so more of it keeps paying where the log above flattens
+        double power = model("survivalPower", 0.25);
         if (power > 0) {
             fLife *= Math.pow(ehpElemental / regenScale, power);
+        }
+        // below the floor for this level a build pays by the cube of the shortfall
+        // (rules.model.ehpFloorPower), so damage is not bought with paper armour: the skill
+        // points, the road map and the build plan all see it, as it is part of the score
+        double floor = ehpFloor(level);
+        if (floor > 0 && ehpElemental < floor) {
+            fLife *= Math.pow(ehpElemental / floor, model("ehpFloorPower", 3));
         }
         // Mana comfort: being able to keep casting is worth more than the DPS number shows
         double fMana = Math.max(0.3, 1 + model("manaWeight", 0.3) * Math.log(Math.max(0.2, casts)));

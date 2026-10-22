@@ -14,8 +14,27 @@ public record SetData(String name, String cleanName, int pieces, Map<Integer, Bo
 
     public record StatValue(String key, int value) {}
 
-    /** The bonus for {@code n} pieces worn, counted between 1 and the set's size; null if none. */
+    /**
+     * The bonus for {@code n} pieces worn: the one for the most pieces up to {@code n}, null if
+     * none. A ring worn in both hands counts twice, so {@code n} can pass the number of items
+     * (Black Catalyst is one ring with its bonus at two, Jester three items with one at four).
+     */
     public Bonus bonusFor(int n) {
-        return bonuses.get(n < 1 ? 1 : Math.min(n, pieces));
+        int at = 0;
+        for (int k : bonuses.keySet()) {
+            if (k <= n && k > at) {
+                at = k;
+            }
+        }
+        return at < 1 ? null : bonuses.get(at);
+    }
+
+    /** The most pieces that count: the items, or the largest bonus when a doubled ring reaches past them. */
+    public int full() {
+        int most = pieces;
+        for (int k : bonuses.keySet()) {
+            most = Math.max(most, k);
+        }
+        return most;
     }
 }

@@ -4,137 +4,76 @@
       "level": 20,
       "gear": [
         {
-          "slot": "RELIK",
-          "name": "Helter Skelter",
-          "level": 19,
+          "slot": "HELMET",
+          "name": "Neolithic",
+          "level": 20,
           "tier": "LEGENDARY",
-          "gain": 92.8,
+          "gain": 154.1,
           "from": "mob'lardan düşer",
           "price": null,
           "tradable": true,
           "options": [
             {
-              "name": "Helter Skelter",
-              "level": 19,
-              "gain": 142.7,
+              "name": "Neolithic",
+              "level": 20,
+              "gain": 152.1,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
-              "name": "Grindcore",
-              "level": 25,
-              "gain": 161.2,
-              "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Intestine Lasso",
-              "level": 25,
-              "gain": 148.7,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Technicolor Phase",
-              "level": 21,
-              "gain": 118.0,
-              "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Cruel Sun",
-              "level": 24,
-              "gain": 112.4,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Gestation",
+              "name": "Beachside Headwrap",
               "level": 23,
-              "gain": 109.5,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Flux and Flow",
-              "level": 25,
-              "gain": 94.4,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Prog",
-              "level": 18,
-              "gain": 76.7,
+              "gain": 88.8,
               "from": "Detlas tüccarı",
               "tradable": true
             },
             {
-              "name": "Presto",
-              "level": 16,
-              "gain": 64.8,
-              "from": "mob'lardan düşer",
+              "name": "Nether Cap",
+              "level": 24,
+              "gain": 75.9,
+              "from": "Detlas tüccarı",
               "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "HELMET",
-          "name": "Gnocchi",
-          "level": 17,
-          "tier": "RARE",
-          "gain": 17.9,
-          "from": "mob'lardan düşer",
-          "price": "~28 EB",
-          "tradable": true,
-          "options": [
+            },
             {
-              "name": "Gnocchi",
-              "level": 17,
-              "gain": -1.4,
-              "from": "mob'lardan düşer",
+              "name": "Mind Alight",
+              "level": 25,
+              "gain": 63.5,
+              "from": "sandık",
+              "tradable": true
+            },
+            {
+              "name": "Equilibrium",
+              "level": 24,
+              "gain": 61.9,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Undertow",
+              "level": 22,
+              "gain": 59.6,
+              "from": "Detlas tüccarı",
               "tradable": true
             },
             {
               "name": "Replica Hallowynn Mask",
               "level": 22,
-              "gain": 6.5,
+              "gain": 46.3,
               "from": "Detlas tüccarı",
               "tradable": true
             },
             {
-              "name": "Bony Circlet",
-              "level": 21,
-              "gain": 5.8,
-              "from": "sandık",
+              "name": "Gnocchi",
+              "level": 17,
+              "gain": 27.4,
+              "from": "Trade Market",
               "tradable": true
             },
             {
-              "name": "Brainy Beanie",
-              "level": 22,
-              "gain": 3.9,
-              "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Hallowynn Mask",
-              "level": 22,
-              "gain": 3.3,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Bear Mask",
-              "level": 15,
-              "gain": 2.0,
-              "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Mercenary Hood",
+              "name": "Memorial",
               "level": 19,
-              "gain": -0.3,
-              "from": "Decrepit Sewers zindanı",
+              "gain": 25.1,
+              "from": "mob'lardan düşer",
               "tradable": true
             }
           ]
@@ -144,7 +83,7 @@
           "name": "The Scarecrow's Vest",
           "level": 20,
           "tier": "LEGENDARY",
-          "gain": 60.4,
+          "gain": 53.3,
           "from": "The Hunger of Gerts Part 1 görevi",
           "price": null,
           "tradable": false,
@@ -152,56 +91,63 @@
             {
               "name": "The Scarecrow's Vest",
               "level": 20,
-              "gain": 3.5,
+              "gain": 53.9,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             },
             {
-              "name": "Arakadicus' Body",
-              "level": 21,
-              "gain": 30.9,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Tribal Tunic",
-              "level": 18,
-              "gain": 19.5,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Dead Samurai's Plate",
-              "level": 24,
-              "gain": 19.8,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Arcanic",
-              "level": 21,
-              "gain": 13.6,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Diode",
-              "level": 24,
-              "gain": 10.8,
+              "name": "Katoa's Warmth",
+              "level": 23,
+              "gain": 61.5,
               "from": "sandık",
               "tradable": true
             },
             {
-              "name": "Fisher's Mail",
-              "level": 22,
-              "gain": 12.1,
-              "from": "Decrepit Sewers zindanı",
+              "name": "Arakadicus' Body",
+              "level": 21,
+              "gain": 68.9,
+              "from": "Detlas tüccarı",
               "tradable": true
             },
             {
-              "name": "Temporal Cage",
+              "name": "Admiral's Aegis",
+              "level": 21,
+              "gain": 25.7,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Karraska",
+              "level": 24,
+              "gain": 24.6,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Nether Tunic",
+              "level": 25,
+              "gain": 22.9,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Web Plate",
+              "level": 22,
+              "gain": 6.5,
+              "from": "The Hunger of Gerts Part 1 görevi",
+              "tradable": false
+            },
+            {
+              "name": "Tribal Tunic",
+              "level": 18,
+              "gain": 4.7,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Abdomen",
               "level": 20,
-              "gain": 10.2,
+              "gain": -14.7,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             }
@@ -212,7 +158,7 @@
           "name": "Lemon Legs",
           "level": 18,
           "tier": "LEGENDARY",
-          "gain": 75.1,
+          "gain": 0.6,
           "from": "Decrepit Sewers zindanı",
           "price": null,
           "tradable": true,
@@ -220,49 +166,223 @@
             {
               "name": "Lemon Legs",
               "level": 18,
-              "gain": 24.1,
+              "gain": 0.6,
               "from": "Decrepit Sewers zindanı",
               "tradable": true
             },
             {
               "name": "Tribal Pants",
               "level": 18,
-              "gain": 15.9,
+              "gain": 0.0,
               "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Conductor",
-              "level": 25,
-              "gain": 13.8,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Tarnish",
-              "level": 21,
-              "gain": 13.0,
-              "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Cloudburst",
               "level": 19,
-              "gain": 15.3,
+              "gain": -13.6,
               "from": "Detlas tüccarı",
               "tradable": true
             },
             {
-              "name": "Selchar's Famous Breeches",
-              "level": 25,
-              "gain": 9.3,
+              "name": "Pigman's Loincloth",
+              "level": 16,
+              "gain": -18.6,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Foundation",
+              "level": 20,
+              "gain": -19.6,
+              "from": "Decrepit Sewers zindanı",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "BOOTS",
+          "name": "Shajone",
+          "level": 18,
+          "tier": "UNIQUE",
+          "gain": 5.9,
+          "from": "Detlas tüccarı",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Shajone",
+              "level": 18,
+              "gain": 5.9,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Ado Saki",
+              "level": 20,
+              "gain": -2.2,
+              "from": "sandık",
+              "tradable": true
+            },
+            {
+              "name": "Greenhoof",
+              "level": 20,
+              "gain": -9.1,
+              "from": "The Hunger of Gerts Part 1 görevi",
+              "tradable": false
+            },
+            {
+              "name": "Hunger",
+              "level": 17,
+              "gain": -12.1,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Hiker's Boots",
+              "level": 20,
+              "gain": -15.2,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "NECKLACE",
+          "name": "Spider's Eye Pendant",
+          "level": 20,
+          "tier": "RARE",
+          "gain": 1.7,
+          "from": "Detlas tüccarı",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Spider's Eye Pendant",
+              "level": 20,
+              "gain": 2.3,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Charm of the Flea",
+              "level": 20,
+              "gain": 1.4,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Simple Coin",
+              "level": 18,
+              "gain": -1.2,
               "from": "Decrepit Sewers zindanı",
               "tradable": true
             },
             {
-              "name": "Relay",
-              "level": 24,
-              "gain": 3.6,
+              "name": "Amulet of the Necromancer",
+              "level": 18,
+              "gain": -3.5,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Diaconate",
+              "level": 15,
+              "gain": -5.3,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "RELIK",
+          "name": "Helter Skelter",
+          "level": 19,
+          "tier": "LEGENDARY",
+          "gain": 26.5,
+          "from": "mob'lardan düşer",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Helter Skelter",
+              "level": 19,
+              "gain": 26.5,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Presto",
+              "level": 16,
+              "gain": 0.0,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Prog",
+              "level": 18,
+              "gain": -4.5,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Earthwave",
+              "level": 16,
+              "gain": -25.8,
+              "from": "sandık",
+              "tradable": true
+            },
+            {
+              "name": "Ivy Whip",
+              "level": 19,
+              "gain": -29.4,
+              "from": "The Hunger of Gerts Part 1 görevi",
+              "tradable": false
+            }
+          ]
+        },
+        {
+          "slot": "RING2",
+          "name": "Red String",
+          "level": 16,
+          "tier": "UNIQUE",
+          "gain": 1.4,
+          "from": "mob'lardan düşer",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Red String",
+              "level": 16,
+              "gain": 1.4,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Ring of Focus",
+              "level": 20,
+              "gain": 1.0,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Quatrain",
+              "level": 16,
+              "gain": 0.5,
+              "from": "Decrepit Sewers zindanı",
+              "tradable": true
+            },
+            {
+              "name": "Major",
+              "level": 20,
+              "gain": 0.0,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Sparkle",
+              "level": 16,
+              "gain": -0.1,
               "from": "Detlas tüccarı",
               "tradable": true
             }
@@ -273,7 +393,7 @@
           "name": "Red String",
           "level": 16,
           "tier": "UNIQUE",
-          "gain": 9.4,
+          "gain": 1.2,
           "from": "mob'lardan düşer",
           "price": null,
           "tradable": true,
@@ -281,64 +401,57 @@
             {
               "name": "Red String",
               "level": 16,
-              "gain": 5.5,
+              "gain": 2.3,
               "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Ring of Focus",
-              "level": 20,
-              "gain": 6.3,
-              "from": "Detlas tüccarı",
               "tradable": true
             },
             {
               "name": "Quatrain",
               "level": 16,
-              "gain": 5.5,
+              "gain": 1.5,
               "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Major",
-              "level": 20,
-              "gain": 4.9,
-              "from": "Detlas tüccarı",
               "tradable": true
             },
             {
               "name": "Sparkle",
               "level": 16,
-              "gain": 3.7,
+              "gain": 0.8,
               "from": "Detlas tüccarı",
               "tradable": true
             },
             {
-              "name": "Lake",
-              "level": 23,
-              "gain": 3.8,
-              "from": "mob'lardan düşer",
+              "name": "Major",
+              "level": 20,
+              "gain": 0.7,
+              "from": "Detlas tüccarı",
               "tradable": true
             },
             {
-              "name": "Lizard",
-              "level": 18,
-              "gain": 2.6,
-              "from": "Decrepit Sewers zindanı",
+              "name": "Ring of Focus",
+              "level": 20,
+              "gain": 0.0,
+              "from": "Detlas tüccarı",
               "tradable": true
             }
           ]
         },
         {
           "slot": "BRACELET",
-          "name": "Gust",
-          "level": 20,
+          "name": "Slap",
+          "level": 15,
           "tier": "UNIQUE",
-          "gain": 10.2,
-          "from": "Detlas tüccarı",
+          "gain": 0.7,
+          "from": "sandık",
           "price": null,
           "tradable": true,
           "options": [
+            {
+              "name": "Slap",
+              "level": 15,
+              "gain": 0.7,
+              "from": "sandık",
+              "tradable": true
+            },
             {
               "name": "Gust",
               "level": 20,
@@ -347,185 +460,23 @@
               "tradable": true
             },
             {
-              "name": "Laen's Curiosity",
-              "level": 25,
-              "gain": 3.6,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
               "name": "The Meddler",
               "level": 19,
-              "gain": 0.5,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Slap",
-              "level": 15,
-              "gain": 1.4,
+              "gain": 0.0,
               "from": "sandık",
               "tradable": true
             },
             {
               "name": "Spider Bracelet",
               "level": 19,
-              "gain": -0.8,
+              "gain": -1.3,
               "from": "sandık",
               "tradable": true
             },
             {
               "name": "Bejeweled Bracelet",
               "level": 17,
-              "gain": -3.9,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Gilded Cuff",
-              "level": 24,
-              "gain": -3.9,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "BOOTS",
-          "name": "Ado Saki",
-          "level": 20,
-          "tier": "RARE",
-          "gain": 1.7,
-          "from": "sandık",
-          "price": null,
-          "tradable": true,
-          "options": [
-            {
-              "name": "Ado Saki",
-              "level": 20,
-              "gain": -2.9,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Shajone",
-              "level": 18,
-              "gain": -2.1,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Hunger",
-              "level": 17,
-              "gain": -13.4,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Stingy",
-              "level": 20,
-              "gain": -13.8,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Arcane Boots",
-              "level": 15,
-              "gain": -14.7,
-              "from": "sandık",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "RING2",
-          "name": "Red String",
-          "level": 16,
-          "tier": "UNIQUE",
-          "gain": 0.2,
-          "from": "mob'lardan düşer",
-          "price": null,
-          "tradable": true,
-          "options": [
-            {
-              "name": "Red String",
-              "level": 16,
-              "gain": 2.4,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Ring of Focus",
-              "level": 20,
-              "gain": 3.1,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Quatrain",
-              "level": 16,
-              "gain": 2.5,
-              "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Major",
-              "level": 20,
-              "gain": 2.0,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Sparkle",
-              "level": 16,
-              "gain": 0.9,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "NECKLACE",
-          "name": "Spider's Eye Pendant",
-          "level": 20,
-          "tier": "RARE",
-          "gain": 2.9,
-          "from": "Detlas tüccarı",
-          "price": null,
-          "tradable": true,
-          "options": [
-            {
-              "name": "Spider's Eye Pendant",
-              "level": 20,
-              "gain": 2.9,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Charm of the Flea",
-              "level": 20,
-              "gain": -0.1,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Simple Coin",
-              "level": 18,
-              "gain": -2.0,
-              "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Amulet of the Necromancer",
-              "level": 18,
-              "gain": -3.7,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Diaconate",
-              "level": 15,
-              "gain": -5.5,
+              "gain": -4.4,
               "from": "Detlas tüccarı",
               "tradable": true
             }
@@ -543,46 +494,156 @@
       "gear": [
         {
           "slot": "RELIK",
-          "name": "Thriller",
-          "level": 28,
-          "tier": "LEGENDARY",
-          "gain": 6.1,
-          "from": "The Hunger of Gerts Part 1 görevi",
+          "name": "Vivace",
+          "level": 29,
+          "tier": "UNIQUE",
+          "gain": 44.9,
+          "from": "Decrepit Sewers zindanı",
           "price": null,
-          "tradable": false,
+          "tradable": true,
           "options": [
-            {
-              "name": "Thriller",
-              "level": 28,
-              "gain": 28.4,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
             {
               "name": "Vivace",
               "level": 29,
-              "gain": 0.0,
+              "gain": 43.4,
               "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Ablution",
-              "level": 30,
-              "gain": -0.7,
-              "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Conclave Crossfire",
               "level": 29,
-              "gain": -3.0,
+              "gain": 46.7,
               "from": "Decrepit Sewers zindanı",
               "tradable": true
             },
             {
-              "name": "Ancient Waters",
-              "level": 29,
-              "gain": -9.8,
+              "name": "Breath of the Dragon",
+              "level": 27,
+              "gain": 24.8,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Fault Lines",
+              "level": 32,
+              "gain": 24.7,
+              "from": "Decrepit Sewers zindanı",
+              "tradable": true
+            },
+            {
+              "name": "Typhoon Blast",
+              "level": 32,
+              "gain": 24.4,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Windowframe",
+              "level": 34,
+              "gain": 20.4,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Incense Burner",
+              "level": 34,
+              "gain": 15.8,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Presto",
+              "level": 16,
+              "gain": -9.0,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Prog",
+              "level": 18,
+              "gain": -16.4,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Earthwave",
+              "level": 16,
+              "gain": -36.9,
+              "from": "sandık",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "BRACELET",
+          "name": "Vindicator",
+          "level": 30,
+          "tier": "FABLED",
+          "gain": 1.9,
+          "from": "Detlas tüccarı",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Vindicator",
+              "level": 30,
+              "gain": 2.1,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Used Wolf Paw",
+              "level": 30,
+              "gain": 0.0,
+              "from": "sandık",
+              "tradable": true
+            },
+            {
+              "name": "Life Charge",
+              "level": 30,
+              "gain": -1.1,
+              "from": "sandık",
+              "tradable": true
+            },
+            {
+              "name": "Handcuff",
+              "level": 33,
+              "gain": -1.0,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Spider Bracelet",
+              "level": 19,
+              "gain": -1.6,
+              "from": "sandık",
+              "tradable": true
+            },
+            {
+              "name": "Sayleros' Brother's Misfortune",
+              "level": 22,
+              "gain": -1.6,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Fortitude",
+              "level": 28,
+              "gain": -2.1,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Gust",
+              "level": 20,
+              "gain": 0.1,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "The Meddler",
+              "level": 19,
+              "gain": -0.3,
               "from": "sandık",
               "tradable": true
             }
@@ -593,7 +654,7 @@
           "name": "Black Ripper",
           "level": 27,
           "tier": "RARE",
-          "gain": 1.8,
+          "gain": 14.5,
           "from": "The Hunger of Gerts Part 1 görevi",
           "price": null,
           "tradable": false,
@@ -601,35 +662,35 @@
             {
               "name": "Black Ripper",
               "level": 27,
-              "gain": 10.1,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Black Mask",
-              "level": 29,
-              "gain": 2.7,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Brise",
-              "level": 27,
-              "gain": 1.8,
+              "gain": 12.9,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             },
             {
               "name": "Advancement",
               "level": 29,
-              "gain": 1.2,
+              "gain": 2.2,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             },
             {
-              "name": "Ice Mask",
-              "level": 28,
-              "gain": 1.1,
+              "name": "Giant's Kneecap",
+              "level": 30,
+              "gain": 0.0,
+              "from": "Decrepit Sewers zindanı",
+              "tradable": true
+            },
+            {
+              "name": "Santa Earmuffs",
+              "level": 30,
+              "gain": -0.2,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Santa Hat",
+              "level": 30,
+              "gain": -4.0,
               "from": "sandık",
               "tradable": true
             }
@@ -640,7 +701,7 @@
           "name": "Secondsaver",
           "level": 30,
           "tier": "LEGENDARY",
-          "gain": 19.4,
+          "gain": 8.6,
           "from": "The Hunger of Gerts Part 1 görevi",
           "price": null,
           "tradable": false,
@@ -648,7 +709,7 @@
             {
               "name": "Secondsaver",
               "level": 30,
-              "gain": 5.8,
+              "gain": 8.4,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             },
@@ -660,71 +721,24 @@
               "tradable": true
             },
             {
+              "name": "Body Axe",
+              "level": 26,
+              "gain": -7.2,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
               "name": "Arakadicus' Body",
               "level": 21,
-              "gain": -2.1,
+              "gain": -9.8,
               "from": "Detlas tüccarı",
               "tradable": true
             },
             {
-              "name": "Streak",
-              "level": 30,
-              "gain": -11.1,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Tribal Tunic",
-              "level": 18,
-              "gain": -13.7,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "BOOTS",
-          "name": "Almuj's Walker",
-          "level": 25,
-          "tier": "LEGENDARY",
-          "gain": 16.3,
-          "from": "Detlas tüccarı",
-          "price": null,
-          "tradable": true,
-          "options": [
-            {
-              "name": "Almuj's Walker",
-              "level": 25,
-              "gain": -4.5,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Adigard's Snowshoes",
-              "level": 30,
-              "gain": 0.0,
-              "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Disco",
+              "name": "Angel Wing Shroud",
               "level": 27,
-              "gain": -2.7,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Cyclo",
-              "level": 21,
-              "gain": -5.7,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Sharp Heels",
-              "level": 29,
-              "gain": -7.1,
-              "from": "sandık",
+              "gain": -11.5,
+              "from": "Decrepit Sewers zindanı",
               "tradable": true
             }
           ]
@@ -742,14 +756,14 @@
             {
               "name": "Timelocked Spark",
               "level": 28,
-              "gain": 4.4,
+              "gain": 3.3,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             },
             {
-              "name": "Timelocked Stone",
+              "name": "Timelocked Breath",
               "level": 28,
-              "gain": 2.6,
+              "gain": 2.9,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             },
@@ -761,16 +775,16 @@
               "tradable": false
             },
             {
-              "name": "Timelocked Coal",
+              "name": "Timelocked Stone",
               "level": 28,
-              "gain": 1.6,
+              "gain": 2.5,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             },
             {
-              "name": "Timelocked Breath",
+              "name": "Timelocked Coal",
               "level": 28,
-              "gain": 1.5,
+              "gain": 2.5,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             }
@@ -781,7 +795,7 @@
           "name": "Timelocked Spark",
           "level": 28,
           "tier": "UNIQUE",
-          "gain": 2.4,
+          "gain": 2.8,
           "from": "The Hunger of Gerts Part 1 görevi",
           "price": null,
           "tradable": false,
@@ -789,35 +803,35 @@
             {
               "name": "Timelocked Spark",
               "level": 28,
-              "gain": 4.6,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Timelocked Dew",
-              "level": 28,
               "gain": 3.0,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Timelocked Stone",
-              "level": 28,
-              "gain": 2.9,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Timelocked Coal",
-              "level": 28,
-              "gain": 1.9,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             },
             {
               "name": "Timelocked Breath",
               "level": 28,
-              "gain": 1.8,
+              "gain": 2.6,
+              "from": "The Hunger of Gerts Part 1 görevi",
+              "tradable": false
+            },
+            {
+              "name": "Timelocked Dew",
+              "level": 28,
+              "gain": 2.3,
+              "from": "The Hunger of Gerts Part 1 görevi",
+              "tradable": false
+            },
+            {
+              "name": "Timelocked Stone",
+              "level": 28,
+              "gain": 2.2,
+              "from": "The Hunger of Gerts Part 1 görevi",
+              "tradable": false
+            },
+            {
+              "name": "Timelocked Coal",
+              "level": 28,
+              "gain": 2.2,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             }
@@ -828,7 +842,7 @@
           "name": "Durum's Serenity",
           "level": 25,
           "tier": "LEGENDARY",
-          "gain": 5.8,
+          "gain": 3.4,
           "from": "The Hunger of Gerts Part 1 görevi",
           "price": null,
           "tradable": false,
@@ -836,14 +850,14 @@
             {
               "name": "Durum's Serenity",
               "level": 25,
-              "gain": 4.8,
+              "gain": 2.8,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             },
             {
               "name": "Slainte",
               "level": 30,
-              "gain": 2.0,
+              "gain": 0.7,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             },
@@ -855,64 +869,64 @@
               "tradable": true
             },
             {
-              "name": "Dark Diadem",
-              "level": 24,
-              "gain": -0.9,
-              "from": "Decrepit Sewers zindanı",
+              "name": "Flickering Light",
+              "level": 29,
+              "gain": -1.8,
+              "from": "Detlas tüccarı",
               "tradable": true
             },
             {
               "name": "Longevity",
               "level": 30,
-              "gain": -2.4,
+              "gain": -3.6,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             }
           ]
         },
         {
-          "slot": "BRACELET",
-          "name": "Dynamic",
-          "level": 28,
-          "tier": "UNIQUE",
-          "gain": 0.6,
-          "from": "mob'lardan düşer",
+          "slot": "BOOTS",
+          "name": "Meanderthal",
+          "level": 29,
+          "tier": "LEGENDARY",
+          "gain": 1.0,
+          "from": "Decrepit Sewers zindanı",
           "price": null,
           "tradable": true,
           "options": [
             {
-              "name": "Dynamic",
-              "level": 28,
-              "gain": 2.5,
-              "from": "mob'lardan düşer",
+              "name": "Meanderthal",
+              "level": 29,
+              "gain": 2.0,
+              "from": "Decrepit Sewers zindanı",
               "tradable": true
             },
             {
-              "name": "Laen's Curiosity",
+              "name": "Morph-Gold",
               "level": 25,
-              "gain": 1.7,
+              "gain": 0.0,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Almuj's Walker",
+              "level": 25,
+              "gain": -0.1,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Disco",
+              "level": 27,
+              "gain": -0.6,
               "from": "sandık",
               "tradable": true
             },
             {
-              "name": "Practice",
-              "level": 30,
-              "gain": 1.3,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Vitre",
-              "level": 29,
-              "gain": 0.3,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Vindicator",
-              "level": 30,
-              "gain": 0.0,
-              "from": "Detlas tüccarı",
+              "name": "Cyclo",
+              "level": 21,
+              "gain": -1.5,
+              "from": "sandık",
               "tradable": true
             }
           ]
@@ -929,84 +943,145 @@
       "level": 40,
       "gear": [
         {
+          "slot": "RELIK",
+          "name": "Thriller",
+          "level": 28,
+          "tier": "LEGENDARY",
+          "gain": 6.3,
+          "from": "The Hunger of Gerts Part 1 görevi",
+          "price": null,
+          "tradable": false,
+          "options": [
+            {
+              "name": "Thriller",
+              "level": 28,
+              "gain": 11.5,
+              "from": "The Hunger of Gerts Part 1 görevi",
+              "tradable": false
+            },
+            {
+              "name": "Fault Lines",
+              "level": 32,
+              "gain": -9.9,
+              "from": "Decrepit Sewers zindanı",
+              "tradable": true
+            },
+            {
+              "name": "Conclave Crossfire",
+              "level": 29,
+              "gain": -15.5,
+              "from": "Decrepit Sewers zindanı",
+              "tradable": true
+            },
+            {
+              "name": "Typhoon Blast",
+              "level": 32,
+              "gain": -19.1,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Windowframe",
+              "level": 34,
+              "gain": -20.8,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Voltage Insignia",
+              "level": 32,
+              "gain": -20.9,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Ablution",
+              "level": 30,
+              "gain": -27.6,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            }
+          ]
+        },
+        {
           "slot": "HELMET",
-          "name": "Enhanced Hilltop",
-          "level": 33,
-          "tier": "UNIQUE",
-          "gain": 8.7,
-          "from": "sandık",
+          "name": "Ridge",
+          "level": 34,
+          "tier": "RARE",
+          "gain": 6.0,
+          "from": "Decrepit Sewers zindanı",
           "price": null,
           "tradable": true,
           "options": [
             {
-              "name": "Enhanced Hilltop",
-              "level": 33,
-              "gain": -11.0,
-              "from": "sandık",
+              "name": "Ridge",
+              "level": 34,
+              "gain": 1.2,
+              "from": "Decrepit Sewers zindanı",
               "tradable": true
             },
             {
-              "name": "Ice Mask",
-              "level": 28,
-              "gain": -6.4,
+              "name": "Enhanced Hilltop",
+              "level": 33,
+              "gain": -5.0,
               "from": "sandık",
               "tradable": true
             },
             {
               "name": "Black Mask",
               "level": 29,
-              "gain": -7.8,
+              "gain": -14.2,
               "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Bush Mask",
-              "level": 27,
-              "gain": -11.0,
-              "from": "sandık",
               "tradable": true
             },
             {
               "name": "Hilltop",
               "level": 33,
-              "gain": -13.0,
+              "gain": -14.1,
               "from": "Decrepit Sewers zindanı",
               "tradable": true
             },
             {
               "name": "Black Cap",
               "level": 33,
-              "gain": -20.4,
+              "gain": -20.8,
               "from": "Decrepit Sewers zindanı",
               "tradable": true
             },
             {
-              "name": "Bony Circlet",
-              "level": 21,
-              "gain": -21.2,
-              "from": "sandık",
+              "name": "Advancement",
+              "level": 29,
+              "gain": -18.2,
+              "from": "The Hunger of Gerts Part 1 görevi",
+              "tradable": false
+            },
+            {
+              "name": "Thunder Relic Helmet",
+              "level": 30,
+              "gain": -23.6,
+              "from": "Decrepit Sewers zindanı",
+              "tradable": true
+            },
+            {
+              "name": "Neolithic",
+              "level": 20,
+              "gain": -27.6,
+              "from": "mob'lardan düşer",
               "tradable": true
             },
             {
               "name": "Straw Helmet",
               "level": 20,
-              "gain": -28.9,
+              "gain": -47.0,
               "from": "Decrepit Sewers zindanı",
               "tradable": true
             },
             {
               "name": "Mask of the Dark Vexations",
               "level": 20,
-              "gain": -31.0,
+              "gain": -49.4,
               "from": "sandık",
               "tradable": true
-            },
-            {
-              "name": "Blue Team Helmet",
-              "level": 20,
-              "gain": -34.6,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
             }
           ]
         },
@@ -1015,7 +1090,7 @@
           "name": "Vagabond",
           "level": 33,
           "tier": "RARE",
-          "gain": -1.4,
+          "gain": 8.4,
           "from": "mob'lardan düşer",
           "price": null,
           "tradable": true,
@@ -1023,35 +1098,131 @@
             {
               "name": "Vagabond",
               "level": 33,
-              "gain": -1.5,
+              "gain": 8.8,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
-              "name": "Nemract's Ruin",
+              "name": "Angel Wing Shroud",
               "level": 27,
-              "gain": -8.2,
-              "from": "sandık",
+              "gain": -5.9,
+              "from": "Decrepit Sewers zindanı",
+              "tradable": true
+            },
+            {
+              "name": "Hourslip",
+              "level": 32,
+              "gain": -7.2,
+              "from": "The Hunger of Gerts Part 1 görevi",
+              "tradable": false
+            },
+            {
+              "name": "Santa's Coat",
+              "level": 32,
+              "gain": -10.4,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Black Tunic",
+              "level": 33,
+              "gain": -10.0,
+              "from": "Decrepit Sewers zindanı",
               "tradable": true
             },
             {
               "name": "Arakadicus' Body",
               "level": 21,
-              "gain": -10.5,
+              "gain": -3.6,
               "from": "Detlas tüccarı",
               "tradable": true
             },
             {
-              "name": "Santa's Coat",
-              "level": 32,
-              "gain": -14.8,
+              "name": "Skeleton Bones",
+              "level": 31,
+              "gain": -15.7,
               "from": "mob'lardan düşer",
               "tradable": true
             },
             {
-              "name": "Dead Samurai's Plate",
-              "level": 24,
-              "gain": -14.8,
+              "name": "The Scarecrow's Vest",
+              "level": 20,
+              "gain": -19.2,
+              "from": "The Hunger of Gerts Part 1 görevi",
+              "tradable": false
+            },
+            {
+              "name": "Abdomen",
+              "level": 20,
+              "gain": -27.9,
+              "from": "The Hunger of Gerts Part 1 görevi",
+              "tradable": false
+            },
+            {
+              "name": "Tepid Plate",
+              "level": 20,
+              "gain": -31.6,
+              "from": "sandık",
+              "tradable": true
+            }
+          ]
+        },
+        {
+          "slot": "BRACELET",
+          "name": "Dynamic",
+          "level": 28,
+          "tier": "UNIQUE",
+          "gain": 2.1,
+          "from": "mob'lardan düşer",
+          "price": null,
+          "tradable": true,
+          "options": [
+            {
+              "name": "Dynamic",
+              "level": 28,
+              "gain": 2.1,
+              "from": "mob'lardan düşer",
+              "tradable": true
+            },
+            {
+              "name": "Used Wolf Paw",
+              "level": 30,
+              "gain": -1.0,
+              "from": "sandık",
+              "tradable": true
+            },
+            {
+              "name": "Life Charge",
+              "level": 30,
+              "gain": -2.4,
+              "from": "sandık",
+              "tradable": true
+            },
+            {
+              "name": "Sayleros' Brother's Misfortune",
+              "level": 22,
+              "gain": -2.0,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Gust",
+              "level": 20,
+              "gain": -2.4,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Blackout",
+              "level": 22,
+              "gain": -2.9,
+              "from": "Detlas tüccarı",
+              "tradable": true
+            },
+            {
+              "name": "Practice",
+              "level": 30,
+              "gain": 0.3,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             }
@@ -1062,7 +1233,7 @@
           "name": "Dilation",
           "level": 31,
           "tier": "LEGENDARY",
-          "gain": 10.5,
+          "gain": 2.9,
           "from": "The Hunger of Gerts Part 1 görevi",
           "price": null,
           "tradable": false,
@@ -1070,12 +1241,19 @@
             {
               "name": "Dilation",
               "level": 31,
-              "gain": 6.1,
+              "gain": 2.9,
               "from": "The Hunger of Gerts Part 1 görevi",
               "tradable": false
             },
             {
-              "name": "Urheus",
+              "name": "Diminution",
+              "level": 33,
+              "gain": 2.5,
+              "from": "The Hunger of Gerts Part 1 görevi",
+              "tradable": false
+            },
+            {
+              "name": "Dead Sands",
               "level": 32,
               "gain": 0.0,
               "from": "Decrepit Sewers zindanı",
@@ -1084,163 +1262,15 @@
             {
               "name": "Black Pants",
               "level": 33,
-              "gain": -2.8,
+              "gain": -4.1,
               "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Selchar's Famous Breeches",
-              "level": 25,
-              "gain": -3.7,
-              "from": "Decrepit Sewers zindanı",
               "tradable": true
             },
             {
               "name": "Alternator",
               "level": 32,
-              "gain": -4.1,
+              "gain": -7.0,
               "from": "sandık",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "BOOTS",
-          "name": "Seal Breaker",
-          "level": 34,
-          "tier": "LEGENDARY",
-          "gain": 8.2,
-          "from": "The Hunger of Gerts Part 1 görevi",
-          "price": null,
-          "tradable": false,
-          "options": [
-            {
-              "name": "Seal Breaker",
-              "level": 34,
-              "gain": 3.3,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Adigard's Snowshoes",
-              "level": 30,
-              "gain": 4.7,
-              "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Disco",
-              "level": 27,
-              "gain": 1.7,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Ado Saki",
-              "level": 20,
-              "gain": 0.9,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Cyclo",
-              "level": 21,
-              "gain": -1.6,
-              "from": "sandık",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "BRACELET",
-          "name": "Laen's Curiosity",
-          "level": 25,
-          "tier": "RARE",
-          "gain": 1.1,
-          "from": "sandık",
-          "price": null,
-          "tradable": true,
-          "options": [
-            {
-              "name": "Laen's Curiosity",
-              "level": 25,
-              "gain": 2.1,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Practice",
-              "level": 30,
-              "gain": 0.0,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Vindicator",
-              "level": 30,
-              "gain": -0.4,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Intuition",
-              "level": 30,
-              "gain": -1.0,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Ba'al's Betrayal",
-              "level": 30,
-              "gain": -1.8,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "NECKLACE",
-          "name": "Crystal-Blend Pendant",
-          "level": 34,
-          "tier": "RARE",
-          "gain": 3.4,
-          "from": "The Hunger of Gerts Part 1 görevi",
-          "price": null,
-          "tradable": false,
-          "options": [
-            {
-              "name": "Crystal-Blend Pendant",
-              "level": 34,
-              "gain": 3.6,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Plain Glass Necklace",
-              "level": 31,
-              "gain": -2.9,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Slainte",
-              "level": 30,
-              "gain": -3.1,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Scarab-Shelled Charm",
-              "level": 32,
-              "gain": -3.3,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Dark Diadem",
-              "level": 24,
-              "gain": -4.7,
-              "from": "Decrepit Sewers zindanı",
               "tradable": true
             }
           ]
@@ -1252,191 +1282,7 @@
     },
     {
       "level": 50,
-      "gear": [
-        {
-          "slot": "LEGGINGS",
-          "name": "Diminution",
-          "level": 33,
-          "tier": "LEGENDARY",
-          "gain": 2.6,
-          "from": "The Hunger of Gerts Part 1 görevi",
-          "price": null,
-          "tradable": false,
-          "options": [
-            {
-              "name": "Diminution",
-              "level": 33,
-              "gain": -6.4,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Alternator",
-              "level": 32,
-              "gain": -9.2,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Urheus",
-              "level": 32,
-              "gain": -6.5,
-              "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Plankton",
-              "level": 34,
-              "gain": -10.0,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Black Pants",
-              "level": 33,
-              "gain": -8.0,
-              "from": "sandık",
-              "tradable": true
-            },
-            {
-              "name": "Santa's Pants",
-              "level": 31,
-              "gain": -11.4,
-              "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Enhanced Panorama",
-              "level": 30,
-              "gain": -12.9,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "BRACELET",
-          "name": "Vindicator",
-          "level": 30,
-          "tier": "FABLED",
-          "gain": 4.0,
-          "from": "Detlas tüccarı",
-          "price": null,
-          "tradable": true,
-          "options": [
-            {
-              "name": "Vindicator",
-              "level": 30,
-              "gain": -2.3,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Practice",
-              "level": 30,
-              "gain": -2.9,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Intuition",
-              "level": 30,
-              "gain": -3.5,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Ionic",
-              "level": 32,
-              "gain": -4.0,
-              "from": "Decrepit Sewers zindanı",
-              "tradable": true
-            },
-            {
-              "name": "Ba'al's Betrayal",
-              "level": 30,
-              "gain": -4.6,
-              "from": "mob'lardan düşer",
-              "tradable": true
-            },
-            {
-              "name": "Takan's Treachery",
-              "level": 30,
-              "gain": -5.1,
-              "from": "Detlas tüccarı",
-              "tradable": true
-            },
-            {
-              "name": "Life Charge",
-              "level": 30,
-              "gain": -6.2,
-              "from": "sandık",
-              "tradable": true
-            }
-          ]
-        },
-        {
-          "slot": "NECKLACE",
-          "name": "Slainte",
-          "level": 30,
-          "tier": "RARE",
-          "gain": 6.5,
-          "from": "The Hunger of Gerts Part 1 görevi",
-          "price": null,
-          "tradable": false,
-          "options": [
-            {
-              "name": "Slainte",
-              "level": 30,
-              "gain": -5.4,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Plain Glass Necklace",
-              "level": 31,
-              "gain": -5.1,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Scarab-Shelled Charm",
-              "level": 32,
-              "gain": -6.4,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Webbed Glass Charm",
-              "level": 32,
-              "gain": -9.1,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Longevity",
-              "level": 30,
-              "gain": -10.2,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Blood-Tinted Necklace",
-              "level": 32,
-              "gain": -11.4,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            },
-            {
-              "name": "Marrow-Tinted Necklace",
-              "level": 32,
-              "gain": -11.8,
-              "from": "The Hunger of Gerts Part 1 görevi",
-              "tradable": false
-            }
-          ]
-        }
-      ],
+      "gear": [],
       "abilities": [],
       "places": [],
       "skillPoints": 20

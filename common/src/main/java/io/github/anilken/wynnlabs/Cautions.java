@@ -46,6 +46,11 @@ final class Cautions {
         if (info == null) {
             return out;
         }
+        // a quest it asks for that the quest book says is not done (Royal amulets: WynnExcavation Site D)
+        QuestBook.Entry quest = Shopping.questPending(GameState.current(), info);
+        if (quest != null) {
+            out.add(L.t("wynnlabs.caution.quest_first", quest.name()));
+        }
         info.base().attackSpeed().ifPresent(a -> {
             switch (a) {
                 case "SUPER_SLOW" -> out.add(L.t("wynnlabs.caution.attack_super_slow"));

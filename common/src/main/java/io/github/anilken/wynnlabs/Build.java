@@ -63,6 +63,15 @@ final class Build {
         double gainPercent() {
             return current.objective() <= 0 ? 0 : (result.objective() / current.objective() - 1) * 100;
         }
+
+        /**
+         * The planned build's score at another level: a piece you wear later is judged at its
+         * level on both sides, or the health floor of that level alone would sink it.
+         */
+        double objectiveAt(int lv) {
+            return lv == level ? result.objective()
+                    : Damage.evaluate(armour(pieces), pieces.get("WEAPON"), allocation, lv).objective();
+        }
     }
 
     private static volatile Plan plan;
@@ -101,18 +110,24 @@ final class Build {
 
     /**
      * Whether wearing {@code cand} in {@code slot} needs points taken out of a skill (a reset in
-     * town), rather than just spending the points still free.
+     * town), rather than just spending the points still free. {@code placed} is what is already
+     * assigned (the points you placed, or the last milestone's spread), not a spread of every
+     * earned point: against one of those every requirement looked like a reset. Null: no reset
+     * can be told, false.
      */
-    static boolean needsRespec(Map<String, Damage.Piece> build, int[] alloc, String slot, Damage.Piece cand,
+    static boolean needsRespec(Map<String, Damage.Piece> build, int[] placed, String slot, Damage.Piece cand,
             int earned) {
+        if (placed == null) {
+            return false;
+        }
         Map<String, Damage.Piece> trial = new LinkedHashMap<>(build);
         trial.put(slot, cand);
         int[] min = minPoints(trial.values());
         int deficit = 0;
         int used = 0;
         for (int i = 0; i < min.length; i++) {
-            deficit += Math.max(0, min[i] - alloc[i]);
-            used += alloc[i];
+            deficit += Math.max(0, min[i] - placed[i]);
+            used += placed[i];
         }
         return deficit > Math.max(0, earned - used);
     }
@@ -358,7 +373,7 @@ final class Build {
         // spread, so the gear comparison is not inflated by "zero points"
         boolean pointsKnown = assignedSum > 0 || earned == 0;
         // The spread that fits what you wear right now: requirements first, the rest where it helps
-        Eval wornBest = allocate(worn, level, earned);
+        Eval wornBest = allocateBest(worn, level, earned);
         if (!pointsKnown && wornBest != null) {
             assignedNow = wornBest.allocation().clone();
         }
@@ -429,6 +444,8 @@ final class Build {
         if (bestEval == null) {
             return null;
         }
+        // the chosen build's points polished by moving them between skills (once, not per swap)
+        bestEval = improve(best, bestEval, level);
         // A plan that takes points back out of a skill needs a reset in town: only worth it
         // for the full threshold, not the lowered one old gear gets
         boolean respec = false;
@@ -437,7 +454,7 @@ final class Build {
         }
         double gainPct = current.objective() <= 0 ? 0 : (bestEval.result().objective() / current.objective() - 1) * 100;
         if (respec && gainPct < Rules.sub("shopping", "minGainPercent", 10) && !best.equals(worn)) {
-            Eval keep = allocate(worn, level, earned);
+            Eval keep = wornBest;
             best = new LinkedHashMap<>(worn);
             // the allocator can miss your own allocation (e.g. Def 8 only for Chained Pixels): then yours
             bestEval = keep != null ? keep : new Eval(assignedNow.clone(), current);
@@ -695,6 +712,25 @@ final class Build {
         return true;
     }
 
+    /**
+     * What a set holds per skill toward requirements: the assigned points plus the bonuses of
+     * the pieces whose bonuses count for others (indexed by SkillKind.ordinal()).
+     */
+    static double[] cover(Map<String, Damage.Piece> build, int[] alloc) {
+        double[] c = new double[alloc.length];
+        for (int i = 0; i < c.length; i++) {
+            c[i] = alloc[i];
+        }
+        for (Damage.Piece p : build.values()) {
+            if (p != null && p.helpsRequirements()) {
+                for (SkillKind s : SkillKind.values()) {
+                    c[s.ordinal()] += bonus(p, s);
+                }
+            }
+        }
+        return c;
+    }
+
     private static double bonus(Damage.Piece p, SkillKind s) {
         return p.stats().getOrDefault(RAW_KEY[s.ordinal()], 0.0);
     }
@@ -761,21 +797,35 @@ final class Build {
                 a[i] = want;
             }
         }
-        // take the deficit from the skills holding the most points that are not required
+        List<Damage.Piece> armour = armour(trial);
+        Damage.Piece weapon = trial.get("WEAPON");
+        // take the deficit from the skill whose loss costs least: the one holding the most points
+        // is mostly the main damage skill, and the piece's gain vanished into its loss
+        Damage.Result last = null;
         while (deficit > 0) {
             int from = -1;
+            int fromTake = 0;
+            Damage.Result fromRes = null;
             for (int i = 0; i < n; i++) {
-                int floor = min[i];
-                if (a[i] > floor && (from < 0 || a[i] > a[from])) {
+                if (a[i] <= min[i]) {
+                    continue;
+                }
+                int take = Math.min(deficit, a[i] - min[i]);
+                a[i] -= take;
+                Damage.Result r = Damage.evaluate(armour, weapon, a, level);
+                a[i] += take;
+                if (fromRes == null || r.objective() > fromRes.objective()) {
                     from = i;
+                    fromTake = take;
+                    fromRes = r;
                 }
             }
             if (from < 0) {
                 return null;
             }
-            int take = Math.min(deficit, a[from] - min[from]);
-            a[from] -= take;
-            deficit -= take;
+            a[from] -= fromTake;
+            deficit -= fromTake;
+            last = fromRes;
         }
         int used = 0;
         for (int v : a) {
@@ -784,7 +834,7 @@ final class Build {
         if (used > earned) {
             return null;
         }
-        return new Eval(a, Damage.evaluate(armour(trial), trial.get("WEAPON"), a, level));
+        return new Eval(a, last != null ? last : Damage.evaluate(armour, weapon, a, level));
     }
 
     /**
@@ -917,6 +967,67 @@ final class Build {
             left -= give;
         }
         return new Eval(alloc, Damage.evaluate(armour, weapon, alloc, level));
+    }
+
+    /**
+     * {@link #allocate}, then a local search on its spread: points moved from one skill to
+     * another (20, 10, 5, 3 or 1 at a time, never under a requirement or past 100), the best move
+     * kept until none helps. The greedy pass gives each chunk to the best single skill, so a
+     * skill that only pays off in quantity (Defence and Agility through effective health,
+     * Intelligence through spell cost) starved. Several times the cost of {@link #allocate}:
+     * for the spreads you are shown, not for ranking candidates.
+     */
+    static Eval allocateBest(Map<String, Damage.Piece> build, int level, int earned) {
+        Eval e = allocate(build, level, earned);
+        return e == null ? null : improve(build, e, level);
+    }
+
+    /** The local search of {@link #allocateBest} from {@code start}'s spread; deterministic. */
+    static Eval improve(Map<String, Damage.Piece> build, Eval start, int level) {
+        int n = SkillKind.values().length;
+        int[] min = minPoints(build.values());
+        List<Damage.Piece> armour = armour(build);
+        Damage.Piece weapon = build.get("WEAPON");
+        int[] a = start.allocation().clone();
+        Damage.Result cur = start.result();
+        int[] moves = {20, 10, 5, 3, 1};
+        for (int round = 0; round < 200; round++) {
+            int bestFrom = -1;
+            int bestTo = -1;
+            int bestK = 0;
+            Damage.Result bestRes = null;
+            double bar = cur.objective() + 1e-9 * Math.max(1, Math.abs(cur.objective()));
+            for (int k : moves) {
+                for (int from = 0; from < n; from++) {
+                    if (a[from] - k < min[from]) {
+                        continue;
+                    }
+                    for (int to = 0; to < n; to++) {
+                        if (to == from || a[to] + k > 100) {
+                            continue;
+                        }
+                        a[from] -= k;
+                        a[to] += k;
+                        Damage.Result r = Damage.evaluate(armour, weapon, a, level);
+                        a[from] += k;
+                        a[to] -= k;
+                        if (r.objective() > bar && (bestRes == null || r.objective() > bestRes.objective())) {
+                            bestFrom = from;
+                            bestTo = to;
+                            bestK = k;
+                            bestRes = r;
+                        }
+                    }
+                }
+            }
+            if (bestRes == null) {
+                break;
+            }
+            a[bestFrom] -= bestK;
+            a[bestTo] += bestK;
+            cur = bestRes;
+        }
+        return new Eval(a, cur);
     }
 
     static JsonObject json() {

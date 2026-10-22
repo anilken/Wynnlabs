@@ -69,7 +69,7 @@
     "where": "bag 15",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "No outcome helps your build (best: Sundown Poncho -3.7%). Sell it to the Blacksmith (untradable)"
+    "note": "No outcome helps your build (best: Sundown Poncho -1.6%). Sell it to the Blacksmith (untradable)"
   },
   {
     "where": "bag 16",
@@ -273,7 +273,7 @@
     "where": "bank acct:Account Bank p. 1#26",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Reveal it at the Trade Market first (~640-656 E), then list it there · No prices yet. No outcome helps your build (best: Panic Attack -14.6%)"
+    "note": "Reveal it at the Trade Market first (~640-656 E), then list it there · No prices yet. No outcome helps your build (best: Panic Attack -53.9%)"
   },
   {
     "where": "bank acct:Account Bank p. 1#27",
@@ -560,8 +560,8 @@
   {
     "where": "bank acct:Account Bank p. 4#2",
     "name": "Unidentified Boots",
-    "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Astral Walkers +0.8%)"
+    "verdict": "KEEP",
+    "note": "Identify it when you get close to Lv. 66"
   },
   {
     "where": "bank acct:Account Bank p. 4#3",
@@ -1394,8 +1394,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 1#1",
     "name": "Marius' Prison",
-    "verdict": "SELL",
-    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (untradable)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 50"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#2",
@@ -1478,14 +1478,14 @@
   {
     "where": "bank char:char0003:Character Bank p. 1#15",
     "name": "Druid's Ring",
-    "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (market ~30 EB)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 65"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#16",
     "name": "Druid's Ring",
-    "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (market ~30 EB)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 65"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#17",
@@ -1556,8 +1556,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 2#0",
     "name": "Ultramarine Boots",
-    "verdict": "KEEP",
-    "note": "You can wear it at Lv. 61"
+    "verdict": "SELL",
+    "note": "Kaleidoscope on the list is better (Lv. 47). Sell it to the Blacksmith (no price yet)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 2#1",
@@ -1628,8 +1628,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 3#0",
     "name": "Unidentified Boots",
-    "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Way Back Home -0.6%)"
+    "verdict": "KEEP",
+    "note": "Identify it when you get close to Lv. 71"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#1",
@@ -1646,8 +1646,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 3#3",
     "name": "Unidentified Necklace",
-    "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rycar's Swagger -9.5%)"
+    "verdict": "KEEP",
+    "note": "Identify it when you get close to Lv. 61"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#4",
@@ -1659,7 +1659,7 @@
     "where": "bank char:char0003:Character Bank p. 3#5",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -7.5%)"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -5.7%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#6",
@@ -1670,8 +1670,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 3#7",
     "name": "Unidentified Necklace",
-    "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Charm of the Vampire -10.7%)"
+    "verdict": "KEEP",
+    "note": "Identify it when you get close to Lv. 61"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#9",
@@ -1718,8 +1718,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 4#27",
     "name": "Photon",
-    "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it on the Trade Market, ~1.4 LE"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 61"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#28",
@@ -1754,14 +1754,14 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#0",
     "name": "Hellion",
-    "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it on the Trade Market: rolled 81%, it is worth more than the Blacksmith pays (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 91"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#1",
     "name": "Hellion",
-    "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (no price yet)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 91"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#2",
@@ -1796,8 +1796,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#12",
     "name": "Flashing Boots",
-    "verdict": "KEEP",
-    "note": "You can wear it at Lv. 87"
+    "verdict": "SELL",
+    "note": "Kaleidoscope on the list is better (Lv. 47). Sell it to the Blacksmith (no price yet)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#13",
@@ -1808,14 +1808,14 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#28",
     "name": "Ring of Generosity",
-    "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (market ~11 EB)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 69"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#29",
     "name": "Ring of Generosity",
-    "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (market ~11 EB)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 69"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#30",
@@ -1844,8 +1844,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#38",
     "name": "Kizuato",
-    "verdict": "SELL",
-    "note": "Solid Quartz Chestplate on the list is better (Lv. 43). Sell it to the Blacksmith (market ~23 EB)"
+    "verdict": "KEEP",
+    "note": "You can wear it at Lv. 74"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#39",
@@ -1856,8 +1856,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 5#40",
     "name": "Cirrus",
-    "verdict": "KEEP",
-    "note": "You can wear it at Lv. 69"
+    "verdict": "SELL",
+    "note": "Kaleidoscope on the list is better (Lv. 47). Sell it to the Blacksmith (no price yet)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#0",
@@ -1874,20 +1874,20 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#2",
     "name": "Unidentified Leggings",
-    "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Jera -12.0%)"
+    "verdict": "KEEP",
+    "note": "Identify it when you get close to Lv. 51"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#3",
     "name": "Unidentified Chestplate",
-    "verdict": "SELL",
-    "note": "Reveal it at the Trade Market first (~76-79 E), then list it there · Expected ~13 EB (1/5 have a price). No outcome helps your build (best: Hailstone -0.8%)"
+    "verdict": "KEEP",
+    "note": "Identify it when you get close to Lv. 56"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#4",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -7.5%)"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -5.7%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#5",
@@ -1898,8 +1898,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#6",
     "name": "Unidentified Chestplate",
-    "verdict": "SELL",
-    "note": "Reveal it at the Trade Market first (~76-79 E), then list it there · Expected ~13 EB (1/5 have a price). No outcome helps your build (best: Hailstone -0.8%)"
+    "verdict": "KEEP",
+    "note": "Identify it when you get close to Lv. 56"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#7",
@@ -1910,8 +1910,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#8",
     "name": "Unidentified Bracelet",
-    "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Czytash's Compass -6.6%)"
+    "verdict": "KEEP",
+    "note": "Identify it when you get close to Lv. 51"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#9",
@@ -1928,8 +1928,8 @@
   {
     "where": "bank char:char0003:Character Bank p. 6#11",
     "name": "Shaggy Boots",
-    "verdict": "KEEP",
-    "note": "You can wear it at Lv. 97"
+    "verdict": "SELL",
+    "note": "Kaleidoscope on the list is better (Lv. 47). Sell it to the Blacksmith (no price yet)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#12",

@@ -25,7 +25,8 @@ import java.util.regex.Pattern;
  * how fast the health went, the area and its level, the build's effective HP, potions left, the
  * mobs around — and the mod answers with one rule-based fix in chat. Deaths repeated in one
  * place mark that area risky for the grind list; a run of deaths nudges the model toward
- * survival (capped, like learning from swaps). Reads only; sends nothing.
+ * survival (capped, like learning from swaps) and how fast you died raises the health floor
+ * the road map and the build plan keep. Reads only; sends nothing.
  */
 final class DeathCoach {
 
@@ -103,6 +104,8 @@ final class DeathCoach {
             if (m.find()) {
                 record(mc, Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)), Integer.parseInt(m.group(3)));
             }
+        } else if (tick % 1200 == 0) {
+            relearn(now);                       // once a minute: lessons age without a new death
         }
     }
 
@@ -233,27 +236,99 @@ final class DeathCoach {
         return out;
     }
 
-    /** Three deaths within half an hour: survival weighs more in the model (×1.15, at most ×2). */
+    /**
+     * Three deaths within half an hour: survival weighs more in the model (rules.model.survivalLearned
+     * ×1.15, at most 2; a key of its own, so choosing a goal keeps it). Then the health floor
+     * from the deaths ({@link #floorRatio}) and the lesson's decay ({@link #decay}) are written.
+     */
     private static void learn() {
         if (!Settings.on("learning")) {
             return;
         }
         long now = System.currentTimeMillis();
         long recent = DEATHS.stream().filter(o -> now - o.time() < 30 * 60_000L).count();
-        if (recent < 3) {
+        if (recent >= 3) {
+            double w = Rules.sub("model", "survivalLearned", 1);
+            double next = Math.min(2, Math.max(1, w) * 1.15);
+            if (next > w + 1e-6) {
+                JsonObject change = new JsonObject();
+                JsonObject model = new JsonObject();
+                model.addProperty("survivalLearned", Math.round(next * 1000) / 1000.0);
+                model.addProperty("survivalLearnedAt", now);
+                change.add("model", model);
+                Rules.update(change);
+            }
+        }
+        relearn(now);
+    }
+
+    /**
+     * Brings the rules up to the deaths on file: the lesson halves after a week without a death,
+     * the floor from deaths follows the last week's. Written only when something changed (a
+     * change makes the road map out of date).
+     */
+    private static void relearn(long now) {
+        if (!Settings.on("learning") || Profile.id().isEmpty()) {
             return;
         }
-        double w = Rules.sub("model", "survivalWeight", 0.4);
-        double base = Rules.sub("model", "survivalWeightBase", w);
-        double next = Math.min(base * 2, w * 1.15);
-        if (next > w + 1e-6) {
+        load();
+        long last = DEATHS.isEmpty() ? 0 : DEATHS.get(DEATHS.size() - 1).time();
+        double learned = Rules.sub("model", "survivalLearned", 1);
+        long at = (long) Rules.sub("model", "survivalLearnedAt", 0);
+        double[] next = decay(learned, at, last, now);
+        double ratio = Math.round(floorRatio(DEATHS, now) * 100) / 100.0;
+        JsonObject model = new JsonObject();
+        if (next[0] != learned) {
+            model.addProperty("survivalLearned", next[0]);
+            model.addProperty("survivalLearnedAt", (long) next[1]);
+        }
+        if (Math.abs(ratio - Rules.sub("model", "deathFloorRatio", 0)) > 1e-6) {
+            model.addProperty("deathFloorRatio", ratio);
+        }
+        if (!model.isEmpty()) {
             JsonObject change = new JsonObject();
-            JsonObject model = new JsonObject();
-            model.addProperty("survivalWeight", Math.round(next * 1000) / 1000.0);
-            model.addProperty("survivalWeightBase", base);
             change.add("model", model);
             Rules.update(change);
         }
+    }
+
+    /**
+     * The survival lesson after time without dying: {learned, since}. A week with no death
+     * since the last change halves what is above 1 (back to 1 below 1.02) and starts the next week.
+     */
+    static double[] decay(double learned, long since, long lastDeath, long now) {
+        long week = 7 * 24 * 3600_000L;
+        if (learned <= 1 || now - Math.max(since, lastDeath) < week) {
+            return new double[] {learned, since};
+        }
+        double half = 1 + (learned - 1) / 2;
+        return new double[] {half < 1.02 ? 1 : Math.round(half * 1000) / 1000.0, now};
+    }
+
+    /**
+     * How far the health floor should rise for what kills you (Damage.ehpFloor), as a share of
+     * the floor's table at each death's level: the effective health lost per second in the last
+     * week's fights (mobs around, at least half a second from the top: falls and one-shots say
+     * little) times rules.model.deathSurviveSeconds (4 s to react), the 75th percentile of them.
+     * 0 with fewer than three such deaths.
+     */
+    static double floorRatio(List<Death> deaths, long now) {
+        double hold = Rules.sub("model", "deathSurviveSeconds", 4);
+        List<Double> ratios = new ArrayList<>();
+        for (Death d : deaths) {
+            double table = Damage.ehpTable(d.level());
+            double health = d.ehp() > 0 ? d.ehp() : d.hpMax();
+            if (now - d.time() > 7 * 24 * 3600_000L || d.mobs().isEmpty() || d.secondsToZero() < 0.5
+                    || health <= 0 || table <= 0) {
+                continue;
+            }
+            ratios.add(health / d.secondsToZero() * hold / table);
+        }
+        if (ratios.size() < 3) {
+            return 0;
+        }
+        ratios.sort(null);
+        return Math.min(2, ratios.get((int) Math.ceil(0.75 * ratios.size()) - 1));
     }
 
     /** Deaths within 150 blocks of a spot in the last week: the grind list treats it as harder. */

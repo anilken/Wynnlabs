@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.anilken.wynnlabs.model.ItemData;
 import io.github.anilken.wynnlabs.model.Klass;
+import io.github.anilken.wynnlabs.model.SetData;
 import io.github.anilken.wynnlabs.model.SkillKind;
 import io.github.anilken.wynnlabs.model.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -60,7 +61,7 @@ final class Roadmap {
             }
         }
         GameState.current().requestPrices(List.of(info.name()));
-        String pr = Prices.text(info.name(), false);
+        String pr = Prices.buyText(info.name());
         String price = pr == null ? null : pr.contains(" (") ? pr.substring(0, pr.indexOf(" (")) : pr;
         String src = Shopping.sourceOf(info);
         return new Option(info, gain, price, src == null ? "?" : Shopping.where(src), Cautions.of(info),
@@ -219,7 +220,7 @@ final class Roadmap {
             }
             Option first = before == null ? null : option(info, slot, start, before, level, earned);
             String src = Shopping.sourceOf(info);
-            rows.add(new Gear(row, info, Double.NaN, src == null ? "?" : Shopping.where(src), Prices.text(info.name(), false),
+            rows.add(new Gear(row, info, Double.NaN, src == null ? "?" : Shopping.where(src), Prices.buyText(info.name()),
                     null, null, detail, List.of(), first == null ? List.of() : List.of(first)));
             place(placed, row, slot);
         }
@@ -259,9 +260,7 @@ final class Roadmap {
                 if (info.requirements().level() > m || there != null && there.key().equals(cand.key()) || !affordable.test(info)) {
                     continue;
                 }
-                String src = Shopping.sourceOf(info);
-                if (src == null || badSources.stream().anyMatch(src::startsWith)
-                        || Exclusive.clash(baseline, slot, Exclusive.group(info)) != null) {
+                if (Shopping.excluded(info, badSources) || Exclusive.clash(baseline, slot, Exclusive.group(info)) != null) {
                     continue;
                 }
                 double obj = full(baseline, slot, cand, m, earned);
@@ -286,7 +285,7 @@ final class Roadmap {
         baseline.put(bestSlot, Damage.piece(best));
         place(placed, RING2, bestSlot);
         String src = Shopping.sourceOf(best);
-        return new Gear(RING2, best, bestGain, Shopping.where(src), Prices.text(best.name(), false), null, null,
+        return new Gear(RING2, best, bestGain, Shopping.where(src), Prices.buyText(best.name()), null, null,
                 new ArrayList<>(), List.of(), first == null ? List.of() : List.of(first));
     }
 
@@ -304,14 +303,9 @@ final class Roadmap {
      * taken back (0.2: a fifth off for a full turn). Points added are free: you earn them.
      */
     static double judged(Build.Eval e, int[] prev, int m) {
+        // the effective health floor (what build-solver asks as min EHP) is part of the score
+        // itself now (Damage.ehpFloor), so the skill points are spread with it in mind too
         double o = e.result().objective();
-        // a floor for effective health (what build-solver asks as min EHP): below it the set
-        // pays by the square of the shortfall, so damage is not bought with paper armour
-        double floor = ehpFloor(m);
-        if (floor > 0 && e.result().ehp() < floor) {
-            double f = e.result().ehp() / floor;
-            o *= f * f;
-        }
         if (prev == null) {
             return o;
         }
@@ -320,26 +314,6 @@ final class Roadmap {
             back += Math.max(0, prev[i] - e.allocation()[i]);
         }
         return o * Math.max(0.5, 1 - Rules.sub("roadmap", "respecWeight", 0.2) * back / 100.0);
-    }
-
-    /** Levels and the effective health a set there should keep (about three quarters of what typical builds wear). */
-    private static final int[][] EHP_FLOOR = {{1, 0}, {50, 1500}, {60, 2500}, {70, 3500}, {80, 5000}, {90, 8000},
-        {100, 12000}, {110, 15000}, {120, 20000}};
-
-    /** The effective health floor at level m, scaled by rules.roadmap.ehpFloorScale (0 turns it off). */
-    static double ehpFloor(int m) {
-        double scale = Rules.sub("roadmap", "ehpFloorScale", 1.0);
-        if (scale <= 0) {
-            return 0;
-        }
-        for (int i = 1; i < EHP_FLOOR.length; i++) {
-            if (m <= EHP_FLOOR[i][0]) {
-                int[] a = EHP_FLOOR[i - 1];
-                int[] b = EHP_FLOOR[i];
-                return scale * (a[1] + (b[1] - a[1]) * (double) (m - a[0]) / (b[0] - a[0]));
-            }
-        }
-        return scale * EHP_FLOOR[EHP_FLOOR.length - 1][1];
     }
 
     /**
@@ -434,7 +408,7 @@ final class Roadmap {
                     break;
                 }
                 if (info == pick || info.name().equals(pick.name()) || info.requirements().level() > m
-                        || Exclusive.clash(build, slot, Exclusive.group(info)) != null) {
+                        || !panelAllows(info, m) || Exclusive.clash(build, slot, Exclusive.group(info)) != null) {
                     continue;
                 }
                 tried++;
@@ -451,7 +425,7 @@ final class Roadmap {
         if (before != null && after != null) {
             detail.addAll(explain(before, after));
         }
-        gear.add(new Gear(rowName, pick, gain, Shopping.where(src), Prices.text(pick.name(), false), null, null,
+        gear.add(new Gear(rowName, pick, gain, Shopping.where(src), Prices.buyText(pick.name()), null, null,
                 detail, List.of(), options));
         build.put(slot, Damage.piece(pick));
         place(placed, rowName, slot);
@@ -510,6 +484,8 @@ final class Roadmap {
             l.forEach(i -> k.append(i.name()).append(','));
         });
         k.append('|').append(Rules.hash());
+        // the scoring model: results an older one chose are not reused
+        k.append("|model:").append(BeamCache.modelVersion());
         if (!fixed.isEmpty()) {
             k.append("|fixed:").append(fixed);      // the chosen items' slots; without any the key is as it was
         }
@@ -605,76 +581,149 @@ final class Roadmap {
 
     /**
      * The set pieces a milestone can put together, by set: what you have (worn, carried or
-     * banked, whatever its level or where it once dropped) and what the slot pools hold.
+     * banked, whatever its level or where it once dropped) and every piece you could get there
+     * ({@code found}: the milestone's level, tier, source and budget, not only each slot's best
+     * forty, as a set piece alone rarely ranks high). Set weapons too, of your class's kind,
+     * unless a chosen item holds the weapon.
      */
-    private static Map<String, List<ItemData>> setPieces(Map<Slot, List<ItemData>> cands, Map<Slot, List<ItemData>> pools,
-            java.util.Set<String> owned, int m) {
+    private static Map<String, List<ItemData>> setPieces(Map<Slot, List<ItemData>> cands, List<ItemData> found,
+            java.util.Set<String> owned, int m, java.util.Set<String> fixed) {
         Map<String, List<ItemData>> out = new LinkedHashMap<>();
         java.util.Set<String> seen = new java.util.HashSet<>();
+        boolean weapon = !fixed.contains("WEAPON");
         java.util.function.Consumer<ItemData> add = info -> {
-            if (info.set().isPresent() && info.slot() != null && !info.slot().isWeapon()
+            if (info.set().isPresent() && info.slot() != null && (weapon || !info.slot().isWeapon())
                     && info.requirements().level() <= m && seen.add(info.name())) {
                 out.computeIfAbsent(info.set().get().name(), k -> new ArrayList<>()).add(info);
             }
         };
         cands.values().forEach(l -> l.stream().filter(i -> owned.contains(i.name())).forEach(add));
-        pools.values().forEach(l -> l.forEach(add));
+        found.forEach(add);
         return out;
     }
+
+    /** A whole-set try: the build with a set put on or taken off, and the slots changed for it. */
+    record Seed(Map<String, Damage.Piece> build, java.util.Set<String> held) {}
 
     /**
      * The searched set with whole sets changed at once ({@link #wholeSets}): a set bonus only
      * shows with its pieces together, so a search that changes one piece at a time never puts a
      * set on (nothing worn and the Wynnterfest ornaments in the bank: Glimmer, Growth … one by
-     * one) nor takes one off for pieces that beat it only together. For every set with two
-     * pieces or more ({@link #setPieces}): all of it on; for every set the build wears: that set
-     * off, each of its slots holding the pool's best.
+     * one) nor takes one off for pieces that beat it only together. For every set
+     * ({@link #setPieces}): all of it on, and for each smaller count it has a bonus at the pieces
+     * that do most alone (Goblin's hood and cloak without the boots); for every set the build
+     * wears: that set off, each of its slots holding the pool's best. A ring you can have twice
+     * fills both hands and counts twice (Black Catalyst, Constellation).
      */
-    private static List<Map<String, Damage.Piece>> setSeeds(Map<String, Damage.Piece> build,
-            Map<Slot, List<ItemData>> pools, Map<String, List<ItemData>> sets, Map<String, Integer> owned,
-            java.util.Set<String> fixed) {
-        Map<String, Map<String, Damage.Piece>> out = new LinkedHashMap<>();
+    static List<Seed> setSeeds(Map<String, Damage.Piece> build, Build.Eval cur, Map<Slot, List<ItemData>> pools,
+            Map<String, List<ItemData>> sets, Map<String, Integer> owned, java.util.Set<String> buyable,
+            java.util.Set<String> fixed, int m, int earned, int[] prev) {
+        Map<String, Seed> out = new LinkedHashMap<>();
+        double curJ = judged(cur, prev, m);
         String now = setKey(build);
-        java.util.function.Consumer<Map<String, Damage.Piece>> keep = seed -> {
-            String k = setKey(seed);
-            if (!k.equals(now) && !clashes(seed)) {
+        java.util.function.Consumer<Seed> keep = seed -> {
+            String k = setKey(seed.build());
+            if (!k.equals(now) && !clashes(seed.build())) {
                 out.putIfAbsent(k, seed);
             }
         };
-        // a set put on whole
-        for (List<ItemData> pieces : sets.values()) {
-            Map<String, Damage.Piece> seed = new LinkedHashMap<>(build);
-            int on = 0;
-            List<String> hands = new ArrayList<>();
-            for (String h : new String[] {"RING1", "RING2"}) {
-                if (!fixed.contains(h)) {
-                    hands.add(h);
-                }
+        List<String> hands = new ArrayList<>();
+        for (String h : new String[] {"RING1", "RING2"}) {
+            if (!fixed.contains(h)) {
+                hands.add(h);
             }
+        }
+        // a set put on, whole or in part
+        for (List<ItemData> pieces : sets.values()) {
+            SetData set = pieces.get(0).set().get();
+            // where its pieces go: a slot each (of two for one slot, the one that does more
+            // alone), a ring in each free hand it can fill: twice when you have two or can buy it
+            java.util.Set<String> bySlot = new java.util.HashSet<>();
+            List<ItemData> rings = new ArrayList<>();
             for (ItemData info : pieces) {
                 if (info.slot() == Slot.RING) {
-                    // a ring you have once fills one hand; one you have twice, or can buy, both
-                    int copies = pools.getOrDefault(Slot.RING, List.of()).contains(info) ? 2
-                            : Math.min(2, owned.getOrDefault(info.name(), 1));
-                    for (int c = 0; c < copies && !hands.isEmpty(); c++) {
-                        String h = hands.remove(0);
-                        if (!sameName(seed.get(h), info)) {
-                            seed.put(h, Damage.piece(info));
-                        }
-                        on++;
+                    int copies = buyable.contains(info.name()) ? 2 : Math.min(2, owned.getOrDefault(info.name(), 1));
+                    for (int c = 0; c < copies; c++) {
+                        rings.add(info);
                     }
                     continue;
                 }
                 String slot = Build.slotOf(info.slot(), 0);
                 if (slot != null && !fixed.contains(slot)) {
+                    bySlot.add(slot);
+                }
+            }
+            int n = bySlot.size() + Math.min(rings.size(), hands.size());
+            int lowest = Integer.MAX_VALUE;
+            for (int k : set.bonuses().keySet()) {
+                SetData.Bonus b = set.bonuses().get(k);
+                if (k >= 2 && k <= n && (!b.minor().isEmpty() || !b.major().isEmpty())) {
+                    lowest = Math.min(lowest, k);
+                }
+            }
+            if (lowest == Integer.MAX_VALUE) {
+                continue;                               // no bonus it can reach here
+            }
+            // each piece judged alone in the build, best first: {slot, piece, judged alone}; a
+            // ring once per copy, the first in the hand where it does more, the second in the other
+            List<Object[]> spots = new ArrayList<>();
+            Map<String, Object[]> best = new LinkedHashMap<>();
+            for (ItemData info : pieces) {
+                String slot = info.slot() == Slot.RING ? null : Build.slotOf(info.slot(), 0);
+                if (slot == null || fixed.contains(slot)) {
+                    continue;
+                }
+                double j = aloneJ(build, cur.allocation(), curJ, slot, info, m, earned, prev);
+                Object[] had = best.get(slot);
+                if (had == null || j > (double) had[2]) {
+                    best.put(slot, new Object[] {slot, info, j});
+                }
+            }
+            spots.addAll(best.values());
+            java.util.Set<String> ringNames = new java.util.HashSet<>();
+            for (ItemData info : rings) {
+                if (!ringNames.add(info.name())) {
+                    continue;
+                }
+                List<Object[]> byHand = new ArrayList<>();
+                for (String h : hands) {
+                    byHand.add(new Object[] {h, info, aloneJ(build, cur.allocation(), curJ, h, info, m, earned, prev)});
+                }
+                byHand.sort((x, y) -> Double.compare((double) y[2], (double) x[2]));
+                long copies = rings.stream().filter(r -> r == info).count();
+                for (int c = 0; c < copies && c < byHand.size(); c++) {
+                    spots.add(byHand.get(c));
+                }
+            }
+            spots.sort((x, y) -> Double.compare((double) y[2], (double) x[2]));
+            int[] handsLeft = {hands.size()};             // the best rings, as many as there are hands
+            spots.removeIf(sp -> ((String) sp[0]).startsWith("RING") && handsLeft[0]-- <= 0);
+            java.util.Set<Integer> counts = new java.util.TreeSet<>();
+            for (int k : set.bonuses().keySet()) {
+                if (k >= lowest && k < spots.size()) {
+                    counts.add(k);
+                }
+            }
+            counts.add(spots.size());
+            for (int k : counts) {
+                Map<String, Damage.Piece> seed = new LinkedHashMap<>(build);
+                java.util.Set<String> held = new java.util.HashSet<>();
+                List<Object[]> ringsOn = new ArrayList<>();
+                for (int i = 0; i < k; i++) {
+                    Object[] sp = spots.get(i);
+                    ItemData info = (ItemData) sp[1];
+                    String slot = (String) sp[0];
+                    if (slot.startsWith("RING")) {
+                        ringsOn.add(sp);
+                        continue;
+                    }
                     if (!sameName(seed.get(slot), info)) {      // the one you wear keeps its rolls
                         seed.put(slot, Damage.piece(info));
                     }
-                    on++;
+                    held.add(slot);
                 }
-            }
-            if (on >= 2) {
-                keep.accept(seed);
+                putRings(seed, ringsOn, hands, held);
+                keep.accept(new Seed(seed, held));
             }
         }
         // a set taken off whole
@@ -686,6 +735,7 @@ final class Roadmap {
         });
         for (String set : worn) {
             Map<String, Damage.Piece> seed = new LinkedHashMap<>(build);
+            java.util.Set<String> held = new java.util.HashSet<>();
             int ring = 0;
             for (String slot : BEAM_ORDER) {
                 Damage.Piece p = seed.get(slot);
@@ -701,10 +751,55 @@ final class Roadmap {
                 // the two hands: the pool's best two, or its best twice
                 ItemData pick = other.get(t == Slot.RING ? Math.min(ring++, other.size() - 1) : 0);
                 seed.put(slot, Damage.piece(pick));
+                held.add(slot);
             }
-            keep.accept(seed);
+            keep.accept(new Seed(seed, held));
         }
         return new ArrayList<>(out.values());
+    }
+
+    /**
+     * A set piece judged alone in the build, in {@code slot}. Quick ({@link Build#tryEval}: only
+     * the points it needs move), as it only orders them.
+     */
+    private static double aloneJ(Map<String, Damage.Piece> build, int[] alloc, double curJ, String slot, ItemData info,
+            int m, int earned, int[] prev) {
+        if (sameName(build.get(slot), info)) {
+            return curJ;                                // worn there already
+        }
+        tick();
+        Build.Eval ev = Build.tryEval(build, alloc, slot, Damage.piece(info), m, earned);
+        return ev == null ? Double.NEGATIVE_INFINITY : judged(ev, prev, m);
+    }
+
+    /**
+     * The set's rings ({hand, piece, ...}, best first) into the free hands: a ring a hand already
+     * holds stays there with its rolls, the others go to the hand they were judged in, or the
+     * one left.
+     */
+    private static void putRings(Map<String, Damage.Piece> seed, List<Object[]> rings, List<String> hands,
+            java.util.Set<String> held) {
+        List<String> free = new ArrayList<>(hands);
+        List<Object[]> left = new ArrayList<>();
+        for (Object[] r : rings) {
+            ItemData info = (ItemData) r[1];
+            String h = free.stream().filter(x -> sameName(seed.get(x), info)).findFirst().orElse(null);
+            if (h == null) {
+                left.add(r);
+            } else {
+                free.remove(h);
+                held.add(h);
+            }
+        }
+        for (Object[] r : left) {
+            if (free.isEmpty()) {
+                break;
+            }
+            String h = free.contains((String) r[0]) ? (String) r[0] : free.get(0);
+            free.remove(h);
+            seed.put(h, Damage.piece((ItemData) r[1]));
+            held.add(h);
+        }
     }
 
     private static boolean sameName(Damage.Piece p, ItemData info) {
@@ -713,35 +808,115 @@ final class Roadmap {
 
     /**
      * After the search: the best of {@link #setSeeds} replaces the build when it beats it by
-     * more than 0.2 %, a row for each slot it changes. The search itself is left as it was, so a
-     * milestone without a set to try comes out the same.
+     * more than 0.2 %, a row for each slot it changes, and the seeds are made again from the new
+     * build until none helps (rules.roadmap.setRounds, 3), so an armour set and a set of
+     * accessories can both go on. The best rules.roadmap.setPolish (2) seeds first get one pass
+     * of slot swaps around the set ({@link #polish}): a set whose other slots must change with it
+     * (the points it needs, the element it brings) is not cut early; the build itself gets the
+     * same pass for the bar to beat. The search itself is left as it was, so a milestone without
+     * a set to try comes out the same.
      */
     private static void wholeSets(Map<String, Damage.Piece> start, Map<String, Damage.Piece> build,
             Map<String, String> placed, Map<Slot, List<ItemData>> pools, List<Gear> gear, int m, int earned, int[] prev,
-            List<Map<String, Damage.Piece>> seeds) {
-        Build.Eval cur = Build.allocate(build, m, earned);
-        if (cur == null || seeds.isEmpty()) {
-            return;
+            Map<String, List<ItemData>> sets, Map<String, Integer> owned, List<ItemData> found,
+            java.util.Set<String> fixed) {
+        java.util.Set<String> buyable = new java.util.HashSet<>();
+        found.forEach(i -> buyable.add(i.name()));
+        int rounds = (int) Rules.sub("roadmap", "setRounds", 3);
+        for (int round = 0; round < rounds; round++) {
+            Build.Eval cur = Build.allocate(build, m, earned);
+            if (cur == null) {
+                return;
+            }
+            double curJ = judged(cur, prev, m);
+            List<Seed> seeds = setSeeds(build, cur, pools, sets, owned, buyable, fixed, m, earned, prev);
+            List<Object[]> scored = new ArrayList<>();   // {seed, judged}
+            for (Seed seed : seeds) {
+                tick();
+                Build.Eval ev = Build.allocate(seed.build(), m, earned);
+                if (ev != null) {
+                    scored.add(new Object[] {seed, judged(ev, prev, m)});
+                }
+            }
+            if (scored.isEmpty()) {
+                return;
+            }
+            scored.sort((x, y) -> Double.compare((double) y[1], (double) x[1]));
+            // a seed far behind is not one pass from winning (rules.roadmap.setPolishWithin, 5 %)
+            int polish = (int) Rules.sub("roadmap", "setPolish", 2);
+            double near = curJ * (1 - Rules.sub("roadmap", "setPolishWithin", 0.05));
+            boolean polished = false;
+            for (int i = 0; i < scored.size() && i < polish && (double) scored.get(i)[1] >= near; i++) {
+                Seed s = (Seed) scored.get(i)[0];
+                Map<String, Damage.Piece> b = new LinkedHashMap<>(s.build());
+                double j = polish(b, (double) scored.get(i)[1], s.held(), pools, fixed, m, earned, prev);
+                scored.set(i, new Object[] {new Seed(b, s.held()), j});
+                polished = true;
+            }
+            // the bar: the build with the same pass, or a set would win on swaps refine makes
+            // anyway; only needed when a polished seed beats the build as it is
+            boolean ahead = scored.stream().anyMatch(sc -> (double) sc[1] > curJ * 1.002);
+            double bar = polished && ahead
+                    ? polish(new LinkedHashMap<>(build), curJ, java.util.Set.of(), pools, fixed, m, earned, prev) : curJ;
+            Object[] best = null;
+            for (Object[] sc : scored) {
+                if ((double) sc[1] > bar * 1.002 && (best == null || (double) sc[1] > (double) best[1])) {
+                    best = sc;
+                }
+            }
+            if (best == null) {
+                return;
+            }
+            TriConsumer tc = trace;
+            if (tc != null) {
+                tc.accept(m, Slot.RING, String.format(java.util.Locale.ROOT, "whole set %+.2f%% over the search (round %d)",
+                        ((double) best[1] / curJ - 1) * 100, round + 1));
+            }
+            applySet(((Seed) best[0]).build(), start, build, placed, pools, gear, m, earned, prev);
         }
-        double bestJ = judged(cur, prev, m) * 1.002;
-        Map<String, Damage.Piece> best = null;
-        for (Map<String, Damage.Piece> seed : seeds) {
-            tick();
-            Build.Eval ev = Build.allocate(seed, m, earned);
-            if (ev != null && judged(ev, prev, m) > bestJ) {
-                bestJ = judged(ev, prev, m);
-                best = seed;
+    }
+
+    /**
+     * One quick pass over the slots a seed did not set: each tries the first
+     * rules.roadmap.setPolishPool (5) of its pool and takes the best swap that helps by more
+     * than 0.2 %. Changes {@code b}; its judged score after.
+     */
+    private static double polish(Map<String, Damage.Piece> b, double j, java.util.Set<String> held,
+            Map<Slot, List<ItemData>> pools, java.util.Set<String> fixed, int m, int earned, int[] prev) {
+        int top = (int) Rules.sub("roadmap", "setPolishPool", 5);
+        for (var e : pools.entrySet()) {
+            Slot t = e.getKey();
+            for (String slot : t == Slot.RING ? new String[] {"RING1", "RING2"} : new String[] {Build.slotOf(t, 0)}) {
+                if (slot == null || fixed.contains(slot) || held.contains(slot)) {
+                    continue;
+                }
+                Damage.Piece there = b.get(slot);
+                Damage.Piece pick = null;
+                double pickJ = j * 1.002;
+                int tried = 0;
+                for (ItemData info : e.getValue()) {
+                    if (tried >= top) {
+                        break;
+                    }
+                    Damage.Piece cand = Damage.piece(info);
+                    if (info.requirements().level() > m || there != null && there.key().equals(cand.key())
+                            || Exclusive.clash(b, slot, Exclusive.group(info)) != null) {
+                        continue;
+                    }
+                    tried++;
+                    Build.Eval ev = fullEval(b, slot, cand, m, earned);
+                    if (ev != null && judged(ev, prev, m) > pickJ) {
+                        pickJ = judged(ev, prev, m);
+                        pick = cand;
+                    }
+                }
+                if (pick != null) {
+                    b.put(slot, pick);
+                    j = pickJ;
+                }
             }
         }
-        if (best == null) {
-            return;
-        }
-        TriConsumer tc = trace;
-        if (tc != null) {
-            tc.accept(m, Slot.RING, String.format(java.util.Locale.ROOT, "whole set %+.2f%% over the search",
-                    (bestJ / judged(cur, prev, m) - 1) * 100));
-        }
-        applySet(best, start, build, placed, pools, gear, m, earned, prev);
+        return j;
     }
 
     /** Puts a set the beam chose into the milestone's build, a row for each slot it changes. */
@@ -755,11 +930,12 @@ final class Roadmap {
                 continue;
             }
             Damage.Piece had = start.get(slot);
-            if (had != null && had.key().equals(want.key())) {
+            if (had != null && (had.key().equals(want.key()) || had.name().equalsIgnoreCase(want.name()))) {
                 // the set keeps what the milestone started with here (what you wear, or an
                 // earlier pick): the slot-by-slot pick is undone and its row goes, it is no
-                // "Yume → Yume" upgrade
-                build.put(slot, want);
+                // "Yume → Yume" upgrade. By name too: a set seed puts a piece you have back
+                // with its plain stats, and the one you have keeps its rolls
+                build.put(slot, had);
                 String row = null;
                 for (var pe : placed.entrySet()) {
                     if (pe.getValue().equals(slot)) {
@@ -959,7 +1135,7 @@ final class Roadmap {
     private static boolean clashes(Map<String, Damage.Piece> set) {
         java.util.Set<String> groups = new java.util.HashSet<>();
         for (Damage.Piece p : set.values()) {
-            String g = p == null ? null : Exclusive.group(p.name());
+            String g = Exclusive.group(p);         // by name, or a set marked illegal
             if (g != null && !groups.add(g)) {
                 return true;
             }
@@ -1235,15 +1411,62 @@ final class Roadmap {
         return out;
     }
 
-    /** The piece's requirements in skills outside {@code preferred}. */
-    private static int offPoints(ItemData info, List<String> preferred) {
+    /**
+     * Whether the comparison panel may show this piece at milestone {@code m}: the tiers and
+     * sources that milestone leaves out stay out of its panel too (a Mythic under "Hide Mythic
+     * upgrades" before the endgame level).
+     */
+    private static boolean panelAllows(ItemData info, int m) {
+        return !badTiers(m).contains(info.tier().name()) && !Shopping.excluded(info, badSources(m));
+    }
+
+    /**
+     * How much a piece's gain counts for while you would buy it soon: 1 when it is listed now
+     * (or its price is unknown); 0.9 for Wynnventory's cache (listed, no count), 0.85 for few
+     * or old listings, 0.6 when nothing is listed now (an old price, or none).
+     */
+    static double availability(Prices.Price p) {
+        if (p == null) {
+            return 1;
+        }
+        return switch (p.confidence()) {
+            case NONE, HISTORY -> 0.6;
+            case THIN, STALE -> 0.85;
+            case CACHE -> 0.9;
+            case OK -> 1;
+        };
+    }
+
+    /** A gain scaled by an availability factor: a gain shrinks, a loss grows. */
+    private static double scaled(double gain, double factor) {
+        return gain >= 0 ? gain * factor : gain / factor;
+    }
+
+    /**
+     * The points the piece's requirements ask for in skills outside {@code preferred}, beyond
+     * what the set already holds there ({@code cover}: assigned plus the gear's, per skill; null
+     * counts every requirement point).
+     */
+    static int offPoints(ItemData info, List<String> preferred, double[] cover) {
         int off = 0;
         for (var r : info.requirements().skills()) {
             if (!preferred.contains(r.skill().name())) {
-                off += r.points();
+                double have = cover == null ? 0 : cover[r.skill().ordinal()];
+                off += (int) Math.max(0, Math.ceil(r.points() - have));
             }
         }
         return off;
+    }
+
+    /** The skill points you placed, by skill; null while the Character Info menu has not shown them. */
+    private static int[] assignedPoints(GameState state) {
+        int[] a = new int[SkillKind.values().length];
+        int sum = 0;
+        for (SkillKind s : SkillKind.values()) {
+            a[s.ordinal()] = state.assigned(s);
+            sum += a[s.ordinal()];
+        }
+        return sum > 0 ? a : null;
     }
 
     /** The build's score with {@code cand} in {@code slot} and the skill points spread anew; NaN if it cannot be worn. */
@@ -1698,10 +1921,14 @@ final class Roadmap {
         // what you have (worn, carried, banked): it costs nothing under a budget
         Map<String, Integer> ownedCount = ownedCounts(state);
         java.util.Set<String> owned = ownedCount.keySet();
-        // (a ring by name is no proof: the second hand's copy is a buy)
+        // (a ring by name is no proof: the second hand's copy is a buy). A price that is only
+        // history over the budget is no skip: it costs the piece a little in the ranking
+        // (overBudget) instead, since the market may well have it cheaper now
         java.util.function.Predicate<ItemData> affordable = info -> budget <= 0
                 || info.slot() != Slot.RING && owned.contains(info.name())
-                || cost(state, info) >= 0 && cost(state, info) <= budget;
+                || cost(state, info) >= 0 && (cost(state, info) <= budget || uncertainPrice(state, info));
+        java.util.function.Predicate<ItemData> overBudget = info -> budget > 0
+                && !(info.slot() != Slot.RING && owned.contains(info.name())) && cost(state, info) > budget;
         Klass cls = state.classType();
         Slot weapon = Slot.weaponOf(cls);
         List<Slot> slots = new ArrayList<>(List.of(SLOTS));
@@ -1723,9 +1950,10 @@ final class Roadmap {
         List<String> preferred = Rules.list("shopping", "preferredSkills");
         List<Integer> levels = in.nowOnly() ? List.of(level) : milestones(level);
         int last = levels.get(levels.size() - 1);
-        // the off-skill limit, tiers and sources go by each milestone's level (maxOff, badTiers,
-        // badSources): the pool holds what the last milestone allows, each milestone filters again
-        int maxOffLast = maxOff(last);
+        // tiers and sources go by each milestone's level (badTiers, badSources): the pool holds
+        // what the last milestone allows, each milestone filters again. The off-skill limit is
+        // only checked there, against that milestone's skill points: a piece asking for 60
+        // Dexterity costs nothing off-skill where the spread holds 80 of it anyway
         List<String> badTiersLast = badTiers(last);
 
         // Candidates per slot, once
@@ -1746,9 +1974,6 @@ final class Roadmap {
             if (need != null && need != Klass.NONE && need != cls) {
                 return;
             }
-            if (offPoints(info, preferred) > maxOffLast) {
-                return;
-            }
             cands.computeIfAbsent(t, k -> new ArrayList<>()).add(info);
         });
 
@@ -1762,7 +1987,9 @@ final class Roadmap {
         Map<String, Damage.Piece> wornNow = plan == null ? null
                 : new LinkedHashMap<>(plan.worn() != null ? plan.worn() : plan.pieces());
         Map<String, String> placed = new LinkedHashMap<>();     // slot type name → build slot of its latest pick
-        int[] prevAlloc = null;                                // the last milestone's set's skill points
+        // the last milestone's set's skill points; before the first, the ones you placed (when the
+        // Character Info menu showed them), so "now" does not quietly take your Defence away
+        int[] prevAlloc = assignedPoints(state);
         // piece key → its row number and reasons from the milestone that first picked it
         Map<String, Double> firstGain = new HashMap<>();
         Map<String, List<String>> firstWhy = new HashMap<>();
@@ -1830,6 +2057,7 @@ final class Roadmap {
             Map<String, Damage.Piece> startSet = baseline == null ? null : new LinkedHashMap<>(baseline);
             Map<String, String> placedStart = new LinkedHashMap<>(placed);
             List<ItemData> ringPool = new ArrayList<>();     // this milestone's best rings, for the other hand
+            List<ItemData> setGear = new ArrayList<>();      // set pieces you could get here, for whole sets
             for (Slot t : slots) {
                 if (lockedKinds.contains(t.isWeapon() ? Slot.WEAPON : t)) {
                     continue;                               // a chosen item holds it
@@ -1841,6 +2069,7 @@ final class Roadmap {
                 String topSlot = null;
                 ItemData alt = null;
                 double altScore = topScore;
+                double altReal = Double.NaN;            // the alternative's own gain
                 List<Object[]> pool = new ArrayList<>();      // {info, % gain} for the alternatives
                 List<Object[]> ranked = new ArrayList<>();    // {info, % gain, gain for availability, slot, its factor}
                 int peek = (int) Rules.sub("shopping", "aheadLevels", 5);
@@ -1854,11 +2083,19 @@ final class Roadmap {
                 // a later milestone only weighs gear made for around that level: a piece 20 levels
                 // below it is not the pick there, and trying every piece up to Lv 120 took seconds
                 int floor = m == level ? Integer.MIN_VALUE : m - (int) Rules.sub("shopping", "milestoneWindow", 20);
+                // what this milestone's set already holds per skill (its points and the gear's): a
+                // requirement within it asks for nothing more
+                double[] cover = allocM == null ? null : Build.cover(baseline, allocM);
                 for (ItemData info : cands.getOrDefault(t, List.of())) {
                     if (wornNames.contains(info.name().toLowerCase(java.util.Locale.ROOT))
-                            || info.requirements().level() < floor || badTiers.contains(info.tier().name())
-                            || offPoints(info, preferred) > maxOff) {
-                        trace(m, t, info, "skip: worn / below window / tier / off-skill " + offPoints(info, preferred) + ">" + maxOff);
+                            || info.requirements().level() < floor || badTiers.contains(info.tier().name())) {
+                        trace(m, t, info, "skip: worn / below window / tier");
+                        continue;
+                    }
+                    // the weapon decides the element, so it is never thrown out for its skills
+                    int off = t.isWeapon() ? 0 : offPoints(info, preferred, cover);
+                    if (off > maxOff) {
+                        trace(m, t, info, "skip: off-skill " + off + " points past the set's > " + maxOff);
                         continue;
                     }
                     if (!affordable.test(info)) {
@@ -1873,10 +2110,24 @@ final class Roadmap {
                         trace(m, t, info, "skip: above the milestone");
                         continue;
                     }
+                    // a quest the piece asks for that you have not done: not before its level
+                    // (Sodeta Boots want Lost Soles); from there on it stays, with a caution
+                    QuestBook.Entry quest = Shopping.questPending(state, info);
+                    if (quest != null && quest.level() > m) {
+                        trace(m, t, info, "skip: quest " + quest.name() + " is Lv " + quest.level());
+                        continue;
+                    }
                     int total = info.requirements().skills().stream().mapToInt(r -> r.points()).sum();
                     if (total > earnedThen) {
                         trace(m, t, info, "skip: needs " + total + " points > " + earnedThen);
                         continue;
+                    }
+                    if (!future && info.set().isPresent()) {
+                        // a set piece alone may rank below the best forty and still pay with its set
+                        // by where it comes from in the world (a listed piece's source reads TRADE_MARKET)
+                        if (!Shopping.excluded(info, badSources)) {
+                            setGear.add(info);
+                        }
                     }
                     double sc;
                     String slotUsed = null;
@@ -1932,12 +2183,11 @@ final class Roadmap {
                         // a nudge toward what players actually pick (rules.community)
                         sc += Rules.communityBonus(info.name());
                         // and away from what needs a skill reset in town
-                        if (slotUsed != null && Build.needsRespec(baseline, allocM, slotUsed, Damage.piece(info), earnedThen)) {
+                        if (slotUsed != null && Build.needsRespec(baseline, prevAlloc, slotUsed, Damage.piece(info), earnedThen)) {
                             sc -= Rules.sub("shopping", "respecPenaltyPercent", 3);
                         }
-                        String srcP = Shopping.sourceOf(info);
-                        if (srcP != null && badSources.stream().anyMatch(srcP::startsWith) && !owned.contains(info.name())) {
-                            trace(m, t, info, "skip: source " + srcP);
+                        if (Shopping.excluded(info, badSources) && !owned.contains(info.name())) {
+                            trace(m, t, info, "skip: source " + Shopping.origin(info));
                             continue;               // never offer what cannot be obtained
                         }
                         trace(m, t, info, String.format(java.util.Locale.ROOT, "ranked %.2f%% in %s", sc, slotUsed)
@@ -1952,17 +2202,20 @@ final class Roadmap {
                     }
                     // what you can actually get now counts: a market item with no listing at the moment
                     // (Wynnventory's live listings) only wins when it is clearly better than one that has
-                    double eff = sc;
+                    double factor = 1;
                     if (allocM != null && listingsMatter && Shopping.tradable(info)) {
-                        Prices.Price live = state.price(info.name());
-                        String src = Shopping.sourceOf(info);
-                        boolean merchant = src != null && (src.startsWith("MERCHANT") || src.startsWith("DUNGEON_MERCHANT"));
-                        if (!merchant && live != null && live.count() != null && live.count() == 0) {
-                            eff = sc * 0.6;
+                        String src = Shopping.origin(info);
+                        boolean merchant = src.startsWith("MERCHANT") || src.startsWith("DUNGEON_MERCHANT");
+                        if (!merchant) {
+                            factor = availability(state.price(info.name()));
                         }
                     }
+                    if (allocM != null && overBudget.test(info)) {
+                        factor *= Rules.sub("shopping", "overBudgetFactor", 0.8);   // its old price is over the budget
+                    }
+                    double eff = scaled(sc, factor);
                     if (allocM != null) {
-                        ranked.add(new Object[] {info, sc, eff, slotUsed, eff == sc ? 1.0 : 0.6});
+                        ranked.add(new Object[] {info, sc, eff, slotUsed, factor});
                     } else if (preferMarket && !Shopping.tradable(info)) {
                         if (eff > altScore) {
                             altScore = eff;
@@ -1988,6 +2241,7 @@ final class Roadmap {
                     int market = 0;
                     int other = 0;
                     String altSlot = null;
+                    List<Object[]> cleared = new ArrayList<>();     // {info, eff, gain, slot}: market picks over the bar
                     for (Object[] r : ranked) {
                         ItemData info = (ItemData) r[0];
                         boolean side = preferMarket && !Shopping.tradable(info);
@@ -2031,23 +2285,37 @@ final class Roadmap {
                             }
                             // judged: a pick that undoes the last milestone's skill points pays for it
                             double full = (judged(fe, prevAlloc, m) / baseJ - 1) * 100 + Rules.communityBonus(info.name());
-                            if (Build.needsRespec(baseline, allocM, slotUsed, Damage.piece(info), earnedThen)) {
+                            if (Build.needsRespec(baseline, prevAlloc, slotUsed, Damage.piece(info), earnedThen)) {
                                 full -= Rules.sub("shopping", "respecPenaltyPercent", 3);
                             }
-                            if (full < Rules.sub("shopping", "minGainPercent", 10)
-                                    && full < Build.gainThreshold(baseline.get(slotUsed), m)) {
-                                trace(m, t, info, String.format(java.util.Locale.ROOT, "skip: full %.2f%% under the bar %.2f%% (slot %s holds Lv %d)",
-                                        full, Build.gainThreshold(baseline.get(slotUsed), m), slotUsed,
+                            // for the choice only (the row shows the gain itself): an untradable
+                            // piece from a dungeon, its merchant, a raid or a quest takes a run of
+                            // its own, so it must clear the bar by this much more (Admiral wants
+                            // Redbeard's Hair); what you have needs no buy and counts a little extra
+                            double pickBy = full;
+                            if (owned.contains(info.name())) {
+                                pickBy += Rules.sub("shopping", "ownedBonusPercent", 2);
+                            } else if (Shopping.effort(info)) {
+                                pickBy -= Rules.sub("shopping", "untradableEffortPercent", 5);
+                            }
+                            if (pickBy < Rules.sub("shopping", "minGainPercent", 10)
+                                    && pickBy < Build.gainThreshold(baseline.get(slotUsed), m)) {
+                                trace(m, t, info, String.format(java.util.Locale.ROOT, "skip: full %.2f%% (%.2f%% to choose by) under the bar %.2f%% (slot %s holds Lv %d)",
+                                        full, pickBy, Build.gainThreshold(baseline.get(slotUsed), m), slotUsed,
                                         baseline.get(slotUsed) == null ? -1 : baseline.get(slotUsed).level()));
                                 continue;
                             }
                             trace(m, t, info, String.format(java.util.Locale.ROOT, "judged %.2f%% in %s", full, slotUsed));
-                            eff = full * (double) r[4];     // keeps the "no listings" factor
+                            eff = scaled(pickBy, (double) r[4]);     // keeps the "no listings" factor
                             sc = full;
+                        }
+                        if (!side) {
+                            cleared.add(new Object[] {info, eff, sc, slotUsed});
                         }
                         if (side) {
                             if (eff > altScore) {
                                 altScore = eff;
+                                altReal = sc;
                                 alt = info;
                                 altSlot = slotUsed;
                             }
@@ -2056,6 +2324,17 @@ final class Roadmap {
                             topReal = sc;
                             top = info;
                             topSlot = slotUsed;
+                        }
+                    }
+                    // close picks (rules.shopping.costTieBreakPercent of the best) are as good a
+                    // buy: what you have first, then the cheaper while you would buy it soon
+                    if (top != null && !emptyBuild) {
+                        Object[] pick = closest(cleared, topScore, owned, listingsMatter);
+                        if (pick != null && pick[0] != top) {
+                            trace(m, t, (ItemData) pick[0], "tie-break over " + top.name());
+                            top = (ItemData) pick[0];   // topScore stays the best's: as good a buy
+                            topReal = (double) pick[2];
+                            topSlot = (String) pick[3];
                         }
                     }
                     if (top == null && alt != null) {
@@ -2068,17 +2347,17 @@ final class Roadmap {
                 if (top == null && alt != null) {
                     top = alt;                  // nothing on the market beats what you wear
                     topScore = altScore;
-                    topReal = Double.NaN;
+                    topReal = altReal;          // its own gain, not the one it was chosen by
                     alt = null;
                 }
                 if (top == null) {
                     continue;
                 }
                 String source = Shopping.sourceOf(top);
-                if (source == null || badSources.stream().anyMatch(source::startsWith) && !owned.contains(top.name())) {
+                if (source == null || Shopping.excluded(top, badSources) && !owned.contains(top.name())) {
                     continue;                       // what cannot be had, unless you have it already
                 }
-                String price = Prices.text(top.name(), false);
+                String price = Prices.buyText(top.name());
                 String altSource = alt == null ? null : Shopping.sourceOf(alt);
                 double gain = allocM != null ? (Double.isNaN(topReal) ? topScore : topReal) : topScore - best.getOrDefault(t, 0.0);
                 if (emptyBuild) {
@@ -2096,7 +2375,7 @@ final class Roadmap {
                         .forEach(o -> {
                             ItemData gi = (ItemData) o[0];
                             state.requestPrices(List.of(gi.name()));
-                            String pr = Prices.text(gi.name(), false);
+                            String pr = Prices.buyText(gi.name());
                             String pShort = pr == null ? (Shopping.tradable(gi) ? "" : " · " + L.t("wynnlabs.road.untradable"))
                                     : " · " + (pr.contains(" (") ? pr.substring(0, pr.indexOf(" (")) : pr);
                             List<String> c = Cautions.of(gi);
@@ -2113,7 +2392,7 @@ final class Roadmap {
                         options.add(first);
                     }
                     pool.stream()
-                            .filter(o -> o[0] != chosen && o[2] != null)
+                            .filter(o -> o[0] != chosen && o[2] != null && panelAllows((ItemData) o[0], m))
                             .sorted((p1, p2) -> Double.compare((double) p2[1], (double) p1[1]))
                             .limit((long) Rules.sub("roadmap", "alternatives", 6))
                             .forEach(o -> {
@@ -2130,7 +2409,7 @@ final class Roadmap {
                         java.util.Set<String> shown = new java.util.HashSet<>();
                         options.forEach(op -> shown.add(op.info().name()));
                         pool.stream()
-                                .filter(o -> o[0] != chosen && o[2] != null
+                                .filter(o -> o[0] != chosen && o[2] != null && panelAllows((ItemData) o[0], m)
                                         && ((ItemData) o[0]).requirements().level() <= level
                                         && !shown.contains(((ItemData) o[0]).name()))
                                 .sorted((p1, p2) -> Double.compare((double) p2[1], (double) p1[1]))
@@ -2170,7 +2449,7 @@ final class Roadmap {
                     exactSearch(baseline, placed, pools, gear, m, earnedThen, prevAlloc);   // its ring pairs know no chosen hand
                 }
                 wholeSets(startSet, baseline, placed, pools, gear, m, earnedThen, prevAlloc,
-                        setSeeds(baseline, pools, setPieces(cands, pools, owned, m), ownedCount, fixed));
+                        setPieces(cands, setGear, owned, m, fixed), ownedCount, setGear, fixed);
                 refine(baseline, placed, pools, gear, m, earnedThen, prevAlloc, fixed);
                 Build.Eval be = Build.allocate(baseline, m, earnedThen);
                 if (be != null) {
@@ -2212,7 +2491,7 @@ final class Roadmap {
                     note = L.t("wynnlabs.road.target_note");
                 }
                 gear.add(new Gear(slotName, info, Double.NaN, src == null ? "?" : Shopping.where(src) + " · "
-                        + note, Prices.text(info.name(), false),
+                        + note, Prices.buyText(info.name()),
                         null, null, List.of(), List.of(), List.of()));
                 if (baseline != null) {
                     String slot = Build.slotOf(info.slot(), 0);
@@ -2274,7 +2553,9 @@ final class Roadmap {
                     firstWhy.put(pick.key(), rowWhy.getOrDefault(slotName, List.of()));
                 }
             }
-            Build.Eval set = baseline == null ? null : Build.allocate(baseline, m, earnedThen);
+            // the spread shown and carried on: the greedy one polished by moving points between
+            // skills (once per milestone; the candidates above are ranked with the quick one)
+            Build.Eval set = baseline == null ? null : Build.allocateBest(baseline, m, earnedThen);
             if (set != null) {
                 prevAlloc = set.allocation();
             }
@@ -2295,10 +2576,10 @@ final class Roadmap {
     }
 
     /**
-     * What you have, by name and how many: worn, carried and banked (a buy you need not make; a
-     * ring you have twice can fill both hands).
+     * What you have, by name and how many: worn, carried and banked where you can reach it (a buy
+     * you need not make; a ring you have twice can fill both hands).
      */
-    private static Map<String, Integer> ownedCounts(GameState state) {
+    static Map<String, Integer> ownedCounts(GameState state) {
         Map<String, Integer> out = new HashMap<>();
         try {
             for (Slot t : Slot.values()) {
@@ -2319,8 +2600,13 @@ final class Roadmap {
                     out.merge(ItemJson.clean(s.getHoverName().getString()).trim(), s.getCount(), Integer::sum);
                 }
             }
+            // only banks you can open from here: a copy on another character's page is no
+            // buy you can skip
             for (Vault.Group g : Vault.groups()) {
-                out.merge(g.name(), Math.max(1, g.total()), Integer::sum);
+                if (g.reachable()) {
+                    int here = g.places().stream().filter(s -> Vault.reachable(s.page())).mapToInt(Vault.Stored::count).sum();
+                    out.merge(g.name(), Math.max(1, here), Integer::sum);
+                }
             }
         } catch (Throwable t) {
             // a menu changed under us: what was read so far
@@ -2329,17 +2615,65 @@ final class Roadmap {
     }
 
     /**
-     * What a piece costs on the Trade Market under a budget: its typical price, 0 for one that
-     * cannot be traded and has none (a quest reward), -1 for a tradable piece with no known price
+     * What a piece costs on the Trade Market under a budget: what buying it is likely to cost
+     * (Prices.Price#buyPrice: the middle of the market for an old price), 0 for one that cannot
+     * be traded and has none (a quest reward), -1 for a tradable piece with no known price
      * (never suggested under a budget).
      */
     static double cost(GameState state, ItemData info) {
         Prices.Price p = state.price(info.name());
-        Double v = p == null ? null : p.typical();
+        Double v = p == null ? null : p.buyPrice();
         if (v != null) {
             return v;
         }
         return Shopping.tradable(info) ? -1 : 0;
+    }
+
+    /** A tradable piece whose price is only history: nothing listed now, or only old listings. */
+    static boolean uncertainPrice(GameState state, ItemData info) {
+        Prices.Price p = state.price(info.name());
+        return Shopping.tradable(info) && p != null && p.typical() != null && p.uncertain();
+    }
+
+    /**
+     * The pick among {@code cleared} ({info, eff, gain, slot}, every market piece over the bar)
+     * within rules.shopping.costTieBreakPercent (15 %) of the best: what you have first, then,
+     * when {@code prices} (bought soon), the cheaper; else the best. Null when nothing is close.
+     */
+    private static Object[] closest(List<Object[]> cleared, double best, java.util.Set<String> owned, boolean prices) {
+        double within = Rules.sub("shopping", "costTieBreakPercent", 15) / 100.0;
+        if (within <= 0 || best <= 0) {
+            return null;
+        }
+        Object[] out = null;
+        for (Object[] c : cleared) {
+            if ((double) c[1] < best * (1 - within)) {
+                continue;
+            }
+            if (out == null || better(c, out, owned, prices)) {
+                out = c;
+            }
+        }
+        return out;
+    }
+
+    /** {@link #closest}'s order: what you have, then the cheaper (when {@code prices}), then the higher gain. */
+    private static boolean better(Object[] a, Object[] b, java.util.Set<String> owned, boolean prices) {
+        ItemData ia = (ItemData) a[0];
+        ItemData ib = (ItemData) b[0];
+        boolean oa = ia.slot() != Slot.RING && owned.contains(ia.name());
+        boolean ob = ib.slot() != Slot.RING && owned.contains(ib.name());
+        if (oa != ob) {
+            return oa;
+        }
+        if (prices && !oa) {
+            double ca = Shopping.buyCost(ia);
+            double cb = Shopping.buyCost(ib);
+            if (ca != cb) {
+                return ca < cb;
+            }
+        }
+        return (double) a[1] > (double) b[1];
     }
 
     /** What the buys in {@code set} cost: every piece outside {@code fixed} that you do not have. */
@@ -2353,6 +2687,11 @@ final class Roadmap {
             }
             ItemData info = findGear(p.name());
             double c = info == null ? 0 : cost(state, info);
+            if (info != null && uncertainPrice(state, info)) {
+                // an old price is a soft limit (the ranking pays for it): the set counts the
+                // lowest one seen, or a single such piece would undo the whole milestone
+                c = state.price(info.name()).typical();
+            }
             sum += c < 0 ? Double.POSITIVE_INFINITY : c;
         }
         return sum;

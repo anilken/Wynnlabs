@@ -1,5 +1,6 @@
 package io.github.anilken.wynnlabs;
 
+import com.google.gson.JsonObject;
 import io.github.anilken.wynnlabs.model.ItemData;
 import io.github.anilken.wynnlabs.model.SkillKind;
 import io.github.anilken.wynnlabs.model.Slot;
@@ -12,8 +13,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Skill point allocation by Wynncraft's rules: equip order, item bonuses, the 100 cap, the earned total. */
 class AllocatorTest {
@@ -93,5 +96,65 @@ class AllocatorTest {
         int[] m = Build.minPoints(b.values());
         Fixtures.note("Lv 120 with Hypoxia needs " + java.util.Arrays.toString(m) + " = " + java.util.Arrays.stream(m).sum());
         assertNotNull(Build.allocate(b, 120, 200), "needs " + java.util.Arrays.toString(m));
+    }
+
+    @Test
+    void theLocalSearchFindsWhatOnlyPaysOffInQuantity() throws Exception {
+        // a tank's score grows with effective health, and Defence and Agility multiply it: the
+        // first few points in Defence gain less than another skill's, a full Defence far more.
+        // The greedy pass gives every chunk to the best single skill and never gets there
+        FixtureState.load(Fixtures.root().resolve("shaman-44")).install("en");
+        JsonObject model = new JsonObject();
+        model.addProperty("survivalWeight", 1.4);
+        model.addProperty("damageWeight", 0.4);
+        model.addProperty("survivalPower", 1.0);
+        JsonObject change = new JsonObject();
+        change.add("model", model);
+        Rules.update(change);
+        Map<String, Damage.Piece> b = new LinkedHashMap<>();
+        b.put("WEAPON", Build.compute().worn().get("WEAPON"));
+        Build.Eval greedy = Build.allocate(b, 100, 198);
+        Build.Eval best = Build.allocateBest(b, 100, 198);
+        int def = SkillKind.DEFENCE.ordinal();
+        Fixtures.note("tank Lv 100: greedy " + java.util.Arrays.toString(greedy.allocation()) + " "
+                + Math.round(greedy.result().objective()) + ", local search " + java.util.Arrays.toString(best.allocation())
+                + " " + Math.round(best.result().objective()));
+        assertEquals(198, java.util.Arrays.stream(best.allocation()).sum());
+        assertTrue(best.result().objective() > greedy.result().objective() * 1.01,
+                greedy.result().objective() + " -> " + best.result().objective());
+        assertTrue(best.allocation()[def] > greedy.allocation()[def]);
+    }
+
+    @Test
+    void theLocalSearchNeverLosesAndKeepsTheRules() throws Exception {
+        FixtureState.load(Fixtures.root().resolve("shaman-44")).install("en");
+        Map<String, Damage.Piece> worn = new LinkedHashMap<>(Build.compute().worn());
+        int[] min = Build.minPoints(worn.values());
+        for (int lv : new int[] {44, 70, 100}) {
+            int earned = (Math.min(lv, 101) - 1) * 2;
+            Build.Eval greedy = Build.allocate(worn, lv, earned);
+            Build.Eval best = Build.allocateBest(worn, lv, earned);
+            assertTrue(best.result().objective() >= greedy.result().objective());
+            int sum = 0;
+            for (int i = 0; i < min.length; i++) {
+                assertTrue(best.allocation()[i] >= min[i] && best.allocation()[i] <= 100, "Lv " + lv + " skill " + i);
+                sum += best.allocation()[i];
+            }
+            assertEquals(earned, sum);
+        }
+    }
+
+    @Test
+    void pointsStillFreeAreNoReset() {
+        Map<String, Damage.Piece> b = new LinkedHashMap<>();
+        b.put("HELMET", piece("str", Slot.HELMET, Map.of(SkillKind.STRENGTH, 20), Map.of()));
+        int[] placed = {20, 0, 0, 0, 0};
+        Damage.Piece dex = piece("dex", Slot.BOOTS, Map.of(SkillKind.DEXTERITY, 30), Map.of());
+        // 20 placed of 60 earned: the 30 Dexterity come out of the 40 still free
+        assertFalse(Build.needsRespec(b, placed, "BOOTS", dex, 60));
+        // 20 placed of 40 earned: 10 of them must come back out of Strength
+        assertTrue(Build.needsRespec(b, placed, "BOOTS", dex, 40));
+        // points not known: no reset to tell
+        assertFalse(Build.needsRespec(b, null, "BOOTS", dex, 40));
     }
 }

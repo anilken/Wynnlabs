@@ -71,6 +71,7 @@ final class Shopping {
         String[] parts = source.split(": ", 2);
         String name = parts.length > 1 ? parts[1] : "";
         return switch (parts[0]) {
+            case "TRADE_MARKET" -> L.t("wynnlabs.shop.where_market");
             case "MERCHANT" -> L.t("wynnlabs.shop.where_merchant", name);
             case "DUNGEON_MERCHANT" -> L.t("wynnlabs.shop.where_dungeon_merchant", name);
             case "QUEST" -> L.t("wynnlabs.shop.where_quest", name);
@@ -97,6 +98,7 @@ final class Shopping {
         }
         String type = source.split(": ", 2)[0];
         return switch (type) {
+            case "TRADE_MARKET" -> "market";
             case "MERCHANT", "DUNGEON_MERCHANT" -> "merchant";
             case "WORLD_EVENT" -> "event";
             case "DUNGEON" -> "dungeon";
@@ -108,9 +110,9 @@ final class Shopping {
         };
     }
 
-    /** {@link #kind(String)} of where this gear comes from. */
+    /** {@link #kind(String)} of where this gear comes from in the world ({@link #origin}, never the market). */
     static String kind(ItemData info) {
-        return kind(source(info));
+        return kind(origin(info));
     }
 
     /** A short word for a {@link #kind} ("tüccar" / "merchant"), or null for kinds without one. */
@@ -137,7 +139,9 @@ final class Shopping {
         Klass cls = state.classType();
         int level = state.level();
         // the list says where each piece comes from in words: the language is part of the key
-        String key = cls + ":" + level + ":" + Rules.version + ":" + System.identityHashCode(Build.plan()) + ":" + L.code();
+        // where a piece is had and which close pick comes first follow the prices too
+        String key = cls + ":" + level + ":" + Rules.version + ":" + System.identityHashCode(Build.plan()) + ":" + L.code()
+                + ":" + Prices.version;
         if (key.equals(builtFor)) {
             return;
         }
@@ -237,8 +241,12 @@ final class Shopping {
                 return;
             }
             String source = source(info);
-            if (source == null || source.startsWith("UNKNOWN") && badSources.contains("UNKNOWN")
-                    || badSources.stream().anyMatch(source::startsWith)) {
+            if (source == null || excluded(info, badSources)) {
+                return;
+            }
+            // a quest it asks for that is not done yet and is above you: not a buy for now
+            QuestBook.Entry quest = questPending(GameState.current(), info);
+            if (quest != null && quest.level() > Math.max(level, lv)) {
                 return;
             }
             double s;
@@ -262,9 +270,16 @@ final class Shopping {
                 if (Double.isNaN(best)) {
                     return;
                 }
-                s = (best / plan.result().objective() - 1) * 100 + Rules.communityBonus(info.name());
+                // both sides at the level it is worn (the health floor rises with it)
+                double base = plan.objectiveAt(Math.max(level, lv));
+                if (base <= 0) {
+                    return;
+                }
+                s = (best / base - 1) * 100 + Rules.communityBonus(info.name());
                 String rs = Build.slotOf(t, 0);
-                if (rs != null && Build.needsRespec(plan.pieces(), plan.allocation(), rs, cand,
+                // against the points you placed: the plan's own spread uses every point, so any
+                // requirement looked like a reset
+                if (rs != null && Build.needsRespec(plan.pieces(), plan.wornAllocation(), rs, cand,
                         Math.max(plan.earned(), (Math.min(Math.max(level, lv), 101) - 1) * 2))) {
                     s -= Rules.sub("shopping", "respecPenaltyPercent", 3);
                 }
@@ -293,10 +308,13 @@ final class Shopping {
         List<Pick> all = new ArrayList<>();
         Map<String, Pick> names = new HashMap<>();
         boolean preferMarket = Rules.sub("shopping", "preferTradeMarket", 1) > 0;
+        java.util.Set<String> owned = Roadmap.ownedCounts(GameState.current()).keySet();
+        double effort = Rules.sub("shopping", "untradableEffortPercent", 5);
         for (Slot t : slots) {
             List<Pick> sorted = new ArrayList<>(perType.getOrDefault(t, List.of()));
             sorted.sort(Comparator.comparingDouble(Pick::score).reversed());
             List<Pick> market = preferMarket ? sorted.stream().filter(p -> tradable(p.info())).toList() : sorted;
+            market = closeFirst(market, owned);
             for (int i = 0; i < Math.min(perSlot, market.size()); i++) {
                 Pick p = market.get(i);
                 Pick ranked = new Pick(p.info(), p.slot(), i + 1, p.score(), p.gain(), p.source());
@@ -305,8 +323,9 @@ final class Shopping {
             }
             // The best you cannot buy, when it beats the best you can
             if (preferMarket) {
-                double topMarket = market.isEmpty() ? Double.NEGATIVE_INFINITY : market.get(0).score();
-                sorted.stream().filter(p -> !tradable(p.info()) && p.score() > topMarket).findFirst().ifPresent(p -> {
+                double topMarket = market.stream().mapToDouble(Pick::score).max().orElse(Double.NEGATIVE_INFINITY);
+                sorted.stream().filter(p -> !tradable(p.info())
+                        && p.score() - (effort(p.info()) ? effort : 0) > topMarket).findFirst().ifPresent(p -> {
                     Pick alt = new Pick(p.info(), p.slot(), 0, p.score(), p.gain(), p.source());
                     all.add(alt);
                     names.putIfAbsent(p.info().name(), alt);
@@ -318,12 +337,138 @@ final class Shopping {
         GameState.current().requestPrices(names.keySet());   // fills in market prices, if the player has a key
     }
 
+    /**
+     * Picks this close to the best (rules.shopping.costTieBreakPercent, 15 % of its score) are as
+     * good a buy: among them what you have comes first, then the cheaper (what buying it is
+     * likely to cost, an unknown price last); the rest follow by score. {@code ranked}: best first.
+     */
+    static List<Pick> closeFirst(List<Pick> ranked, java.util.Set<String> owned) {
+        double within = Rules.sub("shopping", "costTieBreakPercent", 15) / 100.0;
+        if (ranked.size() < 2 || within <= 0 || ranked.get(0).score() <= 0) {
+            return ranked;
+        }
+        double floor = ranked.get(0).score() * (1 - within);
+        List<Pick> close = new ArrayList<>();
+        List<Pick> rest = new ArrayList<>();
+        for (Pick p : ranked) {
+            (p.score() >= floor ? close : rest).add(p);
+        }
+        close.sort(Comparator.<Pick>comparingInt(p -> owned.contains(p.info().name()) ? 0 : 1)
+                .thenComparingDouble(p -> buyCost(p.info()))
+                .thenComparing(Comparator.comparingDouble(Pick::score).reversed()));
+        close.addAll(rest);
+        return close;
+    }
+
+    /** What buying a tradable piece is likely to cost (Prices.Price#buyPrice); infinite when unknown or untradable. */
+    static double buyCost(ItemData info) {
+        if (!tradable(info)) {
+            return Double.POSITIVE_INFINITY;
+        }
+        Prices.Price p = GameState.current().price(info.name());
+        Double v = p == null ? null : p.buyPrice();
+        return v == null ? Double.POSITIVE_INFINITY : v;
+    }
+
     static String sourceOf(ItemData info) {
         return source(info);
     }
 
-    /** Where it comes from, "MERCHANT: Ragni" style; null when it cannot be had. */
+    /**
+     * Where to get it, "TRADE_MARKET" or "MERCHANT: Ragni" style: the Trade Market first for a
+     * tradable piece listed there now that otherwise takes a quest, dungeon, raid or drop (Cloak
+     * of Luminosity has listings, so a quest is not the way to it); a town merchant's fixed price
+     * stays first. The other one is the second line ({@link #alsoFrom}).
+     */
     private static String source(ItemData info) {
+        String o = origin(info);
+        if (listed(info) && !o.startsWith("MERCHANT")) {
+            return "TRADE_MARKET";
+        }
+        return o;
+    }
+
+    /** A tradable piece with listings on the Trade Market now (its price is not only history). */
+    static boolean listed(ItemData info) {
+        if (!tradable(info)) {
+            return false;
+        }
+        Prices.Price p = GameState.current().price(info.name());
+        if (p == null) {
+            return false;
+        }
+        Prices.Confidence c = p.confidence();
+        return c != Prices.Confidence.NONE && c != Prices.Confidence.HISTORY;
+    }
+
+    /**
+     * The second way to a piece listed on the Trade Market now, in words: the Trade Market under
+     * a town merchant, the world source under the Trade Market ("Also: Lights Out quest"); else null.
+     */
+    static String alsoFrom(ItemData info) {
+        if (!listed(info)) {
+            return null;
+        }
+        String o = origin(info);
+        if (o.startsWith("MERCHANT")) {
+            return where("TRADE_MARKET");
+        }
+        return o.startsWith("UNKNOWN") ? null : where(o);
+    }
+
+    /**
+     * Whether rules.shopping.excludeSources keeps this piece off the list: its world source starts
+     * with an entry. "EVENT" is the seasonal events only; world events (WORLD_EVENT) can be done
+     * any time and are never hidden by it.
+     */
+    static boolean excluded(ItemData info, List<String> bad) {
+        String o = origin(info);
+        for (String b : bad) {
+            if (o.startsWith(b)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Whether getting this untradable piece takes a run of its own: a dungeon, its merchant
+     * (Admiral wants Redbeard's Hair from the dungeon), a raid or a quest. The road map asks such
+     * a piece to beat a market one by rules.shopping.untradableEffortPercent more.
+     */
+    static boolean effort(ItemData info) {
+        if (tradable(info)) {
+            return false;
+        }
+        String o = origin(info);
+        return o != null && (o.startsWith("DUNGEON") || o.startsWith("RAID") || o.startsWith("QUEST"));
+    }
+
+    /**
+     * The quest this piece asks for, when the quest book lists it as not done yet; null when it
+     * asks for none, it is done, or the book does not know it (an empty book gates nothing).
+     */
+    static QuestBook.Entry questPending(GameState state, ItemData info) {
+        var need = info.requirements().quest();
+        if (need.isEmpty()) {
+            return null;
+        }
+        String want = questKey(need.get());
+        for (QuestBook.Entry q : state.quests()) {
+            if (questKey(q.name()).equals(want)) {
+                return "COMPLETED".equals(q.status()) ? null : q;
+            }
+        }
+        return null;
+    }
+
+    /** A quest name to compare by: case, curly apostrophes and edge spaces aside. */
+    private static String questKey(String name) {
+        return name.replace('’', '\'').trim().toLowerCase(java.util.Locale.ROOT);
+    }
+
+    /** Where it comes from in the world, "MERCHANT: Ragni" style; "UNKNOWN" when nothing says. */
+    static String origin(ItemData info) {
         List<Obtain> obtain = GameState.current().obtain(info);
         if (obtain == null || obtain.isEmpty()) {
             return "UNKNOWN";
