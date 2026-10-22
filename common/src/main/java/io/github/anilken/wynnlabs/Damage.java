@@ -55,14 +55,23 @@ final class Damage {
     /**
      * {@code ehp} is effective health as WynnBuilder shows it (Defence and Agility only);
      * {@code ehpElemental} also counts the build's elemental defences against the incoming split
-     * (rules.model.incomingElements), and is what the survival factor uses.
+     * (rules.model.incomingElements), and is what the survival factor uses. {@code pieces} and
+     * {@code weapon}: the set it was worked out for (null when read back from disk), so the road
+     * map can tell which pieces a set keeps from the milestone before it.
      */
     record Result(double objective, double spellDps, double mainDps, double casts, double ehp, double xp,
-            double speed, double dmgPerCast, double[] factors, double ehpElemental, double health) {
+            double speed, double dmgPerCast, double[] factors, double ehpElemental, double health,
+            List<Piece> pieces, Piece weapon) {
 
         Result(double objective, double spellDps, double mainDps, double casts, double ehp, double xp,
                 double speed, double dmgPerCast) {
             this(objective, spellDps, mainDps, casts, ehp, xp, speed, dmgPerCast, new double[0], ehp, 0);
+        }
+
+        /** A result with no pieces to it (read back from disk, made up in tests). */
+        Result(double objective, double spellDps, double mainDps, double casts, double ehp, double xp,
+                double speed, double dmgPerCast, double[] factors, double ehpElemental, double health) {
+            this(objective, spellDps, mainDps, casts, ehp, xp, speed, dmgPerCast, factors, ehpElemental, health, null, null);
         }
     }
 
@@ -748,7 +757,8 @@ final class Damage {
         double objective = Math.pow(Math.max(0, total), model("damageWeight", 1.0)) * fXp * fSpeed * fLife * fMana * fHeal
                 * fBurst * fLoot;
         return new Result(objective, spellDps, mainDps, casts, ehp, xp, speed, dmgPerCast,
-                new double[] {totalNoFeel, fLife, fMana, fSpeed, fXp, feelFactor}, ehpElemental, Math.max(1, health));
+                new double[] {totalNoFeel, fLife, fMana, fSpeed, fXp, feelFactor}, ehpElemental, Math.max(1, health),
+                pieces, weapon);
     }
 
     /**

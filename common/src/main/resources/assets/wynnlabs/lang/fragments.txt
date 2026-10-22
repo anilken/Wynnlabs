@@ -75,3 +75,6 @@ wynnlabs.questadv.reason_levels_later   joined with ", " after the XP; L.cap as 
 wynnlabs.questadv.reason_near_level     joined with ", " after the XP; L.cap as a bullet
 wynnlabs.questadv.reason_started        joined with ", " after the XP; L.cap as a bullet
 wynnlabs.questadv.reason_unlocks        joined with ", " after the XP; L.cap as a bullet
+wynnlabs.road.why_from_gear             after "skip: " in the road map trace
+wynnlabs.road.why_over                  after "skip: " in the road map trace
+wynnlabs.road.why_points                after "skip: " in the road map trace

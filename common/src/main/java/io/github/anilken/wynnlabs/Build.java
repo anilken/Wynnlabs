@@ -837,30 +837,79 @@ final class Build {
         return new Eval(a, last != null ? last : Damage.evaluate(armour, weapon, a, level));
     }
 
+    /** {@link #whyNot(Map, int, int[])} without knowing what other gear could give. */
+    static String whyNot(Map<String, Damage.Piece> build, int earned) {
+        return whyNot(build, earned, null);
+    }
+
     /**
      * Why a build has no allocation ({@link #allocate} gives null), for the road map trace: a
      * skill that would need more than 100 assigned after the gear's own points, or more points
-     * in all than earned. Null when it fits.
+     * in all than earned. Past 100 is only impossible when even the most the milestone's other
+     * gear could give there ({@code reach}, per skill: the best bonus of each armour and
+     * accessory slot in its window, and your tomes) leaves it past 100; otherwise the skill needs
+     * that much from gear (Ascended Guardian against an Intelligence set: 10 Defence from the
+     * armour, not "impossible"). Null when it fits.
      */
-    static String whyNot(Map<String, Damage.Piece> build, int earned) {
+    static String whyNot(Map<String, Damage.Piece> build, int earned, int[] reach) {
         int[] min = minPoints(build.values());
         StringBuilder over = new StringBuilder();
+        StringBuilder fromGear = new StringBuilder();
         int used = 0;
         for (SkillKind k : SkillKind.values()) {
             int v = min[k.ordinal()];
             used += v;
-            if (v > 100) {
-                over.append(over.length() > 0 ? ", " : "").append(v).append(' ')
-                        .append(k.name().toLowerCase(java.util.Locale.ROOT));
+            if (v <= 100) {
+                continue;
+            }
+            // what the build's own gear gives here already counts in v; reach is what the slots
+            // could give at best, so v past 100 by more than that cannot be met by any set
+            int could = reach == null ? 0 : reach[k.ordinal()];
+            String name = k.name().toLowerCase(java.util.Locale.ROOT);
+            if (v - could > 100) {
+                over.append(over.length() > 0 ? ", " : "").append(v).append(' ').append(name);
+            } else {
+                fromGear.append(fromGear.length() > 0 ? ", " : "").append(v - 100).append(' ').append(name);
             }
         }
         if (over.length() > 0) {
-            return "impossible: needs " + over + " assigned, 100 is the most";
+            return L.t("wynnlabs.road.why_over", over);
+        }
+        if (fromGear.length() > 0) {
+            return L.t("wynnlabs.road.why_from_gear", fromGear);
         }
         if (used > earned) {
-            return "impossible: needs " + used + " points, " + earned + " earned (" + (used - earned) + " short)";
+            return L.t("wynnlabs.road.why_points", used, earned, used - earned);
         }
         return null;
+    }
+
+    /**
+     * The most points per skill a set could get from gear other than a build's own pieces:
+     * each armour and accessory slot's best bonus there among {@code pieces} (the two rings
+     * twice), plus your tomes. For {@link #whyNot}.
+     */
+    static int[] reach(java.util.Collection<Damage.Piece> pieces) {
+        int n = SkillKind.values().length;
+        Map<String, double[]> bySlot = new java.util.HashMap<>();
+        for (Damage.Piece p : pieces) {
+            if (p == null || p.type() == null || p.type().isWeapon() || !p.helpsRequirements()) {
+                continue;
+            }
+            double[] b = bySlot.computeIfAbsent(p.type().name(), k -> new double[n]);
+            for (SkillKind s : SkillKind.values()) {
+                b[s.ordinal()] = Math.max(b[s.ordinal()], bonus(p, s));
+            }
+        }
+        int[] out = new int[n];
+        for (SkillKind s : SkillKind.values()) {
+            double sum = 0;
+            for (var e : bySlot.entrySet()) {
+                sum += e.getValue()[s.ordinal()] * (e.getKey().equals(Slot.RING.name()) ? 2 : 1);
+            }
+            out[s.ordinal()] = (int) Math.floor(sum) + Wyn.tomePoints(s);
+        }
+        return out;
     }
 
     /**
@@ -920,6 +969,14 @@ final class Build {
      * Null when the requirements need more points than you have.
      */
     static Eval allocate(Map<String, Damage.Piece> build, int level, int earned) {
+        Memo mm = memo();
+        if (mm == null) {
+            return allocateFresh(build, level, earned);
+        }
+        return mm.get(mm.greedy, memoKey(build, level, earned), () -> allocateFresh(build, level, earned));
+    }
+
+    private static Eval allocateFresh(Map<String, Damage.Piece> build, int level, int earned) {
         int n = SkillKind.values().length;
         int[] min = minPoints(build.values());
         int[] alloc = new int[n];
@@ -978,8 +1035,98 @@ final class Build {
      * for the spreads you are shown, not for ranking candidates.
      */
     static Eval allocateBest(Map<String, Damage.Piece> build, int level, int earned) {
-        Eval e = allocate(build, level, earned);
-        return e == null ? null : improve(build, e, level);
+        Memo mm = memo();
+        if (mm == null) {
+            Eval e = allocate(build, level, earned);
+            return e == null ? null : improve(build, e, level);
+        }
+        return mm.get(mm.best, memoKey(build, level, earned), () -> {
+            Eval e = allocate(build, level, earned);
+            return e == null ? null : improve(build, e, level);
+        });
+    }
+
+    /**
+     * One run's memo of {@link #allocate} and {@link #allocateBest}: a road map judges the same
+     * set many times (each start of its search, the rows, the comparison panel), and the spread
+     * depends only on the set, the level and the points earned while the run's rules and tuning
+     * hold. Set for a thread with {@link #withMemo}; the search's workers share one. Kept for
+     * one milestone ({@link #clear}), so it never grows past what one milestone tried.
+     */
+    static final class Memo {
+        final java.util.concurrent.ConcurrentHashMap<String, java.util.Optional<Eval>> greedy =
+                new java.util.concurrent.ConcurrentHashMap<>();
+        final java.util.concurrent.ConcurrentHashMap<String, java.util.Optional<Eval>> best =
+                new java.util.concurrent.ConcurrentHashMap<>();
+        final java.util.concurrent.atomic.AtomicLong hits = new java.util.concurrent.atomic.AtomicLong();
+        final java.util.concurrent.atomic.AtomicLong misses = new java.util.concurrent.atomic.AtomicLong();
+
+        private Eval get(java.util.concurrent.ConcurrentHashMap<String, java.util.Optional<Eval>> in, String key,
+                java.util.function.Supplier<Eval> work) {
+            java.util.Optional<Eval> had = in.get(key);
+            if (had != null) {
+                hits.incrementAndGet();
+                return had.orElse(null);
+            }
+            misses.incrementAndGet();
+            // computed outside the map's lock: two threads may both work one out, the same
+            Eval e = work.get();
+            in.putIfAbsent(key, java.util.Optional.ofNullable(e));
+            return e;
+        }
+
+        void clear() {
+            greedy.clear();
+            best.clear();
+        }
+    }
+
+    /** The memo's slot per thread, made on first use (a field set where it is declared stays null after a hot swap). */
+    private static volatile ThreadLocal<Memo> memoSlot;
+
+    private static ThreadLocal<Memo> memoSlot() {
+        ThreadLocal<Memo> t = memoSlot;
+        if (t == null) {
+            synchronized (Build.class) {
+                if (memoSlot == null) {
+                    memoSlot = new ThreadLocal<>();
+                }
+                t = memoSlot;
+            }
+        }
+        return t;
+    }
+
+    /** The memo in force on this thread, or null. */
+    static Memo memo() {
+        ThreadLocal<Memo> t = memoSlot;
+        return t == null ? null : t.get();
+    }
+
+    /** Runs {@code work} with {@code m} as this thread's memo (null: none), the one before restored after. */
+    static <T> T withMemo(Memo m, java.util.function.Supplier<T> work) {
+        ThreadLocal<Memo> t = memoSlot();
+        Memo before = t.get();
+        t.set(m);
+        try {
+            return work.get();
+        } finally {
+            if (before == null) {
+                t.remove();
+            } else {
+                t.set(before);
+            }
+        }
+    }
+
+    /** A set as its slots and pieces in the map's order (the order the model sums them in), the level and the points. */
+    private static String memoKey(Map<String, Damage.Piece> build, int level, int earned) {
+        StringBuilder k = new StringBuilder(256);
+        k.append(level).append('/').append(earned);
+        for (var e : build.entrySet()) {
+            k.append(';').append(e.getKey()).append('=').append(e.getValue() == null ? "-" : e.getValue().key());
+        }
+        return k.toString();
     }
 
     /** The local search of {@link #allocateBest} from {@code start}'s spread; deterministic. */

@@ -56,7 +56,9 @@ final class RuleEditor {
             // how much more an untradable dungeon, raid or quest piece must gain than a market one
             num("wynnlabs.rules.effort", "wynnlabs.rules.effort_desc", "shopping", "untradableEffortPercent", 5, 0, 30, 1, "%"),
             // picks this close to the best: what you have first, then the cheaper
-            num("wynnlabs.rules.cost_tie", "wynnlabs.rules.cost_tie_desc", "shopping", "costTieBreakPercent", 15, 0, 50, 5, "%"));
+            num("wynnlabs.rules.cost_tie", "wynnlabs.rules.cost_tie_desc", "shopping", "costTieBreakPercent", 15, 0, 50, 5, "%"),
+            // per piece a road map milestone keeps from the one before (Roadmap.judged)
+            num("wynnlabs.rules.keep_milestone", "wynnlabs.rules.keep_milestone_desc", "roadmap", "keepBonusPercent", 1, 0, 5, 1, "%"));
 
     private RuleEditor() {}
 
@@ -98,7 +100,7 @@ final class RuleEditor {
 
     static final List<Section> SECTIONS = List.of(
             new Section("wynnlabs.rules.sec_sell", new int[] {0, 1}),
-            new Section("wynnlabs.rules.sec_shopping", new int[] {2, 3, 20, 21, 4, 5, 13, 14, 15}),
+            new Section("wynnlabs.rules.sec_shopping", new int[] {2, 3, 20, 21, 22, 4, 5, 13, 14, 15}),
             new Section("wynnlabs.rules.sec_trade", new int[] {6, 16, 17, 18, 19, 7, 8, 9}),
             new Section("wynnlabs.rules.sec_quests", new int[] {10, 11, 12}));
 

@@ -30,7 +30,7 @@ final class BeamCache {
      * not a field: a field added by a hot swap keeps no value.
      */
     static int modelVersion() {
-        return 2;
+        return 4;
     }
 
     /** The loaded entries and whose they are; access-ordered, so the oldest drop first. */
@@ -81,6 +81,11 @@ final class BeamCache {
      */
     static synchronized Map<String, Damage.Piece> get(String key, Map<String, Damage.Piece> start,
             Map<String, Damage.Piece> build) {
+        return get(key, java.util.List.of(start, build));
+    }
+
+    /** {@link #get(String, Map, Map)} with the pieces taken from any of {@code sets} (what you wear too). */
+    static synchronized Map<String, Damage.Piece> get(String key, java.util.List<Map<String, Damage.Piece>> sets) {
         Map<String, String> e = entries().get(key);
         if (e == null || e.containsKey(NONE)) {
             return null;
@@ -88,7 +93,14 @@ final class BeamCache {
         Map<String, Damage.Piece> out = new LinkedHashMap<>();
         for (var se : e.entrySet()) {
             String[] kn = se.getValue().split("\n", 2);
-            Damage.Piece p = pick(kn[0], start.get(se.getKey()), build.get(se.getKey()));
+            Damage.Piece p = null;
+            for (Map<String, Damage.Piece> s : sets) {
+                for (Damage.Piece q : s.values()) {         // any slot: a ring may change hands
+                    if (p == null && q != null && q.key().equals(kn[0])) {
+                        p = q;
+                    }
+                }
+            }
             if (p == null && kn.length == 2) {
                 var info = GameState.current().allGear().filter(i -> i.name().equals(kn[1])).findFirst().orElse(null);
                 p = info == null ? null : Damage.piece(info);
@@ -99,13 +111,6 @@ final class BeamCache {
             out.put(se.getKey(), p);
         }
         return out;
-    }
-
-    private static Damage.Piece pick(String key, Damage.Piece a, Damage.Piece b) {
-        if (a != null && a.key().equals(key)) {
-            return a;
-        }
-        return b != null && b.key().equals(key) ? b : null;
     }
 
     static synchronized void put(String key, Map<String, Damage.Piece> set) {
