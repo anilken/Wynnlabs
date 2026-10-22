@@ -52,7 +52,11 @@ final class RuleEditor {
             num("wynnlabs.rules.market_slots", "wynnlabs.rules.market_slots_desc", "trade", "marketSlots", 0, 0,
                     MarketSlots.MAX, 1, "slots"),
             // 0 = off: a high roll is judged by its price like any other
-            num("wynnlabs.rules.keep_roll", "wynnlabs.rules.keep_roll_desc", "trade", "keepRollPercent", 80, 0, 100, 5, "%"));
+            num("wynnlabs.rules.keep_roll", "wynnlabs.rules.keep_roll_desc", "trade", "keepRollPercent", 80, 0, 100, 5, "%"),
+            // how much more an untradable dungeon, raid or quest piece must gain than a market one
+            num("wynnlabs.rules.effort", "wynnlabs.rules.effort_desc", "shopping", "untradableEffortPercent", 5, 0, 30, 1, "%"),
+            // picks this close to the best: what you have first, then the cheaper
+            num("wynnlabs.rules.cost_tie", "wynnlabs.rules.cost_tie_desc", "shopping", "costTieBreakPercent", 15, 0, 50, 5, "%"));
 
     private RuleEditor() {}
 
@@ -94,7 +98,7 @@ final class RuleEditor {
 
     static final List<Section> SECTIONS = List.of(
             new Section("wynnlabs.rules.sec_sell", new int[] {0, 1}),
-            new Section("wynnlabs.rules.sec_shopping", new int[] {2, 3, 4, 5, 13, 14, 15}),
+            new Section("wynnlabs.rules.sec_shopping", new int[] {2, 3, 20, 21, 4, 5, 13, 14, 15}),
             new Section("wynnlabs.rules.sec_trade", new int[] {6, 16, 17, 18, 19, 7, 8, 9}),
             new Section("wynnlabs.rules.sec_quests", new int[] {10, 11, 12}));
 
