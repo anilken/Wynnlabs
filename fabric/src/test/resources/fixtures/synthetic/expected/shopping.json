@@ -8,8 +8,8 @@
       "name": "Neolithic",
       "tier": "LEGENDARY",
       "level": 20,
-      "score": 37.5,
-      "gain": 37.5,
+      "score": 40.1,
+      "gain": 40.1,
       "skillRequirements": {
         "STRENGTH": 5,
         "DEFENCE": 10
@@ -25,8 +25,8 @@
       "name": "Replica Hallowynn Mask",
       "tier": "RARE",
       "level": 22,
-      "score": 33.3,
-      "gain": 33.3,
+      "score": 34.2,
+      "gain": 34.2,
       "source": "MERCHANT: Detlas",
       "restriction": "NONE",
       "powderSlots": 0
@@ -38,8 +38,8 @@
       "name": "Bony Circlet",
       "tier": "RARE",
       "level": 21,
-      "score": 31.4,
-      "gain": 31.4,
+      "score": 33.9,
+      "gain": 33.9,
       "skillRequirements": {
         "AGILITY": 6
       },
@@ -70,8 +70,8 @@
       "name": "Arakadicus' Body",
       "tier": "LEGENDARY",
       "level": 21,
-      "score": 24.4,
-      "gain": 24.4,
+      "score": 22.3,
+      "gain": 22.3,
       "source": "MERCHANT: Detlas",
       "restriction": "NONE",
       "powderSlots": 1
@@ -96,8 +96,8 @@
       "name": "Lemon Legs",
       "tier": "LEGENDARY",
       "level": 18,
-      "score": 64.8,
-      "gain": 64.8,
+      "score": 64.5,
+      "gain": 64.5,
       "source": "DUNGEON: Decrepit Sewers",
       "restriction": "NONE",
       "powderSlots": 2
@@ -109,8 +109,8 @@
       "name": "Tribal Pants",
       "tier": "RARE",
       "level": 18,
-      "score": 49.0,
-      "gain": 49.0,
+      "score": 50.7,
+      "gain": 50.7,
       "source": "LOOT_CHEST",
       "restriction": "NONE",
       "powderSlots": 1
@@ -122,8 +122,8 @@
       "name": "Conductor",
       "tier": "LEGENDARY",
       "level": 25,
-      "score": 42.7,
-      "gain": 42.7,
+      "score": 44.3,
+      "gain": 44.3,
       "skillRequirements": {
         "DEXTERITY": 10,
         "INTELLIGENCE": 5
@@ -139,8 +139,8 @@
       "name": "Almuj's Walker",
       "tier": "LEGENDARY",
       "level": 25,
-      "score": 50.8,
-      "gain": 50.8,
+      "score": 55.2,
+      "gain": 55.2,
       "source": "MERCHANT: Detlas",
       "restriction": "NONE",
       "powderSlots": 3
@@ -152,8 +152,8 @@
       "name": "Cyclo",
       "tier": "LEGENDARY",
       "level": 21,
-      "score": 45.4,
-      "gain": 45.4,
+      "score": 49.7,
+      "gain": 49.7,
       "skillRequirements": {
         "DEXTERITY": 4,
         "AGILITY": 8
@@ -169,8 +169,8 @@
       "name": "Shajone",
       "tier": "UNIQUE",
       "level": 18,
-      "score": 26.9,
-      "gain": 26.9,
+      "score": 30.6,
+      "gain": 30.6,
       "source": "MERCHANT: Detlas",
       "restriction": "NONE",
       "powderSlots": 1
@@ -225,8 +225,8 @@
       "name": "Durum's Serenity",
       "tier": "LEGENDARY",
       "level": 25,
-      "score": 22.5,
-      "gain": 22.5,
+      "score": 20.4,
+      "gain": 20.4,
       "skillRequirements": {
         "STRENGTH": 5,
         "INTELLIGENCE": 10
@@ -275,8 +275,8 @@
       "name": "Intestine Lasso",
       "tier": "RARE",
       "level": 25,
-      "score": 133.1,
-      "gain": 133.1,
+      "score": 127.0,
+      "gain": 127.0,
       "source": "LOOT_CHEST",
       "restriction": "NONE",
       "powderSlots": 1

@@ -55,7 +55,8 @@ class ModelLimitsTest {
 
     @Test
     void oldNudgesAreClampedOnceButHandValuesStay() {
-        Rules.use(model("{\"speedWeight\": 1.0, \"xpWeight\": 1.15}"));
+        // rules of the current goal model: its step to 4 would take a fighting goal's XP nudge back
+        Rules.use(model("{\"speedWeight\": 1.0, \"xpWeight\": 1.15, \"survivalModel\": " + Setup.SURVIVAL_MODEL + "}"));
         assertEquals(0.45, Rules.sub("model", "speedWeight", 0), 1e-6);
         assertEquals(1.15, Rules.sub("model", "xpWeight", 0), 1e-6);
         assertTrue(Rules.clamped.contains("speedWeight"));

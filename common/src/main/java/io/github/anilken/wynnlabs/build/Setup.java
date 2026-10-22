@@ -133,9 +133,11 @@ public final class Setup {
     /**
      * The goal weights' version: rules written before it get their goal's survival weights, health
      * floor, XP curve and XP factor again ({@link #upgrade}); 3 brought the fighting goals' XP factor
-     * (from 2 only that, and the summon calibration starts over).
+     * (from 2 only that, and the summon calibration starts over); 4 takes back an XP weight that
+     * feedback raised on a fighting goal before it stopped doing so, and the Damage goal's XP
+     * factor 0.3 from 3 becomes its 0 (from 3 only these).
      */
-    static final int SURVIVAL_MODEL = 3;
+    static final int SURVIVAL_MODEL = 4;
 
     /**
      * A preset's model weights: survival, regen, mana, heal, damage, survival power, then the
@@ -161,8 +163,9 @@ public final class Setup {
             case "XP" -> new double[] {0.25, 0.2, 0.3, 0, 0.8, 0.2, 3, 2.0, 1.7, 0, 0, 1.0, 0};
             // loot runs: Loot Bonus and Loot Quality
             case "LOOT" -> new double[] {0.25, 0.2, 0.3, 0, 0.8, 0.2, 0.5, 1.3, 1.4, 0, 2.0, 1.0, 0};
-            // fighting: XP is a side gain (0.3), or XP rings outweigh damage when feedback raised it
-            default -> new double[] {0.2, 0.2, 0.3, 0, 1.0, 0.25, 0.3, 1, 1, 0, 0, 1.0, 1};
+            // fighting for damage: XP is not counted (0); at 0.3 an XP piece still won a slot it
+            // lost on damage and health (Sodeta Boots over Stronghold at Lv 75)
+            default -> new double[] {0.2, 0.2, 0.3, 0, 1.0, 0.25, 0, 1, 1, 0, 0, 1.0, 1};
         };
     }
 
@@ -194,9 +197,10 @@ public final class Setup {
         }
         List<String> keys = List.of(keys());
         int from = model.has("survivalModel") ? model.get("survivalModel").getAsInt() : 0;
-        // rules at 2 have this survival model already (and what feedback taught on top of it):
-        // 3 only brings the goal's XP factor; below 2 the whole list comes again
-        String[] reset = from >= 2 ? new String[] {"goalXp"}
+        // rules at 3 have all of it; at 2 this survival model already (and what feedback taught
+        // on top of it): 3 only brings the goal's XP factor; below 2 the whole list comes again
+        String[] reset = from >= 3 ? new String[0]
+                : from >= 2 ? new String[] {"goalXp"}
                 : new String[] {"survivalWeight", "survivalPower", "ehpFloorScale", "xpLog", "goalXp"};
         for (String k : reset) {
             if (!byHand.contains(k)) {
@@ -207,6 +211,17 @@ public final class Setup {
         // a summon calibration fitted before means something else now: it starts over
         if (from < 3 && model.has("summonCalibration") && !byHand.contains("summonCalibration")) {
             model.addProperty("summonCalibration", 1.0);
+        }
+        // 4: feedback no longer raises the XP weight on the fighting goals, but one it raised
+        // before (up to its cap of 1.5) stayed and kept pulling XP gear over damage: it goes;
+        // and the Damage goal leaves XP out, so its 0.3 from 3 becomes the goal's 0
+        if (from < 4 && (g.equals("DAMAGE") || g.equals("BOSS") || g.equals("SAFE"))
+                && model.has("xpWeight") && !byHand.contains("xpWeight")) {
+            model.addProperty("xpWeight", 1.0);
+        }
+        if (from == 3 && g.equals("DAMAGE") && model.has("goalXp") && !byHand.contains("goalXp")
+                && Math.abs(model.get("goalXp").getAsDouble() - 0.3) < 1e-9) {
+            model.addProperty("goalXp", w[keys.indexOf("goalXp")]);
         }
         model.addProperty("survivalModel", SURVIVAL_MODEL);
     }

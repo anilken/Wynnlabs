@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * XP weighs little on the fighting goals: Damage and Boss scale the XP weight by 0.3, rules saved
- * before that get it once (a value set by hand stays), and feedback never raises the XP weight
- * while a fighting goal is set.
+ * XP weighs little on the fighting goals: Damage leaves it out, Boss scales the XP weight by 0.3,
+ * rules saved before that get it once (a value set by hand stays), an XP weight feedback raised
+ * there before goes, and feedback never raises it while a fighting goal is set.
  */
 class FightingGoalXpTest {
 
@@ -36,7 +36,7 @@ class FightingGoalXpTest {
 
     @Test
     void fightingGoalsWeighXpLittle() {
-        assertEquals(0.3, Setup.weights("DAMAGE")[GOAL_XP], 1e-9);
+        assertEquals(0, Setup.weights("DAMAGE")[GOAL_XP], 1e-9, "the Damage goal leaves XP out");
         assertEquals(0.3, Setup.weights("BOSS")[GOAL_XP], 1e-9);
         // Safe is a survival goal that still levels; the levelling goals keep theirs
         assertEquals(1, Setup.weights("SAFE")[GOAL_XP], 1e-9);
@@ -48,8 +48,8 @@ class FightingGoalXpTest {
         JsonObject old = rules("{\"goalPreset\": \"DAMAGE\", \"model\": {\"survivalModel\": 2, \"goalXp\": 1, \"xpWeight\": 1.5}}");
         Setup.upgrade(old);
         JsonObject m = old.getAsJsonObject("model");
-        assertEquals(0.3, m.get("goalXp").getAsDouble(), 1e-9);
-        assertEquals(1.5, m.get("xpWeight").getAsDouble(), 1e-9, "the player's own XP weight is not the goal's");
+        assertEquals(0, m.get("goalXp").getAsDouble(), 1e-9);
+        assertEquals(1, m.get("xpWeight").getAsDouble(), 1e-9, "an old XP nudge goes with the step to 4");
         assertEquals(Setup.SURVIVAL_MODEL, m.get("survivalModel").getAsInt());
         // once: a goal factor changed after the upgrade stays
         m.addProperty("goalXp", 0.8);
@@ -74,7 +74,7 @@ class FightingGoalXpTest {
                 + " \"summonCalibration\": 3.5}}");
         Setup.upgrade(two);
         JsonObject m = two.getAsJsonObject("model");
-        assertEquals(0.3, m.get("goalXp").getAsDouble(), 1e-9);
+        assertEquals(0, m.get("goalXp").getAsDouble(), 1e-9);
         assertEquals(0.33, m.get("survivalWeight").getAsDouble(), 1e-9, "taught survival weight kept");
         assertEquals(0.4, m.get("survivalPower").getAsDouble(), 1e-9);
         assertEquals(1.2, m.get("ehpFloorScale").getAsDouble(), 1e-9);
@@ -85,6 +85,45 @@ class FightingGoalXpTest {
         JsonObject one = rules("{\"goalPreset\": \"DAMAGE\", \"model\": {\"survivalModel\": 1, \"survivalWeight\": 0.33}}");
         Setup.upgrade(one);
         assertEquals(Setup.weights("DAMAGE")[0], one.getAsJsonObject("model").get("survivalWeight").getAsDouble(), 1e-9);
+    }
+
+    @Test
+    void anOldXpNudgeGoesOnTheFightingGoals() {
+        // feedback raised the XP weight before the fighting goals stopped it: from 3 on it is reset
+        for (String goal : List.of("DAMAGE", "BOSS", "SAFE")) {
+            JsonObject r = rules("{\"goalPreset\": \"" + goal + "\", \"model\": {\"survivalModel\": 3,"
+                    + " \"goalXp\": 0.3, \"xpWeight\": 1.5, \"speedWeight\": 0.45, \"summonCalibration\": 0.15}}");
+            Setup.upgrade(r);
+            JsonObject m = r.getAsJsonObject("model");
+            assertEquals(1, m.get("xpWeight").getAsDouble(), 1e-9, goal);
+            assertEquals(Setup.SURVIVAL_MODEL, m.get("survivalModel").getAsInt());
+            // the wave-1 Damage factor 0.3 becomes the new 0; Boss and Safe keep theirs, and other
+            // nudges and the summon calibration stay
+            assertEquals(goal.equals("DAMAGE") ? 0 : 0.3, m.get("goalXp").getAsDouble(), 1e-9, goal);
+            assertEquals(0.45, m.get("speedWeight").getAsDouble(), 1e-9, goal);
+            assertEquals(0.15, m.get("summonCalibration").getAsDouble(), 1e-9, goal);
+            // once: a weight raised again later stays
+            m.addProperty("xpWeight", 1.2);
+            Setup.upgrade(r);
+            assertEquals(1.2, m.get("xpWeight").getAsDouble(), 1e-9, goal);
+        }
+        // a levelling goal keeps what you taught it
+        JsonObject xp = rules("{\"goalPreset\": \"XP\", \"model\": {\"survivalModel\": 3, \"goalXp\": 3, \"xpWeight\": 1.5}}");
+        Setup.upgrade(xp);
+        assertEquals(1.5, xp.getAsJsonObject("model").get("xpWeight").getAsDouble(), 1e-9);
+        // a weight set by hand stays
+        JsonObject hand = rules("{\"goalPreset\": \"DAMAGE\", \"model\": {\"survivalModel\": 3, \"xpWeight\": 1.5,"
+                + " \"byHand\": [\"xpWeight\"]}}");
+        Setup.upgrade(hand);
+        assertEquals(1.5, hand.getAsJsonObject("model").get("xpWeight").getAsDouble(), 1e-9);
+        // a Damage goal factor other than the wave-1 0.3, or one set by hand, stays
+        JsonObject other = rules("{\"goalPreset\": \"DAMAGE\", \"model\": {\"survivalModel\": 3, \"goalXp\": 0.5}}");
+        Setup.upgrade(other);
+        assertEquals(0.5, other.getAsJsonObject("model").get("goalXp").getAsDouble(), 1e-9);
+        JsonObject handXp = rules("{\"goalPreset\": \"DAMAGE\", \"model\": {\"survivalModel\": 3, \"goalXp\": 0.3,"
+                + " \"byHand\": [\"goalXp\"]}}");
+        Setup.upgrade(handXp);
+        assertEquals(0.3, handXp.getAsJsonObject("model").get("goalXp").getAsDouble(), 1e-9);
     }
 
     private static Damage.Result result(double xp, double speed) {

@@ -133,7 +133,9 @@ class RoadmapMilestonesTest {
                 bad.add(String.format("Lv %d: alone %.0f is more than 10 %% behind chained %.0f", p.level(), alone, chained));
             }
         }
-        assertTrue(compared >= 6, "only " + compared + " milestones compared");
+        // with XP left out on the Damage goal the chain keeps the Lv 33 Desert Winds rings up to
+        // Lv 80 (no XP ring replaces them), so fewer milestones are comparable than before
+        assertTrue(compared >= 4, "only " + compared + " milestones compared");
         assertTrue(bad.isEmpty(), String.join("\n", bad));
     }
 

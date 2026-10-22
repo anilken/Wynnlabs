@@ -1,5 +1,5 @@
 {
-  "count": 11,
+  "count": 14,
   "items": [
     {
       "slot": "HELMET",
@@ -8,8 +8,8 @@
       "name": "Astigmatism",
       "tier": "LEGENDARY",
       "level": 48,
-      "score": 2.9,
-      "gain": 2.9,
+      "score": 5.3,
+      "gain": 5.3,
       "skillRequirements": {
         "STRENGTH": 12,
         "DEXTERITY": 12,
@@ -20,6 +20,19 @@
       "source": "NORMAL_MOB_DROP: Between level 44 and 52",
       "restriction": "NONE",
       "powderSlots": 3
+    },
+    {
+      "slot": "HELMET",
+      "rank": 2,
+      "tradable": true,
+      "name": "Wooly Cap",
+      "tier": "RARE",
+      "level": 45,
+      "score": 3.8,
+      "gain": 3.8,
+      "source": "MERCHANT: Isles of Fiction",
+      "restriction": "NONE",
+      "powderSlots": 2
     },
     {
       "slot": "CHESTPLATE",
@@ -43,8 +56,8 @@
       "name": "Solid Quartz Chestplate",
       "tier": "UNIQUE",
       "level": 43,
-      "score": 4.7,
-      "gain": 4.7,
+      "score": 3.2,
+      "gain": 3.2,
       "source": "MERCHANT: Llevigar",
       "restriction": "NONE",
       "powderSlots": 2,
@@ -58,8 +71,8 @@
       "name": "Bob's Battle Chestplate",
       "tier": "UNIQUE",
       "level": 45,
-      "score": 2.8,
-      "gain": 2.8,
+      "score": 1.7,
+      "gain": 1.7,
       "questRequirement": "Bob's Lost Soul",
       "source": "TRADE_MARKET",
       "restriction": "NONE",
@@ -74,8 +87,8 @@
       "name": "Kaleidoscope",
       "tier": "RARE",
       "level": 47,
-      "score": 12.9,
-      "gain": 12.9,
+      "score": 13.5,
+      "gain": 13.5,
       "skillRequirements": {
         "STRENGTH": 10,
         "DEXTERITY": 10,
@@ -94,8 +107,8 @@
       "name": "Marble",
       "tier": "RARE",
       "level": 48,
-      "score": 5.2,
-      "gain": 5.2,
+      "score": 6.0,
+      "gain": 6.0,
       "skillRequirements": {
         "STRENGTH": 8,
         "DEXTERITY": 8,
@@ -114,8 +127,8 @@
       "name": "Precious",
       "tier": "LEGENDARY",
       "level": 41,
-      "score": 4.1,
-      "gain": 4.1,
+      "score": 3.4,
+      "gain": 3.4,
       "source": "TRADE_MARKET",
       "restriction": "NONE",
       "powderSlots": 0,
@@ -129,8 +142,8 @@
       "name": "Quartron's Eye",
       "tier": "RARE",
       "level": 49,
-      "score": 1.7,
-      "gain": 1.7,
+      "score": 2.5,
+      "gain": 2.5,
       "questRequirement": "Rise of the Quartron",
       "source": "TRADE_MARKET",
       "restriction": "NONE",
@@ -145,8 +158,8 @@
       "name": "Horseshoe",
       "tier": "RARE",
       "level": 44,
-      "score": 1.7,
-      "gain": 1.7,
+      "score": 2.5,
+      "gain": 2.5,
       "skillRequirements": {
         "AGILITY": 15
       },
@@ -158,12 +171,12 @@
       "slot": "RING",
       "rank": 5,
       "tradable": true,
-      "name": "Blue Ornament",
+      "name": "Goblin Hex Focus",
       "tier": "RARE",
-      "level": 45,
-      "score": 1.6,
-      "gain": 1.6,
-      "source": "MERCHANT: Isles of Fiction",
+      "level": 42,
+      "score": 1.9,
+      "gain": 1.9,
+      "source": "MERCHANT: Goblin Village",
       "restriction": "NONE",
       "powderSlots": 0
     },
@@ -174,8 +187,8 @@
       "name": "Reminiscence",
       "tier": "LEGENDARY",
       "level": 41,
-      "score": 3.3,
-      "gain": 3.3,
+      "score": 4.1,
+      "gain": 4.1,
       "skillRequirements": {
         "INTELLIGENCE": 30,
         "DEFENCE": 10
@@ -183,6 +196,42 @@
       "source": "CAVE_LOOT_CHEST: Between level 37 and 45",
       "restriction": "NONE",
       "powderSlots": 0
+    },
+    {
+      "slot": "BRACELET",
+      "rank": 2,
+      "tradable": true,
+      "name": "Tarod's Search",
+      "tier": "RARE",
+      "level": 47,
+      "score": 3.4,
+      "gain": 3.4,
+      "skillRequirements": {
+        "INTELLIGENCE": 12,
+        "AGILITY": 12
+      },
+      "source": "CAVE_LOOT_CHEST: Between level 43 and 51",
+      "restriction": "NONE",
+      "powderSlots": 0
+    },
+    {
+      "slot": "RELIK",
+      "rank": 1,
+      "tradable": true,
+      "name": "Heavensent",
+      "tier": "LEGENDARY",
+      "level": 42,
+      "score": 10.3,
+      "gain": 10.3,
+      "skillRequirements": {
+        "INTELLIGENCE": 17,
+        "AGILITY": 17
+      },
+      "source": "TRADE_MARKET",
+      "restriction": "NONE",
+      "powderSlots": 2,
+      "price": 1166,
+      "priceText": "18 EB"
     }
   ],
   "note": "best gear per slot that beats what you wear, at most 5 levels ahead; score uses the rule weights with every stat at the middle of its range"
