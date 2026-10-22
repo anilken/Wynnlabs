@@ -316,67 +316,6 @@ final class Roadmap {
         return o * Math.max(0.5, 1 - Rules.sub("roadmap", "respecWeight", 0.2) * back / 100.0);
     }
 
-    /**
-     * After the slot-by-slot picks: each slot's best few (pools) are tried again in the whole
-     * set, with the points spread anew, and the best swap that helps by more than 0.2 % is
-     * taken, for up to rules.roadmap.jointPasses rounds. A swapped slot's row is made anew.
-     */
-    private static void refine(Map<String, Damage.Piece> build, Map<String, String> placed, Map<Slot, List<ItemData>> pools,
-            List<Gear> gear, int m, int earned, int[] prev, java.util.Set<String> fixed) {
-        Build.Eval cur = Build.allocate(build, m, earned);
-        if (cur == null) {
-            return;
-        }
-        double best = judged(cur, prev, m);
-        int passes = (int) Rules.sub("roadmap", "jointPasses", 1);
-        for (int pass = 0; pass < passes; pass++) {
-            boolean moved = false;
-            for (var e : pools.entrySet()) {
-                Slot t = e.getKey();
-                for (String slot : t == Slot.RING ? new String[] {"RING1", "RING2"} : new String[] {Build.slotOf(t, 0)}) {
-                    if (slot == null || fixed.contains(slot)) {
-                        continue;                       // a chosen item stays
-                    }
-                    Damage.Piece there = build.get(slot);
-                    ItemData pick = null;
-                    Build.Eval pickEval = null;
-                    double pickJ = best * 1.002;
-                    for (ItemData info : e.getValue()) {
-                        if (info.requirements().level() > m) {
-                            continue;
-                        }
-                        Damage.Piece cand = Damage.piece(info);
-                        if (there != null && there.key().equals(cand.key())
-                                || Exclusive.clash(build, slot, Exclusive.group(info)) != null) {
-                            continue;
-                        }
-                        Build.Eval ev = fullEval(build, slot, cand, m, earned);
-                        if (ev == null) {
-                            continue;
-                        }
-                        double j = judged(ev, prev, m);
-                        if (j > pickJ) {
-                            pickJ = j;
-                            pick = info;
-                            pickEval = ev;
-                        }
-                    }
-                    if (pick == null) {
-                        continue;
-                    }
-                    double gain = (pickJ / best - 1) * 100;
-                    trace(m, t, pick, String.format(java.util.Locale.ROOT, "joint swap %.2f%% in %s", gain, slot));
-                    swapRow(build, placed, gear, pools, slot, t, pick, pickEval, gain, m, earned);
-                    best = pickJ;
-                    moved = true;
-                }
-            }
-            if (!moved) {
-                break;
-            }
-        }
-    }
-
     /** Puts {@code pick} into a build slot and makes the row it shows (the pick that held it, or a new one). */
     private static void swapRow(Map<String, Damage.Piece> build, Map<String, String> placed, List<Gear> gear,
             Map<Slot, List<ItemData>> pools, String slot, Slot t, ItemData pick, Build.Eval after, double gain, int m, int earned) {
@@ -437,57 +376,708 @@ final class Roadmap {
 
     private record BeamState(Map<String, Damage.Piece> build, int[] alloc, double score) {}
 
+    /** A whole set with its skill points and its judged score. */
+    record Scored(Map<String, Damage.Piece> set, Build.Eval eval, double j) {}
+
     /**
-     * A wide search over whole sets, after build-solver's beam (RawFish69/build-solver, written
-     * anew): from the milestone's starting set, slot by slot in BEAM_ORDER, every kept partial
-     * set tries each of the slot's best rules.roadmap.jointPool (40) or keeps what it has; the
-     * rules.roadmap.beamWidth (200) best by a quick score go on (the weapon spreads the points
-     * anew, the rest move only what the piece needs). The best few at the end
-     * (rules.roadmap.beamFinal, 40) are judged with the points spread anew. When that beats the
-     * slot-by-slot set, its slots replace the picks.
+     * What one milestone's search works from: the set it started with (what you wear, or the last
+     * milestone's), each slot type's best few ({@code pools}, ranked against the slot-by-slot
+     * build) and everything the milestone allows there ({@code wide}), the sets it can put
+     * together with what you have and could buy of them, what you wear now, the chosen items'
+     * slots, the level, the points earned, the last milestone's spread, and the pieces made so far.
      */
-    private static void beamSearch(Map<String, Damage.Piece> start, Map<String, Damage.Piece> build, Map<String, String> placed,
-            Map<Slot, List<ItemData>> pools, List<Gear> gear, int m, int earned, int[] prev, java.util.Set<String> fixed) {
-        Build.Eval s0 = Build.allocate(start, m, earned);
-        Build.Eval cur = Build.allocate(build, m, earned);
+    record Ctx(Map<String, Damage.Piece> start, Map<Slot, List<ItemData>> pools, Map<Slot, List<ItemData>> wide,
+            Map<String, List<ItemData>> sets, Map<String, Integer> owned, java.util.Set<String> buyable,
+            Map<String, Damage.Piece> worn, java.util.Set<String> fixed, int m, int earned, int[] prev,
+            Map<String, Damage.Piece> pieces) {
+
+        /** The item's piece, made once a milestone (the search tries each many times). */
+        Damage.Piece piece(ItemData info) {
+            return pieces.computeIfAbsent(info.name(), n -> Damage.piece(info));
+        }
+    }
+
+    /** Tests only: told each milestone's search result, with the slot pools its last pass tried. */
+    static volatile Searched searched;
+
+    interface Searched {
+        void accept(int m, int earned, int[] prev, Map<String, List<Damage.Piece>> pools, Scored result);
+    }
+
+    /**
+     * The milestone's search over whole sets, after the slot-by-slot picks: the beam
+     * ({@link #beamBest}), then a local search ({@link #localSearch}) from many starts
+     * ({@link #starts}): the beam's best few, whole sets put on or taken off, the last milestone's
+     * set, what you wear, each slot's best, and a set built around each strong weapon (Mythics and
+     * the ones you have among them). The best set it ends on replaces the picks, a row for each
+     * slot it changes, when it beats them by more than 0.2 %. Kept on disk by its inputs
+     * ({@link BeamCache}): a map that nothing changed for skips all of it.
+     */
+    private static void search(Ctx c, Map<String, Damage.Piece> build, Map<String, String> placed, List<Gear> gear) {
+        Build.Eval s0 = Build.allocate(c.start(), c.m(), c.earned());
+        Build.Eval cur = Build.allocate(build, c.m(), c.earned());
         if (s0 == null || cur == null) {
             return;
         }
         // the same inputs give the same set: kept on disk per character, so a map that
-        // nothing changed for comes back in seconds after a restart instead of 20 s
-        String ck = beamKey(start, build, pools, m, earned, prev, fixed);
-        Map<String, Damage.Piece> chosen;
+        // nothing changed for comes back in seconds after a restart
+        String ck = searchKey(c, build);
+        Map<String, Damage.Piece> chosen = null;
+        boolean hit = false;
         if (BeamCache.has(ck)) {
-            chosen = BeamCache.get(ck, start, build);
-            if (chosen == null && !BeamCache.isNone(ck)) {
-                chosen = beamBest(start, build, pools, m, earned, prev, s0, cur, fixed);
-                BeamCache.put(ck, chosen);
+            List<Map<String, Damage.Piece>> from = new ArrayList<>(List.of(c.start(), build));
+            if (c.worn() != null) {
+                from.add(c.worn());
+            }
+            chosen = BeamCache.get(ck, from);
+            hit = chosen != null || BeamCache.isNone(ck);
+        }
+        TriConsumer tc = trace;
+        if (hit) {
+            if (tc != null) {
+                tc.accept(c.m(), Slot.RING, "cache hit: the search's set comes from an earlier map ("
+                        + (chosen == null ? "none beat the picks" : setKey(chosen)) + ")");
             }
         } else {
-            chosen = beamBest(start, build, pools, m, earned, prev, s0, cur, fixed);
+            Scored best = searchBest(c, build, cur, s0);
+            double from = judged(cur, c.prev(), c.m());
+            if (best.j() > from * 1.002 && !setKey(best.set()).equals(setKey(build))) {
+                chosen = best.set();
+                note(c.m(), String.format(java.util.Locale.ROOT, "search set %+.2f%% over the slot picks",
+                        (best.j() / from - 1) * 100));
+            }
             BeamCache.put(ck, chosen);
         }
-        if (chosen == null) {
-            return;
+        if (chosen != null) {
+            applySet(chosen, c.start(), build, placed, c.pools(), gear, c.m(), c.earned(), c.prev());
         }
-        applySet(chosen, start, build, placed, pools, gear, m, earned, prev);
     }
 
-    /** What a milestone's beam depends on: the sets it starts from, the pools, the points before and the rules. */
-    private static String beamKey(Map<String, Damage.Piece> start, Map<String, Damage.Piece> build,
-            Map<Slot, List<ItemData>> pools, int m, int earned, int[] prev, java.util.Set<String> fixed) {
+    /** The search itself: the best set it finds ({@code build} itself when nothing beats it). */
+    static Scored searchBest(Ctx c, Map<String, Damage.Piece> build, Build.Eval cur, Build.Eval s0) {
+        int m = c.m();
+        double from = judged(cur, c.prev(), m);
+        long t = Perf.start();
+        List<Scored> beam = beamBest(c, build, s0);
+        Perf.end("roadmap.beam", t);
+        Scored inc = new Scored(new LinkedHashMap<>(build), cur, from);
+        if (!beam.isEmpty() && beam.get(0).j() > from * 1.002) {
+            inc = beam.get(0);
+            note(m, String.format(java.util.Locale.ROOT, "beam set %+.2f%% over the slot picks", (inc.j() / from - 1) * 100));
+        }
+        if (c.fixed().isEmpty()) {
+            inc = exactSearch(c, inc);              // its ring pairs know no chosen hand
+        }
+        t = Perf.start();
+        Map<String, List<Damage.Piece>> main = slotPools(c);
+        Scored first = localSearch(c, inc.set(), main);
+        if (first != null && better(first, inc)) {
+            note(m, String.format(java.util.Locale.ROOT, "local search %+.2f%% from the beam's set", (first.j() / inc.j() - 1) * 100));
+            inc = first;
+        }
+        Perf.end("roadmap.local", t);
+        // the other starts, each searched to its own end; the best end wins
+        t = Perf.start();
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        seen.add(setKey(build));
+        seen.add(setKey(inc.set()));
+        inc = runStarts(c, starts(c, inc, beam, build, main, seen), inc, main);
+        Perf.end("roadmap.starts", t);
+        // whole sets again from where that ended (an armour set, then one of accessories)
+        t = Perf.start();
+        int rounds = (int) Rules.sub("roadmap", "setRounds", 3);
+        for (int round = 1; round < rounds; round++) {
+            List<Start> more = new ArrayList<>();
+            for (Seed s : setSeeds(inc.set(), inc.eval(), c.pools(), c.sets(), c.owned(), c.buyable(), c.fixed(), m,
+                    c.earned(), c.prev())) {
+                addStart(more, seen, c, build, "set (round " + (round + 1) + ")", s.build());
+            }
+            if (more.isEmpty()) {
+                break;
+            }
+            Scored was = inc;
+            inc = runStarts(c, more, inc, main);
+            if (was == inc) {
+                break;
+            }
+        }
+        Perf.end("roadmap.sets", t);
+        // and every single swap of the slot pools judged in full: what the quick scores missed
+        t = Perf.start();
+        inc = oneOpt(c, inc, main);
+        Perf.end("roadmap.local", t);
+        Searched hook = searched;
+        if (hook != null) {
+            hook.accept(m, c.earned(), c.prev(), main, inc);
+        }
+        return inc;
+    }
+
+    /** A trace line for the milestone's search. */
+    private static void note(int m, String line) {
+        TriConsumer tc = trace;
+        if (tc != null) {
+            tc.accept(m, Slot.RING, line);
+        }
+    }
+
+    /** {@code a} beats {@code b}: a higher score, or the same and the first set key (so any order of work ends the same). */
+    private static boolean better(Scored a, Scored b) {
+        return a.j() > b.j() || a.j() == b.j() && setKey(a.set()).compareTo(setKey(b.set())) < 0;
+    }
+
+    /**
+     * Each free slot's first rules.roadmap.localPool (12) of its pool as pieces, the level's
+     * only, in BEAM_ORDER: the slots the local search tries (the two rings share one).
+     */
+    private static Map<String, List<Damage.Piece>> slotPools(Ctx c) {
+        int n = (int) Rules.sub("roadmap", "localPool", 12);
+        Map<String, List<Damage.Piece>> out = new LinkedHashMap<>();
+        for (String slot : BEAM_ORDER) {
+            if (c.fixed().contains(slot)) {
+                continue;                                   // a chosen item stays
+            }
+            Slot t = slot.startsWith("RING") ? Slot.RING : slot.equals("WEAPON") ? null : Slot.valueOf(slot);
+            List<ItemData> pool = t == null ? weaponPool(c.pools()) : c.pools().get(t);
+            List<Damage.Piece> top = new ArrayList<>();
+            for (ItemData info : pool == null ? List.<ItemData>of() : pool) {
+                if (top.size() >= n) {
+                    break;
+                }
+                if (info.requirements().level() <= c.m()) {
+                    top.add(c.piece(info));
+                }
+            }
+            if (!top.isEmpty()) {
+                out.put(slot, top);
+            }
+        }
+        return out;
+    }
+
+    /** A move the local search weighs: the set after it, its quick score, its spread, and whether that spread is the full one. */
+    private record Move(Map<String, Damage.Piece> set, double quick, Build.Eval eval, boolean exact) {}
+
+    /**
+     * From {@code start}, the best move until none helps by more than 0.2 %: any one slot to one
+     * of its first rules.roadmap.localPool (12), and once no single swap helps, any two slots at
+     * once to their first rules.roadmap.localPairPool (8) each (a weapon of another element with
+     * the armour it needs, or two pieces that only meet their skill points together). Moves are
+     * scored quickly (only the points a piece needs move, from the spread of the swap before it),
+     * the best rules.roadmap.localJudge (50) and every weapon change judged with the points
+     * spread anew. Null when the start cannot be worn. Deterministic.
+     */
+    private static Scored localSearch(Ctx c, Map<String, Damage.Piece> start, Map<String, List<Damage.Piece>> pools) {
+        Map<String, Damage.Piece> b = new LinkedHashMap<>(start);
+        Build.Eval ev = Build.allocate(b, c.m(), c.earned());
+        if (ev == null) {
+            return null;
+        }
+        Scored cur = new Scored(b, ev, judged(ev, c.prev(), c.m()));
+        int one = (int) Rules.sub("roadmap", "localPool", 12);
+        int two = (int) Rules.sub("roadmap", "localPairPool", 8);
+        int rounds = (int) Rules.sub("roadmap", "localRounds", 40);
+        for (int round = 0; round < rounds; round++) {
+            Scored next = bestMove(c, cur, pools, one, 0);
+            if (next == null && two > 0) {
+                next = bestMove(c, cur, pools, one, two);
+            }
+            if (next == null) {
+                break;
+            }
+            cur = next;
+        }
+        return cur;
+    }
+
+    /** The best move from {@code cur} that helps by more than 0.2 %, or null: single swaps, and pairs when {@code two} > 0. */
+    private static Scored bestMove(Ctx c, Scored cur, Map<String, List<Damage.Piece>> pools, int one, int two) {
+        int m = c.m();
+        int earned = c.earned();
+        Map<String, Damage.Piece> b = cur.set();
+        List<String> free = new ArrayList<>(pools.keySet());
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        seen.add(setKey(b));
+        List<Move> moves = new ArrayList<>();
+        // slot + piece key → the single swap, whose spread the pairs start from
+        Map<String, Move> singles = new HashMap<>();
+        int reach = Math.max(one, two);
+        for (String slot : free) {
+            List<Damage.Piece> pool = pools.get(slot);
+            for (int i = 0; i < pool.size() && i < reach; i++) {
+                Damage.Piece p = pool.get(i);
+                if (same(b.get(slot), p)) {
+                    continue;
+                }
+                Map<String, Damage.Piece> s = with(b, slot, p);
+                if (clashes(s)) {
+                    continue;
+                }
+                tick();
+                // a weapon sets the element: its points are spread anew, the rest move what they need
+                boolean weapon = slot.equals("WEAPON");
+                Build.Eval e = weapon ? Build.allocate(s, m, earned) : Build.tryEval(b, cur.eval().allocation(), slot, p, m, earned);
+                if (e == null) {
+                    continue;
+                }
+                Move mv = new Move(s, judged(e, c.prev(), m), e, weapon);
+                singles.put(slot + "\n" + p.key(), mv);
+                if (i < one && seen.add(setKey(s))) {
+                    moves.add(mv);
+                }
+            }
+        }
+        if (two > 0) {
+            for (int x = 0; x < free.size(); x++) {
+                String sa = free.get(x);
+                List<Damage.Piece> pa = pools.get(sa);
+                for (int i = 0; i < pa.size() && i < two; i++) {
+                    Damage.Piece a = pa.get(i);
+                    if (same(b.get(sa), a)) {
+                        continue;
+                    }
+                    // one that cannot be worn alone may fit with the other (it gives the points)
+                    Move single = singles.get(sa + "\n" + a.key());
+                    Map<String, Damage.Piece> base = with(b, sa, a);
+                    int[] alloc = single != null ? single.eval().allocation() : cur.eval().allocation();
+                    for (int y = x + 1; y < free.size(); y++) {
+                        String sb = free.get(y);
+                        List<Damage.Piece> pb = pools.get(sb);
+                        for (int k = 0; k < pb.size() && k < two; k++) {
+                            Damage.Piece q = pb.get(k);
+                            if (same(base.get(sb), q)) {
+                                continue;
+                            }
+                            Map<String, Damage.Piece> s = with(base, sb, q);
+                            if (!seen.add(setKey(s)) || clashes(s)) {
+                                continue;
+                            }
+                            tick();
+                            Build.Eval e = Build.tryEval(base, alloc, sb, q, m, earned);
+                            if (e != null) {
+                                moves.add(new Move(s, judged(e, c.prev(), m), e, false));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // the best few by the quick score, and every weapon change, judged with the points spread anew
+        moves.sort((p, q) -> {
+            int by = Double.compare(q.quick(), p.quick());
+            return by != 0 ? by : setKey(p.set()).compareTo(setKey(q.set()));
+        });
+        int judge = (int) Rules.sub("roadmap", "localJudge", 50);
+        Scored best = null;
+        int judgedN = 0;
+        for (Move mv : moves) {
+            if (!mv.exact() && judgedN++ >= judge) {
+                continue;
+            }
+            tick();
+            Build.Eval e = mv.exact() ? mv.eval() : Build.allocate(mv.set(), m, earned);
+            if (e == null) {
+                continue;
+            }
+            Scored sc = new Scored(mv.set(), e, judged(e, c.prev(), m));
+            if (sc.j() > cur.j() * 1.002 && (best == null || better(sc, best))) {
+                best = sc;
+            }
+        }
+        return best;
+    }
+
+    /**
+     * Every single swap of the slot pools judged in full until none helps by more than 0.2 %,
+     * each one found searched on ({@link #localSearch}): the quick scores rank a piece by the
+     * points it needs, and a piece that pays only with the points spread anew can sit below the
+     * ones judged.
+     */
+    private static Scored oneOpt(Ctx c, Scored inc, Map<String, List<Damage.Piece>> pools) {
+        int one = (int) Rules.sub("roadmap", "localPool", 12);
+        for (int pass = 0; pass < 8; pass++) {
+            Scored best = null;
+            for (var e : pools.entrySet()) {
+                String slot = e.getKey();
+                List<Damage.Piece> pool = e.getValue();
+                for (int i = 0; i < pool.size() && i < one; i++) {
+                    Damage.Piece p = pool.get(i);
+                    if (same(inc.set().get(slot), p)) {
+                        continue;
+                    }
+                    Map<String, Damage.Piece> s = with(inc.set(), slot, p);
+                    if (clashes(s)) {
+                        continue;
+                    }
+                    tick();
+                    Build.Eval ev = Build.allocate(s, c.m(), c.earned());
+                    if (ev == null) {
+                        continue;
+                    }
+                    Scored sc = new Scored(s, ev, judged(ev, c.prev(), c.m()));
+                    if (sc.j() > inc.j() * 1.002 && (best == null || better(sc, best))) {
+                        best = sc;
+                    }
+                }
+            }
+            if (best == null) {
+                return inc;
+            }
+            note(c.m(), String.format(java.util.Locale.ROOT, "local swap %+.2f%% judged in full", (best.j() / inc.j() - 1) * 100));
+            Scored on = localSearch(c, best.set(), pools);
+            inc = on != null && better(on, best) ? on : best;
+        }
+        return inc;
+    }
+
+    private static boolean same(Damage.Piece there, Damage.Piece p) {
+        return there != null && there.key().equals(p.key());
+    }
+
+    private static Map<String, Damage.Piece> with(Map<String, Damage.Piece> b, String slot, Damage.Piece p) {
+        Map<String, Damage.Piece> s = new LinkedHashMap<>(b);
+        s.put(slot, p);
+        return s;
+    }
+
+    /**
+     * Where a local search starts: a set as it is, or (with {@code weapon}) a set built around
+     * that weapon ({@link #aroundWeapon}), and why, for the trace.
+     */
+    private record Start(String why, Map<String, Damage.Piece> set, ItemData weapon) {}
+
+    /** Adds a start unless it is one already tried; the chosen items stay in their slots. */
+    private static void addStart(List<Start> out, java.util.Set<String> seen, Ctx c, Map<String, Damage.Piece> build,
+            String why, Map<String, Damage.Piece> set) {
+        if (set == null) {
+            return;
+        }
+        Map<String, Damage.Piece> s = new LinkedHashMap<>(set);
+        for (String f : c.fixed()) {
+            s.put(f, build.get(f));
+        }
+        if (!clashes(s) && seen.add(setKey(s))) {
+            out.add(new Start(why, s, null));
+        }
+    }
+
+    /**
+     * The starts besides the beam's best, in a fixed order: the beam's next best
+     * (rules.roadmap.beamStarts, 4), every whole set put on or taken off ({@link #setSeeds}), the
+     * last milestone's set, what you wear, each slot's best piece, and a set around each of the
+     * strongest weapons ({@link #weaponStarts}).
+     */
+    private static List<Start> starts(Ctx c, Scored inc, List<Scored> beam, Map<String, Damage.Piece> build,
+            Map<String, List<Damage.Piece>> main, java.util.Set<String> seen) {
+        List<Start> out = new ArrayList<>();
+        int more = (int) Rules.sub("roadmap", "beamStarts", 4);
+        for (int i = 0, n = 0; i < beam.size() && n < more; i++) {
+            int had = out.size();
+            addStart(out, seen, c, build, "beam #" + (i + 1), beam.get(i).set());
+            n += out.size() - had;
+        }
+        for (Seed s : setSeeds(inc.set(), inc.eval(), c.pools(), c.sets(), c.owned(), c.buyable(), c.fixed(), c.m(),
+                c.earned(), c.prev())) {
+            addStart(out, seen, c, build, "set", s.build());
+        }
+        addStart(out, seen, c, build, "last milestone", c.start());
+        addStart(out, seen, c, build, "worn", c.worn());
+        Map<String, Damage.Piece> fresh = new LinkedHashMap<>(inc.set());
+        main.forEach((slot, pool) -> fresh.put(slot, pool.get(0)));
+        addStart(out, seen, c, build, "each slot's best", fresh);
+        for (ItemData w : weaponStarts(c, inc)) {
+            out.add(new Start("weapon " + w.name(), inc.set(), w));
+        }
+        return out;
+    }
+
+    /**
+     * The weapons a set is built around: the first rules.roadmap.weaponStarts of the weapon pool
+     * (6 from the endgame level on, 3 before), then every Mythic and every weapon you have that
+     * the milestone allows, at most rules.roadmap.weaponStartsMax (16). A weapon judged as a
+     * swap into armour made for another element mostly loses, Mythics most of all.
+     */
+    private static List<ItemData> weaponStarts(Ctx c, Scored inc) {
+        if (c.fixed().contains("WEAPON")) {
+            return List.of();
+        }
+        int k = (int) (endgame(c.m()) ? Rules.sub("roadmap", "weaponStarts", 6) : Rules.sub("roadmap", "weaponStartsEarly", 3));
+        int max = (int) Rules.sub("roadmap", "weaponStartsMax", 16);
+        Damage.Piece held = inc.set().get("WEAPON");
+        java.util.Set<String> names = new java.util.HashSet<>();
+        if (held != null) {
+            names.add(held.name().toLowerCase(java.util.Locale.ROOT));
+        }
+        List<ItemData> out = new ArrayList<>();
+        List<ItemData> ranked = weaponPool(c.pools());
+        for (ItemData info : ranked == null ? List.<ItemData>of() : ranked) {
+            if (out.size() >= k) {
+                break;
+            }
+            if (info.requirements().level() <= c.m() && names.add(info.name().toLowerCase(java.util.Locale.ROOT))) {
+                out.add(info);
+            }
+        }
+        List<ItemData> all = new ArrayList<>();
+        c.wide().forEach((t, l) -> {
+            if (t.isWeapon()) {
+                all.addAll(l);
+            }
+        });
+        for (ItemData info : all) {
+            if (out.size() >= max) {
+                break;
+            }
+            boolean mythic = info.tier().name().equals("MYTHIC");
+            if ((mythic || c.owned().containsKey(info.name())) && info.requirements().level() <= c.m()
+                    && names.add(info.name().toLowerCase(java.util.Locale.ROOT))) {
+                out.add(info);
+            }
+        }
+        return out;
+    }
+
+    /**
+     * A set built around {@code weapon}: it goes into {@code base}, the pieces it cannot be worn
+     * with come off ({@link Build#fitAround}), then slot by slot in BEAM_ORDER every piece the
+     * milestone allows there ({@code wide}) is ranked with that weapon in and the best goes in.
+     * Each slot's ranking (its first rules.roadmap.localPool) is the pool the local search tries
+     * from there, so armour made for this weapon is not cut by a ranking made for another.
+     * Null when it cannot be worn.
+     */
+    private static Scored aroundWeapon(Ctx c, Map<String, Damage.Piece> base, ItemData weapon,
+            Map<String, List<Damage.Piece>> main, Map<String, List<Damage.Piece>> pools) {
+        int m = c.m();
+        int earned = c.earned();
+        Map<String, Damage.Piece> b = new LinkedHashMap<>(base);
+        b.put("WEAPON", c.piece(weapon));
+        java.util.Set<String> keep = new java.util.HashSet<>(c.fixed());
+        keep.add("WEAPON");
+        Build.fitAround(b, keep, earned);
+        // a weapon that asks for more than 100 in a skill (a Mythic's 110 Strength) is worn only
+        // with gear that gives it: the piece that brings the set closest to wearable goes in
+        // until it is (the first such in the milestone's order on a tie)
+        for (int k = 0; k < BEAM_ORDER.length && Build.shortfall(b, earned) > 0; k++) {
+            int now = Build.shortfall(b, earned);
+            String bestSlot = null;
+            Damage.Piece bestPiece = null;
+            for (String slot : BEAM_ORDER) {
+                if (keep.contains(slot)) {
+                    continue;
+                }
+                Slot t = slot.startsWith("RING") ? Slot.RING : Slot.valueOf(slot);
+                for (ItemData info : c.wide().getOrDefault(t, List.of())) {
+                    if (info.requirements().level() > m || Exclusive.clash(b, slot, Exclusive.group(info)) != null) {
+                        continue;
+                    }
+                    int s = Build.shortfall(with(b, slot, c.piece(info)), earned);
+                    if (s < now) {
+                        now = s;
+                        bestSlot = slot;
+                        bestPiece = c.piece(info);
+                    }
+                }
+            }
+            if (bestSlot == null) {
+                return null;
+            }
+            b.put(bestSlot, bestPiece);
+        }
+        Build.Eval ev = Build.allocate(b, m, earned);
+        if (ev == null) {
+            return null;
+        }
+        int n = (int) Rules.sub("roadmap", "localPool", 12);
+        if (main.containsKey("WEAPON")) {
+            pools.put("WEAPON", main.get("WEAPON"));
+        }
+        for (String slot : BEAM_ORDER) {
+            if (slot.equals("WEAPON") || c.fixed().contains(slot)) {
+                continue;
+            }
+            Slot t = slot.startsWith("RING") ? Slot.RING : Slot.valueOf(slot);
+            double hereJ = b.get(slot) == null ? Double.NEGATIVE_INFINITY : judged(ev, c.prev(), m);
+            List<Object[]> ranked = new ArrayList<>();       // {piece, judged quickly}
+            for (ItemData info : c.wide().getOrDefault(t, List.of())) {
+                if (info.requirements().level() > m) {
+                    continue;
+                }
+                Damage.Piece p = c.piece(info);
+                if (same(b.get(slot), p)) {
+                    ranked.add(new Object[] {p, hereJ});
+                    continue;
+                }
+                if (Exclusive.clash(b, slot, Exclusive.group(info)) != null) {
+                    continue;
+                }
+                tick();
+                Build.Eval e = Build.tryEval(b, ev.allocation(), slot, p, m, earned);
+                if (e != null) {
+                    ranked.add(new Object[] {p, judged(e, c.prev(), m)});
+                }
+            }
+            ranked.sort((x, y) -> {
+                int by = Double.compare((double) y[1], (double) x[1]);
+                return by != 0 ? by : ((Damage.Piece) x[0]).key().compareTo(((Damage.Piece) y[0]).key());
+            });
+            List<Damage.Piece> top = new ArrayList<>();
+            for (int i = 0; i < ranked.size() && i < n; i++) {
+                top.add((Damage.Piece) ranked.get(i)[0]);
+            }
+            if (!top.isEmpty()) {
+                pools.put(slot, top);
+            }
+            if (!ranked.isEmpty() && (double) ranked.get(0)[1] > hereJ && !same(b.get(slot), top.get(0))) {
+                Map<String, Damage.Piece> s = with(b, slot, top.get(0));
+                Build.Eval e = Build.allocate(s, m, earned);
+                if (e != null) {
+                    b = s;
+                    ev = e;
+                }
+            }
+        }
+        return new Scored(b, ev, judged(ev, c.prev(), m));
+    }
+
+    /**
+     * Searches each start to its end on the low-priority threads and folds the ends in the
+     * starts' order, so the result never depends on which thread was quicker. A start whose own
+     * score, raised by rules.roadmap.startReach (10 %), still cannot reach the best so far is
+     * not searched (the bar is the best before this round, the same however the work is split).
+     */
+    private static Scored runStarts(Ctx c, List<Start> starts, Scored inc, Map<String, List<Damage.Piece>> main) {
+        if (starts.isEmpty()) {
+            return inc;
+        }
+        double bar = inc.j();
+        double reach = Rules.sub("roadmap", "startReach", 0.10);
+        List<java.util.function.Supplier<Scored>> work = new ArrayList<>();
+        for (Start s : starts) {
+            work.add(() -> {
+                Map<String, List<Damage.Piece>> pools = main;
+                Scored at;
+                if (s.weapon() != null) {
+                    pools = new LinkedHashMap<>();
+                    at = aroundWeapon(c, s.set(), s.weapon(), main, pools);
+                } else {
+                    Build.Eval e = Build.allocate(s.set(), c.m(), c.earned());
+                    at = e == null ? null : new Scored(s.set(), e, judged(e, c.prev(), c.m()));
+                }
+                if (at == null) {
+                    note(c.m(), "start " + s.why() + ": cannot be worn");
+                    return null;
+                }
+                if (at.j() * (1 + reach) < bar) {
+                    note(c.m(), String.format(java.util.Locale.ROOT, "start %s: %+.2f%%, too far behind to search",
+                            s.why(), (at.j() / bar - 1) * 100));
+                    return at;
+                }
+                Scored end = localSearch(c, at.set(), pools);
+                note(c.m(), String.format(java.util.Locale.ROOT, "start %s: %+.2f%%, searched to %+.2f%%", s.why(),
+                        (at.j() / bar - 1) * 100, end == null ? Double.NaN : (end.j() / bar - 1) * 100));
+                return end == null ? at : end;
+            });
+        }
+        List<Scored> ends = inParallel(work);
+        Scored best = inc;
+        for (int i = 0; i < ends.size(); i++) {
+            Scored e = ends.get(i);
+            if (e != null && e.j() > best.j() * 1.002 && better(e, best)) {
+                note(c.m(), String.format(java.util.Locale.ROOT, "start %s wins %+.2f%%", starts.get(i).why(),
+                        (e.j() / best.j() - 1) * 100));
+                best = e;
+            }
+        }
+        return best;
+    }
+
+    /**
+     * Runs the work on rules.roadmap.searchThreads low-priority threads (a third of the cores, at
+     * most 8) with this run's job, memo and tuning, and gives the results in the work's order.
+     */
+    private static <T> List<T> inParallel(List<java.util.function.Supplier<T>> work) {
+        int threads = (int) Rules.sub("roadmap", "searchThreads",
+                Math.max(1, Math.min(8, Runtime.getRuntime().availableProcessors() / 3)));
+        List<T> out = new ArrayList<>();
+        if (threads <= 1 || work.size() <= 1) {
+            work.forEach(w -> out.add(w.get()));
+            return out;
+        }
+        Job job = JOB.get();
+        Build.Memo memo = Build.memo();
+        Tuning.Choice tuned = Tuning.active();
+        java.util.concurrent.ForkJoinPool fj = lowPriority(threads, "wynnlabs-search");
+        try {
+            List<java.util.concurrent.Future<T>> running = new ArrayList<>();
+            for (var w : work) {
+                running.add(fj.submit(() -> {
+                    JOB.set(job);
+                    try {
+                        return Tuning.with(tuned, () -> Build.withMemo(memo, w));
+                    } finally {
+                        JOB.remove();
+                    }
+                }));
+            }
+            for (var f : running) {
+                out.add(f.get());
+            }
+            return out;
+        } catch (java.util.concurrent.ExecutionException e) {
+            if (e.getCause() instanceof RuntimeException r) {
+                throw r;                                    // Cancelled among them
+            }
+            throw new IllegalStateException(e.getCause());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new Cancelled();
+        } finally {
+            fj.shutdownNow();
+        }
+    }
+
+    /** A pool of daemon threads at the lowest priority, so the game keeps its share. */
+    private static java.util.concurrent.ForkJoinPool lowPriority(int threads, String name) {
+        return new java.util.concurrent.ForkJoinPool(Math.max(1, threads), fp -> {
+            var th = java.util.concurrent.ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(fp);
+            th.setPriority(Thread.MIN_PRIORITY);
+            th.setDaemon(true);
+            th.setName(name);
+            return th;
+        }, null, false);
+    }
+
+    /**
+     * What a milestone's search depends on: the sets it starts from, the pools and everything the
+     * milestone allows, the sets it can put on with what you have of them, what you wear, the
+     * points before and the rules.
+     */
+    private static String searchKey(Ctx c, Map<String, Damage.Piece> build) {
         StringBuilder k = new StringBuilder();
-        k.append(m).append('|').append(earned).append('|').append(java.util.Arrays.toString(prev)).append('|');
-        k.append(setKey(start)).append('|').append(setKey(build)).append('|');
-        pools.forEach((t, l) -> {
+        k.append(c.m()).append('|').append(c.earned()).append('|').append(java.util.Arrays.toString(c.prev())).append('|');
+        k.append(setKey(c.start())).append('|').append(setKey(build)).append('|');
+        c.pools().forEach((t, l) -> {
             k.append(t.name()).append(':');
             l.forEach(i -> k.append(i.name()).append(','));
         });
+        k.append("|wide:");
+        c.wide().forEach((t, l) -> {
+            k.append(t.name()).append(':');
+            l.forEach(i -> k.append(i.name()).append(','));
+        });
+        k.append("|sets:");
+        c.sets().forEach((n, l) -> {
+            k.append(n).append('{');
+            l.forEach(i -> k.append(i.name()).append(c.buyable().contains(i.name()) ? "$" : "")
+                    .append(c.owned().getOrDefault(i.name(), 0)).append(','));
+            k.append('}');
+        });
+        k.append("|worn:").append(c.worn() == null ? "-" : setKey(c.worn()));
         k.append('|').append(Rules.hash());
         // the scoring model: results an older one chose are not reused
         k.append("|model:").append(BeamCache.modelVersion());
-        if (!fixed.isEmpty()) {
-            k.append("|fixed:").append(fixed);      // the chosen items' slots; without any the key is as it was
+        if (!c.fixed().isEmpty()) {
+            k.append("|fixed:").append(c.fixed());      // the chosen items' slots
         }
         Tuning.Choice tuned = Tuning.active();
         if (tuned != null) {
@@ -496,18 +1086,27 @@ final class Roadmap {
         return Integer.toHexString(k.toString().hashCode()) + Integer.toHexString(k.reverse().toString().hashCode());
     }
 
-    /** The beam itself: the best set it finds, or null when none beats the slot picks. */
-    private static Map<String, Damage.Piece> beamBest(Map<String, Damage.Piece> start, Map<String, Damage.Piece> build,
-            Map<Slot, List<ItemData>> pools, int m, int earned, int[] prev, Build.Eval s0, Build.Eval cur,
-            java.util.Set<String> fixed) {
+    /**
+     * A wide search over whole sets, after build-solver's beam (RawFish69/build-solver, written
+     * anew): from the milestone's starting set, slot by slot in BEAM_ORDER, every kept partial
+     * set tries each of the slot's best rules.roadmap.jointPool (40) or keeps what it has; the
+     * rules.roadmap.beamWidth (200) best by a quick score go on (the weapon spreads the points
+     * anew, the rest move only what the piece needs), no weapon holding more than a quarter of
+     * them, so a weapon of another element keeps its sets to the end. The best few at the end
+     * (rules.roadmap.beamFinal, 40) are judged with the points spread anew: those, best first.
+     */
+    private static List<Scored> beamBest(Ctx c, Map<String, Damage.Piece> build, Build.Eval s0) {
+        int m = c.m();
+        int earned = c.earned();
+        int[] prev = c.prev();
         int width = (int) Rules.sub("roadmap", "beamWidth", 200);
-        Map<String, Damage.Piece> pieces = new HashMap<>();
-        List<BeamState> beam = new ArrayList<>(List.of(new BeamState(new LinkedHashMap<>(start), s0.allocation(),
+        int perWeapon = Math.max(1, width / 4);
+        List<BeamState> beam = new ArrayList<>(List.of(new BeamState(new LinkedHashMap<>(c.start()), s0.allocation(),
                 judged(s0, prev, m))));
         for (String slot : BEAM_ORDER) {
             Slot t = slot.startsWith("RING") ? Slot.RING : slot.equals("WEAPON") ? null : Slot.valueOf(slot);
-            List<ItemData> pool = t == null ? weaponPool(pools) : pools.get(t);
-            if (pool == null || pool.isEmpty() || fixed.contains(slot)) {
+            List<ItemData> pool = t == null ? weaponPool(c.pools()) : c.pools().get(t);
+            if (pool == null || pool.isEmpty() || c.fixed().contains(slot)) {
                 continue;                                           // a chosen item stays
             }
             List<BeamState> next = new ArrayList<>(beam);          // keeping the slot as it is
@@ -517,7 +1116,7 @@ final class Roadmap {
                     if (info.requirements().level() > m) {
                         continue;
                     }
-                    Damage.Piece cand = pieces.computeIfAbsent(info.name(), n -> Damage.piece(info));
+                    Damage.Piece cand = c.piece(info);
                     if (there != null && there.key().equals(cand.key())
                             || Exclusive.clash(st.build(), slot, Exclusive.group(info)) != null) {
                         continue;
@@ -544,39 +1143,48 @@ final class Roadmap {
                     next.set(i, new BeamState(st.build(), ev.allocation(), judged(ev, prev, m)));
                 }
             }
-            // the same set reached two ways counts once (the two rings in either hand too)
+            // the same set reached two ways counts once (the two rings in either hand too); a
+            // weapon fills at most a quarter, the rest of the width after every weapon had its turn
             Map<String, BeamState> seen = new LinkedHashMap<>();
+            Map<String, Integer> byWeapon = new HashMap<>();
             next.sort((x, y) -> Double.compare(y.score(), x.score()));
+            List<BeamState> over = new ArrayList<>();
             for (BeamState st : next) {
-                seen.putIfAbsent(setKey(st.build()), st);
                 if (seen.size() >= width) {
                     break;
                 }
+                String key = setKey(st.build());
+                if (seen.containsKey(key)) {
+                    continue;
+                }
+                Damage.Piece w = st.build().get("WEAPON");
+                String wk = w == null ? "-" : w.key();
+                if (byWeapon.merge(wk, 1, Integer::sum) > perWeapon) {
+                    over.add(st);
+                    continue;
+                }
+                seen.put(key, st);
+            }
+            for (BeamState st : over) {
+                if (seen.size() >= width) {
+                    break;
+                }
+                seen.putIfAbsent(setKey(st.build()), st);
             }
             beam = new ArrayList<>(seen.values());
+            beam.sort((x, y) -> Double.compare(y.score(), x.score()));
         }
         // judge the best few with the points spread anew
-        BeamState best = null;
-        Build.Eval bestEval = null;
-        double bestJ = judged(cur, prev, m) * 1.002;
+        List<Scored> out = new ArrayList<>();
         int fin = (int) Rules.sub("roadmap", "beamFinal", 40);
         for (int i = 0; i < beam.size() && i < fin; i++) {
             Build.Eval ev = Build.allocate(beam.get(i).build(), m, earned);
-            if (ev != null && judged(ev, prev, m) > bestJ) {
-                bestJ = judged(ev, prev, m);
-                best = beam.get(i);
-                bestEval = ev;
+            if (ev != null) {
+                out.add(new Scored(beam.get(i).build(), ev, judged(ev, prev, m)));
             }
         }
-        if (best == null) {
-            return null;
-        }
-        double from = judged(cur, prev, m);
-        TriConsumer tc = trace;
-        if (tc != null) {
-            tc.accept(m, Slot.RING, String.format(java.util.Locale.ROOT, "beam set %+.2f%% over the slot picks", (bestJ / from - 1) * 100));
-        }
-        return best.build();
+        out.sort((x, y) -> better(x, y) ? -1 : better(y, x) ? 1 : 0);
+        return out;
     }
 
     /**
@@ -606,7 +1214,7 @@ final class Roadmap {
     record Seed(Map<String, Damage.Piece> build, java.util.Set<String> held) {}
 
     /**
-     * The searched set with whole sets changed at once ({@link #wholeSets}): a set bonus only
+     * The searched set with whole sets changed at once, as starts of the search ({@link #starts}): a set bonus only
      * shows with its pieces together, so a search that changes one piece at a time never puts a
      * set on (nothing worn and the Wynnterfest ornaments in the bank: Glimmer, Growth … one by
      * one) nor takes one off for pieces that beat it only together. For every set
@@ -806,119 +1414,6 @@ final class Roadmap {
         return p != null && p.name().equalsIgnoreCase(info.name());
     }
 
-    /**
-     * After the search: the best of {@link #setSeeds} replaces the build when it beats it by
-     * more than 0.2 %, a row for each slot it changes, and the seeds are made again from the new
-     * build until none helps (rules.roadmap.setRounds, 3), so an armour set and a set of
-     * accessories can both go on. The best rules.roadmap.setPolish (2) seeds first get one pass
-     * of slot swaps around the set ({@link #polish}): a set whose other slots must change with it
-     * (the points it needs, the element it brings) is not cut early; the build itself gets the
-     * same pass for the bar to beat. The search itself is left as it was, so a milestone without
-     * a set to try comes out the same.
-     */
-    private static void wholeSets(Map<String, Damage.Piece> start, Map<String, Damage.Piece> build,
-            Map<String, String> placed, Map<Slot, List<ItemData>> pools, List<Gear> gear, int m, int earned, int[] prev,
-            Map<String, List<ItemData>> sets, Map<String, Integer> owned, List<ItemData> found,
-            java.util.Set<String> fixed) {
-        java.util.Set<String> buyable = new java.util.HashSet<>();
-        found.forEach(i -> buyable.add(i.name()));
-        int rounds = (int) Rules.sub("roadmap", "setRounds", 3);
-        for (int round = 0; round < rounds; round++) {
-            Build.Eval cur = Build.allocate(build, m, earned);
-            if (cur == null) {
-                return;
-            }
-            double curJ = judged(cur, prev, m);
-            List<Seed> seeds = setSeeds(build, cur, pools, sets, owned, buyable, fixed, m, earned, prev);
-            List<Object[]> scored = new ArrayList<>();   // {seed, judged}
-            for (Seed seed : seeds) {
-                tick();
-                Build.Eval ev = Build.allocate(seed.build(), m, earned);
-                if (ev != null) {
-                    scored.add(new Object[] {seed, judged(ev, prev, m)});
-                }
-            }
-            if (scored.isEmpty()) {
-                return;
-            }
-            scored.sort((x, y) -> Double.compare((double) y[1], (double) x[1]));
-            // a seed far behind is not one pass from winning (rules.roadmap.setPolishWithin, 5 %)
-            int polish = (int) Rules.sub("roadmap", "setPolish", 2);
-            double near = curJ * (1 - Rules.sub("roadmap", "setPolishWithin", 0.05));
-            boolean polished = false;
-            for (int i = 0; i < scored.size() && i < polish && (double) scored.get(i)[1] >= near; i++) {
-                Seed s = (Seed) scored.get(i)[0];
-                Map<String, Damage.Piece> b = new LinkedHashMap<>(s.build());
-                double j = polish(b, (double) scored.get(i)[1], s.held(), pools, fixed, m, earned, prev);
-                scored.set(i, new Object[] {new Seed(b, s.held()), j});
-                polished = true;
-            }
-            // the bar: the build with the same pass, or a set would win on swaps refine makes
-            // anyway; only needed when a polished seed beats the build as it is
-            boolean ahead = scored.stream().anyMatch(sc -> (double) sc[1] > curJ * 1.002);
-            double bar = polished && ahead
-                    ? polish(new LinkedHashMap<>(build), curJ, java.util.Set.of(), pools, fixed, m, earned, prev) : curJ;
-            Object[] best = null;
-            for (Object[] sc : scored) {
-                if ((double) sc[1] > bar * 1.002 && (best == null || (double) sc[1] > (double) best[1])) {
-                    best = sc;
-                }
-            }
-            if (best == null) {
-                return;
-            }
-            TriConsumer tc = trace;
-            if (tc != null) {
-                tc.accept(m, Slot.RING, String.format(java.util.Locale.ROOT, "whole set %+.2f%% over the search (round %d)",
-                        ((double) best[1] / curJ - 1) * 100, round + 1));
-            }
-            applySet(((Seed) best[0]).build(), start, build, placed, pools, gear, m, earned, prev);
-        }
-    }
-
-    /**
-     * One quick pass over the slots a seed did not set: each tries the first
-     * rules.roadmap.setPolishPool (5) of its pool and takes the best swap that helps by more
-     * than 0.2 %. Changes {@code b}; its judged score after.
-     */
-    private static double polish(Map<String, Damage.Piece> b, double j, java.util.Set<String> held,
-            Map<Slot, List<ItemData>> pools, java.util.Set<String> fixed, int m, int earned, int[] prev) {
-        int top = (int) Rules.sub("roadmap", "setPolishPool", 5);
-        for (var e : pools.entrySet()) {
-            Slot t = e.getKey();
-            for (String slot : t == Slot.RING ? new String[] {"RING1", "RING2"} : new String[] {Build.slotOf(t, 0)}) {
-                if (slot == null || fixed.contains(slot) || held.contains(slot)) {
-                    continue;
-                }
-                Damage.Piece there = b.get(slot);
-                Damage.Piece pick = null;
-                double pickJ = j * 1.002;
-                int tried = 0;
-                for (ItemData info : e.getValue()) {
-                    if (tried >= top) {
-                        break;
-                    }
-                    Damage.Piece cand = Damage.piece(info);
-                    if (info.requirements().level() > m || there != null && there.key().equals(cand.key())
-                            || Exclusive.clash(b, slot, Exclusive.group(info)) != null) {
-                        continue;
-                    }
-                    tried++;
-                    Build.Eval ev = fullEval(b, slot, cand, m, earned);
-                    if (ev != null && judged(ev, prev, m) > pickJ) {
-                        pickJ = judged(ev, prev, m);
-                        pick = cand;
-                    }
-                }
-                if (pick != null) {
-                    b.put(slot, pick);
-                    j = pickJ;
-                }
-            }
-        }
-        return j;
-    }
-
     /** Puts a set the beam chose into the milestone's build, a row for each slot it changes. */
     private static void applySet(Map<String, Damage.Piece> chosen, Map<String, Damage.Piece> start,
             Map<String, Damage.Piece> build, Map<String, String> placed, Map<Slot, List<ItemData>> pools,
@@ -968,19 +1463,22 @@ final class Roadmap {
      * miss a set where several pieces change at once (on the recorded Shaman this finds 2 to 5 %
      * at Lv 44, 50 and 90; 2 to 7 s a milestone, but a wide beam alone does as well in 20 s, so it
      * is off unless rules.roadmap.exactPool is 2 or more). Judged in full on rules.roadmap.exactThreads low-priority
-     * threads (at most 8, a third of the cores), so the game keeps its share.
+     * threads (at most 8, a third of the cores), so the game keeps its share. The best set, or
+     * {@code inc} when none beats it by 0.2 %.
      */
-    private static void exactSearch(Map<String, Damage.Piece> build, Map<String, String> placed,
-            Map<Slot, List<ItemData>> pools, List<Gear> gear, int m, int earned, int[] prev) {
+    private static Scored exactSearch(Ctx cx, Scored inc) {
         int k = (int) Rules.sub("roadmap", "exactPool", 0);
-        Build.Eval cur = Build.allocate(build, m, earned);
-        if (k < 2 || cur == null) {
-            return;
+        if (k < 2) {
+            return inc;
         }
-        double curJ = judged(cur, prev, m);
+        Map<String, Damage.Piece> build = inc.set();
+        Map<Slot, List<ItemData>> pools = cx.pools();
+        int m = cx.m();
+        int earned = cx.earned();
+        int[] prev = cx.prev();
+        double curJ = inc.j();
         String[] slots = {"WEAPON", "HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS", "RING1", "BRACELET", "NECKLACE"};
         Map<String, List<Damage.Piece>> cands = new LinkedHashMap<>();
-        Map<String, ItemData> infoOf = new HashMap<>();
         for (String slot : slots) {
             Slot t = slot.startsWith("RING") ? Slot.RING : slot.equals("WEAPON") ? null : Slot.valueOf(slot);
             List<ItemData> pool = t == null ? weaponPool(pools) : pools.get(t);
@@ -994,7 +1492,7 @@ final class Roadmap {
             if (pool != null) {
                 List<Object[]> ranked = new ArrayList<>();
                 for (ItemData info : pool) {
-                    Damage.Piece cand = Damage.piece(info);
+                    Damage.Piece cand = cx.piece(info);
                     if (info.requirements().level() > m || top.stream().anyMatch(q -> q.key().equals(cand.key()))
                             || Exclusive.clash(build, slot, Exclusive.group(info)) != null) {
                         continue;
@@ -1002,7 +1500,6 @@ final class Roadmap {
                     Build.Eval ev = fullEval(build, slot, cand, m, earned);
                     if (ev != null) {
                         ranked.add(new Object[] {cand, judged(ev, prev, m)});
-                        infoOf.put(cand.key(), info);
                     }
                 }
                 ranked.sort((x, y) -> Double.compare((double) y[1], (double) x[1]));
@@ -1052,13 +1549,7 @@ final class Roadmap {
         Object[] bestSet = {null};
         int threads = (int) Rules.sub("roadmap", "exactThreads",
                 Math.max(1, Math.min(8, Runtime.getRuntime().availableProcessors() / 3)));
-        java.util.concurrent.ForkJoinPool fj = new java.util.concurrent.ForkJoinPool(Math.max(1, threads), fp -> {
-            var th = java.util.concurrent.ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(fp);
-            th.setPriority(Thread.MIN_PRIORITY);
-            th.setDaemon(true);
-            th.setName("wynnlabs-exact");
-            return th;
-        }, null, false);
+        java.util.concurrent.ForkJoinPool fj = lowPriority(threads, "wynnlabs-exact");
         List<Map<String, Damage.Piece>> all = sets;
         try {
             Tuning.Choice tuned = Tuning.active();             // the workers score with the same tuning
@@ -1088,7 +1579,7 @@ final class Roadmap {
             if (tr != null) {
                 tr.accept(m, Slot.RING, "exact failed: " + e);
             }
-            return;                                 // the beam's set stands
+            return inc;                             // the beam's set stands
         } finally {
             fj.shutdown();
         }
@@ -1097,7 +1588,7 @@ final class Roadmap {
                     (System.nanoTime() - started) / 1_000_000, best[0], curJ));
         }
         if (bestSet[0] == null) {
-            return;
+            return inc;
         }
         @SuppressWarnings("unchecked")
         Map<String, Damage.Piece> win = (Map<String, Damage.Piece>) bestSet[0];
@@ -1109,26 +1600,12 @@ final class Roadmap {
             win.put("RING1", r2);
             win.put("RING2", r1);
         }
-        TriConsumer tc = trace;
-        if (tc != null) {
-            tc.accept(m, Slot.RING, String.format(java.util.Locale.ROOT, "exact set %+.2f%% over the beam's", (best[0] / curJ - 1) * 100));
+        Build.Eval ev = Build.allocate(win, m, earned);
+        if (ev == null) {
+            return inc;
         }
-        for (String slot : BEAM_ORDER) {
-            Damage.Piece want = win.get(slot);
-            Damage.Piece have = build.get(slot);
-            if (want == null || have != null && have.key().equals(want.key())) {
-                continue;
-            }
-            ItemData info = infoOf.containsKey(want.key()) ? infoOf.get(want.key()) : findGear(want.name());
-            if (info == null) {
-                continue;
-            }
-            Slot t = slot.startsWith("RING") ? Slot.RING : slot.equals("WEAPON") ? info.slot() : Slot.valueOf(slot);
-            Build.Eval before = Build.allocate(build, m, earned);
-            Build.Eval after = fullEval(build, slot, want, m, earned);
-            double gain = before == null || after == null ? 0 : (judged(after, prev, m) / judged(before, prev, m) - 1) * 100;
-            swapRow(build, placed, gear, pools, slot, t, info, after, gain, m, earned);
-        }
+        note(m, String.format(java.util.Locale.ROOT, "exact set %+.2f%% over the beam's", (best[0] / curJ - 1) * 100));
+        return new Scored(win, ev, judged(ev, prev, m));
     }
 
     /** Two pieces of one exclusive group (Ornate Shadow, the Hives …) in a set. */
@@ -1392,6 +1869,51 @@ final class Roadmap {
     static int maxOff(int m) {
         return (int) Math.max(Rules.sub("shopping", "maxOffSkillPoints", 10),
                 Math.max(0, (Math.min(m, 101) - 1) * 2) * 0.15);
+    }
+
+    /**
+     * Per Mythic name, the lowest level of a later version of it in the item data: Masterwork
+     * Aftershock (Lv 100) after Aftershock (Lv 77), or an Ascended one.
+     */
+    private static Map<String, Integer> laterVersions(GameState state) {
+        Map<String, Integer> out = new HashMap<>();
+        state.allGear().forEach(info -> {
+            for (String p : new String[] {"Masterwork ", "Ascended "}) {
+                if (info.name().startsWith(p)) {
+                    out.merge(info.name().substring(p.length()), info.requirements().level(), Math::min);
+                }
+            }
+        });
+        return out;
+    }
+
+    /**
+     * A Mythic that no later version replaces by milestone {@code m} (Freedom, Ignis, Hadal at
+     * Lv 120): still the best of its kind there however far below the level window it sits.
+     */
+    private static boolean lastOfItsKind(ItemData info, int m, Map<String, Integer> laterVersion) {
+        if (!info.tier().name().equals("MYTHIC")) {
+            return false;
+        }
+        Integer later = laterVersion.get(info.name());
+        return later == null || later > m;
+    }
+
+    /**
+     * For the trace's reasons ({@link Build#whyNot}): the most points each skill could get from
+     * the gear milestone {@code m} weighs (its window, the Mythics it keeps, never weapons) and tomes.
+     */
+    private static int[] windowReach(Map<Slot, List<ItemData>> cands, int m, Map<String, Integer> laterVersion) {
+        int floor = m - (int) Rules.sub("shopping", "milestoneWindow", 20);
+        List<Damage.Piece> pieces = new ArrayList<>();
+        cands.forEach((t, l) -> {
+            if (!t.isWeapon()) {
+                l.stream().filter(i -> i.requirements().level() <= m
+                        && (i.requirements().level() >= floor || lastOfItsKind(i, m, laterVersion)))
+                        .forEach(i -> pieces.add(Damage.piece(i)));
+            }
+        });
+        return Build.reach(pieces);
     }
 
     /** From shopping.endgameLevel (80) on, every tier and raid gear count. */
@@ -1893,7 +2415,8 @@ final class Roadmap {
         Job before = JOB.get();
         JOB.set(job);
         try {
-            return Tuning.with(in.tuning(), () -> computeTuned(in, job));
+            // one memo of skill point spreads for the run (Build.Memo), emptied each milestone
+            return Tuning.with(in.tuning(), () -> Build.withMemo(new Build.Memo(), () -> computeTuned(in, job)));
         } finally {
             if (before == null) {
                 JOB.remove();
@@ -1976,6 +2499,8 @@ final class Roadmap {
             }
             cands.computeIfAbsent(t, k -> new ArrayList<>()).add(info);
         });
+        // a Mythic's later version (Masterwork Aftershock, an Ascended one) by the Mythic's name and its level
+        Map<String, Integer> laterVersion = laterVersions(state);
 
         Map<String, Integer> abilities = state.abilityPlan();
         java.util.Set<String> placesShown = new java.util.HashSet<>();
@@ -2032,6 +2557,11 @@ final class Roadmap {
                 continue;
             }
             phase(1);
+            long perfPools = Perf.start();
+            Build.Memo memo = Build.memo();
+            if (memo != null) {
+                memo.clear();                       // the spreads of the last milestone's level are never asked again
+            }
             int earnedThen = Math.max(0, (Math.min(m, 101) - 1) * 2);
             int maxOff = maxOff(m);
             List<String> badTiers = badTiers(m);
@@ -2058,6 +2588,9 @@ final class Roadmap {
             Map<String, String> placedStart = new LinkedHashMap<>(placed);
             List<ItemData> ringPool = new ArrayList<>();     // this milestone's best rings, for the other hand
             List<ItemData> setGear = new ArrayList<>();      // set pieces you could get here, for whole sets
+            Map<Slot, List<ItemData>> wide = new java.util.EnumMap<>(Slot.class);   // everything the milestone allows per slot type
+            // for the trace's reasons: the most each skill could get from the milestone's gear
+            int[] reach = trace == null ? null : windowReach(cands, m, laterVersion);
             for (Slot t : slots) {
                 if (lockedKinds.contains(t.isWeapon() ? Slot.WEAPON : t)) {
                     continue;                               // a chosen item holds it
@@ -2087,8 +2620,11 @@ final class Roadmap {
                 // requirement within it asks for nothing more
                 double[] cover = allocM == null ? null : Build.cover(baseline, allocM);
                 for (ItemData info : cands.getOrDefault(t, List.of())) {
+                    // a Mythic with no later version by then is still the best of its kind there
+                    // (Freedom, Ignis at Lv 120): the window does not drop it
                     if (wornNames.contains(info.name().toLowerCase(java.util.Locale.ROOT))
-                            || info.requirements().level() < floor || badTiers.contains(info.tier().name())) {
+                            || info.requirements().level() < floor && !lastOfItsKind(info, m, laterVersion)
+                            || badTiers.contains(info.tier().name())) {
                         trace(m, t, info, "skip: worn / below window / tier");
                         continue;
                     }
@@ -2129,6 +2665,10 @@ final class Roadmap {
                             setGear.add(info);
                         }
                     }
+                    if (!future && (!Shopping.excluded(info, badSources) || owned.contains(info.name()))) {
+                        // for the search's sets around another weapon: ranked anew there, not by the score below
+                        wide.computeIfAbsent(t, k -> new ArrayList<>()).add(info);
+                    }
                     double sc;
                     String slotUsed = null;
                     if (allocM != null) {
@@ -2166,7 +2706,7 @@ final class Roadmap {
                                     if (slot != null) {
                                         Map<String, Damage.Piece> trial = new LinkedHashMap<>(baseline);
                                         trial.put(slot, cand);
-                                        why = Build.whyNot(trial, earnedThen);
+                                        why = Build.whyNot(trial, earnedThen, reach);
                                         if (why == null) {
                                             break;
                                         }
@@ -2258,7 +2798,7 @@ final class Roadmap {
                                 if (trace != null) {
                                     Map<String, Damage.Piece> trial = new LinkedHashMap<>(baseline);
                                     trial.put(slotUsed, Damage.piece(info));
-                                    String why = Build.whyNot(trial, earnedThen);
+                                    String why = Build.whyNot(trial, earnedThen, reach);
                                     trace(m, t, info, "skip: " + (why != null ? why
                                             : fe == null ? "no allocation" : "nothing to score against yet (no weapon in the build)"));
                                 }
@@ -2440,17 +2980,18 @@ final class Roadmap {
                     best.put(t, topScore);
                 }
             }
-            // Slot by slot, an early pick never sees the later ones: the best few of every slot
-            // are tried again against the whole set, until no swap helps
+            Perf.end("roadmap.pools", perfPools);
+            // Slot by slot, an early pick never sees the later ones: whole sets are searched
+            // (search), from the beam's and from many other starts, until no swap helps
             if (allocM != null && baseline != null) {
                 phase(2);
-                beamSearch(startSet, baseline, placed, pools, gear, m, earnedThen, prevAlloc, fixed);
-                if (fixed.isEmpty()) {
-                    exactSearch(baseline, placed, pools, gear, m, earnedThen, prevAlloc);   // its ring pairs know no chosen hand
-                }
-                wholeSets(startSet, baseline, placed, pools, gear, m, earnedThen, prevAlloc,
-                        setPieces(cands, setGear, owned, m, fixed), ownedCount, setGear, fixed);
-                refine(baseline, placed, pools, gear, m, earnedThen, prevAlloc, fixed);
+                long perfSearch = Perf.start();
+                java.util.Set<String> buyable = new java.util.HashSet<>();
+                setGear.forEach(i -> buyable.add(i.name()));
+                search(new Ctx(startSet, pools, wide, setPieces(cands, setGear, owned, m, fixed), ownedCount, buyable,
+                        wornNow, fixed, m, earnedThen, prevAlloc, new java.util.concurrent.ConcurrentHashMap<>()),
+                        baseline, placed, gear);
+                Perf.end("roadmap.search", perfSearch);
                 Build.Eval be = Build.allocate(baseline, m, earnedThen);
                 if (be != null) {
                     baseObj = be.result().objective();
@@ -2458,6 +2999,7 @@ final class Roadmap {
                     allocM = be.allocation();
                 }
             }
+            long perfRows = Perf.start();
             // The other hand: Wynncraft takes the same ring twice, and one pick per slot type left
             // the second ring at what you wear now all the way to Lv 120
             if (allocM != null && baseline != null && !ringFixed) {         // a chosen ring holds the other hand
@@ -2562,6 +3104,7 @@ final class Roadmap {
             steps.add(new Step(m, gear, abil, places, m == level ? 0 : sp, rowGain, rowWhy,
                     baseline == null ? Map.of() : java.util.Collections.unmodifiableMap(new LinkedHashMap<>(baseline)),
                     set));
+            Perf.end("roadmap.rows", perfRows);
             prev = m;
             if (job == null) {
                 progressDone++;
