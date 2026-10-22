@@ -114,6 +114,7 @@ public final class Setup {
             model.addProperty(keys[i], w[i]);
         }
         model.addProperty("survivalModel", SURVIVAL_MODEL);
+        model.add("byHand", byHandWith("goalXp", false));     // the XP switch starts at the goal's default
         JsonObject change = new JsonObject();
         change.addProperty("goalPreset", preset);
         change.addProperty("goal", preset.toLowerCase(java.util.Locale.ROOT) + " build"
@@ -122,6 +123,51 @@ public final class Setup {
         change.add("model", model);
         Rules.update(change);
     }
+
+    /** Whether the score counts XP and XP bonus (rules.model.goalXp above 0): the home's XP switch. */
+    public static boolean countsXp() {
+        return Rules.sub("model", "goalXp", weights(goal())[GOAL_XP]) > 0;
+    }
+
+    /**
+     * The home's XP switch: off leaves XP out of the score (goal XP factor 0), on gives the goal's
+     * own factor back (the Damage goal's 0.3, its preset being 0). Marked as set by hand, so an
+     * upgrade keeps it; a new goal sets it again ({@link #setGoal}).
+     */
+    public static void setCountsXp(boolean on) {
+        JsonObject model = new JsonObject();
+        model.addProperty("goalXp", on ? xpWhenOn(goal()) : 0);
+        model.add("byHand", byHandWith("goalXp", true));
+        JsonObject change = new JsonObject();
+        change.add("model", model);
+        Rules.update(change);
+    }
+
+    /** The XP factor a goal counts XP with when the switch is on. */
+    static double xpWhenOn(String preset) {
+        double w = weights(preset)[GOAL_XP];
+        return w > 0 ? w : 0.3;
+    }
+
+    /** rules.model.byHand with {@code key} in it or not, the rest as it was. */
+    private static com.google.gson.JsonArray byHandWith(String key, boolean in) {
+        JsonObject m = Rules.get().getAsJsonObject("model");
+        com.google.gson.JsonArray out = new com.google.gson.JsonArray();
+        if (m != null && m.has("byHand") && m.get("byHand").isJsonArray()) {
+            m.getAsJsonArray("byHand").forEach(e -> {
+                if (!e.getAsString().equals(key)) {
+                    out.add(e);
+                }
+            });
+        }
+        if (in) {
+            out.add(key);
+        }
+        return out;
+    }
+
+    /** Where goalXp sits in {@link #weights}. */
+    private static final int GOAL_XP = 6;
 
     /** The model weights a goal writes, in {@link #weights} order. */
     private static String[] keys() {

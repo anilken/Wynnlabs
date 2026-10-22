@@ -206,6 +206,11 @@ public final class HomePage extends MenuTab {
         } else if (c.startsWith("#qcancelbuild:")) {
             Roadmap.cancelBuild();
             menu.refreshAsked = false;
+        } else if (c.startsWith("#qxp:")) {
+            boolean on = !Setup.countsXp();
+            Setup.setCountsXp(on);
+            menu.flash(L.t(on ? "wynnlabs.home.count_xp_on" : "wynnlabs.home.count_xp_off"));
+            menu.rebuildMap();                     // rebuilt in the background, picked up when ready
         } else if (c.startsWith("#qpowder:")) {
             boolean on = Rules.sub("model", "assumePowders", 1) > 0;
             JsonObject pm = new JsonObject();
@@ -765,25 +770,36 @@ public final class HomePage extends MenuTab {
                 L.c("wynnlabs.home.archetype_click").withStyle(ChatFormatting.DARK_GRAY)), "#qarch:"));
         nx += font().width(archLabel) + 18;
         g.drawString(font(), "Lv " + level, nx, y + 7, Theme.CREAM_DIM, true);
-        // the right side: goal and powder buttons, the nearest bank and Trade Market below
+        // the right side: the goal button and its XP switch, the powder button, the nearest bank
+        // and Trade Market below
         int chipW = 92;
         int cx = x + w - chipW - 6;
         int gs = goalOpen ? Kit.ON : Kit.REST;
-        Kit.button(g, cx, y + 7, chipW, 13, gs);
-        woodIconText(g, "target", fit(Setup.goalName(Setup.goal()), chipW - 28), cx + 4, y + 10, gs);
-        Art.icon(g, "chevron-down", cx + chipW - 12, y + 10, 8, goalOpen ? Theme.INK_2 : Theme.CREAM_DIM);
-        goalAnchor = new int[] {cx, y + 7, chipW, 13};
-        menu.hits.add(new MenuHit(cx, y + 8, chipW, 12, null, goalOpen ? List.of() : List.of(
+        Kit.button(g, cx, y + 4, chipW, 13, gs);
+        woodIconText(g, "target", fit(Setup.goalName(Setup.goal()), chipW - 28), cx + 4, y + 7, gs);
+        Art.icon(g, "chevron-down", cx + chipW - 12, y + 7, 8, goalOpen ? Theme.INK_2 : Theme.CREAM_DIM);
+        goalAnchor = new int[] {cx, y + 4, chipW, 13};
+        menu.hits.add(new MenuHit(cx, y + 5, chipW, 12, null, goalOpen ? List.of() : List.of(
                 L.c("wynnlabs.home.goal_tip", Setup.goalName(Setup.goal())).withStyle(ChatFormatting.LIGHT_PURPLE),
                 L.c("wynnlabs.home.goal_click").withStyle(ChatFormatting.DARK_GRAY)), "#qgoal:"));
+        // the XP switch under it: the switch at the button's right edge, its label before it
+        boolean xpOn = Setup.countsXp();
+        int sx = cx + chipW - 19;
+        String xpLabel = fit(L.t("wynnlabs.home.count_xp"), chipW + 4);
+        int lx = sx - 4 - font().width(xpLabel);
+        g.drawString(font(), xpLabel, lx, y + 20, xpOn ? Theme.CREAM : Theme.CREAM_DIM, true);
+        Kit.toggle(g, sx, y + 19, xpOn);
+        menu.hits.add(new MenuHit(lx, y + 19, sx + 19 - lx, 11, null, List.of(
+                L.c(xpOn ? "wynnlabs.home.count_xp_on_tip" : "wynnlabs.home.count_xp_off_tip").withStyle(ChatFormatting.LIGHT_PURPLE),
+                L.c("wynnlabs.home.powder_click").withStyle(ChatFormatting.DARK_GRAY)), "#qxp:"));
         boolean powdered = Rules.sub("model", "assumePowders", 1) > 0;
         String powLabel = powdered ? L.t("wynnlabs.home.powder_on") : L.t("wynnlabs.home.powder_off");
-        Kit.button(g, cx, y + 23, chipW, 13, powdered ? Kit.ON : Kit.REST);
-        woodIconText(g, "diamond", fit(powLabel, chipW - 18), cx + 4, y + 26, powdered ? Kit.ON : Kit.REST);
-        menu.hits.add(new MenuHit(cx, y + 24, chipW, 12, null, List.of(
+        Kit.button(g, cx, y + 31, chipW, 12, powdered ? Kit.ON : Kit.REST);
+        woodIconText(g, "diamond", fit(powLabel, chipW - 18), cx + 4, y + 33, powdered ? Kit.ON : Kit.REST);
+        menu.hits.add(new MenuHit(cx, y + 31, chipW, 12, null, List.of(
                 L.c(powdered ? "wynnlabs.home.powder_on_tip" : "wynnlabs.home.powder_off_tip").withStyle(ChatFormatting.LIGHT_PURPLE),
                 L.c("wynnlabs.home.powder_click").withStyle(ChatFormatting.DARK_GRAY)), "#qpowder:"));
-        drawNearest(g, cx, y + 40, chipW);
+        drawNearest(g, cx, y + 44, chipW);
         // the gauge: the build score against the next milestone's
         Build.Plan plan = Build.plan();
         Damage.Result now = plan == null ? null : plan.current();
