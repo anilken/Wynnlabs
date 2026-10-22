@@ -251,7 +251,8 @@ public final class DeathCoach {
 
     /**
      * Three deaths within half an hour: survival weighs more in the model (rules.model.survivalLearned
-     * ×1.15, at most 2; a key of its own, so choosing a goal keeps it). Then the health floor
+     * ×1.15, stored up to 2, read at most 1.2 on the Damage goal by Damage.deathCap; a key of its
+     * own, so choosing a goal keeps it). Then the health floor
      * from the deaths ({@link #floorRatio}) and the lesson's decay ({@link #decay}) are written.
      */
     private static void learn() {
