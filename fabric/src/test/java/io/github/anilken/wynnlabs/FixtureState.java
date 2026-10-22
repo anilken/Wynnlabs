@@ -316,14 +316,31 @@ final class FixtureState implements GameState {
         return new java.util.TreeMap<>(data.state().abilityPlan());
     }
 
+    /** A tree to play the recorded character with, and its unlocked nodes; null: the recorded one. */
+    private List<io.github.anilken.wynnlabs.model.AbilityNode> treeAs;
+    private List<String> unlockedAs;
+
+    /** The recorded character with another ability tree (the game's own, from a test resource) and these nodes unlocked. */
+    FixtureState withTree(List<io.github.anilken.wynnlabs.model.AbilityNode> nodes, List<String> unlocked) {
+        treeAs = nodes;
+        unlockedAs = unlocked;
+        return this;
+    }
+
     /** The recorded tree, or the made-up one for a fixture recorded before trees were kept. */
     @Override
     public List<io.github.anilken.wynnlabs.model.AbilityNode> abilityTree() {
+        if (treeAs != null) {
+            return treeAs;
+        }
         return data.tree() != null ? data.tree().nodes() : SyntheticTree.nodes();
     }
 
     @Override
     public List<String> unlockedAbilities() {
+        if (unlockedAs != null) {
+            return unlockedAs;
+        }
         return data.tree() != null ? data.tree().unlocked() : SyntheticTree.unlocked();
     }
 

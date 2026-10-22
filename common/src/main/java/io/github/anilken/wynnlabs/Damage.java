@@ -464,8 +464,9 @@ final class Damage {
     }
 
     private static double model(String key, double fallback) {
-        // the road map's tuning strip (Tuning) leans a few weights; 1 everywhere else
-        double v = Rules.sub("model", key, fallback) * Tuning.weight(key);
+        // the road map's tuning strip (Tuning) leans a few weights; 1 everywhere else. The ability
+        // tree you have at the level worked out for (TreeModel) sets summons, mana and the main attack
+        double v = TreeModel.adjust(key, Rules.sub("model", key, fallback)) * Tuning.weight(key);
         // what deaths taught (DeathCoach, rules.model.survivalLearned, 1 to 2) is kept apart from
         // the goal's weights, so choosing a goal again does not wipe it
         if (key.equals("survivalWeight") || key.equals("survivalPower")) {
@@ -614,7 +615,8 @@ final class Damage {
         double costSum = 0;
         double shareSum = 0;
         JsonElement spellsEl = Rules.get().has("model") ? Rules.get().getAsJsonObject("model").get("spells") : null;
-        JsonArray spells = spellsEl != null && spellsEl.isJsonArray() ? spellsEl.getAsJsonArray() : new JsonArray();
+        // with the tree's cost changes and the spells not bought yet at this level (TreeModel)
+        JsonArray spells = TreeModel.spells(spellsEl != null && spellsEl.isJsonArray() ? spellsEl.getAsJsonArray() : new JsonArray());
         for (JsonElement e : spells) {
             JsonObject sp = e.getAsJsonObject();
             double share = sp.has("share") ? sp.get("share").getAsDouble() : 1;
@@ -669,7 +671,8 @@ final class Damage {
         double passive = 0;
         double summons = model("passiveDpsFactor", 0);
         if (summons > 0) {
-            double[] pc = {model("summonNeutral", 0.16), model("summonEarth", 0.02), 0, 0, 0, model("summonAir", 0.02)};
+            double[] pc = {model("summonNeutral", 0.16), model("summonEarth", 0.02), model("summonThunder", 0),
+                model("summonWater", 0), model("summonFire", 0), model("summonAir", 0.02)};
             passive = hit(s, split(pc, shares), baseDps, skillBonus, true, summonEl) * model("summonHitsPerSecond", 6)
                     * summons * multiplier;
         }

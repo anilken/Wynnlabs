@@ -1,6 +1,7 @@
 package io.github.anilken.wynnlabs;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import io.github.anilken.wynnlabs.model.AbilityNode;
 import io.github.anilken.wynnlabs.model.Klass;
@@ -26,7 +27,7 @@ final class ClassProfiles {
     private static final Map<String, String> SKILL_OF = Map.of("earth", "STRENGTH", "thunder", "DEXTERITY",
             "water", "INTELLIGENCE", "fire", "DEFENCE", "air", "AGILITY");
     private static final Pattern COST = Pattern.compile("Mana Cost: (\\d+)");
-    private static final Pattern PART = Pattern.compile("\\(\\S*\\s*(Damage|Earth|Thunder|Water|Fire|Air): (\\d+)%\\)");
+    static final Pattern PART = Pattern.compile("\\(\\S*\\s*(Damage|Earth|Thunder|Water|Fire|Air): (\\d+)%\\)");
 
     private ClassProfiles() {}
 
@@ -131,13 +132,22 @@ final class ClassProfiles {
      * A mastery counts about as much as one spell's conversion: at 1 each it outweighed every
      * spell, and an Archer's gear was held to two elements its spells barely use.
      */
-    private static Map<String, Double> elements(JsonArray spells, String archetype) {
+    private static Map<String, Double> elements(JsonArray spells, String archetype, TreeModel.Overlay plan) {
         Map<String, Double> score = new HashMap<>();
         for (var e : spells) {
             JsonObject s = e.getAsJsonObject();
             double share = s.get("share").getAsDouble();
             s.getAsJsonObject("conv").entrySet().forEach(c ->
                     score.merge(c.getKey(), share * c.getValue().getAsDouble(), Double::sum));
+        }
+        // the summons and traps the plan takes, in their elements (a Trapper's water comes from
+        // Chilling Snare, not from a spell); their plain damage is left to the spells' "neutral"
+        if (plan != null) {
+            for (int i = 1; i < Damage.ELEMENTS.length; i++) {
+                if (plan.passive[i] > 0) {
+                    score.merge(Damage.ELEMENTS[i], plan.passive[i], Double::sum);
+                }
+            }
         }
         var tree = Wyn.abilityTree(Wyn.classType());
         if (tree != null && archetype != null && !archetype.isEmpty()) {
@@ -152,10 +162,7 @@ final class ClassProfiles {
         return score;
     }
 
-    /**
-     * The rules a class and archetype need: spells, the two main elements' stat weights,
-     * weapon powders, the skills gear may ask for, and summons for a Summoner.
-     */
+    /** Archetypes that fight up close: attack speed feels no slower than it hits, mana steal works in full. */
     private static final List<String> MELEE = List.of("fallen", "battle monk", "shadestepper", "acrobat", "boltslinger");
 
     /**
@@ -164,21 +171,62 @@ final class ClassProfiles {
      * raise it at most to rules.model.nudgeCap times this.
      */
     static double mainAttackWeight(String cls, String archetype) {
-        String arch = archetype == null ? "" : archetype.toLowerCase(Locale.ROOT);
-        return MELEE.contains(arch) ? 1.0
-                : arch.equals("summoner") ? 0.2
-                : arch.equals("ritualist") ? 0.6
-                : arch.isEmpty() ? (cls.equals("WARRIOR") || cls.equals("ASSASSIN") ? 1.0 : cls.equals("ARCHER") ? 0.7 : 0.4)
-                : 0.3;
+        return mainAttackWeight(cls, archetype, TreeModel.tree());
     }
 
+    /**
+     * {@link #mainAttackWeight(String, String)} with the class's tree: an archetype outside the
+     * few weighed by hand gets its weight from its own nodes, the more of them speak of the main
+     * attack the more it counts (a Sharpshooter's Focus and Twain's Arc, none of a Trapper's).
+     */
+    static double mainAttackWeight(String cls, String archetype, List<AbilityNode> tree) {
+        String arch = archetype == null ? "" : archetype.toLowerCase(Locale.ROOT);
+        if (MELEE.contains(arch)) {
+            return 1.0;
+        }
+        if (arch.equals("summoner")) {
+            return 0.2;
+        }
+        if (arch.equals("ritualist")) {
+            return 0.6;
+        }
+        if (arch.isEmpty()) {
+            return cls.equals("WARRIOR") || cls.equals("ASSASSIN") ? 1.0 : cls.equals("ARCHER") ? 0.7 : 0.4;
+        }
+        int all = 0;
+        int main = 0;
+        if (tree != null) {
+            for (AbilityNode n : tree) {
+                if (n.archetype() != null && n.archetype().equalsIgnoreCase(archetype)) {
+                    all++;
+                    if (TreeModel.text(n).toLowerCase(Locale.ROOT).contains("main attack")) {
+                        main++;
+                    }
+                }
+            }
+        }
+        if (all == 0) {
+            return 0.3;
+        }
+        return Math.round(Math.max(0.25, Math.min(1.0, 0.25 + 1.5 * main / (double) all)) * 100) / 100.0;
+    }
+
+    /**
+     * The rules a class and archetype need: spells, the two main elements' stat weights, weapon
+     * powders, the skills gear may ask for, and the summons and traps the archetype's plan takes.
+     * The keys an archetype owns (spells, summons, attack speed feel, skill priority) are written
+     * whole, so nothing of the archetype before stays behind.
+     */
     static JsonObject rulesFor(String archetype, boolean newCharacter) {
         JsonArray spells = spells();
         JsonObject change = new JsonObject();
         if (spells.isEmpty()) {
             return change;
         }
-        Map<String, Double> el = elements(spells, archetype);
+        // the archetype's whole plan as the damage model reads it: summons, traps, their elements
+        TreeModel.Run run = TreeModel.run(archetype == null ? "" : archetype);
+        TreeModel.Overlay plan = run == null ? null : run.at(Integer.MAX_VALUE);
+        Map<String, Double> el = elements(spells, archetype, plan);
         double neutral = el.getOrDefault("neutral", 0.0);
         el.remove("neutral");
         List<String> top = new ArrayList<>(el.keySet());
@@ -187,7 +235,22 @@ final class ClassProfiles {
 
         JsonObject model = new JsonObject();
         model.add("spells", spells);
-        model.addProperty("passiveDpsFactor", "Summoner".equalsIgnoreCase(archetype) ? 1.0 : 0.0);
+        // summons and traps the plan takes, as conversions per second (the tree's own numbers)
+        boolean passive = plan != null && plan.passiveTotal() > 0;
+        model.addProperty("passiveDpsFactor", passive ? 1.0 : 0.0);
+        String[] summonKeys = {"summonNeutral", "summonEarth", "summonThunder", "summonWater", "summonFire", "summonAir"};
+        for (int i = 0; i < summonKeys.length; i++) {
+            if (passive) {
+                model.addProperty(summonKeys[i], plan.passive[i]);
+            } else {
+                model.add(summonKeys[i], JsonNull.INSTANCE);
+            }
+        }
+        if (passive) {
+            model.addProperty("summonHitsPerSecond", 1);
+        } else {
+            model.add("summonHitsPerSecond", JsonNull.INSTANCE);
+        }
         // How much the main attack matters, how hard it hits per click, and how well mana steal
         // works (it needs main-attack hits): per class and archetype, not one Shaman number
         String cls = Wyn.classType().name();
@@ -206,6 +269,8 @@ final class ClassProfiles {
                 feel.addProperty(sp, 1.0);
             }
             model.add("attackSpeedFeel", feel);
+        } else {
+            model.add("attackSpeedFeel", JsonNull.INSTANCE);   // a melee archetype's before goes
         }
         JsonObject weights = new JsonObject();
         for (String e : ELEMENTS) {
@@ -240,8 +305,10 @@ final class ClassProfiles {
         change.add("statWeights", weights);
         change.add("powders", pw);
         change.add("shopping", shopping);
-        if (newCharacter) {
-            // the skills behind the build's own elements (earth → Strength, …), not a fixed pair
+        // the skills behind the build's own elements (earth → Strength, …), not a fixed pair: on
+        // an archetype change too, or the last archetype's pair stayed (one set by hand, listed
+        // in rules.model.byHand, stays)
+        if (!Rules.list("model", "byHand").contains("SKILLPRIORITY")) {
             JsonArray prio = new JsonArray();
             main.forEach(e -> {
                 if (SKILL_OF.containsKey(e) && !prio.contains(new com.google.gson.JsonPrimitive(SKILL_OF.get(e)))) {
@@ -253,6 +320,8 @@ final class ClassProfiles {
             }
             model.add("skillPriority", prio);
             model.addProperty("skillPriorityShare", 0.4);
+        }
+        if (newCharacter) {
             change.addProperty("goal", "otomatik profil: " + Wyn.classType().name()
                     + (archetype == null || archetype.isEmpty() ? "" : " " + archetype));
         }

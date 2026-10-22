@@ -1066,7 +1066,8 @@ final class Roadmap {
 
     /**
      * Runs the work on rules.roadmap.searchThreads low-priority threads (a third of the cores, at
-     * most 8) with this run's job, memo and tuning, and gives the results in the work's order.
+     * most 8) with this run's job, memo, tuning and the milestone's tree, and gives the results
+     * in the work's order.
      */
     private static <T> List<T> inParallel(List<java.util.function.Supplier<T>> work) {
         int threads = (int) Rules.sub("roadmap", "searchThreads",
@@ -1079,6 +1080,7 @@ final class Roadmap {
         Job job = JOB.get();
         Build.Memo memo = Build.memo();
         Tuning.Choice tuned = Tuning.active();
+        TreeModel.Overlay tree = TreeModel.active();
         java.util.concurrent.ForkJoinPool fj = lowPriority(threads, "wynnlabs-search");
         try {
             List<java.util.concurrent.Future<T>> running = new ArrayList<>();
@@ -1086,7 +1088,7 @@ final class Roadmap {
                 running.add(fj.submit(() -> {
                     JOB.set(job);
                     try {
-                        return Tuning.with(tuned, () -> Build.withMemo(memo, w));
+                        return Tuning.with(tuned, () -> TreeModel.with(tree, () -> Build.withMemo(memo, w)));
                     } finally {
                         JOB.remove();
                     }
@@ -1155,6 +1157,10 @@ final class Roadmap {
         Tuning.Choice tuned = Tuning.active();
         if (tuned != null) {
             k.append("|tuned:").append(tuned.key());   // the strip's weights score the sets otherwise
+        }
+        String tree = TreeModel.key();
+        if (!tree.isEmpty()) {
+            k.append("|tree:").append(tree);            // the nodes the milestone has: spells, costs, summons
         }
         return Integer.toHexString(k.toString().hashCode()) + Integer.toHexString(k.reverse().toString().hashCode());
     }
@@ -1729,7 +1735,8 @@ final class Roadmap {
         List<Map<String, Damage.Piece>> all = sets;
         try {
             Tuning.Choice tuned = Tuning.active();             // the workers score with the same tuning
-            fj.submit(() -> all.parallelStream().forEach(b -> Tuning.with(tuned, () -> {
+            TreeModel.Overlay tree = TreeModel.active();       // and the milestone's tree
+            fj.submit(() -> all.parallelStream().forEach(b -> Tuning.with(tuned, () -> TreeModel.with(tree, () -> {
                 for (Damage.Piece[] rp : rings) {
                     Map<String, Damage.Piece> c = new LinkedHashMap<>(b);
                     c.put("RING1", rp[0]);
@@ -1750,7 +1757,7 @@ final class Roadmap {
                     }
                 }
                 return null;
-            }))).get();
+            })))).get();
         } catch (Exception e) {
             if (tr != null) {
                 tr.accept(m, Slot.RING, "exact failed: " + e);
@@ -2671,8 +2678,10 @@ final class Roadmap {
         Job before = JOB.get();
         JOB.set(job);
         try {
-            // one memo of skill point spreads for the run (Build.Memo), emptied each milestone
-            return Tuning.with(in.tuning(), () -> Build.withMemo(new Build.Memo(), () -> computeTuned(in, job)));
+            // one memo of skill point spreads for the run (Build.Memo), emptied each milestone; the
+            // tree each milestone sets (TreeModel) is gone after the run
+            return Tuning.with(in.tuning(), () -> TreeModel.with(null,
+                    () -> Build.withMemo(new Build.Memo(), () -> computeTuned(in, job))));
         } finally {
             if (before == null) {
                 JOB.remove();
@@ -2759,6 +2768,10 @@ final class Roadmap {
         Map<String, Integer> laterVersion = laterVersions(state);
 
         Map<String, Integer> abilities = state.abilityPlan();
+        // the tree read once for the run; each milestone scores with the nodes it will have,
+        // the chosen items below with the ones you have now
+        TreeModel.Run treeRun = TreeModel.run();
+        TreeModel.use(treeRun == null ? null : treeRun.at(state.level()));
         java.util.Set<String> placesShown = new java.util.HashSet<>();
         List<Step> steps = new ArrayList<>();
         int prev = level - 1;
@@ -2813,6 +2826,8 @@ final class Roadmap {
                 continue;
             }
             phase(1);
+            // the ability tree you will have by then: your nodes now, the plan's up to this level
+            TreeModel.use(treeRun == null ? null : treeRun.at(m));
             long perfPools = Perf.start();
             Build.Memo memo = Build.memo();
             if (memo != null) {

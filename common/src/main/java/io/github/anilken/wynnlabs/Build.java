@@ -261,12 +261,13 @@ final class Build {
     /**
      * Everything {@link #compute(Inputs)} needs from the game, read on the game thread: the level
      * and class, what you wear and carry as model pieces, the points you placed, and which worn
-     * pieces actually work (their requirements met). The pieces carry their stats; the
+     * pieces actually work (their requirements met), and the ability tree you have now as the
+     * model reads it ({@link TreeModel}, null when unknown). The pieces carry their stats; the
      * optimiser never reads the game.
      */
     record Inputs(int level, Klass cls, int earned, Map<String, Damage.Piece> worn,
                   Map<String, List<Damage.Piece>> cands, java.util.Set<String> carried, int[] assignedNow,
-                  Map<String, Damage.Piece> working) {}
+                  Map<String, Damage.Piece> working, TreeModel.Overlay tree) {}
 
     static Plan compute() {
         return compute(prepare());
@@ -344,14 +345,17 @@ final class Build {
                 working.put(slot, null);
             }
         }
-        return new Inputs(level, cls, earned, worn, cands, carried, assignedNow, working);
+        // the nodes you have now: the spells you can cast, their costs, your summons
+        TreeModel.Run tree = TreeModel.run();
+        return new Inputs(level, cls, earned, worn, cands, carried, assignedNow, working,
+                tree == null ? null : tree.at(level));
     }
 
     /** The plan from {@link #prepare}'s snapshot: the optimiser, safe off the game thread. */
     static Plan compute(Inputs in) {
         Damage.CLASS_FOR_THREAD.set(in.cls());
         try {
-            return computeFrom(in);
+            return TreeModel.with(in.tree(), () -> computeFrom(in));
         } finally {
             Damage.CLASS_FOR_THREAD.remove();
         }
@@ -1119,10 +1123,13 @@ final class Build {
         }
     }
 
-    /** A set as its slots and pieces in the map's order (the order the model sums them in), the level and the points. */
+    /**
+     * A set as its slots and pieces in the map's order (the order the model sums them in), the
+     * level, the points and the ability tree in force (TreeModel: another level's tree scores otherwise).
+     */
     private static String memoKey(Map<String, Damage.Piece> build, int level, int earned) {
         StringBuilder k = new StringBuilder(256);
-        k.append(level).append('/').append(earned);
+        k.append(level).append('/').append(earned).append('/').append(TreeModel.key().hashCode());
         for (var e : build.entrySet()) {
             k.append(';').append(e.getKey()).append('=').append(e.getValue() == null ? "-" : e.getValue().key());
         }

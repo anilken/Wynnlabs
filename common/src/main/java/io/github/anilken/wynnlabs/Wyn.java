@@ -636,6 +636,11 @@ final class Wyn {
 
     /** The class's ability tree, or null when Wynntils has none for it. Converted once per tree. */
     static List<AbilityNode> abilityTree(Klass cls) {
+        GameState gs = GameState.current();
+        if (!gs.running()) {
+            // a recorded game: its own tree (the live one asks here, so not for it)
+            return gs instanceof LiveGameState ? null : gs.abilityTree();
+        }
         return guard(Feature.ABILITIES, () -> {
             ClassType c = cls == null ? null : ClassType.valueOf(cls.name());
             AbilityTreeInfo tree = Models.AbilityTree.getAbilityTree(c);
