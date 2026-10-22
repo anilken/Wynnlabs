@@ -273,7 +273,7 @@
     "where": "bank acct:Account Bank p. 1#26",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Önce Trade Market'te göster (~640-656 E), sonra listele · Fiyat henüz yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Panic Attack %-14.6)"
+    "note": "Önce Trade Market'te göster (~640-656 E), sonra listele · Fiyat henüz yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Panic Attack %-12.1)"
   },
   {
     "where": "bank acct:Account Bank p. 1#27",
@@ -1659,7 +1659,7 @@
     "where": "bank char:char0003:Character Bank p. 3#5",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-7.5)"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-5.0)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#6",
@@ -1887,7 +1887,7 @@
     "where": "bank char:char0003:Character Bank p. 6#4",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-7.5)"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Rayshyroth's Knowledge %-5.0)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#5",
@@ -1911,7 +1911,7 @@
     "where": "bank char:char0003:Character Bank p. 6#8",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Czytash's Compass %-6.6)"
+    "note": "Blacksmith'e sat: olasılıkların hiçbirinin fiyatı yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Czytash's Compass %-3.9)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#9",

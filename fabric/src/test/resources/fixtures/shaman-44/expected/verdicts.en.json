@@ -273,7 +273,7 @@
     "where": "bank acct:Account Bank p. 1#26",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Reveal it at the Trade Market first (~640-656 E), then list it there · No prices yet. No outcome helps your build (best: Panic Attack -14.6%)"
+    "note": "Reveal it at the Trade Market first (~640-656 E), then list it there · No prices yet. No outcome helps your build (best: Panic Attack -12.1%)"
   },
   {
     "where": "bank acct:Account Bank p. 1#27",
@@ -1659,7 +1659,7 @@
     "where": "bank char:char0003:Character Bank p. 3#5",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -7.5%)"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -5.0%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 3#6",
@@ -1887,7 +1887,7 @@
     "where": "bank char:char0003:Character Bank p. 6#4",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -7.5%)"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Rayshyroth's Knowledge -5.0%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#5",
@@ -1911,7 +1911,7 @@
     "where": "bank char:char0003:Character Bank p. 6#8",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Czytash's Compass -6.6%)"
+    "note": "Sell it to the Blacksmith: none of its outcomes has a price yet. No outcome helps your build (best: Czytash's Compass -3.9%)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#9",

@@ -1234,7 +1234,7 @@ final class AutoAdvice {
 
     /** The set bonus for n pieces, scored with the rule weights. */
     private static double setScore(SetData set, int n) {
-        if (n < 2) {
+        if (n < 1) {
             return 0;
         }
         double s = 0;
@@ -1283,7 +1283,7 @@ final class AutoAdvice {
         }
         var set = info.set().get();
         int n = setCount(set.name(), replaced) + 1;
-        return ", set: " + set.cleanName() + " " + n + "/" + set.pieces();
+        return ", set: " + set.cleanName() + " " + n + "/" + set.full();
     }
 
     /**

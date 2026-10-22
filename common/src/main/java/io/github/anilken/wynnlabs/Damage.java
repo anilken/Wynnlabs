@@ -533,14 +533,15 @@ final class Damage {
             weapon.stats().forEach((k, v) -> s.merge(k, v, Double::sum));
             health += weapon.health();
         }
-        // Set bonuses: n pieces of one set add that set's bonus for n (Morph, Adventurer's, …)
+        // Set bonuses: n pieces of one set add that set's bonus for n (Morph, Adventurer's, …);
+        // a ring in both hands is two, and some sets pay from one piece (Goblin, Black Catalyst)
         for (var e : new java.util.ArrayList<>(s.entrySet())) {
             if (!e.getKey().startsWith(SET)) {
                 continue;
             }
             var set = SETS.get(e.getKey().substring(SET.length()));
             int n = (int) Math.round(e.getValue());
-            var bonus = set == null || n < 2 ? null : set.bonusFor(n);
+            var bonus = set == null || n < 1 ? null : set.bonusFor(n);
             if (bonus != null) {
                 bonus.minor().forEach(sv -> s.merge(sv.key(), (double) sv.value(), Double::sum));
             }
