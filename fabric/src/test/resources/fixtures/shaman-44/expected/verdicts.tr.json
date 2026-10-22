@@ -69,7 +69,7 @@
     "where": "bag 15",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Sundown Poncho %-3.7). Blacksmith'e sat (takas edilemez)"
+    "note": "Hiçbir olasılık build'ine yaramıyor (en iyisi: Sundown Poncho %-3.2). Blacksmith'e sat (takas edilemez)"
   },
   {
     "where": "bag 16",
@@ -273,7 +273,7 @@
     "where": "bank acct:Account Bank p. 1#26",
     "name": "Unidentified Bracelet",
     "verdict": "SELL",
-    "note": "Önce Trade Market'te göster (~640-656 E), sonra listele · Fiyat henüz yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Panic Attack %-14.6)"
+    "note": "Önce Trade Market'te göster (~640-656 E), sonra listele · Fiyat henüz yok. Hiçbir olasılık build'ine yaramıyor (en iyisi: Panic Attack %-14.3)"
   },
   {
     "where": "bank acct:Account Bank p. 1#27",
@@ -1881,7 +1881,7 @@
     "where": "bank char:char0003:Character Bank p. 6#3",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "Önce Trade Market'te göster (~76-79 E), sonra listele · Beklenen ~13 EB (1/5 olasılığın fiyatı var). Hiçbir olasılık build'ine yaramıyor (en iyisi: Hailstone %-0.8)"
+    "note": "Önce Trade Market'te göster (~76-79 E), sonra listele · Beklenen ~13 EB (1/5 olasılığın fiyatı var). Hiçbir olasılık build'ine yaramıyor (en iyisi: Hailstone %+0.4)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#4",
@@ -1899,7 +1899,7 @@
     "where": "bank char:char0003:Character Bank p. 6#6",
     "name": "Unidentified Chestplate",
     "verdict": "SELL",
-    "note": "Önce Trade Market'te göster (~76-79 E), sonra listele · Beklenen ~13 EB (1/5 olasılığın fiyatı var). Hiçbir olasılık build'ine yaramıyor (en iyisi: Hailstone %-0.8)"
+    "note": "Önce Trade Market'te göster (~76-79 E), sonra listele · Beklenen ~13 EB (1/5 olasılığın fiyatı var). Hiçbir olasılık build'ine yaramıyor (en iyisi: Hailstone %+0.4)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 6#7",

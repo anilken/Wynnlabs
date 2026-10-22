@@ -125,17 +125,19 @@ final class ClassProfiles {
         return out;
     }
 
-    /** Element scores: spell conversions plus the archetype's mastery nodes. */
+    /**
+     * Element scores: spell conversions plus the archetype's mastery nodes, and "neutral" for the
+     * plain damage part of the spells (no element of its own: Strength and Dexterity raise it).
+     * A mastery counts about as much as one spell's conversion: at 1 each it outweighed every
+     * spell, and an Archer's gear was held to two elements its spells barely use.
+     */
     private static Map<String, Double> elements(JsonArray spells, String archetype) {
         Map<String, Double> score = new HashMap<>();
         for (var e : spells) {
             JsonObject s = e.getAsJsonObject();
             double share = s.get("share").getAsDouble();
-            s.getAsJsonObject("conv").entrySet().forEach(c -> {
-                if (!c.getKey().equals("neutral")) {
-                    score.merge(c.getKey(), share * c.getValue().getAsDouble(), Double::sum);
-                }
-            });
+            s.getAsJsonObject("conv").entrySet().forEach(c ->
+                    score.merge(c.getKey(), share * c.getValue().getAsDouble(), Double::sum));
         }
         var tree = Wyn.abilityTree(Wyn.classType());
         if (tree != null && archetype != null && !archetype.isEmpty()) {
@@ -143,7 +145,7 @@ final class ClassProfiles {
                 String a = n.archetype() == null ? "" : n.archetype();
                 String name = n.name().toLowerCase(Locale.ROOT);
                 if (archetype.equalsIgnoreCase(a) && name.endsWith(" mastery")) {
-                    score.merge(name.replace(" mastery", ""), 1.0, Double::sum);
+                    score.merge(name.replace(" mastery", ""), 0.3, Double::sum);
                 }
             }
         }
@@ -177,6 +179,8 @@ final class ClassProfiles {
             return change;
         }
         Map<String, Double> el = elements(spells, archetype);
+        double neutral = el.getOrDefault("neutral", 0.0);
+        el.remove("neutral");
         List<String> top = new ArrayList<>(el.keySet());
         top.sort((a, b) -> Double.compare(el.get(b), el.get(a)));
         List<String> main = top.subList(0, Math.min(2, top.size()));
@@ -217,6 +221,14 @@ final class ClassProfiles {
         JsonObject shopping = new JsonObject();
         JsonArray pref = new JsonArray();
         main.forEach(e -> pref.add(SKILL_OF.get(e)));
+        // spells that are mostly plain damage: Dexterity and Strength raise every hit of it
+        if (neutral > 0 && (top.isEmpty() || neutral >= el.get(top.get(0)))) {
+            for (String sk : List.of("DEXTERITY", "STRENGTH")) {
+                if (!pref.contains(new com.google.gson.JsonPrimitive(sk))) {
+                    pref.add(sk);
+                }
+            }
+        }
         if (!main.contains("water")) {
             pref.add("INTELLIGENCE");           // cheaper spells help every class
         }

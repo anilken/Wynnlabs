@@ -1235,15 +1235,31 @@ final class Roadmap {
         return out;
     }
 
-    /** The piece's requirements in skills outside {@code preferred}. */
-    private static int offPoints(ItemData info, List<String> preferred) {
+    /**
+     * The points the piece's requirements ask for in skills outside {@code preferred}, beyond
+     * what the set already holds there ({@code cover}: assigned plus the gear's, per skill; null
+     * counts every requirement point).
+     */
+    static int offPoints(ItemData info, List<String> preferred, double[] cover) {
         int off = 0;
         for (var r : info.requirements().skills()) {
             if (!preferred.contains(r.skill().name())) {
-                off += r.points();
+                double have = cover == null ? 0 : cover[r.skill().ordinal()];
+                off += (int) Math.max(0, Math.ceil(r.points() - have));
             }
         }
         return off;
+    }
+
+    /** The skill points you placed, by skill; null while the Character Info menu has not shown them. */
+    private static int[] assignedPoints(GameState state) {
+        int[] a = new int[SkillKind.values().length];
+        int sum = 0;
+        for (SkillKind s : SkillKind.values()) {
+            a[s.ordinal()] = state.assigned(s);
+            sum += a[s.ordinal()];
+        }
+        return sum > 0 ? a : null;
     }
 
     /** The build's score with {@code cand} in {@code slot} and the skill points spread anew; NaN if it cannot be worn. */
@@ -1723,9 +1739,10 @@ final class Roadmap {
         List<String> preferred = Rules.list("shopping", "preferredSkills");
         List<Integer> levels = in.nowOnly() ? List.of(level) : milestones(level);
         int last = levels.get(levels.size() - 1);
-        // the off-skill limit, tiers and sources go by each milestone's level (maxOff, badTiers,
-        // badSources): the pool holds what the last milestone allows, each milestone filters again
-        int maxOffLast = maxOff(last);
+        // tiers and sources go by each milestone's level (badTiers, badSources): the pool holds
+        // what the last milestone allows, each milestone filters again. The off-skill limit is
+        // only checked there, against that milestone's skill points: a piece asking for 60
+        // Dexterity costs nothing off-skill where the spread holds 80 of it anyway
         List<String> badTiersLast = badTiers(last);
 
         // Candidates per slot, once
@@ -1746,9 +1763,6 @@ final class Roadmap {
             if (need != null && need != Klass.NONE && need != cls) {
                 return;
             }
-            if (offPoints(info, preferred) > maxOffLast) {
-                return;
-            }
             cands.computeIfAbsent(t, k -> new ArrayList<>()).add(info);
         });
 
@@ -1762,7 +1776,9 @@ final class Roadmap {
         Map<String, Damage.Piece> wornNow = plan == null ? null
                 : new LinkedHashMap<>(plan.worn() != null ? plan.worn() : plan.pieces());
         Map<String, String> placed = new LinkedHashMap<>();     // slot type name → build slot of its latest pick
-        int[] prevAlloc = null;                                // the last milestone's set's skill points
+        // the last milestone's set's skill points; before the first, the ones you placed (when the
+        // Character Info menu showed them), so "now" does not quietly take your Defence away
+        int[] prevAlloc = assignedPoints(state);
         // piece key → its row number and reasons from the milestone that first picked it
         Map<String, Double> firstGain = new HashMap<>();
         Map<String, List<String>> firstWhy = new HashMap<>();
@@ -1854,11 +1870,19 @@ final class Roadmap {
                 // a later milestone only weighs gear made for around that level: a piece 20 levels
                 // below it is not the pick there, and trying every piece up to Lv 120 took seconds
                 int floor = m == level ? Integer.MIN_VALUE : m - (int) Rules.sub("shopping", "milestoneWindow", 20);
+                // what this milestone's set already holds per skill (its points and the gear's): a
+                // requirement within it asks for nothing more
+                double[] cover = allocM == null ? null : Build.cover(baseline, allocM);
                 for (ItemData info : cands.getOrDefault(t, List.of())) {
                     if (wornNames.contains(info.name().toLowerCase(java.util.Locale.ROOT))
-                            || info.requirements().level() < floor || badTiers.contains(info.tier().name())
-                            || offPoints(info, preferred) > maxOff) {
-                        trace(m, t, info, "skip: worn / below window / tier / off-skill " + offPoints(info, preferred) + ">" + maxOff);
+                            || info.requirements().level() < floor || badTiers.contains(info.tier().name())) {
+                        trace(m, t, info, "skip: worn / below window / tier");
+                        continue;
+                    }
+                    // the weapon decides the element, so it is never thrown out for its skills
+                    int off = t.isWeapon() ? 0 : offPoints(info, preferred, cover);
+                    if (off > maxOff) {
+                        trace(m, t, info, "skip: off-skill " + off + " points past the set's > " + maxOff);
                         continue;
                     }
                     if (!affordable.test(info)) {
@@ -1932,7 +1956,7 @@ final class Roadmap {
                         // a nudge toward what players actually pick (rules.community)
                         sc += Rules.communityBonus(info.name());
                         // and away from what needs a skill reset in town
-                        if (slotUsed != null && Build.needsRespec(baseline, allocM, slotUsed, Damage.piece(info), earnedThen)) {
+                        if (slotUsed != null && Build.needsRespec(baseline, prevAlloc, slotUsed, Damage.piece(info), earnedThen)) {
                             sc -= Rules.sub("shopping", "respecPenaltyPercent", 3);
                         }
                         String srcP = Shopping.sourceOf(info);
@@ -2031,7 +2055,7 @@ final class Roadmap {
                             }
                             // judged: a pick that undoes the last milestone's skill points pays for it
                             double full = (judged(fe, prevAlloc, m) / baseJ - 1) * 100 + Rules.communityBonus(info.name());
-                            if (Build.needsRespec(baseline, allocM, slotUsed, Damage.piece(info), earnedThen)) {
+                            if (Build.needsRespec(baseline, prevAlloc, slotUsed, Damage.piece(info), earnedThen)) {
                                 full -= Rules.sub("shopping", "respecPenaltyPercent", 3);
                             }
                             if (full < Rules.sub("shopping", "minGainPercent", 10)
@@ -2274,7 +2298,9 @@ final class Roadmap {
                     firstWhy.put(pick.key(), rowWhy.getOrDefault(slotName, List.of()));
                 }
             }
-            Build.Eval set = baseline == null ? null : Build.allocate(baseline, m, earnedThen);
+            // the spread shown and carried on: the greedy one polished by moving points between
+            // skills (once per milestone; the candidates above are ranked with the quick one)
+            Build.Eval set = baseline == null ? null : Build.allocateBest(baseline, m, earnedThen);
             if (set != null) {
                 prevAlloc = set.allocation();
             }

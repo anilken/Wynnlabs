@@ -264,7 +264,9 @@ final class Shopping {
                 }
                 s = (best / plan.result().objective() - 1) * 100 + Rules.communityBonus(info.name());
                 String rs = Build.slotOf(t, 0);
-                if (rs != null && Build.needsRespec(plan.pieces(), plan.allocation(), rs, cand,
+                // against the points you placed: the plan's own spread uses every point, so any
+                // requirement looked like a reset
+                if (rs != null && Build.needsRespec(plan.pieces(), plan.wornAllocation(), rs, cand,
                         Math.max(plan.earned(), (Math.min(Math.max(level, lv), 101) - 1) * 2))) {
                     s -= Rules.sub("shopping", "respecPenaltyPercent", 3);
                 }
