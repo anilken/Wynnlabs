@@ -209,6 +209,10 @@ final class TreePlanner {
                         || !legal(n, taken, byId, byName, adj, all.get(0).id())) {
                     continue;
                 }
+                // not before the level it asks for (an ultimate at 90): the points to buy it come at a level
+                if (n.requiredLevel() > Math.max(level, levelFor(spent + n.cost() - bonus))) {
+                    continue;
+                }
                 // look ahead: worth of good nodes this one brings closer
                 double ahead = 0;
                 for (int nb : adj.getOrDefault(n.id(), Set.of())) {
