@@ -55,8 +55,10 @@ final class Feedback {
         // Compare the planned build with the same build carrying your choice in that slot
         Map<String, Damage.Piece> mine = new java.util.LinkedHashMap<>(before.pieces());
         mine.put(slot, chosen);
-        Build.Eval e = Build.allocate(mine, Wyn.level(),
-                before.earned());
+        // scored as the plan was: with the ability tree you have now
+        TreeModel.Run tree = TreeModel.run();
+        Build.Eval e = TreeModel.with(tree == null ? null : tree.at(Wyn.level()),
+                () -> Build.allocate(mine, Wyn.level(), before.earned()));
         if (e == null) {
             return;
         }
@@ -75,7 +77,8 @@ final class Feedback {
         }
         if (b.mainDps() > a.mainDps() * 1.05 && b.spellDps() <= a.spellDps()) {
             // capped against the archetype's own weight: a Summoner's main attack stays a side act
-            double def = ClassProfiles.mainAttackWeight(Wyn.classType().name(), TreePlanner.chosen());
+            // (the one you lean to when the planner has none, as the class profile is made for)
+            double def = ClassProfiles.mainAttackWeight(Wyn.classType().name(), TreeModel.archetype());
             nudge(model, "mainAttackWeight", def, nudged, L.t("wynnlabs.feedback.main_attack"));
         }
         // the log keeps the model weights nudged, not their names in the language of the day

@@ -31,8 +31,18 @@ final class TreePlanner {
     private TreePlanner() {}
 
     /**
-     * The archetype with the most nodes you have unlocked; the tree's first archetype when none
-     * is unlocked (or Wynntils has not read the tree yet); "" when the tree is unknown.
+     * Below this level a character with no archetype node leans to none yet (its main attack
+     * carries it). A method, not a field: a field added by a hot swap keeps no value.
+     */
+    static int leanLevel() {
+        return 10;
+    }
+
+    /**
+     * The archetype with the most nodes you have unlocked; "" when the tree is unknown, and below
+     * Lv {@link #leanLevel} while no archetype node is unlocked (a Lv 3 character leans to none:
+     * the tree's first archetype was no lean, only the tree's order). From that level on with
+     * none unlocked (Wynntils has not read them yet), the tree's first.
      */
     static String mostUnlocked() {
         List<String> archs = archetypes();
@@ -46,6 +56,9 @@ final class TreePlanner {
             if (!a.isEmpty() && have.contains(n.name())) {
                 count.merge(a, 1, Integer::sum);
             }
+        }
+        if (count.isEmpty() && Wyn.level() < leanLevel()) {
+            return "";
         }
         String best = archs.get(0);
         for (String a : archs) {
@@ -68,8 +81,9 @@ final class TreePlanner {
         return new ArrayList<>(out);
     }
 
+    /** The class's tree: the game state's, else Wynntils' own ({@link TreeModel#tree}); empty when unknown. */
     private static List<AbilityNode> nodes() {
-        var tree = GameState.current().abilityTree();
+        var tree = TreeModel.tree();
         return tree == null ? List.of() : tree;
     }
 
@@ -408,6 +422,7 @@ final class TreePlanner {
         String next = i + 1 < archs.size() ? archs.get(i + 1) : "";
         JsonObject tree = new JsonObject();
         tree.addProperty("archetype", next);
+        tree.add("guess", com.google.gson.JsonNull.INSTANCE);  // your choice: never guessed again
         JsonObject change = new JsonObject();
         change.add("tree", tree);
         Rules.update(change);

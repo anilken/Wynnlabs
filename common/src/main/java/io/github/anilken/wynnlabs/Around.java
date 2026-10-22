@@ -104,10 +104,12 @@ final class Around {
         plan.items().forEach((slot, name) -> state.allGear().filter(i -> i.name().equals(name)).findFirst()
                 .ifPresent(i -> set.put(slot, Damage.piece(i))));
         int earned = Math.max(0, (Math.min(level, 101) - 1) * 2);
-        return Tuning.with(tuning, () -> {
+        // with the ability tree you will have at that level, as the road map scores it
+        TreeModel.Run tree = TreeModel.run();
+        return Tuning.with(tuning, () -> TreeModel.with(tree == null ? null : tree.at(level), () -> {
             Build.Eval e = Build.allocate(set, level, earned);
             return e == null ? Double.NaN : Roadmap.judged(e, null, level);
-        });
+        }));
     }
 
     /** Stops the search running (Cancel): the result before it stays. */
