@@ -1371,7 +1371,7 @@
     "where": "bank char:char0001:Character Bank p. 2#4",
     "name": "Relic Chestplate",
     "verdict": "SELL",
-    "note": "En iyi build'de Nemract's Ruin var. Blacksmith'e sat (market ~20 EB)"
+    "note": "En iyi build'de Nemract's Ruin var. %89 roll: en ucuz ilandan (~20 EB) fazlasına gider, Trade Market'e koy"
   },
   {
     "where": "bank char:char0001:Character Bank p. 2#5",
@@ -1437,7 +1437,7 @@
     "where": "bank char:char0003:Character Bank p. 1#8",
     "name": "Darkiron Ring",
     "verdict": "SELL",
-    "note": "En iyi build'de Warsong, Precious var. Blacksmith'e sat (market ~16 EB)"
+    "note": "En iyi build'de Warsong, Precious var. %100 roll: en ucuz ilandan (~16 EB) fazlasına gider, Trade Market'e koy"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#9",
@@ -1725,7 +1725,7 @@
     "where": "bank char:char0003:Character Bank p. 4#28",
     "name": "Ozoth's Breath",
     "verdict": "SELL",
-    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (market ~21 EB)"
+    "note": "Listedeki Precious daha iyi (Lv. 41). %95 roll: en ucuz ilandan (~21 EB) fazlasına gider, Trade Market'e koy"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#29",
@@ -1755,7 +1755,7 @@
     "where": "bank char:char0003:Character Bank p. 5#0",
     "name": "Hellion",
     "verdict": "SELL",
-    "note": "Listedeki Precious daha iyi (Lv. 41). Blacksmith'e sat (fiyat henüz bilinmiyor)"
+    "note": "Listedeki Precious daha iyi (Lv. 41). Trade Market'te sat: %81 roll, Blacksmith'in vereceğinden fazla eder (fiyat henüz yok)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#1",
