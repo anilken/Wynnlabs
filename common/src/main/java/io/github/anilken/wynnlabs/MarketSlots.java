@@ -230,8 +230,8 @@ final class MarketSlots {
             }
             double gain = AutoAdvice.gain(s);
             String kind = state.view(s).map(AutoAdvice::kindOf).orElse("unknown");
-            all.add(new Candidate(s, Double.isNaN(gain) ? priced(ItemJson.clean(s.getHoverName().getString())) : gain,
-                    copies(kind, s.getCount())));
+            double worth = Double.isNaN(gain) ? priced(ItemJson.clean(s.getHoverName().getString())) : gain;
+            all.add(new Candidate(s, highRoll(s) ? first(worth) : worth, copies(kind, s.getCount())));
         }
         Map<String, String> keys = new HashMap<>();     // bank id → what the item is, as for a stack
         for (Vault.Group g : Vault.groups()) {
@@ -282,11 +282,25 @@ final class MarketSlots {
     private static double bankGain(Vault.Stored s) {
         if (s.item() != null) {
             ItemStack st = Vault.stackOf(s);
+            if (highRoll(st)) {
+                double g = AutoAdvice.gain(st);
+                return first(Double.isNaN(g) ? priced(s.name()) : g);
+            }
             if (toMarket(AutoAdvice.uncapped(st)) && !Double.isNaN(AutoAdvice.gain(st))) {
                 return AutoAdvice.gain(st);
             }
         }
         return priced(s.name());
+    }
+
+    /** A high roll (rules.trade.keepRollPercent) never goes to the Blacksmith: it takes an order first. */
+    private static boolean highRoll(ItemStack stack) {
+        return GameState.current().view(stack).map(AutoAdvice::highRoll).orElse(false);
+    }
+
+    /** A worth that ranks ahead of every ordinary one, keeping their order among themselves. */
+    private static double first(double worth) {
+        return 1e12 + (Double.isNaN(worth) ? 0 : worth);
     }
 
     /** The item's market price after the fee, NaN when it has none. */

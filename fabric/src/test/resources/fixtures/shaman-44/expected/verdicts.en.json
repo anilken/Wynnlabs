@@ -1371,7 +1371,7 @@
     "where": "bank char:char0001:Character Bank p. 2#4",
     "name": "Relic Chestplate",
     "verdict": "SELL",
-    "note": "The best build uses Nemract's Ruin. Sell it to the Blacksmith (market ~20 EB)"
+    "note": "The best build uses Nemract's Ruin. Rolled 89%: it sells for more than the cheapest listing (~20 EB), so list it on the Trade Market"
   },
   {
     "where": "bank char:char0001:Character Bank p. 2#5",
@@ -1437,7 +1437,7 @@
     "where": "bank char:char0003:Character Bank p. 1#8",
     "name": "Darkiron Ring",
     "verdict": "SELL",
-    "note": "The best build uses Warsong, Precious. Sell it to the Blacksmith (market ~16 EB)"
+    "note": "The best build uses Warsong, Precious. Rolled 100%: it sells for more than the cheapest listing (~16 EB), so list it on the Trade Market"
   },
   {
     "where": "bank char:char0003:Character Bank p. 1#9",
@@ -1725,7 +1725,7 @@
     "where": "bank char:char0003:Character Bank p. 4#28",
     "name": "Ozoth's Breath",
     "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (market ~21 EB)"
+    "note": "Precious on the list is better (Lv. 41). Rolled 95%: it sells for more than the cheapest listing (~21 EB), so list it on the Trade Market"
   },
   {
     "where": "bank char:char0003:Character Bank p. 4#29",
@@ -1755,7 +1755,7 @@
     "where": "bank char:char0003:Character Bank p. 5#0",
     "name": "Hellion",
     "verdict": "SELL",
-    "note": "Precious on the list is better (Lv. 41). Sell it to the Blacksmith (no price yet)"
+    "note": "Precious on the list is better (Lv. 41). Sell it on the Trade Market: rolled 81%, it is worth more than the Blacksmith pays (no price yet)"
   },
   {
     "where": "bank char:char0003:Character Bank p. 5#1",

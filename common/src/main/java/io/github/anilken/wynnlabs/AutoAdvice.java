@@ -86,6 +86,13 @@ final class AutoAdvice {
         return e;
     }
 
+    /** Rolled at least rules.trade.keepRollPercent overall (0 turns it off): never for the Blacksmith. */
+    static boolean highRoll(ItemView gear) {
+        double min = Rules.sub("trade", "keepRollPercent", 80);
+        ItemView.Rolled r = gear.rolled();
+        return min > 0 && r != null && r.hasOverall() && r.overallPercent() >= min;
+    }
+
     /** {@code price} less the market fee. */
     private static double afterFee(double price) {
         return price * (1 - marketFee() / 100.0);
@@ -503,6 +510,7 @@ final class AutoAdvice {
         }
         // A known market price beats every guess below; a week-old one is no longer known
         GameState state = GameState.current();
+        boolean high = highRoll(gear);
         Prices.Price price = state.price(gear.data().name());
         if (price == null || state.now() - price.seen() > 7L * 24 * 3600 * 1000) {
             state.requestPrices(List.of(gear.data().name()));
@@ -521,6 +529,11 @@ final class AutoAdvice {
                     return market(new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_market_price", why,
                             Prices.fmt(typical))), afterFee(typical));
                 }
+                if (high) {
+                    // the price is the cheapest listing, any roll: a high roll sells for more than that
+                    return market(new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_market_high_roll", why,
+                            Math.round(gear.rolled().overallPercent()), Prices.fmt(typical))), afterFee(typical));
+                }
                 return new Advice.Entry(Verdict.SELL, L.t("wynnlabs.auto.sell_blacksmith_market_price", why, Prices.fmt(typical)));
             }
         }
@@ -534,6 +547,8 @@ final class AutoAdvice {
             where = L.t("wynnlabs.auto.sell_perfect");
         } else if (Rules.list("trade", "valuableTiers").contains(tier)) {
             where = L.t("wynnlabs.auto.sell_valuable_tier", nice(tier));
+        } else if (high) {
+            where = L.t("wynnlabs.auto.sell_market_high_roll_no_price", Math.round(pct));
         } else if (tier.equals("LEGENDARY") && pct >= Rules.sub("trade", "legendaryMinPercent", 80)
                 || pct >= Rules.sub("trade", "anyMinPercent", 95)) {
             // without a price the 30 EB rule cannot be checked: say so instead of guessing
