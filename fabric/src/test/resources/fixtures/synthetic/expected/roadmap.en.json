@@ -104,6 +104,13 @@
               "tradable": true
             },
             {
+              "name": "Cave In",
+              "level": 21,
+              "gain": 58.9,
+              "from": "Trade Market",
+              "tradable": true
+            },
+            {
               "name": "Gestation",
               "level": 23,
               "gain": 58.9,
@@ -111,10 +118,17 @@
               "tradable": true
             },
             {
-              "name": "Cave In",
-              "level": 21,
-              "gain": 58.9,
-              "from": "Trade Market",
+              "name": "The Saltwater Rune",
+              "level": 24,
+              "gain": 45.8,
+              "from": "dropped by mobs",
+              "tradable": true
+            },
+            {
+              "name": "Flux and Flow",
+              "level": 25,
+              "gain": 45.6,
+              "from": "loot chest",
               "tradable": true
             },
             {
@@ -129,6 +143,20 @@
               "level": 18,
               "gain": 37.4,
               "from": "Detlas merchant",
+              "tradable": true
+            },
+            {
+              "name": "Ivy Whip",
+              "level": 19,
+              "gain": 2.1,
+              "from": "The Hunger of Gerts Part 1 quest",
+              "tradable": false
+            },
+            {
+              "name": "Butterfly Wings",
+              "level": 19,
+              "gain": -24.4,
+              "from": "Trade Market",
               "tradable": true
             }
           ]
@@ -198,6 +226,20 @@
               "gain": 18.7,
               "from": "Detlas merchant",
               "tradable": true
+            },
+            {
+              "name": "Tarnish",
+              "level": 21,
+              "gain": 17.0,
+              "from": "dropped by mobs",
+              "tradable": true
+            },
+            {
+              "name": "Foundation",
+              "level": 20,
+              "gain": 13.6,
+              "from": "Decrepit Sewers dungeon",
+              "tradable": true
             }
           ]
         },
@@ -244,6 +286,20 @@
               "level": 15,
               "gain": -3.6,
               "from": "dropped by mobs",
+              "tradable": true
+            },
+            {
+              "name": "Cephalothorax",
+              "level": 16,
+              "gain": -5.5,
+              "from": "The Hunger of Gerts Part 1 quest",
+              "tradable": false
+            },
+            {
+              "name": "Straw Helmet",
+              "level": 20,
+              "gain": -6.5,
+              "from": "Decrepit Sewers dungeon",
               "tradable": true
             }
           ]
@@ -292,6 +348,13 @@
               "gain": -5.9,
               "from": "Decrepit Sewers dungeon",
               "tradable": true
+            },
+            {
+              "name": "Tepid Plate",
+              "level": 20,
+              "gain": -6.5,
+              "from": "loot chest",
+              "tradable": true
             }
           ]
         },
@@ -338,6 +401,13 @@
               "level": 18,
               "gain": -8.4,
               "from": "Decrepit Sewers dungeon",
+              "tradable": true
+            },
+            {
+              "name": "Steel Toed Boots",
+              "level": 19,
+              "gain": -9.1,
+              "from": "loot chest",
               "tradable": true
             }
           ]
@@ -386,6 +456,13 @@
               "gain": -0.8,
               "from": "dropped by mobs",
               "tradable": true
+            },
+            {
+              "name": "Zap",
+              "level": 20,
+              "gain": -1.2,
+              "from": "loot chest",
+              "tradable": true
             }
           ]
         },
@@ -432,6 +509,13 @@
               "level": 16,
               "gain": -1.9,
               "from": "dropped by mobs",
+              "tradable": true
+            },
+            {
+              "name": "Zap",
+              "level": 20,
+              "gain": -2.3,
+              "from": "loot chest",
               "tradable": true
             }
           ]
@@ -593,10 +677,24 @@
               "tradable": false
             },
             {
+              "name": "Reckless Vessel",
+              "level": 29,
+              "gain": -1.7,
+              "from": "Detlas merchant",
+              "tradable": true
+            },
+            {
               "name": "Arakadicus' Body",
               "level": 21,
               "gain": -2.5,
               "from": "Detlas merchant",
+              "tradable": true
+            },
+            {
+              "name": "Black Tunic",
+              "level": 33,
+              "gain": -3.6,
+              "from": "Decrepit Sewers dungeon",
               "tradable": true
             },
             {
@@ -666,6 +764,13 @@
               "gain": -25.6,
               "from": "Detlas merchant",
               "tradable": true
+            },
+            {
+              "name": "Boundary",
+              "level": 26,
+              "gain": -27.6,
+              "from": "The Hunger of Gerts Part 1 quest",
+              "tradable": false
             }
           ]
         },
@@ -713,6 +818,13 @@
               "gain": -12.8,
               "from": "dropped by mobs",
               "tradable": true
+            },
+            {
+              "name": "Santa Earmuffs",
+              "level": 30,
+              "gain": -16.1,
+              "from": "Detlas merchant",
+              "tradable": true
             }
           ]
         },
@@ -758,6 +870,13 @@
               "name": "Panorama",
               "level": 30,
               "gain": -3.1,
+              "from": "loot chest",
+              "tradable": true
+            },
+            {
+              "name": "Tribal Pants",
+              "level": 18,
+              "gain": -9.0,
               "from": "loot chest",
               "tradable": true
             }
@@ -829,6 +948,13 @@
               "gain": -1.5,
               "from": "The Hunger of Gerts Part 1 quest",
               "tradable": false
+            },
+            {
+              "name": "Crystal Necklace",
+              "level": 28,
+              "gain": -4.0,
+              "from": "dropped by mobs",
+              "tradable": true
             }
           ]
         },
@@ -887,6 +1013,13 @@
               "tradable": true
             },
             {
+              "name": "Giant's Kneecap",
+              "level": 30,
+              "gain": -5.8,
+              "from": "Decrepit Sewers dungeon",
+              "tradable": true
+            },
+            {
               "name": "Hood of the Resistance",
               "level": 32,
               "gain": -7.3,
@@ -898,13 +1031,6 @@
               "level": 29,
               "gain": -7.5,
               "from": "Detlas merchant",
-              "tradable": true
-            },
-            {
-              "name": "Giant's Kneecap",
-              "level": 30,
-              "gain": -5.8,
-              "from": "Decrepit Sewers dungeon",
               "tradable": true
             },
             {
@@ -922,10 +1048,31 @@
               "tradable": true
             },
             {
+              "name": "Tarnhelm",
+              "level": 33,
+              "gain": -10.4,
+              "from": "loot chest",
+              "tradable": true
+            },
+            {
+              "name": "Advancement",
+              "level": 29,
+              "gain": -12.3,
+              "from": "The Hunger of Gerts Part 1 quest",
+              "tradable": false
+            },
+            {
               "name": "Neolithic",
               "level": 20,
               "gain": -15.2,
               "from": "dropped by mobs",
+              "tradable": true
+            },
+            {
+              "name": "Brainy Beanie",
+              "level": 22,
+              "gain": -23.0,
+              "from": "Trade Market",
               "tradable": true
             },
             {
@@ -1001,6 +1148,20 @@
               "level": 33,
               "gain": -10.6,
               "from": "Decrepit Sewers dungeon",
+              "tradable": true
+            },
+            {
+              "name": "The Juggernaut",
+              "level": 33,
+              "gain": -14.1,
+              "from": "Detlas merchant",
+              "tradable": true
+            },
+            {
+              "name": "Streak",
+              "level": 30,
+              "gain": -15.5,
+              "from": "Detlas merchant",
               "tradable": true
             },
             {
@@ -1086,6 +1247,20 @@
               "tradable": true
             },
             {
+              "name": "Alternator",
+              "level": 32,
+              "gain": -1.6,
+              "from": "loot chest",
+              "tradable": true
+            },
+            {
+              "name": "Conductor",
+              "level": 25,
+              "gain": -2.0,
+              "from": "Detlas merchant",
+              "tradable": true
+            },
+            {
               "name": "Foundation",
               "level": 20,
               "gain": -14.8,
@@ -1140,18 +1315,18 @@
               "tradable": true
             },
             {
-              "name": "Mud",
-              "level": 31,
-              "gain": -1.4,
-              "from": "The Hunger of Gerts Part 1 quest",
-              "tradable": false
-            },
-            {
               "name": "Meanderthal",
               "level": 29,
               "gain": 0.0,
               "from": "Decrepit Sewers dungeon",
               "tradable": true
+            },
+            {
+              "name": "Mud",
+              "level": 31,
+              "gain": -1.4,
+              "from": "The Hunger of Gerts Part 1 quest",
+              "tradable": false
             },
             {
               "name": "Trouble Tamer",
@@ -1161,6 +1336,13 @@
               "tradable": false
             },
             {
+              "name": "Enhanced Coalwalkers",
+              "level": 31,
+              "gain": -3.0,
+              "from": "Detlas merchant",
+              "tradable": true
+            },
+            {
               "name": "Seal Breaker",
               "level": 34,
               "gain": -3.2,
@@ -1168,9 +1350,9 @@
               "tradable": false
             },
             {
-              "name": "Ado Saki",
-              "level": 20,
-              "gain": -15.4,
+              "name": "Cyclo",
+              "level": 21,
+              "gain": -8.0,
               "from": "loot chest",
               "tradable": true
             },
@@ -1182,11 +1364,25 @@
               "tradable": false
             },
             {
+              "name": "Ado Saki",
+              "level": 20,
+              "gain": -15.4,
+              "from": "loot chest",
+              "tradable": true
+            },
+            {
               "name": "Stingy",
               "level": 20,
               "gain": -19.2,
               "from": "The Hunger of Gerts Part 1 quest",
               "tradable": false
+            },
+            {
+              "name": "Aged Golden Boots",
+              "level": 22,
+              "gain": -27.1,
+              "from": "Ragni merchant",
+              "tradable": true
             }
           ]
         },
@@ -1247,6 +1443,20 @@
               "level": 25,
               "gain": -0.3,
               "from": "dropped by mobs",
+              "tradable": true
+            },
+            {
+              "name": "Timelocked Spark",
+              "level": 28,
+              "gain": -0.3,
+              "from": "The Hunger of Gerts Part 1 quest",
+              "tradable": false
+            },
+            {
+              "name": "Rusted Ring",
+              "level": 31,
+              "gain": -0.3,
+              "from": "loot chest",
               "tradable": true
             },
             {
@@ -1316,6 +1526,13 @@
               "gain": -17.4,
               "from": "dropped by mobs",
               "tradable": true
+            },
+            {
+              "name": "Voltage Insignia",
+              "level": 32,
+              "gain": -21.9,
+              "from": "Detlas merchant",
+              "tradable": true
             }
           ]
         },
@@ -1361,6 +1578,13 @@
               "name": "Lake",
               "level": 23,
               "gain": -0.8,
+              "from": "dropped by mobs",
+              "tradable": true
+            },
+            {
+              "name": "Barrage",
+              "level": 28,
+              "gain": -0.9,
               "from": "dropped by mobs",
               "tradable": true
             }
@@ -1409,6 +1633,20 @@
               "level": 33,
               "gain": -3.0,
               "from": "dropped by mobs",
+              "tradable": true
+            },
+            {
+              "name": "Fortitude",
+              "level": 28,
+              "gain": -3.1,
+              "from": "dropped by mobs",
+              "tradable": true
+            },
+            {
+              "name": "Life Charge",
+              "level": 30,
+              "gain": -3.4,
+              "from": "loot chest",
               "tradable": true
             }
           ]

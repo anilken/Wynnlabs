@@ -624,8 +624,9 @@ final class MilestonePicks {
         }
 
         /**
-         * The comparison panel: the pick first, then the best others (up to five in all), weaker
-         * ones too: a cheaper piece a few % behind is still a choice. Empty without a build plan.
+         * The comparison panel: the pick first, then the best others by gain, weaker ones too (a
+         * cheaper piece a few % behind is still a choice), some the Trade Market sells and some
+         * you can wear today ({@link PanelOptions#others}). Empty without a build plan.
          */
         private List<Option> panel(Build.Eval before, Damage.Piece topPiece) {
             List<Option> options = new ArrayList<>();
@@ -638,36 +639,17 @@ final class MilestonePicks {
             if (first != null) {
                 options.add(first);
             }
-            pool.stream()
+            Map<String, String> slotOf = new HashMap<>();
+            List<ItemData> ranked = pool.stream()
                     .filter(o -> o[0] != chosen && o[2] != null && CandidateRules.panelAllows((ItemData) o[0], m))
                     .sorted((p1, p2) -> Double.compare((double) p2[1], (double) p1[1]))
-                    .limit((long) Rules.sub("roadmap", "alternatives", 6))
-                    .forEach(o -> {
-                        Option op = RoadmapRows.option((ItemData) o[0], (String) o[2], run.baseline, before, m, earned);
-                        if (op != null) {
-                            options.add(op);
-                        }
-                    });
-            // the best few may all sit above your level: keep some you can wear today in
-            // the panel too, even when they lose a little (the panel says so in red)
-            int nowMin = (int) Rules.sub("roadmap", "alternativesNow", 3);
-            long nowHave = options.stream().filter(op -> op.info().requirements().level() <= run.level).count();
-            if (nowHave < nowMin) {
-                java.util.Set<String> shown = new java.util.HashSet<>();
-                options.forEach(op -> shown.add(op.info().name()));
-                pool.stream()
-                        .filter(o -> o[0] != chosen && o[2] != null && CandidateRules.panelAllows((ItemData) o[0], m)
-                                && ((ItemData) o[0]).requirements().level() <= run.level
-                                && !shown.contains(((ItemData) o[0]).name()))
-                        .sorted((p1, p2) -> Double.compare((double) p2[1], (double) p1[1]))
-                        .limit(nowMin - nowHave)
-                        .forEach(o -> {
-                            Option op = RoadmapRows.option((ItemData) o[0], (String) o[2], run.baseline, before, m, earned);
-                            if (op != null) {
-                                options.add(op);
-                            }
-                        });
-            }
+                    .map(o -> {
+                        slotOf.putIfAbsent(((ItemData) o[0]).name(), (String) o[2]);
+                        return (ItemData) o[0];
+                    })
+                    .toList();
+            options.addAll(PanelOptions.others(ranked,
+                    info -> RoadmapRows.option(info, slotOf.get(info.name()), run.baseline, before, m, earned), run.level));
             return options;
         }
     }

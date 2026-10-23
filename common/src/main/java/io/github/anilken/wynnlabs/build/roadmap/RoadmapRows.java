@@ -117,26 +117,13 @@ final class RoadmapRows {
         if (first != null) {
             options.add(first);
             List<ItemData> pool = t != null && t.isWeapon() ? SetJudge.weaponPool(pools) : pools.get(t);
-            List<Option> others = new ArrayList<>();
-            // the pool is ranked: its first eight are judged for the panel's four (all forty
-            // took most of a map that the beam cache had otherwise made quick)
-            int tried = 0;
-            for (ItemData info : pool == null ? List.<ItemData>of() : pool) {
-                if (tried >= 8) {
-                    break;
-                }
-                if (info == pick || info.name().equals(pick.name()) || info.requirements().level() > m
-                        || !CandidateRules.panelAllows(info, m) || Exclusive.clash(build, slot, Exclusive.group(info)) != null) {
-                    continue;
-                }
-                tried++;
-                Option op = option(info, slot, build, before, m, earned);
-                if (op != null) {
-                    others.add(op);
-                }
-            }
-            others.sort((x, y) -> Double.compare(y.gain(), x.gain()));
-            others.stream().limit((long) Rules.sub("roadmap", "alternatives", 4)).forEach(options::add);
+            // the pool is ranked: only its best and the Trade Market's best are judged (all
+            // forty took most of a map that the beam cache had otherwise made quick)
+            List<ItemData> ranked = (pool == null ? List.<ItemData>of() : pool).stream()
+                    .filter(info -> info != pick && !info.name().equals(pick.name()) && info.requirements().level() <= m
+                            && CandidateRules.panelAllows(info, m) && Exclusive.clash(build, slot, Exclusive.group(info)) == null)
+                    .toList();
+            options.addAll(PanelOptions.others(ranked, info -> option(info, slot, build, before, m, earned), m));
         }
         String src = Shopping.sourceOf(pick);
         List<String> detail = new ArrayList<>();
