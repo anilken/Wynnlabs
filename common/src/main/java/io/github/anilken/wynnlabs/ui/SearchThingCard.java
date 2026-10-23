@@ -182,7 +182,18 @@ final class SearchThingCard extends MenuPaint {
     /** The badge drawn as a thing's picture, in a slot of {@code size}. */
     static void picture(GuiGraphics g, Entry e, int x, int y, int size) {
         String badge = Things.badge(e);
-        Kit.seal(g, x, y, size, size, Theme.sourceFill(badge));
+        // a plain rounded square in the badge's colour: the seal's stamped look reads as an award at this size
+        int c = Theme.sourceFill(badge);
+        int r = Math.max(2, size / 8);
+        g.fill(x + r, y, x + size - r, y + size, c);
+        g.fill(x, y + r, x + size, y + size - r, c);
+        for (int i = 1; i < r; i++) {
+            int in = r - (int) Math.round(Math.sqrt((double) r * r - (double) (r - i) * (r - i)));
+            g.fill(x + in, y + i, x + r, y + i + 1, c);
+            g.fill(x + size - r, y + i, x + size - in, y + i + 1, c);
+            g.fill(x + in, y + size - i - 1, x + r, y + size - i, c);
+            g.fill(x + size - r, y + size - i - 1, x + size - in, y + size - i, c);
+        }
         int icon = size >= 30 ? 16 : 8;
         Art.icon(g, badge, x + (size - icon) / 2, y + (size - icon) / 2, icon, Theme.CREAM);
     }
