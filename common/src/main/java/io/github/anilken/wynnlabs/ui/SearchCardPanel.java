@@ -290,9 +290,11 @@ final class SearchCardPanel extends MenuPaint {
     private void trackButton(GuiGraphics g, int bx, int y, int bw, String label, String mob, int mx, int my) {
         boolean on = TrackedMobs.get().has(mob);
         boolean hover = over(mx, my) && mx >= bx && mx < bx + bw && my >= y && my < y + 11;
-        int state = hover ? Kit.HOVER : Kit.REST;
+        // gold while tracking, wood otherwise; the label drawn as on every wooden button (cream
+        // with a shadow, ink on gold), not in paper ink, which is unreadable on wood
+        int state = on ? Kit.ON : hover ? Kit.HOVER : Kit.REST;
         Kit.button(g, bx, y, bw, 11, state);
-        ink(g, label, bx + 4, y + 2, on ? Theme.GOOD : Kit.buttonText(state));
+        onWood(g, label, bx + 4, y + 2, state);
         click(bx, y, bw, 11, () -> {
             boolean now = TrackedMobs.get().toggle(mob);
             menu.flash(L.t(now ? "wynnlabs.search.track_on" : "wynnlabs.search.track_off", mob));
