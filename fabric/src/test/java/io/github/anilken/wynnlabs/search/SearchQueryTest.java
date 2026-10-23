@@ -28,7 +28,7 @@ class SearchQueryTest {
     @Test
     void emptyTextListsEverything() {
         SearchQuery.Result r = SearchQuery.of("").run(SearchFixtures.index(), FACTS);
-        assertEquals(SearchFixtures.index().entries().size(), r.hits().size());
+        assertEquals(SearchFixtures.index().all().size(), r.hits().size());
         assertEquals(Hit.Match.ALL, r.hits().get(0).match());
     }
 
@@ -62,7 +62,7 @@ class SearchQueryTest {
         SearchQuery q = new SearchQuery("", SearchQuery.Sort.PRICE, Set.of(), 0, Integer.MAX_VALUE, false, false, false);
         List<String> n = names(q.run(SearchFixtures.index(), FACTS));
         assertEquals(List.of("Accursed Effigy", "About-Face", "Papyrus"), n.subList(0, 3));
-        assertEquals(SearchFixtures.index().entries().size(), n.size());
+        assertEquals(SearchFixtures.index().all().size(), n.size());
     }
 
     @Test
@@ -92,15 +92,19 @@ class SearchQueryTest {
         }
     }
 
-    /** The spec's latency: 100 queries on a full-size index, median under 5 ms and the slowest under 20 ms. */
+    /**
+     * The spec's latency: 100 queries on a full-size index (items, the world's things and a
+     * wiki-size mob list), median under 5 ms and the slowest under 20 ms.
+     */
     @Test
     void latencyOnAFullSizeIndex(@TempDir Path dir) throws Exception {
         SearchFixtures.writeSynthetic(dir);
-        ItemIndex idx = ItemIndex.read(dir, List.of());
+        ItemIndex idx = ItemIndex.read(dir, List.of(), SearchFixtures.syntheticWiki());
         List<String> queries = new ArrayList<>();
         String[] seeds = {"ar", "bel", "cor", "dra", "elfen", "gorha", "isjor", "kalum", "morn", "nexor", "paqua", "rissol",
             "torum", "velwyn", "xanyr", "zel", "mana steal", "life", "spell dam", "walk speed", "essence", "corel", "draek",
-            "papirus", "abdomen", "belcor", "wynzel", "solris", "umvel", "qua"};
+            "papirus", "abdomen", "belcor", "wynzel", "solris", "umvel", "qua", "blacksmith", "cinfras", "infested pit",
+            "reggie", "talk", "aledar", "croaking", "copper", "shard", "forest"};
         for (int i = 0; i < 100; i++) {
             String s = seeds[i % seeds.length];
             queries.add(i < seeds.length ? s : s.substring(0, Math.max(1, s.length() - i % 3)));
@@ -119,8 +123,8 @@ class SearchQueryTest {
         Arrays.sort(times);
         double median = times[times.length / 2] / 1e6;
         double max = times[times.length - 1] / 1e6;
-        System.out.printf("[search] %d queries on %d items: median %.2f ms, slowest %.2f ms%n",
-                times.length, idx.entries().size(), median, max);
+        System.out.printf("[search] %d queries on %d items and %d things: median %.2f ms, slowest %.2f ms%n",
+                times.length, idx.entries().size(), idx.all().size() - idx.entries().size(), median, max);
         assertTrue(median < 5, "median " + median + " ms");
         assertTrue(max < 20, "slowest " + max + " ms");
     }

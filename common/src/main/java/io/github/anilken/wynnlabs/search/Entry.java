@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * One searchable item, read from Wynntils' cached data. Names stay in English as in the data.
+ * One searchable entry: an item read from Wynntils' cached data, or a thing of the world (a mob,
+ * a place, a dungeon, a service, ...; see {@link #thing}). Names stay in English as in the data.
  *
  * @param type        the data's sub type: "chestplate", "bow", "weapon_tome", a material's profession; "ingredient" for ingredients
  * @param level       the level requirement (0 when none)
@@ -29,7 +30,68 @@ public record Entry(String name, Kind kind, String type, int level, String tier,
         List<Origin> origins, List<Stat> stats, List<String> professions, Map<String, Integer> modifiers,
         String set) {
 
-    /** Untradable items and quest items never reach the Trade Market. */
+    /** A thing's links in {@link #origins}: a place it is at (areas, name = the place's label). */
+    public static final String AT = "at";
+    /** A thing's links: an item it drops, gives or is made into (name = the item). */
+    public static final String ITEM = "item";
+    /** A thing's links: where it is in words (a region, the wiki's location text). */
+    public static final String WHERE = "where";
+    /** A thing's links: a quest it belongs to (an NPC's quest, a quest's own name). */
+    public static final String QUEST = "quest";
+    /** A thing's links: its id in its own tab (a discovery's id), as the name. */
+    public static final String ID = "id";
+    /** A thing's links: who to talk to first (a quest's start NPC, with its place when known). */
+    public static final String NPC = "npc";
+
+    /**
+     * A thing of the world (not an item): its kind's {@code type} ("dungeon", "city", "wiki" for a
+     * mob only the wiki lists), its level (0 when unknown) and its links as {@link Origin}s of the
+     * types {@link #AT}, {@link #ITEM}, {@link #WHERE}, {@link #QUEST} and {@link #NPC}. Never
+     * tradable; no icon, stats or class.
+     */
+    public static Entry thing(String name, Kind kind, String type, int level, List<Origin> links) {
+        return new Entry(name, kind, type, level, null, -1, Klass.NONE, Map.of(), null, "world", null,
+                new Icon(null, Float.NaN, null, null), List.copyOf(links), List.of(), List.of(), Map.of(), null);
+    }
+
+    /** True for items (gear, ingredients, ...); false for the world's things. */
+    public boolean item() {
+        return kind.item();
+    }
+
+    /**
+     * What the tab keeps to find this entry again: an item's name, or a thing's kind and name
+     * ("mob:Reggie"), since a mob, a place and an item can share a name.
+     */
+    public String key() {
+        return item() ? name : kind.name().toLowerCase(java.util.Locale.ROOT) + ":" + name;
+    }
+
+    /** A thing's links of one type, in order. */
+    public List<Origin> links(String type) {
+        return origins.stream().filter(o -> o.type().equals(type)).toList();
+    }
+
+    /** Every area of a thing's {@link #AT} links (and its start NPC's), in order. */
+    public List<Area> places() {
+        List<Area> out = null;
+        List<Area> only = List.of();
+        for (Origin o : origins) {
+            if ((o.type().equals(AT) || o.type().equals(NPC)) && !o.areas().isEmpty()) {
+                if (only.isEmpty()) {
+                    only = o.areas();               // the usual single list, handed out as is (drawn every frame)
+                } else {
+                    if (out == null) {
+                        out = new java.util.ArrayList<>(only);
+                    }
+                    out.addAll(o.areas());
+                }
+            }
+        }
+        return out == null ? only : out;
+    }
+
+    /** Untradable items, quest items and things never reach the Trade Market. */
     public boolean tradable() {
         return restriction == null || restriction.equals("none");
     }

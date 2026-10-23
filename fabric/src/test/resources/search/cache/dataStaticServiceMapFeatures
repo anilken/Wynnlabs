@@ -1,0 +1,74 @@
+[
+  {
+    "featureId": "blacksmith-34",
+    "categoryId": "wynntils:service:blacksmith",
+    "location": {
+      "x": -459,
+      "y": 50,
+      "z": -4929
+    }
+  },
+  {
+    "featureId": "blacksmith-32",
+    "categoryId": "wynntils:service:blacksmith",
+    "location": {
+      "x": -464,
+      "y": 50,
+      "z": -4926
+    }
+  },
+  {
+    "featureId": "blacksmith-47",
+    "categoryId": "wynntils:service:blacksmith",
+    "location": {
+      "x": 487,
+      "y": 67,
+      "z": -1597
+    }
+  },
+  {
+    "featureId": "blacksmith-33",
+    "categoryId": "wynntils:service:blacksmith",
+    "location": {
+      "x": -464,
+      "y": 50,
+      "z": -4918
+    }
+  },
+  {
+    "featureId": "woodworking-station-23",
+    "categoryId": "wynntils:service:profession:woodworking",
+    "location": {
+      "x": 478,
+      "y": 66,
+      "z": -1572
+    }
+  },
+  {
+    "featureId": "woodworking-station-16",
+    "categoryId": "wynntils:service:profession:woodworking",
+    "location": {
+      "x": -436,
+      "y": 46,
+      "z": -4937
+    }
+  },
+  {
+    "featureId": "emerald-merchant-63",
+    "categoryId": "wynntils:service:merchant:emerald",
+    "location": {
+      "x": -425,
+      "y": 47,
+      "z": -4927
+    }
+  },
+  {
+    "featureId": "emerald-merchant-62",
+    "categoryId": "wynntils:service:merchant:emerald",
+    "location": {
+      "x": -427,
+      "y": 47,
+      "z": -4910
+    }
+  }
+]

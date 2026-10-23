@@ -150,6 +150,9 @@ public final class Theme {
             case "trophy" -> TIER_MYTHIC;           // a raid, a lootrun, an event
             case "building-bank", "package" -> GOOD; // already yours
             case "pick" -> GREEN_LO;                // gathering
+            case "home" -> TIER_LEGENDARY;          // a town or a city
+            case "user" -> ACCENT;                  // an NPC
+            case "compass" -> TIER_RARE;            // a secret discovery
             default -> INK_3;                       // unknown
         };
     }

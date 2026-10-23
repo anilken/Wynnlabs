@@ -170,6 +170,23 @@ public final class QuestWiki {
         return Dirs.config().resolve("wiki");
     }
 
+    /** Where the wiki's pages are kept for a week ({@code config/wynnlabs/wiki}); other readers keep their files there too. */
+    public static Path cacheDir() {
+        return dir();
+    }
+
+    /**
+     * One call to the wiki's API ({@code api.php?<query>}, with the same User-Agent and time-outs
+     * as the quest pages); the reply's body. Callers check {@link #on()} first.
+     */
+    public static String api(String query) throws Exception {
+        HttpResponse<String> r = HTTP.send(HttpRequest.newBuilder(URI.create("https://wynncraft.wiki.gg/api.php?" + query))
+                .timeout(Duration.ofSeconds(30))
+                .header("User-Agent", "WynnLabs (Minecraft client mod; quest guide; https://github.com/anilken/wynnlabs)").GET().build(),
+                HttpResponse.BodyHandlers.ofString());
+        return r.body();
+    }
+
     /** The raw wikitext: from disk when under a week old, else from the wiki (then saved). */
     public static String page(String quest) throws Exception {
         Path f = dir().resolve(quest.replaceAll("[^A-Za-z0-9 ._'-]", "_") + ".txt");

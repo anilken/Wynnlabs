@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import io.github.anilken.wynnlabs.model.Klass;
+import io.github.anilken.wynnlabs.quests.QuestWiki;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -22,40 +23,51 @@ import java.util.Map;
 /**
  * Every searchable item, read once from Wynntils' downloaded data ({@code wynntils/cache/dataStatic*}:
  * gear, ingredients, materials, tomes, charms, plus the item obtain list and sets), together with
- * the {@link Places} its sources point at and the matcher's prepared names. Immutable; built off
- * the game thread by {@link #startLoading}, read by {@link #get}. A missing gear file gives an
- * empty index whose {@link #missing} says why.
+ * the {@link Places} its sources point at, the world's {@link Things} (mobs, places, dungeons,
+ * services, quests, ...) and the matcher's prepared names. Immutable; built off the game thread
+ * by {@link #startLoading}, read by {@link #get}. A missing gear file gives an empty index whose
+ * {@link #missing} says why.
  */
 public final class ItemIndex {
 
     public static final String GEAR = "dataStaticGear";
 
-    private static final ItemIndex LOADING = new ItemIndex(List.of(), Map.of(), Places.EMPTY, "loading");
+    private static final ItemIndex LOADING = new ItemIndex(List.of(), List.of(), Map.of(), Places.EMPTY, "loading");
     private static volatile ItemIndex current = LOADING;
     private static volatile boolean started;
 
     private final List<Entry> entries;
+    private final List<Entry> all;
     private final Map<String, Entry> byName;
+    private final Map<String, Entry> byKey;
     private final Map<Kind, Integer> counts;
     private final Map<String, List<String>> sets;
     private final Places places;
     private final String missing;
     final ItemMatch.Prepared prepared;
 
-    ItemIndex(List<Entry> entries, Map<String, List<String>> sets, Places places, String missing) {
+    ItemIndex(List<Entry> entries, List<Entry> things, Map<String, List<String>> sets, Places places, String missing) {
         this.entries = List.copyOf(entries);
+        List<Entry> both = new ArrayList<>(this.entries);
+        both.addAll(things);
+        this.all = List.copyOf(both);
         this.places = places;
         this.missing = missing;
         Map<String, Entry> names = new HashMap<>();
+        Map<String, Entry> keys = new HashMap<>();
         Map<Kind, Integer> c = new EnumMap<>(Kind.class);
-        for (Entry e : this.entries) {
-            names.putIfAbsent(e.name().toLowerCase(Locale.ROOT), e);
+        for (Entry e : this.all) {
+            if (e.item()) {
+                names.putIfAbsent(e.name().toLowerCase(Locale.ROOT), e);
+            }
+            keys.putIfAbsent(e.key().toLowerCase(Locale.ROOT), e);
             c.merge(e.kind(), 1, Integer::sum);
         }
         this.byName = names;
+        this.byKey = keys;
         this.counts = Collections.unmodifiableMap(c);
         this.sets = sets;
-        this.prepared = ItemMatch.prepare(this.entries);
+        this.prepared = ItemMatch.prepare(this.all);
     }
 
     /** The index now: the loaded one, or an empty one whose {@link #missing} is "loading" or the failure. */
@@ -65,7 +77,9 @@ public final class ItemIndex {
 
     /**
      * Reads the index on its own thread, once per game session: {@code gameDir/wynntils/cache}
-     * and the loot chests (shipped list plus {@code userChests}, which may be missing).
+     * and the loot chests (shipped list plus {@code userChests}, which may be missing), with the
+     * wiki's mob list as kept on disk; when that list is a week old (and wiki guides are on) it is
+     * read again from the wiki afterwards and the index rebuilt with it.
      */
     public static synchronized void startLoading(Path gameDir, Path userChests) {
         if (started) {
@@ -73,10 +87,22 @@ public final class ItemIndex {
         }
         started = true;
         Thread t = new Thread(() -> {
+            Path cache = gameDir.resolve("wynntils/cache");
             try {
-                current = read(gameDir.resolve("wynntils/cache"), LootChests.load(userChests));
+                List<Area> chests = LootChests.load(userChests);
+                Path wikiDir = QuestWiki.cacheDir();
+                current = read(cache, chests, MobWiki.cached(wikiDir));
+                if (MobWiki.fresh(wikiDir) || !QuestWiki.on()) {
+                    return;
+                }
+                List<MobWiki.Mob> wiki = MobWiki.load();
+                if (!wiki.isEmpty()) {
+                    current = read(cache, chests, wiki);
+                }
             } catch (Throwable e) {
-                current = new ItemIndex(List.of(), Map.of(), Places.EMPTY, "error: " + e);
+                if (current.missing() != null) {
+                    current = new ItemIndex(List.of(), List.of(), Map.of(), Places.EMPTY, "error: " + e);
+                }
             }
         }, "wynnlabs-item-index");
         t.setDaemon(true);
@@ -84,11 +110,16 @@ public final class ItemIndex {
         t.start();
     }
 
-    /** Reads every file now, on the calling thread (the loading thread and tests). */
+    /** Reads every file now, on the calling thread (the loading thread and tests), without the wiki's mobs. */
     public static ItemIndex read(Path cacheDir, List<Area> chests) {
+        return read(cacheDir, chests, List.of());
+    }
+
+    /** Reads every file now, with the wiki's mob list (empty: only the mobs the item data names). */
+    public static ItemIndex read(Path cacheDir, List<Area> chests, List<MobWiki.Mob> wiki) {
         JsonElement gear = readJson(cacheDir, GEAR);
         if (gear == null || !gear.isJsonObject()) {
-            return new ItemIndex(List.of(), Map.of(), Places.EMPTY, "no " + GEAR);
+            return new ItemIndex(List.of(), List.of(), Map.of(), Places.EMPTY, "no " + GEAR);
         }
         Map<String, String> setOf = new HashMap<>();
         Map<String, List<String>> parts = new HashMap<>();
@@ -112,7 +143,8 @@ public final class ItemIndex {
         addAll(out, readJson(cacheDir, "dataStaticMaterials"), Kind.MATERIAL, obtain, setOf);
         addAll(out, readJson(cacheDir, "dataStaticTomes"), Kind.TOME, obtain, setOf);
         addAll(out, readJson(cacheDir, "dataStaticCharms"), Kind.CHARM, obtain, setOf);
-        return new ItemIndex(out, parts, Places.read(cacheDir, chests), null);
+        Places places = Places.read(cacheDir, chests);
+        return new ItemIndex(out, Things.read(cacheDir, out, places, wiki), parts, places, null);
     }
 
     /** A cache file as JSON, or null when it is missing or unreadable. */
@@ -316,8 +348,14 @@ public final class ItemIndex {
 
     // ---- reading the index ----
 
+    /** The items only (gear to charm), in the data's order. */
     public List<Entry> entries() {
         return entries;
+    }
+
+    /** Everything searchable: the items, then the world's things. */
+    public List<Entry> all() {
+        return all;
     }
 
     /** The item of this name (any case), or null. */
@@ -325,7 +363,12 @@ public final class ItemIndex {
         return name == null ? null : byName.get(name.toLowerCase(Locale.ROOT));
     }
 
-    /** How many items of each kind (kinds with none are absent). */
+    /** The entry of this {@link Entry#key} (any case; an item's key is its name), or null. */
+    public Entry byKey(String key) {
+        return key == null ? null : byKey.get(key.toLowerCase(Locale.ROOT));
+    }
+
+    /** How many entries of each kind (kinds with none are absent). */
     public Map<Kind, Integer> counts() {
         return counts;
     }

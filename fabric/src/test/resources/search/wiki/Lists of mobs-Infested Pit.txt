@@ -1,0 +1,15 @@
+{{List of mobs}}
+Trimmed copy of a wiki list page for the tests.
+{{MobTable}}
+|-
+| [[File:PitCrawler.png|100px]]
+| [[Pit Crawler]]
+| 50
+| 2,100
+| {{AI|Melee}}
+| -
+| -
+| {{WynnIcon|Spider Eye}} [[Accursed Effigy]]
+| {{CBIcon|Dungeon|1}} [[Infested Pit]]
+|-
+{{MobTable/End}}
