@@ -30,11 +30,17 @@ public final class MapMarkPaint {
             }
             top = cz - 7;
         } else {
+            // the map's own colours are earthy, so the badge colour is lifted towards white and
+            // the area gets a white halo outside a thick ring: it reads on sand, grass and water
             int r = MapMark.radiusPx(m.radius(), pxPerBlock);
-            int fill = (m.focus() || hovered ? 0x60 : 0x38) << 24 | rgb;
-            int ring = (m.focus() ? 0xFF : 0xC0) << 24 | rgb;
-            disc(g, cx, cz, r, fill, ring, m.focus() || hovered ? 2 : 1);
-            top = cz - r;
+            boolean strong = m.focus() || hovered;
+            int lr = (rgb >> 16 & 0xFF) + ((0xFF - (rgb >> 16 & 0xFF)) * 2 / 5);
+            int lg = (rgb >> 8 & 0xFF) + ((0xFF - (rgb >> 8 & 0xFF)) * 2 / 5);
+            int lb = (rgb & 0xFF) + ((0xFF - (rgb & 0xFF)) * 2 / 5);
+            int bright = lr << 16 | lg << 8 | lb;
+            disc(g, cx, cz, r + 2, 0, (strong ? 0xFF : 0xD0) << 24 | 0xFFFFFF, 2);
+            disc(g, cx, cz, r, (strong ? 0x70 : 0x50) << 24 | bright, 0xFF000000 | bright, strong ? 4 : 3);
+            top = cz - r - 2;
         }
         if (hovered && m.label() != null) {
             Font font = Minecraft.getInstance().font;
