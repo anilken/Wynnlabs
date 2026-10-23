@@ -38,6 +38,8 @@ public final class Settings {
         LABELS.put("groundBeam", "wynnlabs.setting.groundBeam");
         LABELS.put("groundGlowShop", "wynnlabs.setting.groundGlowShop");
         LABELS.put("groundGlowNormal", "wynnlabs.setting.groundGlowNormal");
+        LABELS.put("mobTrack", "wynnlabs.setting.mobTrack");
+        LABELS.put("mobTrackSound", "wynnlabs.setting.mobTrackSound");
         LABELS.put("autoTree", "wynnlabs.setting.autoTree");
         LABELS.put("learning", "wynnlabs.setting.learning");
         LABELS.put("manaMeter", "wynnlabs.setting.manaMeter");
@@ -100,6 +102,10 @@ public final class Settings {
         DESC.put("groundGlowShop", "wynnlabs.setting_desc.groundGlowShop");
         CATEGORY.put("groundGlowNormal", "glow");
         DESC.put("groundGlowNormal", "wynnlabs.setting_desc.groundGlowNormal");
+        CATEGORY.put("mobTrack", "glow");
+        DESC.put("mobTrack", "wynnlabs.setting_desc.mobTrack");
+        CATEGORY.put("mobTrackSound", "glow");
+        DESC.put("mobTrackSound", "wynnlabs.setting_desc.mobTrackSound");
         CATEGORY.put("sellGlow", "glow");
         DESC.put("sellGlow", "wynnlabs.setting_desc.sellGlow");
         CATEGORY.put("verdictBadges", "glow");

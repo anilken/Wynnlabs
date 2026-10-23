@@ -18,6 +18,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
@@ -115,6 +116,12 @@ public final class NeoForgePlatform implements Platform {
             throw new IllegalStateException("HUD layer " + id + " added after RegisterGuiLayersEvent");
         }
         huds.add(new Hud(id, layer));
+    }
+
+    @Override
+    public void onWorldRender(WorldLayer layer) {
+        NeoForge.EVENT_BUS.addListener(RenderLevelStageEvent.AfterEntities.class,
+                e -> layer.render(e.getPoseStack(), Minecraft.getInstance().renderBuffers().bufferSource()));
     }
 
     @Override

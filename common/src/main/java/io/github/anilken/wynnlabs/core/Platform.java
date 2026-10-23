@@ -1,5 +1,6 @@
 package io.github.anilken.wynnlabs.core;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import io.github.anilken.wynnlabs.api.WynnLabs;
@@ -8,6 +9,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -54,6 +56,13 @@ public interface Platform {
     /** A layer drawn above the vanilla HUD, after the ones added before it. */
     void addHud(Identifier id, HudLayer layer);
 
+    /**
+     * Drawn into the world once a frame, after entities and before translucent terrain, with the
+     * depth of the terrain already there (so blocks hide what is behind them). The pose has no
+     * camera offset: positions are relative to the camera.
+     */
+    void onWorldRender(WorldLayer layer);
+
     /** The client left a server (or a world). */
     void onDisconnect(Runnable listener);
 
@@ -76,6 +85,12 @@ public interface Platform {
     @FunctionalInterface
     interface HudLayer {
         void render(GuiGraphics graphics, DeltaTracker delta);
+    }
+
+    /** A world layer: both loaders call it with the frame's pose and buffers. */
+    @FunctionalInterface
+    interface WorldLayer {
+        void render(PoseStack pose, MultiBufferSource buffers);
     }
 
     /**
