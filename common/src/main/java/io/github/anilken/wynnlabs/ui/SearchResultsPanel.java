@@ -60,23 +60,23 @@ final class SearchResultsPanel extends MenuPaint {
         return out;
     }
 
-    /** The empty box: the road map's missing pieces, then the recent searches. */
+    /** The empty box: the recent searches first (the quickest way back), then the road map's missing pieces. */
     List<Row> emptyRows(ItemIndex index) {
         List<Row> out = new ArrayList<>();
-        List<String> missing = tab.missingPieces();
-        if (!missing.isEmpty()) {
-            out.add(new Row(null, L.t("wynnlabs.search.roadmap_missing"), null));
-            for (String n : missing) {
+        List<String> recent = RecentSearches.get().names();
+        if (!recent.isEmpty()) {
+            out.add(new Row(null, L.t("wynnlabs.search.recent"), null));
+            for (String n : recent) {
                 Entry e = index.byName(n);
                 if (e != null) {
                     out.add(new Row(e, null, null));
                 }
             }
         }
-        List<String> recent = RecentSearches.get().names();
-        if (!recent.isEmpty()) {
-            out.add(new Row(null, L.t("wynnlabs.search.recent"), null));
-            for (String n : recent) {
+        List<String> missing = tab.missingPieces();
+        if (!missing.isEmpty()) {
+            out.add(new Row(null, L.t("wynnlabs.search.roadmap_missing"), null));
+            for (String n : missing) {
                 Entry e = index.byName(n);
                 if (e != null) {
                     out.add(new Row(e, null, null));
