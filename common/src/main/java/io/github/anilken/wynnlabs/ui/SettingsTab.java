@@ -311,7 +311,8 @@ final class SettingsTab extends MenuTab {
                     new String[] {"wynnlabs.settings.sec_text", "webFont", "menu_scale"}),
             "tips", List.of(
                     new String[] {"wynnlabs.settings.sec_advice", "itemAdvice", "altAdvice", "wornHint"},
-                    new String[] {"wynnlabs.settings.sec_tooltip", "powderHint", "tooltipPrice", "boxPrices", "bankHint"}),
+                    new String[] {"wynnlabs.settings.sec_tooltip", "powderHint", "tooltipPrice", "boxPrices", "bankHint",
+                            "sourceHint"}),
             "glow", List.of(
                     new String[] {"wynnlabs.settings.sec_bag", "glowUpgrade", "glowShop", "sellGlow", "verdictBadges",
                             "hotbarBadges"},
