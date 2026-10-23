@@ -1916,6 +1916,7 @@
   "wynnlabs.search.match_mob": "Dropped by %s",
   "wynnlabs.search.match_stat": "Rolls %s",
   "wynnlabs.search.roadmap_missing": "Missing from your road map",
+  "wynnlabs.search.pinned_many": "Pinned %s place on the map and compass|Pinned %s places on the map and compass",
   "wynnlabs.search.recent": "Recent searches",
   "wynnlabs.search.empty_hint": "Type an item, a mob or a stat. Once your road map is built, its missing pieces show here.",
   "wynnlabs.search.none": "No results. Try fewer filters.",

@@ -247,7 +247,15 @@ final class SearchCardPanel extends MenuPaint {
                 Kit.button(g, px, cy, 12, 12, ph ? Kit.HOVER : Kit.REST);
                 Art.icon(g, "map-pin", px + 2, cy + 2, 8, Kit.buttonText(ph ? Kit.HOVER : Kit.REST));
                 String label = text;
-                click(px, cy, 12, 12, () -> pin(a, label));
+                // a row of several places (loot chests, spawn areas) pins them all, nearest first
+                List<Area> places = s.areas();
+                click(px, cy, 12, 12, () -> {
+                    if (places.size() > 1) {
+                        pinAll(places);
+                    } else {
+                        pin(a, label);
+                    }
+                });
                 int row = i;
                 click(x, cy - 1, w - 14, rh, () -> {
                     picked = row;
@@ -301,6 +309,20 @@ final class SearchCardPanel extends MenuPaint {
             String at = "/compass at " + a.x() + " " + a.y() + " " + a.z();
             net.minecraft.client.Minecraft.getInstance().keyboardHandler.setClipboard(at);
             menu.flash(L.t("wynnlabs.screen.copied", at));
+        }
+    }
+
+    private void pinAll(List<Area> places) {
+        String what = entry.name().length() > 32 ? entry.name().substring(0, 32) : entry.name();
+        List<int[]> points = new java.util.ArrayList<>();
+        for (Area p : places) {
+            points.add(new int[] {p.x(), p.y(), p.z()});
+        }
+        int n = Waypoints.goAll(points, what);
+        if (n > 0) {
+            menu.flash(L.n("wynnlabs.search.pinned_many", n));
+        } else {
+            pin(places.get(0), what);
         }
     }
 

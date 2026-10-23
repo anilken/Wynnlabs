@@ -386,6 +386,31 @@ public final class Waypoints {
         }
     }
 
+    /**
+     * Several "go there" pins at once (the search tab's row of loot chests or spawn areas): the
+     * previous ones go first, like {@link #go}; how many were placed.
+     */
+    public static int goAll(List<int[]> points, String label) {
+        if (points.isEmpty()) {
+            return 0;
+        }
+        if (!go(points.get(0)[0], points.get(0)[1], points.get(0)[2], label)) {
+            return 0;
+        }
+        try {
+            var pins = Wyn.waypoints();
+            String what = label == null || label.isBlank() ? L.t("wynnlabs.waypoint.default_label")
+                    : label.length() > 32 ? label.substring(0, 32) : label;
+            for (int i = 1; i < points.size(); i++) {
+                int[] p = points.get(i);
+                add(pins, p[0], p[1], p[2], what, false);
+            }
+            return points.size();
+        } catch (Throwable t) {
+            return 1;
+        }
+    }
+
     /** Every point of a quest, in order, one on the map at a time (the previous quest's points go first). */
     public static int all(List<int[]> points, List<String> labels) {
         try {

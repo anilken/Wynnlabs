@@ -1916,6 +1916,7 @@
   "wynnlabs.search.match_mob": "%s düşürür",
   "wynnlabs.search.match_stat": "%s verir",
   "wynnlabs.search.roadmap_missing": "Yol haritanın eksikleri",
+  "wynnlabs.search.pinned_many": "%s yer haritaya ve pusulaya işaretlendi",
   "wynnlabs.search.recent": "Son aramalar",
   "wynnlabs.search.empty_hint": "Bir eşya, mob ya da stat yaz. Yol haritan kurulunca eksik parçalar burada görünür.",
   "wynnlabs.search.none": "Sonuç yok. Filtreleri azaltmayı dene.",
