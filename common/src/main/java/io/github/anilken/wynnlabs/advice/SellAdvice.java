@@ -119,12 +119,16 @@ final class SellAdvice {
     }
 
     static Advice.Entry sellBox(ItemView.Box box, String why) {
+        return BoxAdvice.boxRoute(box, boxChoice(box), why, 0, 0);
+    }
+
+    /** The way to sell a box: the Trade Market's reveal or the Blacksmith. */
+    static BoxRoutes.Choice boxChoice(ItemView.Box box) {
         // Boss altar and similar drops cannot be traded: if nothing in the box can, only the
         // Blacksmith takes it (The Scarecrow's Vest from Bovine Barn)
         String tier = box.tier().name();
         boolean valuable = Rules.list("trade", "valuableTiers").contains(tier) || tier.equals("LEGENDARY");
-        BoxRoutes.Choice c = BoxRoutes.choose(BoxAdvice.outcomes(box, null), marketFee(), revealMinProfit(), valuable);
-        return BoxAdvice.boxRoute(box, c, why, 0, 0);
+        return BoxRoutes.choose(BoxAdvice.outcomes(box, null), marketFee(), revealMinProfit(), valuable);
     }
 
     /** The market fee the advice takes off a sale, in % (rules.trade.marketFeePercent). */

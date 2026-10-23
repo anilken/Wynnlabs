@@ -76,7 +76,26 @@ final class BoxAdvice {
                 : L.t("wynnlabs.auto.box_unpriced_some", v.outcomes() - missing.size(), v.outcomes()));
     }
 
+    /** The tooltip's verdict and, when one was weighed, the route it came from (null otherwise). */
+    record Decision(Advice.Entry entry, BoxRoutes.Choice choice) {}
+
     static Advice.Entry box(ItemView.Box box, Klass cls, int level) {
+        return decide(box, cls, level).entry();
+    }
+
+    /** Sell it: the route {@link SellAdvice#boxChoice} picks, with {@code why}. */
+    private static Decision sell(ItemView.Box box, String why) {
+        BoxRoutes.Choice c = SellAdvice.boxChoice(box);
+        return new Decision(boxRoute(box, c, why, 0, 0), c);
+    }
+
+    /** A verdict that weighed no route (kept for an alt, too far ahead, nothing known). */
+    private static Decision plain(Advice.Entry e) {
+        return new Decision(e, null);
+    }
+
+    /** {@link #box}, with the route behind it: the box window's verdict chip reads the same call. */
+    static Decision decide(ItemView.Box box, Klass cls, int level) {
         int tooLow = (int) Rules.num("tooLowLevels", 4);
         int tooHigh = (int) Rules.num("tooHighLevels", 5);
         int low = box.low();
@@ -87,10 +106,10 @@ final class BoxAdvice {
                 Klass c = info.requirements().klass().orElse(info.slot().klass());
                 String alt = AltCharacters.altOfLevel(c, low, high);
                 if (alt != null) {
-                    return new Advice.Entry(Verdict.KEEP, L.t("wynnlabs.auto.box_for_alt", low, high, alt));
+                    return plain(new Advice.Entry(Verdict.KEEP, L.t("wynnlabs.auto.box_for_alt", low, high, alt)));
                 }
             }
-            return SellAdvice.sellBox(box, L.t("wynnlabs.auto.box_too_low", low, high));
+            return sell(box, L.t("wynnlabs.auto.box_too_low", low, high));
         }
         int fits = 0;
         int all = 0;
@@ -107,10 +126,10 @@ final class BoxAdvice {
                 Klass c = info.requirements().klass().orElse(info.slot().klass());
                 String alt = c == null ? null : AltCharacters.altOfClass(c, low, high);
                 if (alt != null) {
-                    return new Advice.Entry(Verdict.KEEP, L.t("wynnlabs.auto.box_other_class_alt", AltCharacters.className(c), alt));
+                    return plain(new Advice.Entry(Verdict.KEEP, L.t("wynnlabs.auto.box_other_class_alt", AltCharacters.className(c), alt)));
                 }
             }
-            return SellAdvice.sellBox(box, L.t("wynnlabs.auto.box_none_for_class", AltCharacters.className(cls)));
+            return sell(box, L.t("wynnlabs.auto.box_none_for_class", AltCharacters.className(cls)));
         }
         // If even the best outcome is weaker than what you wear, the box is for selling
         // the build model: does any outcome you could wear raise the build at its level? A box
@@ -132,14 +151,14 @@ final class BoxAdvice {
                 }
             }
             if (bestName != null && bestGain < Rules.num("boxMinGainPercent", 3)) {
-                return SellAdvice.sellBox(box, L.t("wynnlabs.auto.box_no_build_gain", bestName,
+                return sell(box, L.t("wynnlabs.auto.box_no_build_gain", bestName,
                         (bestGain >= 0 ? "+" : "") + Math.round(bestGain * 10) / 10.0));
             }
             wearName = bestName;
         }
         // too far ahead to identify now: kept for later only when an outcome will help (above)
         if (low > level + tooHigh) {
-            return new Advice.Entry(Verdict.KEEP, L.t("wynnlabs.auto.identify_near_level", low));
+            return plain(new Advice.Entry(Verdict.KEEP, L.t("wynnlabs.auto.identify_near_level", low)));
         }
         WornGear.Weakest wb = !GameState.current().inGame() ? null : WornGear.weakest(WornGear.worn(box.slot()));
         if (wb != null && wb.name() != null && all > 0) {
@@ -151,11 +170,11 @@ final class BoxAdvice {
                 }
             }
             if (bestOutcome < wb.score() - 0.5) {
-                return SellAdvice.sellBox(box, L.t("wynnlabs.auto.box_worn_better", wb.name()));
+                return sell(box, L.t("wynnlabs.auto.box_worn_better", wb.name()));
             }
         }
         if (all == 0) {
-            return new Advice.Entry(Verdict.IDENTIFY, L.t("wynnlabs.auto.box_identify", box.tier().identificationCost(high)));
+            return plain(new Advice.Entry(Verdict.IDENTIFY, L.t("wynnlabs.auto.box_identify", box.tier().identificationCost(high))));
         }
         // the one you would wear: the build's best pick, else the best-scoring outcome for you
         String wear = wearName;
@@ -170,11 +189,11 @@ final class BoxAdvice {
             }
         }
         if (wear == null) {
-            return new Advice.Entry(Verdict.IDENTIFY, L.t("wynnlabs.auto.box_identify", box.tier().identificationCost(high)));
+            return plain(new Advice.Entry(Verdict.IDENTIFY, L.t("wynnlabs.auto.box_identify", box.tier().identificationCost(high))));
         }
         String tier = box.tier().name();
         boolean valuable = Rules.list("trade", "valuableTiers").contains(tier) || tier.equals("LEGENDARY");
-        return boxRoute(box, BoxRoutes.choose(outcomes(box, wear), SellAdvice.marketFee(), SellAdvice.revealMinProfit(), valuable),
-                null, fits, all);
+        BoxRoutes.Choice c = BoxRoutes.choose(outcomes(box, wear), SellAdvice.marketFee(), SellAdvice.revealMinProfit(), valuable);
+        return new Decision(boxRoute(box, c, null, fits, all), c);
     }
 }
