@@ -248,10 +248,10 @@ final class SearchCardPanel extends MenuPaint {
                 Art.icon(g, "map-pin", px + 2, cy + 2, 8, Kit.buttonText(ph ? Kit.HOVER : Kit.REST));
                 String label = text;
                 // a row of several places (loot chests, spawn areas) pins them all, nearest first
-                List<Area> places = s.areas();
+                List<Area> rowPlaces = s.areas();
                 click(px, cy, 12, 12, () -> {
-                    if (places.size() > 1) {
-                        pinAll(places);
+                    if (rowPlaces.size() > 1) {
+                        pinAll(rowPlaces);
                     } else {
                         pin(a, label);
                     }
