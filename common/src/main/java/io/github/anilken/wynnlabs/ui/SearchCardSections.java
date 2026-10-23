@@ -223,7 +223,9 @@ final class SearchCardSections extends MenuPaint {
             cy = link(g, L.t("wynnlabs.search.craft_link"), x, cy, w, mx, my, () -> menu.openTab(RoadmapScreen.TAB_CRAFT));
         }
         for (String n : related) {
-            cy = link(g, n, x, cy, w, mx, my, () -> tab.selName = n);
+            // searched for, as the search key does: an item outside the current results would
+            // otherwise give way to the first result again on the next frame
+            cy = link(g, n, x, cy, w, mx, my, () -> tab.show(n));
         }
         if (cy == y) {
             cy = line(g, L.t("wynnlabs.search.related_none"), x, cy, w, FAINT);
