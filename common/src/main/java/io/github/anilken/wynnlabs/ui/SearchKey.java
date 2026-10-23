@@ -38,6 +38,7 @@ public final class SearchKey {
         platform.onEndTick(client -> {
             while (k.consumeClick()) {
                 if (client.player != null && client.screen == null) {
+                    swallowNextChar();                  // its ` or " must not land in the focused box
                     client.setScreen(RoadmapScreen.search(null, null));
                 }
             }

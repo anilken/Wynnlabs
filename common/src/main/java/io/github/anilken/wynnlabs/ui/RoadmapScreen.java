@@ -176,6 +176,9 @@ public final class RoadmapScreen extends Screen {
             t.printStackTrace(System.out);
         }
         refreshQuests();
+        if (tab == TAB_SEARCH) {
+            search.focus();                     // last, so no box added after it takes the keys
+        }
     }
 
     private int stepsVersion;
