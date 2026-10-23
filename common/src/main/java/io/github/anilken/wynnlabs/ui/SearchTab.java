@@ -337,6 +337,10 @@ final class SearchTab extends MenuTab {
     boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double ex = event.x();
         double ey = event.y();
+        // the two scroll bars first: a press on a thumb starts a drag, on a track it pages
+        if (card.barPress(ex, ey) || results.barPress(ex, ey)) {
+            return true;
+        }
         for (int i = clicks.size() - 1; i >= 0; i--) {
             Click c = clicks.get(i);
             if (in(ex, ey, c.rect())) {
@@ -359,6 +363,16 @@ final class SearchTab extends MenuTab {
     @Override
     boolean sharedClicks() {
         return false;
+    }
+
+    /** A drag with the button held: a scroll bar's thumb follows; true while one is dragged. */
+    boolean mouseDragged(double x, double y) {
+        return card.barDrag(y) || results.barDrag(y);
+    }
+
+    void mouseReleased() {
+        card.barRelease();
+        results.barRelease();
     }
 
     @Override

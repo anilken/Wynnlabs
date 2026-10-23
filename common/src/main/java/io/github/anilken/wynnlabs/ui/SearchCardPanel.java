@@ -58,6 +58,8 @@ final class SearchCardPanel extends MenuPaint {
     private boolean all;
     int scroll;
     private int scrollMax;
+    /** The card's bar, kept between frames so its thumb can be dragged. */
+    private final ScrollBar bar = new ScrollBar();
     private int[] view = new int[4];
 
     SearchCardPanel(SearchTab tab) {
@@ -146,7 +148,6 @@ final class SearchCardPanel extends MenuPaint {
         scrollMax = Math.max(0, total - view[3]);
         scroll = Math.min(scroll, scrollMax);
         if (scrollMax > 0) {
-            ScrollBar bar = new ScrollBar();
             bar.place(x + w - ScrollBar.W - 2, view[1], view[3], view[3], total, scroll);
             bar.draw(g, mx, my);
         }
@@ -469,6 +470,28 @@ final class SearchCardPanel extends MenuPaint {
     }
 
     // ---- the wheel ----
+
+    /** A press on the card's bar; true when it took it. */
+    boolean barPress(double mx, double my) {
+        if (scrollMax > 0 && bar.mouseClicked(mx, my)) {
+            scroll = bar.offset();
+            return true;
+        }
+        return false;
+    }
+
+    /** The bar's thumb dragged; true while it is. */
+    boolean barDrag(double my) {
+        if (bar.mouseDragged(my)) {
+            scroll = Math.max(0, Math.min(scrollMax, bar.offset()));
+            return true;
+        }
+        return false;
+    }
+
+    void barRelease() {
+        bar.mouseReleased();
+    }
 
     /** The wheel over the card scrolls it; true when it was over the card. */
     boolean scrolled(double x, double y, double v) {

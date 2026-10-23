@@ -263,6 +263,28 @@ final class SearchResultsPanel extends MenuPaint {
         }
     }
 
+    /** A press on the list's bar: the thumb starts a drag, the track pages; true when it took it. */
+    boolean barPress(double mx, double my) {
+        if (bar.mouseClicked(mx, my)) {
+            scroll = bar.offset();
+            return true;
+        }
+        return false;
+    }
+
+    /** The bar's thumb dragged; true while it is. */
+    boolean barDrag(double my) {
+        if (bar.mouseDragged(my)) {
+            scroll = bar.offset();
+            return true;
+        }
+        return false;
+    }
+
+    void barRelease() {
+        bar.mouseReleased();
+    }
+
     void scrolled(double v) {
         scroll = Math.max(0, Math.min(scrollMax, scroll - ROW * (int) Math.signum(v)));
     }
