@@ -221,14 +221,14 @@ public final class BoxScreen extends Screen {
         closeRect = Kit.closeOutside(g, width, x, y, w, closeHover);
         int in = x + 10;
         int iw = w - 20;
-        header(g, in, y + 8, iw, mx, my);
+        header(g, in, y + 12, iw, mx, my);      // clear of the frame's top edge
         if (single != null) {
-            right.singleChips(g, in, y + 24, single);
+            right.singleChips(g, in, y + 28, single);
         } else {
-            chips(g, in, y + 24, iw, mx, my);
+            chips(g, in, y + 28, iw, mx, my);
         }
-        filters(g, in, y + 42, iw, mx, my);
-        int top = rolled() ? y + 62 : y + 44;     // no rolls: no filter row, the list right under the chips
+        filters(g, in, y + 46, iw, mx, my);
+        int top = rolled() ? y + 66 : y + 48;     // no rolls: no filter row, the list right under the chips
         int bottom = y + h - 16;
         g.fill(in, top - 4, in + iw, top - 3, Theme.LINE);
         if (items.isEmpty()) {
