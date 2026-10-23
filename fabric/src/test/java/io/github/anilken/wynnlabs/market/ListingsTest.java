@@ -188,4 +188,19 @@ class ListingsTest {
         assertFalse(r.running());
         assertSame(r, Listings.refreshOf("LEGGINGS:UNIQUE:66-70"));
     }
+
+    @Test
+    void theUploadersStatShapeIsRead() {
+        // Wynnventory's mod writes each stat from its ItemStat record: apiName, statRoll, rollPercentage
+        String body = "{\"data\":[{\"name\":\"Atoll\",\"listing_price\":4096,\"overall_roll\":75.5,"
+                + "\"stat_rolls\":[{\"apiName\":\"rawHealth\",\"displayName\":\"Health\",\"statRoll\":120,"
+                + "\"rollPercentage\":81.5}]}],\"pagination\":{\"page\":1,\"page_size\":50,\"total_items\":1,\"total_pages\":1}}";
+        Listings.Page p = Listings.parse("Atoll", new Gson().fromJson(body, JsonObject.class));
+        BoxMarket.StatRoll r = p.listings().get(0).statRolls().get(0);
+        assertEquals("rawHealth", r.key());
+        assertEquals(120.0, r.value(), 1e-9);
+        assertEquals(81.5, r.percent(), 1e-9);
+        assertEquals(1, p.total());
+        assertEquals(Boolean.FALSE, p.hasMore());
+    }
 }

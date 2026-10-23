@@ -181,7 +181,7 @@ public final class Listings {
         return bool(l, "shiny") || l.has("shiny_stat") && !l.get("shiny_stat").isJsonNull();
     }
 
-    /** stat_rolls as a list of {name/api_name, value, percentage} or a map of stat → % or → {value, percentage}. */
+    /** stat_rolls as Wynnventory's uploader writes them (a list of {apiName, displayName, statRoll, rollPercentage}, from its ItemStat record), a list of {name/api_name, value, percentage} or a map of stat → % or → {value, percentage}. */
     private static List<BoxMarket.StatRoll> stats(JsonElement e) {
         List<BoxMarket.StatRoll> out = new ArrayList<>();
         if (e == null || e.isJsonNull()) {
@@ -193,7 +193,7 @@ public final class Listings {
                     JsonObject o = s.getAsJsonObject();
                     String key = firstStr(o, "api_name", "apiName", "stat", "name", "key");
                     if (key != null) {
-                        out.add(new BoxMarket.StatRoll(key, num(o, "value"), firstNum(o, "percentage", "percent", "roll")));
+                        out.add(new BoxMarket.StatRoll(key, firstNum(o, "value", "statRoll"), firstNum(o, "rollPercentage", "percentage", "percent", "roll")));
                     }
                 }
             }
@@ -202,7 +202,7 @@ public final class Listings {
                 JsonElement v = s.getValue();
                 if (v.isJsonObject()) {
                     JsonObject o = v.getAsJsonObject();
-                    out.add(new BoxMarket.StatRoll(s.getKey(), num(o, "value"), firstNum(o, "percentage", "percent", "roll")));
+                    out.add(new BoxMarket.StatRoll(s.getKey(), firstNum(o, "value", "statRoll"), firstNum(o, "rollPercentage", "percentage", "percent", "roll")));
                 } else if (v.isJsonPrimitive() && v.getAsJsonPrimitive().isNumber()) {
                     out.add(new BoxMarket.StatRoll(s.getKey(), null, v.getAsDouble()));
                 }
