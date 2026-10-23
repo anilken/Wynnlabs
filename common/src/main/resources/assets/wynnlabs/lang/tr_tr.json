@@ -2093,5 +2093,18 @@
   "wynnlabs.box.verdict.identify": "Tanımla",
   "wynnlabs.box.verdict.sell": "Sat",
   "wynnlabs.box.verdict.keep": "Sakla",
-  "wynnlabs.box.footer_item": "Tekerlek: kaydır · Esc: geri"
+  "wynnlabs.box.footer_item": "Tekerlek: kaydır · Esc: geri",
+  "wynnlabs.box.col_unit": "Birim fiyat",
+  "wynnlabs.box.col_amount": "Adet",
+  "wynnlabs.box.col_total": "Toplam",
+  "wynnlabs.box.col_seen": "Görüldü",
+  "wynnlabs.box.age_min": "%s dk",
+  "wynnlabs.box.age_hours": "%s sa",
+  "wynnlabs.box.age_days": "%s g",
+  "wynnlabs.box.stock": "Toplam stok %s adet",
+  "wynnlabs.box.from": "Nereden",
+  "wynnlabs.box.owned": "Sende",
+  "wynnlabs.box.owned_bag": "Çanta %s",
+  "wynnlabs.box.owned_bank": "Banka %s",
+  "wynnlabs.box.owned_none": "Sende yok"
 }

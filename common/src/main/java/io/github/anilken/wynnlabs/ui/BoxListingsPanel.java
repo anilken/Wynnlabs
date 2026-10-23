@@ -17,6 +17,7 @@ import java.util.List;
  * rolls (rules boxHighRoll, 80 %) are lit; listings seen 3+ hours before the newest are faded and
  * marked "may be sold". Under the list, "x / total" and a "more" row while the market has more
  * pages; that row, or scrolling to the end, asks for the next page. No seller is ever shown.
+ * Items without rolls (ingredients, materials) get a one-line table instead ({@link BoxPlainRows}).
  */
 final class BoxListingsPanel {
 
@@ -49,8 +50,10 @@ final class BoxListingsPanel {
         int cw = s.font().width(count);
         s.ink(g, count, x + w - cw, y, Theme.INK_3);
         s.ink(g, s.fit(r.name(), w - cw - 6), x, y, HomePart.tierColour(r.item().tier()));
-        int top = y + 12;
-        int listH = h - 12;
+        boolean plain = !s.rolled();
+        int head = plain ? 12 + BoxPlainRows.HEAD : 12;
+        int top = y + head;
+        int listH = h - head;
         if (r.listings().isEmpty()) {
             String why = switch (r.state()) {
                 case UNTRADABLE -> L.t("wynnlabs.box.untradable");
@@ -65,18 +68,26 @@ final class BoxListingsPanel {
             return;
         }
         boolean more = r.hasMore();
-        int total = r.listings().size() * ROW + (more ? MORE : 0);
+        int rowH = plain ? BoxPlainRows.ROW : ROW;
+        int total = r.listings().size() * rowH + (more ? MORE : 0);
         max = ScrollBar.max(listH, total);
         scroll = Math.max(0, Math.min(max, scroll));
         int rw = w - ScrollBar.W - 2;
+        if (plain) {
+            BoxPlainRows.header(s, g, x, y + 12, rw);
+        }
         g.enableScissor(x, top, x + w, top + listH);
         int ry = top - scroll;
         double high = BoxScreen.highRoll();
         for (int i = 0; i < r.listings().size(); i++) {
-            if (ry + ROW > top && ry < top + listH) {
-                listing(g, r.listings().get(i), i, x, ry, rw, high);
+            if (ry + rowH > top && ry < top + listH) {
+                if (plain) {
+                    BoxPlainRows.row(s, g, r.listings().get(i), i, x, ry, rw);
+                } else {
+                    listing(g, r.listings().get(i), i, x, ry, rw, high);
+                }
             }
-            ry += ROW;
+            ry += rowH;
         }
         if (more) {
             boolean waiting = Listings.loadingMore(r.name());
@@ -103,9 +114,7 @@ final class BoxListingsPanel {
             Kit.row(g, x, y, w, ROW, i, false);
         }
         // line 1: the roll (or "unidentified"), then amount and price on the right
-        if (!s.rolled()) {
-            // no rolls on this kind of item: the line starts with nothing, the price says it all
-        } else if (l.unidentified() || l.overallRoll() == null) {
+        if (l.unidentified() || l.overallRoll() == null) {
             s.ink(g, l.unidentified() ? L.t("wynnlabs.box.unidentified") : L.t("wynnlabs.box.no_roll"), x + 4, y + 2, Theme.INK_3);
         } else {
             double roll = l.overallRoll();
@@ -148,8 +157,13 @@ final class BoxListingsPanel {
     void singleHeader(GuiGraphics g, int x, int y, int room, BoxScreen.Single single, net.minecraft.world.item.ItemStack icon) {
         BoxMarket.Item it = single.item();
         g.renderItem(icon, x, y - 5);
-        String name = s.fit(it.name(), room - 20);
+        String stars = BoxPlainRows.stars(it.name());
+        String name = s.fit(it.name(), room - 20 - s.font().width(stars));
         s.ink(g, name, x + 20, y, HomePart.tierColour(it.tier()));
+        if (!stars.isEmpty()) {
+            s.ink(g, stars, x + 20 + s.font().width(name), y, Theme.GOLD_DEEP);
+            name += stars;
+        }
         String rest = (it.tier() == io.github.anilken.wynnlabs.model.Tier.NORMAL ? "" : " · " + MenuPaint.nice(it.tier().name()))
                 + (it.level() > 0 ? " · Lv " + it.level() : "");
         s.ink(g, s.fit(rest, room - 20 - s.font().width(name)), x + 20 + s.font().width(name), y, Theme.INK_2);
@@ -168,6 +182,9 @@ final class BoxListingsPanel {
                 Theme.PLAQUE, Theme.INK) + 4;
         cx += s.chip(g, cx, y, L.t("wynnlabs.box.median", BoxScreen.money(r == null || r.median() == null ? null : (double) r.median())),
                 Theme.PLAQUE, Theme.INK) + 4;
+        if (r != null && !s.rolled()) {
+            cx += s.chip(g, cx, y, L.t("wynnlabs.box.stock", BoxPlainRows.stock(r.listings())), Theme.PLAQUE, Theme.INK) + 4;
+        }
         if (r != null && r.bestRoll() != null) {
             cx += s.chip(g, cx, y, L.t("wynnlabs.box.best_roll", BoxScreen.pct(r.bestRoll())), Theme.PLAQUE, Theme.INK) + 4;
         }
@@ -204,7 +221,7 @@ final class BoxListingsPanel {
         if (mx < area[0] || mx >= area[0] + area[2] || my < area[1] || my >= area[1] + area[3]) {
             return false;
         }
-        scroll = Math.max(0, Math.min(max, scroll - (int) Math.signum(v) * ROW));
+        scroll = Math.max(0, Math.min(max, scroll - (int) Math.signum(v) * (s.rolled() ? ROW : BoxPlainRows.ROW * 2)));
         atEnd();
         return true;
     }
@@ -227,10 +244,10 @@ final class BoxListingsPanel {
      * A listing's price to the emerald, the way the Trade Market writes it: "2 EB 49 E",
      * "1 LE 12 EB 3 E" (1 LE = 64 EB = 4096 E); parts that are 0 are left out.
      */
-    static String exact(int emeralds) {
-        int le = emeralds / 4096;
-        int eb = emeralds % 4096 / 64;
-        int e = emeralds % 64;
+    static String exact(long emeralds) {
+        long le = emeralds / 4096;
+        long eb = emeralds % 4096 / 64;
+        long e = emeralds % 64;
         StringBuilder b = new StringBuilder();
         if (le > 0) {
             b.append(le).append(" LE");

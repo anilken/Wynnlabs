@@ -228,7 +228,7 @@ public final class BoxScreen extends Screen {
             chips(g, in, y + 24, iw, mx, my);
         }
         filters(g, in, y + 42, iw, mx, my);
-        int top = y + 62;
+        int top = rolled() ? y + 62 : y + 44;     // no rolls: no filter row, the list right under the chips
         int bottom = y + h - 16;
         g.fill(in, top - 4, in + iw, top - 3, Theme.LINE);
         if (items.isEmpty()) {

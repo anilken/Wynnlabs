@@ -32,7 +32,8 @@ import java.nio.file.Path;
  * The box contents window without the game ({@code -PpreviewOnly=box}): the recorded Shaman's
  * unique leggings box (Lv 66-70) over the inventory, with canned Wynnventory answers for two of
  * its items and no network; shots with live lookups on and off, the unidentified filter, GUI
- * scales 2 and 4, and the window for one item.
+ * scales 2 and 4, the window for one item, and for one ingredient (no rolls: the one-line table,
+ * where it comes from and what the player holds; the item index read from the search fixtures).
  */
 public class BoxPreview implements FabricClientGameTest {
 
@@ -45,6 +46,7 @@ public class BoxPreview implements FabricClientGameTest {
         try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
             world.getClientWorld().waitForChunksRender();
             Files.createDirectories(out);
+            SearchPreview.loadIndex();
             ctx.getInput().resizeWindow(1920, 1080);
             ctx.runOnClient(mc -> {
                 mc.options.guiScale().set(3);
@@ -98,6 +100,23 @@ public class BoxPreview implements FabricClientGameTest {
             });
             ctx.waitTicks(5);
             shot(ctx, out, "box-window-item");
+            ctx.waitFor(mc -> !"loading".equals(io.github.anilken.wynnlabs.search.ItemIndex.get().missing()), 20 * 60);
+            ctx.runOnClient(mc -> {
+                canned("Accursed Effigy", 1, "listings-effigy.json");
+                BoxMarket.Item effigy = new BoxMarket.Item("Accursed Effigy", Slot.UNKNOWN, Tier.NORMAL, 76, Klass.NONE, 0, true);
+                mc.setScreen(new BoxScreen(new BoxScreen.Single(effigy, null, false), new ItemStack(Items.POTION),
+                        new InventoryScreen(mc.player)));
+            });
+            ctx.waitTicks(5);
+            shot(ctx, out, "box-window-material");
+            for (int scale : new int[] {2, 4}) {
+                ctx.runOnClient(mc -> {
+                    mc.options.guiScale().set(scale);
+                    mc.resizeDisplay();
+                });
+                ctx.waitTicks(5);
+                shot(ctx, out, "box-window-material-gui" + scale);
+            }
             ctx.runOnClient(mc -> mc.setScreen(null));
         } catch (Exception e) {
             throw new RuntimeException(e);

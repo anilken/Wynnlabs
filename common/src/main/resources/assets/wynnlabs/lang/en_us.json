@@ -2093,5 +2093,18 @@
   "wynnlabs.box.verdict.identify": "Identify",
   "wynnlabs.box.verdict.sell": "Sell",
   "wynnlabs.box.verdict.keep": "Keep",
-  "wynnlabs.box.footer_item": "Wheel: scroll · Esc: back"
+  "wynnlabs.box.footer_item": "Wheel: scroll · Esc: back",
+  "wynnlabs.box.col_unit": "Unit price",
+  "wynnlabs.box.col_amount": "Amount",
+  "wynnlabs.box.col_total": "Total",
+  "wynnlabs.box.col_seen": "Seen",
+  "wynnlabs.box.age_min": "%s min",
+  "wynnlabs.box.age_hours": "%s h",
+  "wynnlabs.box.age_days": "%s d",
+  "wynnlabs.box.stock": "Total stock %s",
+  "wynnlabs.box.from": "Where from",
+  "wynnlabs.box.owned": "You have",
+  "wynnlabs.box.owned_bag": "Bag %s",
+  "wynnlabs.box.owned_bank": "Bank %s",
+  "wynnlabs.box.owned_none": "You have none"
 }
