@@ -282,17 +282,7 @@ final class HomeSlots extends HomePart {
             String icon = !worn && BuildSources.haveNames().contains(name)
                     ? "building-bank" : BuildWindow.sourceIcon(name);
             // each kind of place its own colour, a light icon on it, so the kind reads at a glance
-            int fill = switch (icon) {
-                case "coin" -> Theme.GOLD_DEEP;          // Trade Market
-                case "shopping-cart" -> Theme.LINK;      // a merchant
-                case "script" -> Theme.ACCENT;           // a quest
-                case "box" -> Theme.WARN;                // a chest
-                case "sword" -> Theme.BAD;               // mobs
-                case "skull" -> Theme.WOOD_EDGE;         // a dungeon
-                case "trophy" -> Theme.TIER_MYTHIC;      // this week's raid pool
-                case "building-bank" -> Theme.GOOD;      // already yours
-                default -> Theme.INK_3;                  // unknown
-            };
+            int fill = Theme.sourceFill(icon);
             int bx = badgeRight ? sx + s - 10 : sx - 5;
             Kit.seal(g, bx, sy - 5, 15, 15, fill);
             Art.icon(g, icon, bx + 2, sy - 3, 11, Theme.CREAM);

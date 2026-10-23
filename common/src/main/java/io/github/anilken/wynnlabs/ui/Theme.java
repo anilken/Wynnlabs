@@ -135,6 +135,25 @@ public final class Theme {
         });
     }
 
+    /**
+     * The seal colour behind a source badge (its icon name), the same everywhere: each kind of
+     * place its own colour so the kind reads at a glance, with a light icon on it.
+     */
+    static int sourceFill(String icon) {
+        return switch (icon) {
+            case "coin" -> GOLD_DEEP;               // Trade Market
+            case "shopping-cart" -> LINK;           // a merchant
+            case "script" -> ACCENT;                // a quest
+            case "box" -> WARN;                     // a chest
+            case "sword" -> BAD;                    // mobs
+            case "skull" -> WOOD_EDGE;              // a dungeon
+            case "trophy" -> TIER_MYTHIC;           // a raid, a lootrun, an event
+            case "building-bank", "package" -> GOOD; // already yours
+            case "pick" -> GREEN_LO;                // gathering
+            default -> INK_3;                       // unknown
+        };
+    }
+
     /** WCAG contrast ratio of two colours (alpha ignored). */
     static double contrast(int a, int b) {
         double la = luminance(a);

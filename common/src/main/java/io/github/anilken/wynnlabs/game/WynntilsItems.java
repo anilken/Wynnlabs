@@ -151,6 +151,32 @@ public final class WynntilsItems {
         }
     }
 
+    /**
+     * Wynntils' guide stack for an item of the search index (gear, ingredient, tome, charm), with
+     * its full tooltip; null for a material, an unknown name or without Wynntils.
+     */
+    public static ItemStack guideStack(io.github.anilken.wynnlabs.search.Kind kind, String name) {
+        return Wyn.guard(Wyn.Feature.GEAR_DB, () -> switch (kind) {
+            case GEAR -> {
+                GearInfo info = com.wynntils.core.components.Models.Gear.getGearInfoFromDisplayName(name);
+                yield info == null ? null : new GuideGearItemStack(info);
+            }
+            case INGREDIENT -> {
+                var info = com.wynntils.core.components.Models.Ingredient.getIngredientInfoFromName(name);
+                yield info == null ? null : new com.wynntils.screens.guides.ingredient.GuideIngredientItemStack(info);
+            }
+            case TOME -> {
+                var info = com.wynntils.core.components.Models.Rewards.getTomeInfoFromDisplayName(name);
+                yield info == null ? null : new com.wynntils.screens.guides.tome.GuideTomeItemStack(info);
+            }
+            case CHARM -> {
+                var info = com.wynntils.core.components.Models.Rewards.getCharmInfoFromDisplayName(name);
+                yield info == null ? null : new com.wynntils.screens.guides.charm.GuideCharmItemStack(info);
+            }
+            default -> null;
+        }, null);
+    }
+
     /** The tier a name's colour shows, or null. */
     public static Tier tierOf(Component name) {
         GearTier t = Wyn.guard(Wyn.Feature.ITEMS, () -> GearTier.fromComponent(name), null);
