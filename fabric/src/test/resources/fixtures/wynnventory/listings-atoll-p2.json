@@ -1,0 +1,46 @@
+{
+  "data": [
+    {
+      "name": "Atoll",
+      "rarity": "Unique",
+      "item_type": "GearItem",
+      "type": "leggings",
+      "tier": null,
+      "unidentified": false,
+      "shiny_stat": null,
+      "overall_roll": 64.0,
+      "stat_rolls": [],
+      "reroll_count": 0,
+      "amount": 1,
+      "listing_price": 500,
+      "icon": null,
+      "player_name": "SellerX",
+      "mod_version": "2.2.5",
+      "hash_code": 123456789,
+      "timestamp": "2026-10-24T11:55:00Z"
+    },
+    {
+      "name": "Atoll",
+      "rarity": "Unique",
+      "item_type": "GearItem",
+      "type": "leggings",
+      "tier": null,
+      "unidentified": false,
+      "shiny_stat": null,
+      "overall_roll": 30.0,
+      "stat_rolls": [],
+      "reroll_count": 0,
+      "amount": 1,
+      "listing_price": 450,
+      "icon": null,
+      "player_name": "SellerX",
+      "mod_version": "2.2.5",
+      "hash_code": 123456789,
+      "timestamp": "2026-10-24T11:58:00Z"
+    }
+  ],
+  "page": 2,
+  "page_size": 7,
+  "total": 9,
+  "has_more": false
+}

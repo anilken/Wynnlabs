@@ -1,0 +1,42 @@
+{
+  "data": [
+    {
+      "name": "Canopy",
+      "rarity": "Unique",
+      "item_type": "GearItem",
+      "type": "leggings",
+      "tier": null,
+      "unidentified": true,
+      "shiny_stat": null,
+      "overall_roll": null,
+      "stat_rolls": [],
+      "reroll_count": 0,
+      "amount": 2,
+      "listing_price": 70,
+      "icon": null,
+      "player_name": "SellerX",
+      "mod_version": "2.2.5",
+      "hash_code": 123456789,
+      "timestamp": "2026-10-24T10:00:00Z"
+    },
+    {
+      "name": "Canopy",
+      "rarity": "Unique",
+      "item_type": "GearItem",
+      "type": "leggings",
+      "tier": null,
+      "unidentified": true,
+      "shiny_stat": null,
+      "overall_roll": null,
+      "stat_rolls": [],
+      "reroll_count": 0,
+      "amount": 1,
+      "listing_price": 64,
+      "icon": null,
+      "player_name": "SellerX",
+      "mod_version": "2.2.5",
+      "hash_code": 123456789,
+      "timestamp": "2026-10-24T10:30:00Z"
+    }
+  ]
+}

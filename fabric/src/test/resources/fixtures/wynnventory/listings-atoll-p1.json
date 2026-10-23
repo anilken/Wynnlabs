@@ -1,0 +1,171 @@
+{
+  "data": [
+    {
+      "name": "Atoll",
+      "rarity": "Unique",
+      "item_type": "GearItem",
+      "type": "leggings",
+      "tier": null,
+      "unidentified": false,
+      "shiny_stat": null,
+      "overall_roll": 86.4,
+      "stat_rolls": [
+        {
+          "api_name": "rawHealth",
+          "value": 120,
+          "percentage": 92.0
+        },
+        {
+          "api_name": "waterDamage",
+          "value": 14,
+          "percentage": 71.5
+        },
+        {
+          "api_name": "manaRegen",
+          "value": 3,
+          "percentage": 40.0
+        },
+        {
+          "api_name": "walkSpeed",
+          "value": 5,
+          "percentage": 20.0
+        }
+      ],
+      "reroll_count": 2,
+      "amount": 1,
+      "listing_price": 640,
+      "icon": null,
+      "player_name": "SellerX",
+      "mod_version": "2.2.5",
+      "hash_code": 123456789,
+      "timestamp": "2026-10-24T12:00:00Z"
+    },
+    {
+      "name": "Atoll",
+      "rarity": "Unique",
+      "item_type": "GearItem",
+      "type": "leggings",
+      "tier": null,
+      "unidentified": false,
+      "shiny_stat": null,
+      "overall_roll": 80.0,
+      "stat_rolls": [
+        {
+          "api_name": "rawHealth",
+          "value": 110,
+          "percentage": 80.0
+        }
+      ],
+      "reroll_count": 0,
+      "amount": 1,
+      "listing_price": 1280,
+      "icon": null,
+      "player_name": "SellerX",
+      "mod_version": "2.2.5",
+      "hash_code": 123456789,
+      "timestamp": "2026-10-24T11:50:00Z"
+    },
+    {
+      "name": "Atoll",
+      "rarity": "Unique",
+      "item_type": "GearItem",
+      "type": "leggings",
+      "tier": null,
+      "unidentified": false,
+      "shiny_stat": null,
+      "overall_roll": 79.0,
+      "stat_rolls": [],
+      "reroll_count": 0,
+      "amount": 1,
+      "listing_price": 300,
+      "icon": null,
+      "player_name": "SellerX",
+      "mod_version": "2.2.5",
+      "hash_code": 123456789,
+      "timestamp": "2026-10-24T11:40:00Z"
+    },
+    {
+      "name": "Atoll",
+      "rarity": "Unique",
+      "item_type": "GearItem",
+      "type": "leggings",
+      "tier": null,
+      "unidentified": true,
+      "shiny_stat": null,
+      "overall_roll": null,
+      "stat_rolls": [],
+      "reroll_count": 0,
+      "amount": 1,
+      "listing_price": 200,
+      "icon": null,
+      "player_name": "SellerX",
+      "mod_version": "2.2.5",
+      "hash_code": 123456789,
+      "timestamp": "2026-10-24T11:30:00Z"
+    },
+    {
+      "name": "Atoll",
+      "rarity": "Unique",
+      "item_type": "GearItem",
+      "type": "leggings",
+      "tier": null,
+      "unidentified": false,
+      "shiny_stat": null,
+      "overall_roll": 50.0,
+      "stat_rolls": [],
+      "reroll_count": 0,
+      "amount": 1,
+      "listing_price": 90,
+      "icon": null,
+      "player_name": "SellerX",
+      "mod_version": "2.2.5",
+      "hash_code": 123456789,
+      "timestamp": "2026-10-24T07:00:00Z"
+    },
+    {
+      "name": "Atoll",
+      "rarity": "Unique",
+      "item_type": "GearItem",
+      "type": "leggings",
+      "tier": null,
+      "unidentified": false,
+      "shiny_stat": {
+        "name": "Mobs Killed",
+        "value": 100
+      },
+      "overall_roll": 99.0,
+      "stat_rolls": [],
+      "reroll_count": 0,
+      "amount": 1,
+      "listing_price": 99999,
+      "icon": null,
+      "player_name": "SellerX",
+      "mod_version": "2.2.5",
+      "hash_code": 123456789,
+      "timestamp": "2026-10-24T12:00:00Z"
+    },
+    {
+      "name": "Atoll Shard",
+      "rarity": "Unique",
+      "item_type": "GearItem",
+      "type": "leggings",
+      "tier": null,
+      "unidentified": false,
+      "shiny_stat": null,
+      "overall_roll": 10.0,
+      "stat_rolls": [],
+      "reroll_count": 0,
+      "amount": 1,
+      "listing_price": 5,
+      "icon": null,
+      "player_name": "SellerX",
+      "mod_version": "2.2.5",
+      "hash_code": 123456789,
+      "timestamp": "2026-10-24T12:00:00Z"
+    }
+  ],
+  "page": 1,
+  "page_size": 7,
+  "total": 9,
+  "has_more": true
+}

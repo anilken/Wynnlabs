@@ -276,6 +276,8 @@ public final class WynnLabs {
         });
         // the key under Esc opens the search tab, or the tab on the item under the mouse
         io.github.anilken.wynnlabs.ui.SearchKey.register(platform, category);
+        // T over a gear box in a container: the box contents window over it
+        io.github.anilken.wynnlabs.ui.BoxKey.register(platform, category);
         // files waiting in the background writer reach the disk before the game closes
         platform.onClientStopping(Saver::flush);
         // Wynntils' event bus only exists once the client has started.
