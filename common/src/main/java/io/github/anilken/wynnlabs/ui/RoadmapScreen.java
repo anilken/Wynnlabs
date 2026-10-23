@@ -44,7 +44,7 @@ public final class RoadmapScreen extends Screen {
     private static final String[] TABS = {"wynnlabs.screen.tab_home", "wynnlabs.screen.tab_today", "wynnlabs.screen.tab_quests",
         "wynnlabs.screen.tab_deaths", "wynnlabs.screen.tab_bank", "wynnlabs.screen.tab_settings", "wynnlabs.screen.tab_ai",
         "wynnlabs.screen.tab_damage", "wynnlabs.screen.tab_discoveries", "wynnlabs.screen.tab_tree", "wynnlabs.screen.tab_craft",
-        "wynnlabs.screen.tab_endgame"};
+        "wynnlabs.screen.tab_endgame", "wynnlabs.screen.tab_search"};
     public static final int TAB_BANK = 4;
     static final int TAB_SETTINGS = 5;
     static final int TAB_AI = 6;
@@ -53,6 +53,7 @@ public final class RoadmapScreen extends Screen {
     static final int TAB_TREE = 9;
     static final int TAB_CRAFT = 10;
     static final int TAB_ENDGAME = 11;
+    static final int TAB_SEARCH = 12;
 
     List<Roadmap.Step> steps = List.of();
     List<QuestAdvisor.Suggestion> quests = List.of();
@@ -92,8 +93,23 @@ public final class RoadmapScreen extends Screen {
     final DamageTab damage = new DamageTab(this);
     final DiscoveriesTab discoveries = new DiscoveriesTab(this);
     public final TreeTab tree = new TreeTab(this);
+    final SearchTab search = new SearchTab(this);
     /** The tabs by number (null for the Crafting and Endgame tabs, which are their own singletons). */
-    private final MenuTab[] pages = {home, today, questsTab, deaths, bank, settings, ai, damage, discoveries, tree, null, null};
+    private final MenuTab[] pages = {home, today, questsTab, deaths, bank, settings, ai, damage, discoveries, tree, null, null,
+        search};
+    /** The screen the search key was pressed on (a bank, a chest): closing the menu goes back to it. */
+    private Screen parent;
+
+    /** The menu on the search tab, on {@code item} when not null; Esc goes back to {@code parent} when not null. */
+    public static RoadmapScreen search(String item, Screen parent) {
+        RoadmapScreen s = new RoadmapScreen();
+        s.tab = TAB_SEARCH;
+        s.parent = parent;
+        if (item != null) {
+            s.search.show(item);
+        }
+        return s;
+    }
 
     public RoadmapScreen() {
         super(L.c("wynnlabs.screen.title"));
@@ -133,10 +149,16 @@ public final class RoadmapScreen extends Screen {
     protected void init() {
         UiFont.apply(this);                     // Inter instead of the pixel font (setting: webFont)
         WynnTex.clear();                        // the pack may have changed since last time
-        for (MenuTab t : new MenuTab[] {bank, tree, settings}) {
+        for (MenuTab t : new MenuTab[] {bank, tree, settings, search}) {
             for (net.minecraft.client.gui.components.EditBox b : t.init()) {
                 addWidget(b);
             }
+        }
+        // the search tab's items, read in the background from the first opening on
+        io.github.anilken.wynnlabs.search.ItemIndex.startLoading(io.github.anilken.wynnlabs.core.Platform.get().gameDir(),
+                io.github.anilken.wynnlabs.core.Dirs.config().resolve("chests.json"));
+        if (tab == TAB_SEARCH) {
+            search.focus();
         }
         for (net.minecraft.client.gui.components.EditBox b : CraftingTab.INSTANCE.init(this, font, this::flash)) {
             addWidget(b);
@@ -154,6 +176,9 @@ public final class RoadmapScreen extends Screen {
             t.printStackTrace(System.out);
         }
         refreshQuests();
+        if (tab == TAB_SEARCH) {
+            search.focus();                     // last, so no box added after it takes the keys
+        }
     }
 
     private int stepsVersion;
@@ -310,14 +335,14 @@ public final class RoadmapScreen extends Screen {
     /** This frame's size class, panel and rail (MenuLayout): set at the start of each render. */
     MenuLayout layout = MenuLayout.of(640, 360);
     /** The rail's order (the tab numbers stay what the rest of the screen uses). */
-    private static final int[] RAIL = {0, TAB_CRAFT, TAB_TREE, 1, TAB_ENDGAME, 2, TAB_DISCOVERIES, TAB_BANK, TAB_DAMAGE, 3, TAB_AI,
-        TAB_SETTINGS};
+    private static final int[] RAIL = {0, TAB_SEARCH, TAB_CRAFT, TAB_TREE, 1, TAB_ENDGAME, 2, TAB_DISCOVERIES, TAB_BANK, TAB_DAMAGE, 3,
+        TAB_AI, TAB_SETTINGS};
     /**
      * Each rail entry's hint as a language key ("" for none). The Endgame tab's title line holds
      * its pills, so its hint is drawn under its aspect list instead.
      */
     private static final String[] RAIL_HINT = {
-        "", "", "wynnlabs.screen.hint_tree", "wynnlabs.screen.hint_today", "wynnlabs.screen.hint_endgame",
+        "", "", "", "wynnlabs.screen.hint_tree", "wynnlabs.screen.hint_today", "wynnlabs.screen.hint_endgame",
         "wynnlabs.screen.hint_quests", "wynnlabs.screen.hint_discoveries", "wynnlabs.screen.hint_bank", "wynnlabs.screen.hint_damage", "wynnlabs.screen.hint_deaths", "wynnlabs.screen.hint_ai",
         "wynnlabs.screen.hint_settings"};
     private final Map<Integer, ItemStack> railIcons = new HashMap<>();
@@ -666,6 +691,13 @@ public final class RoadmapScreen extends Screen {
         if (tab == TAB_CRAFT && CraftingTab.INSTANCE.keyPressed(event.key())) {
             return true;
         }
+        // the search key on another tab, while nothing is being typed: the search tab
+        if (tab != TAB_SEARCH && SearchKey.matches(event)
+                && !(getFocused() instanceof net.minecraft.client.gui.components.EditBox b && b.isFocused())) {
+            SearchKey.swallowNextChar();
+            openTab(TAB_SEARCH);
+            return true;
+        }
         if (pages[tab] != null && pages[tab].keyPressed(event.key())) {
             return true;
         }
@@ -742,11 +774,7 @@ public final class RoadmapScreen extends Screen {
         }
         for (int[] t : tabs) {
             if (MenuPaint.in(ex, ey, t)) {
-                tab = t[4];
-                home.detail = null;
-                bank.search.setFocused(tab == TAB_BANK);
-                tree.treeSearch.setFocused(tab == TAB_TREE);
-                setFocused(tab == TAB_BANK ? bank.search : tab == TAB_TREE ? tree.treeSearch : null);
+                openTab(t[4]);
                 return true;
             }
         }
@@ -774,6 +802,38 @@ public final class RoadmapScreen extends Screen {
             }
         }
         return super.mouseClicked(event, doubleClick);
+    }
+
+    /** Shows tab {@code t}: its text box takes the keys; leaving the search tab takes its marks off the map. */
+    void openTab(int t) {
+        if (tab == TAB_SEARCH && t != TAB_SEARCH) {
+            search.closed();
+        }
+        tab = t;
+        home.detail = null;
+        bank.search.setFocused(tab == TAB_BANK);
+        tree.treeSearch.setFocused(tab == TAB_TREE);
+        search.box.setFocused(false);
+        setFocused(tab == TAB_BANK ? bank.search : tab == TAB_TREE ? tree.treeSearch : null);
+        if (tab == TAB_SEARCH) {
+            search.focus();
+        }
+    }
+
+    /** Typing, except the search key's own character right after it opened the tab. */
+    @Override
+    public boolean charTyped(net.minecraft.client.input.CharacterEvent event) {
+        return SearchKey.swallow() || super.charTyped(event);
+    }
+
+    /** Esc: back to the screen the search key was pressed on, when there is one. */
+    @Override
+    public void onClose() {
+        if (parent != null && minecraft != null) {
+            minecraft.setScreen(parent);
+            return;
+        }
+        super.onClose();
     }
 
     /**
@@ -875,6 +935,7 @@ public final class RoadmapScreen extends Screen {
     public void removed() {
         CraftingTab.INSTANCE.closed();          // a search running for the tab stops with the menu
         EndgameTab.INSTANCE.closed();
+        search.closed();                        // its worker stops; its map marks go unless kept
         super.removed();
     }
 

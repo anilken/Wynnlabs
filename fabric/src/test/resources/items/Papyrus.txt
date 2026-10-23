@@ -1,0 +1,21 @@
+{{Infobox/Armour
+| name = Papyrus
+| item = Chestplate
+| material = Iron
+| level = 77
+| type = Rare
+| obtain = Loot Chest, Mob Drop
+| health = +1000
+| fire = -50
+| air = +90
+| slots = 5
+}}
+'''Papyrus''' is a level 77 [[Rare]] [[Chestplate]]. It can be found in [[Loot Chests]] or dropped by mobs of level 73 to 81.
+
+== Identifications ==
+{{IDcost|r|77}}
+{{Identification
+| manaRegen = +4/+16
+| rawSpellDamage = +42/+182
+| combatExperience = +9/+39
+}}

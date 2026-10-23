@@ -1,0 +1,80 @@
+{
+ "Copper Gem": {
+  "chances": {
+   "TIER_1": 80,
+   "TIER_2": 10,
+   "TIER_3": 1
+  },
+  "emblem": "square",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      3544
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "profession.gemCopper"
+   }
+  },
+  "internalName": "Refined Copper Gem",
+  "requirements": {
+   "level": 1
+  },
+  "subType": "mining",
+  "type": "material"
+ },
+ "Copper Ingot": {
+  "chances": {
+   "TIER_1": 80,
+   "TIER_2": 10,
+   "TIER_3": 1
+  },
+  "emblem": "square",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      3573
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "profession.ingotCopper"
+   }
+  },
+  "internalName": "Refined Copper Ingot",
+  "requirements": {
+   "level": 1
+  },
+  "subType": "mining",
+  "type": "material"
+ },
+ "Oak Paper": {
+  "chances": {
+   "TIER_1": 80,
+   "TIER_2": 10,
+   "TIER_3": 1
+  },
+  "emblem": "square",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      3622
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "profession.paperOak"
+   }
+  },
+  "internalName": "Refined Oak Paper",
+  "requirements": {
+   "level": 1
+  },
+  "subType": "woodcutting",
+  "type": "material"
+ }
+}

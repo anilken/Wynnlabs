@@ -169,6 +169,7 @@ class MenuPaint {
             case RoadmapScreen.TAB_TREE -> { icon = "hierarchy"; bg = 0xFF1E3220; fg = 0xFF9FDC8A; }
             case RoadmapScreen.TAB_CRAFT -> { icon = "hammer"; bg = 0xFF3A2E14; fg = 0xFFE8C07A; }
             case RoadmapScreen.TAB_ENDGAME -> { icon = "trophy"; bg = 0xFF40280C; fg = 0xFFFFD36B; }
+            case RoadmapScreen.TAB_SEARCH -> { icon = "search"; bg = 0xFF2E2414; fg = 0xFFF2D59A; }
             default -> { icon = "settings"; bg = 0xFF24242E; fg = 0xFFB4B2A9; }
         }
         Art.iconTile(g, icon, x, y, size, bg, fg);

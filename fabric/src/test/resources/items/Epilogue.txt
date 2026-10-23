@@ -1,0 +1,24 @@
+{{EventHeroes}}<br>
+{{Infobox/Armour
+| name = Epilogue
+| item = Boots
+| material = Diamond
+| level = 89
+| type = Legendary
+| obtain = The Claim to Heroism, ([[Equipment Merchant (The Claim to Heroism)|Equipment Merchant]])
+| health = +3200
+| slots = 3
+| tag = Untradable
+}}
+'''Epilogue''' is an untradable pair of level 89 [[Legendary]] [[Boots]] obtainable during the annual [[Festival of the Heroes]]. It can be purchased from the [[Talespun Citadel]] [[Equipment Merchant (The Claim to Heroism)|Equipment Merchant]] in exchange for {{WynnIcon|allium}} [[Talespun Memory|Talespun Memories]], the currency awarded by the [[The Claim to Heroism|Claim to Heroism]] minigame during the festival.
+
+Epilogue can also be purchased from the [[Talespun Merchant]] on the [[Isles of Fiction]] year-round for 7 {{WynnIcon|le}} [[Liquid Emeralds]] and 32 {{WynnIcon|eb}} [[Emerald Blocks]].
+
+== Identifications ==
+{{IDcost|preset|[[Equipment Merchant (The Claim to Heroism)|Equipment Merchant]]|12 {{WynnIcon|allium}} [[Talespun Memory|Talespun Memories]]}}
+{{Identification/Preset
+| manaRegen = +15
+| walkSpeed = +15
+}}
+
+[[Category:Untradable Items]][[Category:Festival of the Heroes 2023 Items]][[Category:Festival of the Heroes 2024 Items]]

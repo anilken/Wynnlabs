@@ -46,6 +46,7 @@ public final class Settings {
         LABELS.put("dangerWarn", "wynnlabs.setting.dangerWarn");
         LABELS.put("sellSummary", "wynnlabs.setting.sellSummary");
         LABELS.put("bankHint", "wynnlabs.setting.bankHint");
+        LABELS.put("sourceHint", "wynnlabs.setting.sourceHint");
         LABELS.put("survivalWarn", "wynnlabs.setting.survivalWarn");
         LABELS.put("coachToasts", "wynnlabs.setting.coachToasts");
         LABELS.put("dpsHud", "wynnlabs.setting.dpsHud");
@@ -83,6 +84,8 @@ public final class Settings {
         DESC.put("boxPrices", "wynnlabs.setting_desc.boxPrices");
         CATEGORY.put("bankHint", "tips");
         DESC.put("bankHint", "wynnlabs.setting_desc.bankHint");
+        CATEGORY.put("sourceHint", "tips");
+        DESC.put("sourceHint", "wynnlabs.setting_desc.sourceHint");
         CATEGORY.put("glowTree", "glow");
         DESC.put("glowTree", "wynnlabs.setting_desc.glowTree");
         CATEGORY.put("glowUpgrade", "glow");

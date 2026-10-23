@@ -1,0 +1,20 @@
+{
+ "Bear": {
+  "bonuses": {
+   "2": {
+    "major": [],
+    "minor": {
+     "mainAttackDamage": 14,
+     "rawHealth": 75,
+     "rawMainAttackDamage": 25
+    }
+   }
+  },
+  "internalName": "bear",
+  "parts": [
+   "Bear Body",
+   "Bear Mask",
+   "Bear Head"
+  ]
+ }
+}

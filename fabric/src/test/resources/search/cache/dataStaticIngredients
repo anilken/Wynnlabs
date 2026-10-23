@@ -1,0 +1,191 @@
+{
+ "7-Yottabyte Storage Component": {
+  "consumableOnlyIDs": {
+   "charges": 0,
+   "duration": 0
+  },
+  "droppedBy": [
+   {
+    "coords": [
+     -1568,
+     150,
+     -2582,
+     250
+    ],
+    "name": "T-5lusive Surveillance Camera"
+   }
+  ],
+  "emblem": "square",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      1780
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "ingredient.7YottabyteStorageComponent"
+   }
+  },
+  "ingredientPositionModifiers": {
+   "above": 0,
+   "left": 0,
+   "notTouching": 0,
+   "right": 0,
+   "touching": 0,
+   "under": 0
+  },
+  "internalName": "7-Yottabyte Storage Component",
+  "itemOnlyIDs": {
+   "agilityRequirement": -17,
+   "defenceRequirement": -17,
+   "dexterityRequirement": -17,
+   "durabilityModifier": -98000,
+   "intelligenceRequirement": 0,
+   "strengthRequirement": 0
+  },
+  "requirements": {
+   "level": 90,
+   "skills": [
+    "armouring",
+    "weaponsmithing",
+    "woodworking"
+   ]
+  },
+  "tier": "TIER_2",
+  "type": "ingredient"
+ },
+ "Accursed Effigy": {
+  "consumableOnlyIDs": {
+   "charges": 0,
+   "duration": 0
+  },
+  "droppedBy": [
+   {
+    "coords": [
+     [
+      -730,
+      45,
+      -5510,
+      80
+     ],
+     [
+      -750,
+      46,
+      -5175,
+      100
+     ]
+    ],
+    "name": "Obelisk Of Inversion"
+   }
+  ],
+  "emblem": "square",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      1781
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "ingredient.accursedEffigy"
+   }
+  },
+  "identifications": {
+   "fireDamage": {
+    "max": 11,
+    "min": 8,
+    "raw": 8
+   },
+   "manaSteal": {
+    "max": 4,
+    "min": 3,
+    "raw": 3
+   },
+   "walkSpeed": {
+    "max": -5,
+    "min": -8,
+    "raw": -8
+   }
+  },
+  "ingredientPositionModifiers": {
+   "above": 0,
+   "left": 0,
+   "notTouching": 0,
+   "right": 0,
+   "touching": 0,
+   "under": 0
+  },
+  "internalName": "Accursed Effigy",
+  "itemOnlyIDs": {
+   "agilityRequirement": 0,
+   "defenceRequirement": 15,
+   "dexterityRequirement": 0,
+   "durabilityModifier": -87000,
+   "intelligenceRequirement": 0,
+   "strengthRequirement": 0
+  },
+  "requirements": {
+   "level": 76,
+   "skills": [
+    "armouring",
+    "tailoring"
+   ]
+  },
+  "tier": "TIER_2",
+  "type": "ingredient"
+ },
+ "Aged Cheese": {
+  "consumableOnlyIDs": {
+   "charges": 0,
+   "duration": -945
+  },
+  "emblem": "square",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      1791
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "ingredient.agedCheese"
+   }
+  },
+  "identifications": {
+   "rawAttackSpeed": {
+    "max": -1,
+    "min": -1,
+    "raw": -1
+   }
+  },
+  "ingredientPositionModifiers": {
+   "above": 0,
+   "left": -120,
+   "notTouching": 0,
+   "right": 0,
+   "touching": 20,
+   "under": 0
+  },
+  "internalName": "Aged Cheese",
+  "itemOnlyIDs": {
+   "agilityRequirement": 0,
+   "defenceRequirement": 0,
+   "dexterityRequirement": 0,
+   "durabilityModifier": 0,
+   "intelligenceRequirement": 0,
+   "strengthRequirement": 0
+  },
+  "requirements": {
+   "level": 117,
+   "skills": [
+    "cooking"
+   ]
+  },
+  "tier": "TIER_3",
+  "type": "ingredient"
+ }
+}

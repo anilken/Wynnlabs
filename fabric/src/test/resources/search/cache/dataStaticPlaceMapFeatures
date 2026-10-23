@@ -1,0 +1,93 @@
+[
+ {
+  "attributes": {
+   "label": "Aldorei"
+  },
+  "categoryId": "wynntils:place:town-or-place",
+  "featureId": "aldorei",
+  "level": 75,
+  "location": {
+   "x": -479,
+   "y": 0,
+   "z": -4546
+  }
+ },
+ {
+  "attributes": {
+   "label": "Cinfras"
+  },
+  "categoryId": "wynntils:place:city",
+  "featureId": "cinfras",
+  "level": 75,
+  "location": {
+   "x": -455,
+   "y": 0,
+   "z": -4928
+  }
+ },
+ {
+  "attributes": {
+   "label": "Detlas"
+  },
+  "categoryId": "wynntils:place:city",
+  "featureId": "detlas",
+  "level": 10,
+  "location": {
+   "x": 477,
+   "y": 0,
+   "z": -1590
+  }
+ },
+ {
+  "attributes": {
+   "label": "Gert Camp"
+  },
+  "categoryId": "wynntils:place:town-or-place",
+  "featureId": "gert-camp",
+  "level": 75,
+  "location": {
+   "x": -46,
+   "y": 0,
+   "z": -5539
+  }
+ },
+ {
+  "attributes": {
+   "label": "Ragni"
+  },
+  "categoryId": "wynntils:place:city",
+  "featureId": "ragni",
+  "level": 1,
+  "location": {
+   "x": -819,
+   "y": 0,
+   "z": -1581
+  }
+ },
+ {
+  "attributes": {
+   "label": "Tempo Town"
+  },
+  "categoryId": "wynntils:place:town-or-place",
+  "featureId": "tempo-town",
+  "level": 25,
+  "location": {
+   "x": -301,
+   "y": 0,
+   "z": -1171
+  }
+ },
+ {
+  "attributes": {
+   "label": "Thesead"
+  },
+  "categoryId": "wynntils:place:city",
+  "featureId": "thesead",
+  "level": 85,
+  "location": {
+   "x": 770,
+   "y": 0,
+   "z": -5043
+  }
+ }
+]

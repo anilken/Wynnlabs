@@ -1,0 +1,20 @@
+{{ItemData/ingredient
+| name = Lucky Rabbit's Foot
+| icon = File:Rabbit'sFootIcon.png
+| tier = 2
+| level = 37
+| professions = armouring,tailoring,woodworking,weaponsmithing,
+}}
+'''{{PAGENAME}}''' is a Tier 2 [[Crafting Ingredients|Crafting Ingredient]].
+
+==Obtaining==
+{{PAGENAME}} is dropped by various {{Icon|rare}} [[Rare Mobs]] in the [[Rymek Mesa]]. It can also be found in [[Loot Chests]].
+{{MobsThatDrop|{{PAGENAME}}}}
+
+{{PAGENAME}} is a reward from the following {{CBIcon|WE}} [[World Events|World Event]]:
+<ul>
+<li>[[Encroaching Conflagration]]</li>
+</ul>
+
+==Usage==
+{{IngredientUsage|basic}}

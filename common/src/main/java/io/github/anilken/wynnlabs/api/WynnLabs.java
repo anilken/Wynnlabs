@@ -135,6 +135,11 @@ public final class WynnLabs {
             long t = Perf.start();
             try {
                 lines.addAll(Advice.linesCached(stack));
+                // where the item comes from, one short line (setting sourceHint)
+                var from = io.github.anilken.wynnlabs.advice.SourceHint.line(stack);
+                if (from != null) {
+                    lines.add(from);
+                }
             } catch (Throwable ignored) {
                 // a broken advice line must never break the tooltip
             } finally {
@@ -245,6 +250,8 @@ public final class WynnLabs {
                 client.setScreen(new RoadmapScreen());
             }
         });
+        // the key under Esc opens the search tab, or the tab on the item under the mouse
+        io.github.anilken.wynnlabs.ui.SearchKey.register(platform, category);
         // files waiting in the background writer reach the disk before the game closes
         platform.onClientStopping(Saver::flush);
         // Wynntils' event bus only exists once the client has started.

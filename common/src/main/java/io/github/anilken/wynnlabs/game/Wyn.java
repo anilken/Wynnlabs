@@ -1276,4 +1276,135 @@ public final class Wyn {
             return true;
         }, false);
     }
+
+    // ---- the search tab: Wynntils' map and guide screens ----
+
+    /** Opens Wynntils' full map centred on (x, z), in place of the open screen; false when unavailable. */
+    public static boolean openMap(float x, float z) {
+        return guard(Feature.WAYPOINTS, () -> {
+            net.minecraft.client.Minecraft.getInstance().setScreen(com.wynntils.screens.maps.MainMapScreen.create(x, z));
+            return true;
+        }, false);
+    }
+
+    /**
+     * Puts these places on Wynntils' map in place of the ones shown before (empty clears them):
+     * our own marker provider, registered once, with one point of interest a mark. Map only: no
+     * waypoint, beacon or compass. False when unavailable.
+     */
+    public static boolean showMarks(List<io.github.anilken.wynnlabs.search.MapMark> marks) {
+        return guard(Feature.WAYPOINTS, () -> SearchMarks.show(marks), false);
+    }
+
+    /** The name of the item under the mouse on one of Wynntils' guide screens, or null. */
+    public static String hoveredGuideItem(net.minecraft.client.gui.screens.Screen screen) {
+        return guard(Feature.ITEMS, () -> {
+            for (var child : screen.children()) {
+                if (child instanceof com.wynntils.screens.guides.widgets.GuideButton b && b.isHovered()) {
+                    try {
+                        java.lang.reflect.Field f = com.wynntils.screens.guides.widgets.GuideButton.class.getDeclaredField("itemName");
+                        f.setAccessible(true);
+                        Object name = f.get(b);
+                        return name == null ? null : plain(name.toString());
+                    } catch (ReflectiveOperationException e) {
+                        return null;                // the field moved: the key does nothing there
+                    }
+                }
+            }
+            return null;
+        }, null);
+    }
+
+    /** Our places on Wynntils' map: a marker provider with points of interest only (no world markers). */
+    private static final class SearchMarks
+            implements com.wynntils.models.marker.type.MarkerProvider<com.wynntils.services.map.pois.Poi> {
+        private static SearchMarks registered;
+        private static volatile boolean broken;
+        private volatile List<com.wynntils.services.map.pois.Poi> pois = List.of();
+
+        static boolean show(List<io.github.anilken.wynnlabs.search.MapMark> marks) {
+            if (registered == null) {
+                if (marks.isEmpty()) {
+                    return true;                    // nothing shown yet, nothing to clear
+                }
+                registered = new SearchMarks();
+                Models.Marker.registerMarkerProvider(registered);
+            }
+            List<com.wynntils.services.map.pois.Poi> out = new ArrayList<>();
+            for (io.github.anilken.wynnlabs.search.MapMark m : marks) {
+                out.add(new MarkPoi(m, new com.wynntils.utils.mc.type.PoiLocation(m.x(), m.y(), m.z())));
+            }
+            registered.pois = List.copyOf(out);
+            return true;
+        }
+
+        @Override
+        public java.util.stream.Stream<com.wynntils.models.marker.type.MarkerInfo> getMarkerInfos() {
+            return java.util.stream.Stream.empty();
+        }
+
+        @Override
+        public java.util.stream.Stream<com.wynntils.services.map.pois.Poi> getPois() {
+            return pois.stream();
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return !pois.isEmpty();
+        }
+    }
+
+    /**
+     * One mark as Wynntils' map draws it: the map hands us its place on screen and its pixels per
+     * block ({@code zoomRenderScale}); {@link io.github.anilken.wynnlabs.ui.MapMarkPaint} draws. A
+     * failure in our drawing turns the drawing off and never reaches Wynntils' screen.
+     */
+    private record MarkPoi(io.github.anilken.wynnlabs.search.MapMark mark, com.wynntils.utils.mc.type.PoiLocation location)
+            implements com.wynntils.services.map.pois.Poi {
+
+        @Override
+        public com.wynntils.utils.mc.type.PoiLocation getLocation() {
+            return location;
+        }
+
+        @Override
+        public com.wynntils.services.map.type.DisplayPriority getDisplayPriority() {
+            return mark.focus() ? com.wynntils.services.map.type.DisplayPriority.HIGH
+                    : com.wynntils.services.map.type.DisplayPriority.NORMAL;
+        }
+
+        @Override
+        public boolean hasStaticLocation() {
+            return true;
+        }
+
+        @Override
+        public void renderAt(net.minecraft.client.gui.GuiGraphics g, float x, float z, boolean hovered, float scale,
+                float zoomRenderScale, float zoomLevel, boolean showLabels) {
+            if (SearchMarks.broken) {
+                return;
+            }
+            try {
+                io.github.anilken.wynnlabs.ui.MapMarkPaint.draw(g, mark, x, z, hovered, zoomRenderScale);
+            } catch (Throwable t) {
+                SearchMarks.broken = true;          // the pins and the rest of the map keep working
+                System.out.println("[WynnLabs] search marks on the map are off: " + t);
+            }
+        }
+
+        @Override
+        public int getWidth(float zoomRenderScale, float scale) {
+            return io.github.anilken.wynnlabs.search.MapMark.sizePx(mark, zoomRenderScale);
+        }
+
+        @Override
+        public int getHeight(float zoomRenderScale, float scale) {
+            return io.github.anilken.wynnlabs.search.MapMark.sizePx(mark, zoomRenderScale);
+        }
+
+        @Override
+        public String getName() {
+            return mark.label();
+        }
+    }
 }

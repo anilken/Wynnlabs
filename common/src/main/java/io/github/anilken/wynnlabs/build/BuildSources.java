@@ -105,19 +105,24 @@ public final class BuildSources {
         String src = Shopping.origin(info);
         boolean known = src != null && !src.isBlank() && !src.toUpperCase(Locale.ROOT).startsWith("UNKNOWN");
         if (known) {
-            return switch (Shopping.kind(src)) {
-                case "merchant" -> "shopping-cart";
-                case "quest" -> "script";
-                case "chest" -> "box";
-                case "drop" -> "sword";
-                case "dungeon" -> "skull";
-                default -> "question-mark";
-            };
+            return kindIcon(Shopping.kind(src));
         }
         if ("QUEST_ITEM".equals(info.restriction())) {
             return "script";
         }
         return tradable ? "coin" : "question-mark";
+    }
+
+    /** The badge of a {@link Shopping#kind} ("merchant" → the cart); the search tab's sources use it too. */
+    public static String kindIcon(String kind) {
+        return switch (kind) {
+            case "merchant" -> "shopping-cart";
+            case "quest" -> "script";
+            case "chest" -> "box";
+            case "drop" -> "sword";
+            case "dungeon" -> "skull";
+            default -> "question-mark";
+        };
     }
 
     /**

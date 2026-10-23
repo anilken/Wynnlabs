@@ -10,7 +10,9 @@
     "ScreenFontAccessor",
     "GuiGraphicsBoundsMixin",
     "GuiGraphicsScaleMixin",
-    "GuiGraphicsAccessor"
+    "GuiGraphicsAccessor",
+    "ContainerHoverAccessor",
+    "SearchKeyMixin"
   ],
   "injectors": {
     "defaultRequire": 1
