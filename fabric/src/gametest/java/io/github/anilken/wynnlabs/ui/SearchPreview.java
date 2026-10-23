@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * The search tab in the J menu preview: the item index read from a game folder's Wynntils cache
  * ({@code -PpreviewWynntils=<folder>}, read only) or, without one, from the trimmed test copies;
  * then shots of a search for an ingredient and for a piece of gear, its folding sections open,
- * GUI scales 2 and 4, and the empty box.
+ * GUI scales 2 and 4, the empty box, and searches for a mob, a town, a service and a dungeon.
  */
 final class SearchPreview {
 
@@ -71,6 +71,11 @@ final class SearchPreview {
             mc.resizeDisplay();
         });
         ctx.waitTicks(3);
+        // the world's things: a mob, a town, a service, a dungeon
+        for (String q : new String[] {"reggie", "cinfras", "blacksmith", "fallen factory"}) {
+            search(ctx, q);
+            shot(ctx, out, "search-all-" + q.replace(' ', '-'));
+        }
     }
 
     private static void search(ClientGameTestContext ctx, String text) {

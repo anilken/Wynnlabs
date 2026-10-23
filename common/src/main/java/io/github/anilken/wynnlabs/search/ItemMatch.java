@@ -9,7 +9,8 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Matches typed text against item names, the mobs that drop them and the stats they roll.
+ * Matches typed text against the names of items and things, the mobs that drop items and the
+ * stats they roll.
  * Text is normalised once (lower case, accents folded, apostrophes dropped, other punctuation a
  * space; stat keys split: "manaSteal" → "mana steal"). Tiers, best first: exact name, name prefix,
  * every typed word a word prefix, substring, small typos (Damerau–Levenshtein ≤ 1 for 4–7
@@ -34,6 +35,8 @@ public final class ItemMatch {
     static final class Prepared {
         final String[] names;
         final String[][] tokens;
+        /** Each token's letters as a bit set ({@link #mask}), to skip tokens a typo cannot reach. */
+        final int[][] masks;
         final String[] mobNorm;
         final String[][] mobTokens;
         final String[] mobName;
@@ -47,6 +50,13 @@ public final class ItemMatch {
                 String[] statNorm, String[] statKey, int[][] statEntries) {
             this.names = names;
             this.tokens = tokens;
+            this.masks = new int[tokens.length][];
+            for (int i = 0; i < tokens.length; i++) {
+                masks[i] = new int[tokens[i].length];
+                for (int j = 0; j < tokens[i].length; j++) {
+                    masks[i][j] = mask(tokens[i][j]);
+                }
+            }
             this.mobNorm = mobNorm;
             this.mobTokens = split(mobNorm);
             this.mobName = mobName;
@@ -172,8 +182,12 @@ public final class ItemMatch {
             return out;
         }
         Prepared p = index.prepared;
-        List<Entry> entries = index.entries();
+        List<Entry> entries = index.all();
         String[] qt = q.split(" ");
+        int[] qm = new int[qt.length];
+        for (int w = 0; w < qt.length; w++) {
+            qm[w] = mask(qt[w]);
+        }
         int letters = q.length() - (qt.length - 1);
         int[] best = new int[entries.size()];
         Hit.Match[] how = new Hit.Match[entries.size()];
@@ -193,7 +207,7 @@ public final class ItemMatch {
                 best[i] = SUBSTRING;
                 how[i] = Hit.Match.SUBSTRING;
             } else if (letters >= 4) {
-                int d = typo(qt, p.tokens[i]);
+                int d = typo(qt, qm, p.tokens[i], p.masks[i]);
                 if (d > 0) {
                     best[i] = TYPO - 40 * d;
                     how[i] = Hit.Match.TYPO;
@@ -261,10 +275,25 @@ public final class ItemMatch {
      * words do not all match or none needed a typo.
      */
     static int typo(String[] qt, String[] tokens) {
+        int[] qm = new int[qt.length];
+        int[] tm = new int[tokens.length];
+        for (int i = 0; i < qt.length; i++) {
+            qm[i] = mask(qt[i]);
+        }
+        for (int i = 0; i < tokens.length; i++) {
+            tm[i] = mask(tokens[i]);
+        }
+        return typo(qt, qm, tokens, tm);
+    }
+
+    /** {@link #typo(String[], String[])} with the words' and tokens' {@link #mask}s worked out already. */
+    private static int typo(String[] qt, int[] qm, String[] tokens, int[] tm) {
         int total = 0;
-        for (String w : qt) {
+        for (int wi = 0; wi < qt.length; wi++) {
+            String w = qt[wi];
             int bestD = Integer.MAX_VALUE;
-            for (String t : tokens) {
+            for (int ti = 0; ti < tokens.length; ti++) {
+                String t = tokens[ti];
                 if (t.startsWith(w)) {
                     bestD = 0;
                     break;
@@ -273,6 +302,10 @@ public final class ItemMatch {
                     continue;
                 }
                 int max = w.length() >= 8 ? 2 : 1;
+                // each letter of the word that the token lacks costs an edit: too many, no typo
+                if (Integer.bitCount(qm[wi] & ~tm[ti]) > max) {
+                    continue;
+                }
                 for (int len = w.length() - max; len <= w.length() + max; len++) {
                     if (len < 1 || len > t.length()) {
                         continue;
@@ -289,6 +322,15 @@ public final class ItemMatch {
             total += bestD;
         }
         return total;
+    }
+
+    /** The letters and digits of a word as bits (two characters may share one: a bound, never a miss). */
+    static int mask(String s) {
+        int m = 0;
+        for (int i = 0; i < s.length(); i++) {
+            m |= 1 << (s.charAt(i) & 31);
+        }
+        return m;
     }
 
     /**

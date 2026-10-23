@@ -127,10 +127,24 @@ final class SearchFixtures {
         total += simple(dir, "dataStaticTomes", 156, "tome", "weapon_tome", r);
         total += simple(dir, "dataStaticCharms", 5, "charm", null, r);
         for (String f : new String[] {"dataStaticCaveInfo", "dataStaticCombatMapFeatures", "dataStaticPlaceMapFeatures",
-            "dataStaticGatheringNodes", "dataStaticMaps"}) {
+            "dataStaticGatheringNodes", "dataStaticMaps", "dataStaticServiceMapFeatures", "dataStaticCombatLocations"}) {
             Files.copy(cacheDir().resolve(f), dir.resolve(f));
         }
         return total;
+    }
+
+    /**
+     * A wiki mob list of the real size (about 4,000 mobs after merging), each with a level, a
+     * region and one or two drops. Deterministic.
+     */
+    static List<MobWiki.Mob> syntheticWiki() {
+        Random r = new Random(7);
+        List<MobWiki.Mob> out = new ArrayList<>();
+        for (int i = 0; i < 4000; i++) {
+            List<String> drops = r.nextBoolean() ? List.of(word(r) + " Shard") : List.of(word(r) + " Shard", word(r) + " Hide");
+            out.add(new MobWiki.Mob(name(r) + " " + i, 1 + r.nextInt(110), word(r) + " Forest", word(r), drops));
+        }
+        return out;
     }
 
     private static int simple(Path dir, String file, int count, String type, String sub, Random r) throws IOException {

@@ -31,17 +31,19 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * The search tab ("Ara"): a search box over every item Wynntils knows, its sort and filter chips,
- * the results on the left ({@link SearchResultsPanel}) and the chosen item's card on the right
- * ({@link SearchCardPanel}). Typing runs the query on a background thread ({@link SearchWorker});
- * the frame draws its last answer. The selection follows the item's name, so it stays put while
- * the list changes. Shows only: the one thing it changes is a compass pin or the map's marks.
+ * The search tab ("Ara"): a search box over every item Wynntils knows and the world's things
+ * (mobs, places, dungeons, services, resources, quests, NPCs, discoveries), its sort and filter
+ * chips ("All" first, then one per kind with its count), the results on the left
+ * ({@link SearchResultsPanel}) and the chosen entry's card on the right ({@link SearchCardPanel}).
+ * Typing runs the query on a background thread ({@link SearchWorker}); the frame draws its last
+ * answer. The selection follows the entry's key, so it stays put while the list changes. Shows
+ * only: the one thing it changes is a compass pin or the map's marks.
  */
 final class SearchTab extends MenuTab {
 
     static final String[] SORTS = {"wynnlabs.search.sort_easiest", "wynnlabs.search.sort_level", "wynnlabs.search.sort_name",
         "wynnlabs.search.sort_price"};
-    private static final Kind[] KINDS = {Kind.GEAR, Kind.INGREDIENT, Kind.MATERIAL, Kind.TOME, Kind.CHARM};
+    private static final Kind[] KINDS = Kind.values();
 
     /** A click area of this frame and what it does. */
     record Click(int[] rect, Runnable run) {}
@@ -64,9 +66,9 @@ final class SearchTab extends MenuTab {
     private ItemIndex submittedFor;
     /** Lower-case names of what the player holds (bag and every seen bank page), as of the last query. */
     Set<String> ownedNames = Set.of();
-    /** The chosen item's name; the row it is on is found again each frame. */
+    /** The chosen entry's key (an item's name, a thing's "kind:name"); the row it is on is found again each frame. */
     String selName;
-    /** An item asked for from outside (the search key over a hovered item), chosen once the index is there. */
+    /** An entry asked for from outside (the search key over a hovered item, a card's link), chosen once the index is there. */
     private String wanted;
 
     SearchTab(RoadmapScreen menu) {
@@ -94,13 +96,17 @@ final class SearchTab extends MenuTab {
         clicks.add(new Click(new int[] {x, y, w, h}, run));
     }
 
-    /** Opens on this item: its name in the box and its card shown (the search key over a hovered item). */
-    void show(String name) {
-        wanted = name;
+    /**
+     * Opens on this entry, by its key (an item's name, a thing's "kind:name"): its name in the box
+     * and its card shown (the search key over a hovered item, a card's link to a mob or an item).
+     */
+    void show(String key) {
+        wanted = key;
         if (box != null) {
-            box.setValue(name);
+            Entry e = ItemIndex.get().byKey(key);
+            box.setValue(e != null ? e.name() : key.substring(key.indexOf(':') + 1));
         }
-        selName = name;
+        selName = key;
     }
 
     /** The tab is shown: the box takes the keys. */
@@ -150,7 +156,9 @@ final class SearchTab extends MenuTab {
             String why = "loading".equals(index.missing()) ? L.t("wynnlabs.search.loading") : L.t("wynnlabs.search.no_data");
             ink(g, fit(why, listW), x, bodyY + 4, FAINT);
         } else {
-            List<SearchResultsPanel.Row> rows = q.text().isBlank() ? results.emptyRows(index) : results.rows(result);
+            // an empty box lists the recent searches, unless a world kind is picked (all services, all quests)
+            boolean browse = q.kinds().stream().anyMatch(k -> !k.item());
+            List<SearchResultsPanel.Row> rows = q.text().isBlank() && !browse ? results.emptyRows(index) : results.rows(result);
             String pick = results.draw(g, x, bodyY, listW, bodyH, rows, mx, my);
             choose(pick, index);
         }
@@ -167,8 +175,13 @@ final class SearchTab extends MenuTab {
         int cx = x;
         int cy = y;
         List<Object[]> chips = new ArrayList<>();       // {label, on, action}
+        int total = result.counts().values().stream().mapToInt(Integer::intValue).sum();
+        chips.add(new Object[] {L.t("wynnlabs.search.kind.all") + " " + total, kinds.isEmpty(), (Runnable) kinds::clear});
         for (Kind k : KINDS) {
             Integer n = result.counts().get(k);
+            if (!k.item() && (n == null || n == 0) && !kinds.contains(k)) {
+                continue;                               // a world kind with nothing to show takes no room
+            }
             String label = L.t("wynnlabs.search.kind." + k.name().toLowerCase(Locale.ROOT)) + " " + (n == null ? 0 : n);
             chips.add(new Object[] {label, kinds.contains(k), (Runnable) () -> {
                 if (!kinds.remove(k)) {
@@ -286,13 +299,13 @@ final class SearchTab extends MenuTab {
 
     /** The row the results panel shows as chosen; a new one opens its card. */
     private void choose(String pick, ItemIndex index) {
-        if (wanted != null && index.byName(wanted) != null) {
-            pick = index.byName(wanted).name();
+        if (wanted != null && index.byKey(wanted) != null) {
+            pick = index.byKey(wanted).key();
             wanted = null;
             RecentSearches.get().add(pick);
         }
-        if (pick != null && !pick.equals(card.name())) {
-            Entry e = index.byName(pick);
+        if (pick != null && !pick.equals(card.key())) {
+            Entry e = index.byKey(pick);
             if (e != null) {
                 card.select(e);
             }
@@ -324,6 +337,10 @@ final class SearchTab extends MenuTab {
     boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double ex = event.x();
         double ey = event.y();
+        // the two scroll bars first: a press on a thumb starts a drag, on a track it pages
+        if (card.barPress(ex, ey) || results.barPress(ex, ey)) {
+            return true;
+        }
         for (int i = clicks.size() - 1; i >= 0; i--) {
             Click c = clicks.get(i);
             if (in(ex, ey, c.rect())) {
@@ -348,6 +365,16 @@ final class SearchTab extends MenuTab {
         return false;
     }
 
+    /** A drag with the button held: a scroll bar's thumb follows; true while one is dragged. */
+    boolean mouseDragged(double x, double y) {
+        return card.barDrag(y) || results.barDrag(y);
+    }
+
+    void mouseReleased() {
+        card.barRelease();
+        results.barRelease();
+    }
+
     @Override
     void mouseScrolled(double x, double y, double v) {
         if (!card.scrolled(x, y, v)) {
@@ -367,8 +394,8 @@ final class SearchTab extends MenuTab {
                 return true;
             }
             case GLFW.GLFW_KEY_ENTER, GLFW.GLFW_KEY_KP_ENTER -> {
-                if (card.name() != null) {
-                    RecentSearches.get().add(card.name());
+                if (card.key() != null) {
+                    RecentSearches.get().add(card.key());
                     card.pinEasiest();
                 }
                 return true;

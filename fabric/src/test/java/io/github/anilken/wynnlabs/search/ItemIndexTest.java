@@ -98,11 +98,13 @@ class ItemIndexTest {
     @Test
     void fullSizeBuildUnderOneSecond(@TempDir Path dir) throws Exception {
         int total = SearchFixtures.writeSynthetic(dir);
-        ItemIndex.read(dir, List.of());                    // warm the JIT once
+        List<MobWiki.Mob> wiki = SearchFixtures.syntheticWiki();
+        ItemIndex.read(dir, List.of(), wiki);              // warm the JIT once
         long t0 = System.nanoTime();
-        ItemIndex idx = ItemIndex.read(dir, LootChests.load(null));
+        ItemIndex idx = ItemIndex.read(dir, LootChests.load(null), wiki);
         long ms = (System.nanoTime() - t0) / 1_000_000;
-        System.out.println("[search] synthetic index of " + total + " items built in " + ms + " ms");
+        System.out.println("[search] synthetic index of " + total + " items and " + (idx.all().size() - total)
+                + " things built in " + ms + " ms");
         assertEquals(total, idx.entries().size());
         assertTrue(ms < 1000, "index build took " + ms + " ms");
     }

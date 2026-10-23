@@ -40,6 +40,11 @@ public final class QuestGuides {
         return m.get(quest);
     }
 
+    /** Every shipped guide, English stages only (the search lists quests and their NPCs from them). */
+    public static java.util.Collection<Guide> allEnglish() {
+        return english().values();
+    }
+
     /**
      * A quest's name as the player reads it: in Turkish the name the game shows with the
      * WynnChaYuan translation (tr.json's "name"), else the English one. Lookups stay English.

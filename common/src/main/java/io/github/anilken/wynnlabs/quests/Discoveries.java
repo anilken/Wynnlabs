@@ -84,6 +84,11 @@ public final class Discoveries {
         return inTurkish ? turkish : english;
     }
 
+    /** The English entries (names and places as the game has them). */
+    public static List<Entry> english() {
+        return entries(false);
+    }
+
     /** The entries in the menu's language: Turkish when the mod's text is Turkish. */
     public static List<Entry> all() {
         return entries(turkish());

@@ -182,6 +182,11 @@ public final class Places {
         return resource == null ? List.of() : nodes.getOrDefault(resource.toUpperCase(Locale.ROOT), List.of());
     }
 
+    /** The gathering resources that have nodes ("COPPER", "OAK"), sorted. */
+    public List<String> resources() {
+        return nodes.keySet().stream().sorted().toList();
+    }
+
     /** Every loot chest that got a level. */
     public List<Area> chests() {
         return chests;

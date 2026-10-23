@@ -1,0 +1,44 @@
+[
+  {
+    "type": "Dungeons",
+    "locations": [
+      {
+        "name": "Infested Pit",
+        "coordinates": {
+          "x": -199,
+          "y": 53,
+          "z": -1854
+        }
+      },
+      {
+        "name": "The Forgery",
+        "coordinates": {
+          "x": -853,
+          "y": 125,
+          "z": -4904
+        }
+      }
+    ]
+  },
+  {
+    "type": "Caves",
+    "locations": [
+      {
+        "name": "Cave",
+        "coordinates": {
+          "x": 1283,
+          "y": 102,
+          "z": -1054
+        }
+      },
+      {
+        "name": "Cave",
+        "coordinates": {
+          "x": -626,
+          "y": 68,
+          "z": -1769
+        }
+      }
+    ]
+  }
+]

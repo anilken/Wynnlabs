@@ -11,6 +11,7 @@ import io.github.anilken.wynnlabs.search.SearchQuery;
 import io.github.anilken.wynnlabs.search.Source;
 import io.github.anilken.wynnlabs.search.SourceRank;
 import io.github.anilken.wynnlabs.search.SourceText;
+import io.github.anilken.wynnlabs.search.Things;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -22,9 +23,10 @@ import java.util.Locale;
 /**
  * The search tab's results table: the item's real icon, its name in its rarity's colour with its
  * kind (or why it matched) under it, its level, the easiest way to get it as the home page's
- * coloured badge with a short hint, and a check when the player holds it. With an empty box it
- * lists the road map's missing pieces and the recent searches instead. Arrow keys move the
- * choice, the wheel scrolls.
+ * coloured badge with a short hint, and a check when the player holds it. A thing of the world
+ * (mob, place, dungeon, ...) shows its source badge for a picture and how far its nearest place
+ * is. With an empty box it lists the road map's missing pieces and the recent searches instead.
+ * Arrow keys move the choice, the wheel scrolls. Rows are told apart by {@link Entry#key}.
  */
 final class SearchResultsPanel extends MenuPaint {
 
@@ -67,7 +69,7 @@ final class SearchResultsPanel extends MenuPaint {
         if (!recent.isEmpty()) {
             out.add(new Row(null, L.t("wynnlabs.search.recent"), null));
             for (String n : recent) {
-                Entry e = index.byName(n);
+                Entry e = index.byKey(n);
                 if (e != null) {
                     out.add(new Row(e, null, null));
                 }
@@ -93,7 +95,7 @@ final class SearchResultsPanel extends MenuPaint {
         int selIndex = indexOf(rows, sel);
         if (selIndex < 0) {
             selIndex = next(rows, -1, 1);
-            sel = selIndex < 0 ? null : rows.get(selIndex).e().name();
+            sel = selIndex < 0 ? null : rows.get(selIndex).e().key();
         }
         if (rows.isEmpty()) {
             String empty = tab.box.getValue().isBlank() ? L.t("wynnlabs.search.empty_hint") : L.t("wynnlabs.search.none");
@@ -160,31 +162,43 @@ final class SearchResultsPanel extends MenuPaint {
         } else if (hover) {
             g.fill(x, y, x + w, y + ROW, Theme.CARD_HOVER);
         }
-        g.renderItem(tab.icons.of(e), x + 4, y + 3);
+        if (e.item()) {
+            g.renderItem(tab.icons.of(e), x + 4, y + 3);
+        } else {
+            SearchThingCard.picture(g, e, x + 4, y + 3, 16);
+        }
         int nameW = lvX - (x + 24) - 4;
         ink(g, Component.literal(fit(e.name(), nameW)), x + 24, y + 2, colour(e));
-        String sub = r.note() != null ? r.note() : kindText(e);
+        String sub = r.note() != null ? r.note() : e.item() ? kindText(e) : SearchThingCard.sub(e);
         scaledText(g, Component.literal(fit(sub, (int) (nameW / DESC_SCALE))), x + 24, y + 12, DESC_SCALE, FAINT);
         if (e.level() > 0) {
             ink(g, String.valueOf(e.level()), lvX, y + 7, MUTED);
         }
-        Prices.Price price = e.tradable() ? Prices.of(e.name()) : null;
-        Source.Type easy = SourceRank.easiest(e, price != null && price.typical() != null);
-        String badge = SourceRank.badge(easy);
-        Kit.seal(g, easyX, y + 5, 12, 12, Theme.sourceFill(badge));
-        Art.icon(g, badge, easyX + 2, y + 7, 8, Theme.CREAM);
-        ink(g, fit(SourceText.brief(easy, price, e.level()), easyW - 16), easyX + 15, y + 7,
-                easy == Source.Type.MARKET ? GOLD : MUTED);
-        if (tab.ownedNames.contains(e.name().toLowerCase(Locale.ROOT))) {
-            Art.icon(g, "check", x + w - 9, y + 7, 8, Theme.paperRgb(Theme.GOOD));
+        if (!e.item()) {
+            // a thing: its badge and how far its nearest place is
+            String badge = Things.badge(e);
+            Kit.seal(g, easyX, y + 5, 12, 12, Theme.sourceFill(badge));
+            Art.icon(g, badge, easyX + 2, y + 7, 8, Theme.CREAM);
+            ink(g, fit(SearchThingCard.hint(e, SearchTab.position()), easyW - 16), easyX + 15, y + 7, MUTED);
+        } else {
+            Prices.Price price = e.tradable() ? Prices.of(e.name()) : null;
+            Source.Type easy = SourceRank.easiest(e, price != null && price.typical() != null);
+            String badge = SourceRank.badge(easy);
+            Kit.seal(g, easyX, y + 5, 12, 12, Theme.sourceFill(badge));
+            Art.icon(g, badge, easyX + 2, y + 7, 8, Theme.CREAM);
+            ink(g, fit(SourceText.brief(easy, price, e.level()), easyW - 16), easyX + 15, y + 7,
+                    easy == Source.Type.MARKET ? GOLD : MUTED);
+            if (tab.ownedNames.contains(e.name().toLowerCase(Locale.ROOT))) {
+                Art.icon(g, "check", x + w - 9, y + 7, 8, Theme.paperRgb(Theme.GOOD));
+            }
+            if (hover) {
+                menu.hits.add(new MenuHit(x + 2, y + 1, 20, 20, tab.icons.of(e), null, null));
+            }
         }
-        if (hover) {
-            menu.hits.add(new MenuHit(x + 2, y + 1, 20, 20, tab.icons.of(e), null, null));
-        }
-        String name = e.name();
+        String key = e.key();
         tab.click(x, Math.max(y, top), w, Math.min(y + ROW, top + listH) - Math.max(y, top), () -> {
-            tab.selName = name;
-            RecentSearches.get().add(name);
+            tab.selName = key;
+            RecentSearches.get().add(key);
         });
     }
 
@@ -244,9 +258,31 @@ final class SearchResultsPanel extends MenuPaint {
             to = nx;
         }
         if (to >= 0 && to != at) {
-            tab.selName = last.get(to).e().name();
+            tab.selName = last.get(to).e().key();
             reveal = true;
         }
+    }
+
+    /** A press on the list's bar: the thumb starts a drag, the track pages; true when it took it. */
+    boolean barPress(double mx, double my) {
+        if (bar.mouseClicked(mx, my)) {
+            scroll = bar.offset();
+            return true;
+        }
+        return false;
+    }
+
+    /** The bar's thumb dragged; true while it is. */
+    boolean barDrag(double my) {
+        if (bar.mouseDragged(my)) {
+            scroll = bar.offset();
+            return true;
+        }
+        return false;
+    }
+
+    void barRelease() {
+        bar.mouseReleased();
     }
 
     void scrolled(double v) {
@@ -254,11 +290,12 @@ final class SearchResultsPanel extends MenuPaint {
     }
 
     private static int indexOf(List<Row> rows, String name) {
+        // name: the row's key (an item's name, a thing's "kind:name")
         if (name == null) {
             return -1;
         }
         for (int i = 0; i < rows.size(); i++) {
-            if (rows.get(i).e() != null && rows.get(i).e().name().equals(name)) {
+            if (rows.get(i).e() != null && rows.get(i).e().key().equals(name)) {
                 return i;
             }
         }

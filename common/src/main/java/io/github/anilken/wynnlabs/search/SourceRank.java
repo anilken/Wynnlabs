@@ -131,7 +131,7 @@ public final class SourceRank {
     }
 
     /** The {@code max} areas nearest to {@code pos} (all of them, in order, when it is null). */
-    static List<Area> nearest(List<Area> areas, double[] pos, int max) {
+    public static List<Area> nearest(List<Area> areas, double[] pos, int max) {
         if (pos == null) {
             return areas.size() <= max ? areas : List.copyOf(areas.subList(0, max));
         }

@@ -47,7 +47,7 @@ public record SearchQuery(String text, Sort sort, Set<Kind> kinds, int minLevel,
         public static final Facts NONE = new Facts(Klass.NONE, n -> false, n -> null);
     }
 
-    /** The ranked hits, how many items of each kind pass the other filters, and the query it answers. */
+    /** The ranked hits, how many entries of each kind pass the other filters, and the query it answers. */
     public record Result(SearchQuery query, List<Hit> hits, Map<Kind, Integer> counts) {
         public static final Result EMPTY = new Result(of(""), List.of(), Map.of());
     }
@@ -57,8 +57,8 @@ public record SearchQuery(String text, Sort sort, Set<Kind> kinds, int minLevel,
         String t = text == null ? "" : text.trim();
         List<Hit> found;
         if (t.isEmpty()) {
-            found = new ArrayList<>(index.entries().size());
-            for (Entry e : index.entries()) {
+            found = new ArrayList<>(index.all().size());
+            for (Entry e : index.all()) {
                 found.add(new Hit(e, 0, Hit.Match.ALL, null));
             }
         } else {
@@ -76,7 +76,7 @@ public record SearchQuery(String text, Sort sort, Set<Kind> kinds, int minLevel,
             if (myClass && e.klass() != Klass.NONE && e.klass() != f.klass()) {
                 continue;
             }
-            if (owned && !owns.computeIfAbsent(e.name(), f.owned()::test)) {
+            if (owned && !owns(e, f, owns)) {
                 continue;
             }
             if (onMarket && !(e.tradable() && price(e, f, prices) != null)) {
@@ -89,6 +89,11 @@ public record SearchQuery(String text, Sort sort, Set<Kind> kinds, int minLevel,
         }
         kept.sort(order(f, prices, owns));
         return new Result(this, Collections.unmodifiableList(kept), Collections.unmodifiableMap(counts));
+    }
+
+    /** Whether the player holds the item (things are never held). */
+    private static boolean owns(Entry e, Facts f, Map<String, Boolean> cache) {
+        return e.item() && cache.computeIfAbsent(e.name(), f.owned()::test);
     }
 
     private static Double price(Entry e, Facts f, Map<String, Double> cache) {
@@ -114,9 +119,9 @@ public record SearchQuery(String text, Sort sort, Set<Kind> kinds, int minLevel,
             case EASIEST -> {
                 Map<Entry, Integer> ease = new java.util.IdentityHashMap<>();
                 yield Comparator.comparingInt((Hit h) -> -(h.score() / 100))
-                        .thenComparingInt(h -> owns.computeIfAbsent(h.entry().name(), f.owned()::test) ? 0 : 1)
-                        .thenComparingInt(h -> ease.computeIfAbsent(h.entry(), e ->
-                                SourceRank.effort(SourceRank.easiest(e, price(e, f, prices) != null))))
+                        .thenComparingInt(h -> owns(h.entry(), f, owns) ? 0 : 1)
+                        .thenComparingInt(h -> ease.computeIfAbsent(h.entry(), e -> e.item()
+                                ? SourceRank.effort(SourceRank.easiest(e, price(e, f, prices) != null)) : Things.ease(e)))
                         .thenComparing(byScore)
                         .thenComparing(Comparator.comparingInt((Hit h) -> h.entry().name().length()))
                         .thenComparing(byName);

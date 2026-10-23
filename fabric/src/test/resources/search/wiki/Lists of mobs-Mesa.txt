@@ -1,0 +1,45 @@
+{{List of mobs}}
+{{Navbox Lists of mobs}}
+
+Trimmed copy of a wiki list page for the tests.
+
+== General Mobs ==
+{{MobTable}}
+|-
+| [[File:DustySkeleton.png|100px]]
+| [[Dusty Skeleton]]
+| 38
+| 1,200
+| {{AI|Melee}}
+| -
+| -
+| {{WynnIcon|bone}} [[Bone Shards]] <br> {{WynnIcon|Emerald}} 2-4 [[Emeralds]]
+| [[Mesa]], <br> {{CBIcon|Cave|1}} [[Mossy Grotto]]
+|-
+{{:Reggie}}
+|-
+| [[File:Sentry.png|100px]]
+| T-5lusive Sentry <br> (Lv. 41)
+| 41
+| ?
+| {{AI|Ranged}}
+| -
+| -
+| -
+| ?
+|-
+| style="text-align: center;" | [[File:Camera.png|100px]]
+| [[T-5lusive Surveillance Camera]]
+| 44
+| 900
+| {{AI|Ranged}}
+| -
+| -
+| {{WynnIcon|Potato}} [[7-Yottabyte Storage Component]]
+| [[Mesa]]
+|-
+| [[File:Fly.png|100px]]
+| Fly
+| Everywhere
+| -
+{{MobTable/End}}

@@ -1,0 +1,25 @@
+{{Infobox/Mob
+| name = Reggie
+| level = 40
+| location = [[Mesa]]
+}}Trimmed copy of a wiki mob page for the tests.
+==Drops==
+{{MobDrops
+|{{MDRow|item=Gunpowder|is_guaranteed=0}}
+}}
+
+== Table data ==
+{{MobTable}}
+<onlyinclude>
+| [[File:Reggie.png|100px]]
+| [[Reggie]]
+| 40
+| 3825
+| Melee AI
+| Charge
+| -
+| {{WynnIcon|Emerald}} 64-128 [[Emeralds]] <br> {{WynnIcon|Firework Star}} [[Gunpowder]] <br> {{WynnIcon|Potato}} Lucky Rabbit's Foot
+| [[Mesa]]
+|-
+</onlyinclude>
+|}

@@ -16,6 +16,7 @@ import io.github.anilken.wynnlabs.search.MapMark;
 import io.github.anilken.wynnlabs.search.Source;
 import io.github.anilken.wynnlabs.search.SourceText;
 import io.github.anilken.wynnlabs.search.Sources;
+import io.github.anilken.wynnlabs.search.Things;
 import io.github.anilken.wynnlabs.search.TrackedMobs;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -28,16 +29,24 @@ import java.util.concurrent.CompletableFuture;
  * The search tab's card for the chosen item: its icon, name, kind and level, what it asks of
  * the player (✔/✘ as tooltips mark them), the build gain when the shopping list knows it, the
  * buttons (pin the easiest place, open Wynntils' map there, the wiki), then "How do I get it":
- * every way ranked easiest first, each with its distance and direction and a pin. The folding
- * sections below are {@link SearchCardSections}. Sources are worked out once per choice; the
- * wiki page loads in the background and fills in a merchant's cost when it arrives.
+ * every way ranked easiest first, each with its distance and direction and a pin, and a link to
+ * the card of the mob, town or dungeon a row names. The folding sections below are
+ * {@link SearchCardSections}. Sources are worked out once per choice; the wiki page loads in the
+ * background and fills in a merchant's cost when it arrives.
+ *
+ * <p>A thing of the world (mob, place, dungeon, service, ...) gets the same card with its badge
+ * for a picture, "Where" for its places ({@link Things#rows}) and the parts of
+ * {@link SearchThingCard} below.
  */
 final class SearchCardPanel extends MenuPaint {
 
     private final SearchTab tab;
     final SearchCardSections sections;
+    final SearchThingCard thing;
     Entry entry;
     List<Source> rows = List.of();
+    /** The card each row links to (a mob, a town, a dungeon), null where none; as long as {@link #rows}. */
+    private List<Entry> rowLinks = List.of();
     Sources.Owned have = Sources.Owned.NONE;
     /** The row the map and "open on map" follow (0: the easiest). */
     int picked;
@@ -49,16 +58,24 @@ final class SearchCardPanel extends MenuPaint {
     private boolean all;
     int scroll;
     private int scrollMax;
+    /** The card's bar, kept between frames so its thumb can be dragged. */
+    private final ScrollBar bar = new ScrollBar();
     private int[] view = new int[4];
 
     SearchCardPanel(SearchTab tab) {
         super(tab.menu);
         this.tab = tab;
         this.sections = new SearchCardSections(this, tab);
+        this.thing = new SearchThingCard(this, tab);
     }
 
     String name() {
         return entry == null ? null : entry.name();
+    }
+
+    /** The shown entry's {@link Entry#key}, or null. */
+    String key() {
+        return entry == null ? null : entry.key();
     }
 
     /** Shows this item: its sources from where the player stands, its wiki page asked for, the map's marks replaced. */
@@ -68,9 +85,20 @@ final class SearchCardPanel extends MenuPaint {
         scroll = 0;
         all = false;
         kept = false;
+        if (!e.item()) {
+            have = Sources.Owned.NONE;
+            rows = Things.rows(e, SearchTab.position());
+            rowLinks = java.util.Collections.nCopies(rows.size(), null);
+            wikiLoad = null;
+            wiki = null;
+            gain = null;
+            marks();
+            return;
+        }
         have = SearchCardSections.owned(e.name());
         Prices.Price price = e.tradable() ? Prices.of(e.name()) : null;
         rows = Sources.of(e, ItemIndex.get().places(), have, price, SearchTab.position());
+        rowLinks = rows.stream().map(SearchThingCard::linked).toList();
         wikiLoad = ItemWiki.load(e.name());
         wiki = null;
         Shopping.Pick pick = e.kind() == io.github.anilken.wynnlabs.search.Kind.GEAR ? Shopping.find(e.name()) : null;
@@ -88,7 +116,13 @@ final class SearchCardPanel extends MenuPaint {
 
     private void marks() {
         ItemWiki.Info w = wiki;
-        Wyn.showMarks(MapMark.of(rows, picked, all, s -> SourceText.row(s, w)));
+        Entry e = entry;
+        Wyn.showMarks(MapMark.of(rows, picked, all, s -> e.item() ? SourceText.row(s, w) : SearchThingCard.markText(e, s)));
+    }
+
+    /** A row's words: the item card's source text, a thing's place label. */
+    private String rowText(Source s) {
+        return entry.item() ? SourceText.row(s, wiki) : SearchThingCard.rowText(entry, s);
     }
 
     void draw(GuiGraphics g, int x, int y, int w, int h, int mx, int my) {
@@ -107,13 +141,13 @@ final class SearchCardPanel extends MenuPaint {
         int top = y + 8 - scroll;
         int cy = header(g, x + 8, top, w - 16 - ScrollBar.W, mx, my);
         cy = sources(g, x + 8, cy + 6, w - 16 - ScrollBar.W, mx, my);
-        cy = sections.draw(g, x + 8, cy + 4, w - 16 - ScrollBar.W, mx, my);
+        cy = entry.item() ? sections.draw(g, x + 8, cy + 4, w - 16 - ScrollBar.W, mx, my)
+                : thing.draw(g, entry, x + 8, cy + 4, w - 16 - ScrollBar.W, mx, my);
         g.disableScissor();
         int total = cy - top + 6;
         scrollMax = Math.max(0, total - view[3]);
         scroll = Math.min(scroll, scrollMax);
         if (scrollMax > 0) {
-            ScrollBar bar = new ScrollBar();
             bar.place(x + w - ScrollBar.W - 2, view[1], view[3], view[3], total, scroll);
             bar.draw(g, mx, my);
         }
@@ -136,20 +170,26 @@ final class SearchCardPanel extends MenuPaint {
     // ---- the head: picture, name, needs, buttons ----
 
     private int header(GuiGraphics g, int x, int y, int w, int mx, int my) {
-        var stack = tab.icons.of(entry);
         Kit.slot(g, x, y, 36, 0);
-        bigItem(g, stack, x + 2, y + 2);
-        if (over(mx, my) && mx >= x && mx < x + 36 && my >= y && my < y + 36) {
-            menu.hits.add(new MenuHit(x, y, 36, 36, stack, null, null));
+        if (entry.item()) {
+            var stack = tab.icons.of(entry);
+            bigItem(g, stack, x + 2, y + 2);
+            if (over(mx, my) && mx >= x && mx < x + 36 && my >= y && my < y + 36) {
+                menu.hits.add(new MenuHit(x, y, 36, 36, stack, null, null));
+            }
+        } else {
+            SearchThingCard.picture(g, entry, x + 2, y + 2, 32);
         }
         int tx = x + 42;
         int tw = w - 42;
         ink(g, Component.literal(fit(entry.name(), tw)).withStyle(UiFont::bold), tx, y + 1, SearchResultsPanel.colour(entry));
         String tier = entry.tier() == null ? "" : SearchResultsPanel.words(entry.tier()) + " · ";
         String lv = entry.level() > 0 ? " · Lv " + entry.level() : "";
-        ink(g, fit(tier + SearchResultsPanel.kindText(entry) + lv, tw), tx, y + 12, MUTED);
-        // the needs wrap to a second line when the card is narrow
-        List<net.minecraft.util.FormattedCharSequence> need = font().split(sections.needs(entry), tw);
+        String kind = entry.item() ? SearchResultsPanel.kindText(entry) : SearchThingCard.typeText(entry);
+        ink(g, fit(tier + kind + lv, tw), tx, y + 12, MUTED);
+        // the needs (a thing's status) wrap to a second line when the card is narrow
+        Component needs = entry.item() ? sections.needs(entry) : SearchThingCard.status(entry);
+        List<net.minecraft.util.FormattedCharSequence> need = font().split(needs, tw);
         for (int i = 0; i < Math.min(2, need.size()); i++) {
             ink(g, need.get(i), tx, y + 23 + i * 10, Theme.INK);
         }
@@ -161,19 +201,31 @@ final class SearchCardPanel extends MenuPaint {
             g.drawString(font(), text, x + 5, cy + 2, Theme.SEAL_TEXT, true);
             cy += 14;
         }
-        // the buttons: pin the easiest place, Wynntils' map there, the wiki
+        // the buttons: pin the easiest (a thing's nearest) place, Wynntils' map there, every place, the wiki
         Area easiest = firstPlace(0);
         boolean mapOk = easiest != null && GameState.current().running() && Wyn.up(Wyn.Feature.WAYPOINTS);
         int bx = x;
-        bx += iconButton(g, bx, cy, "map-pin", L.t("wynnlabs.search.pin_easiest"), easiest != null, mx, my, this::pinEasiest) + 4;
+        String pinText = L.t(entry.item() ? "wynnlabs.search.pin_easiest" : "wynnlabs.search.pin_nearest");
+        bx += iconButton(g, bx, cy, "map-pin", pinText, easiest != null, mx, my, this::pinEasiest) + 4;
         bx += iconButton(g, bx, cy, "map-2", L.t("wynnlabs.search.open_map"), mapOk, mx, my, this::openMap) + 4;
-        if (bx + font().width(L.t("wynnlabs.search.wiki")) + 22 > x + w) {
-            bx = x;
-            cy += 17;
+        List<Area> every = entry.item() ? List.of() : entry.places();
+        if (every.size() > 1) {
+            if (bx + font().width(L.t("wynnlabs.search.pin_all")) + 22 > x + w) {
+                bx = x;
+                cy += 17;
+            }
+            bx += iconButton(g, bx, cy, "map-pin", L.t("wynnlabs.search.pin_all"), true, mx, my,
+                    () -> pinAll(io.github.anilken.wynnlabs.search.SourceRank.nearest(every, SearchTab.position(), every.size()))) + 4;
         }
-        String url = ItemWiki.url(entry.name());
-        iconButton(g, bx, cy, "arrow-up-right", L.t("wynnlabs.search.wiki"), true, mx, my,
-                () -> net.minecraft.client.gui.screens.ConfirmLinkScreen.confirmLinkNow(menu, java.net.URI.create(url), true));
+        if (entry.item() || SearchThingCard.wiki(entry)) {
+            if (bx + font().width(L.t("wynnlabs.search.wiki")) + 22 > x + w) {
+                bx = x;
+                cy += 17;
+            }
+            String url = ItemWiki.url(entry.name());
+            iconButton(g, bx, cy, "arrow-up-right", L.t("wynnlabs.search.wiki"), true, mx, my,
+                    () -> net.minecraft.client.gui.screens.ConfirmLinkScreen.confirmLinkNow(menu, java.net.URI.create(url), true));
+        }
         return cy + 14;
     }
 
@@ -195,7 +247,7 @@ final class SearchCardPanel extends MenuPaint {
     // ---- how do I get it ----
 
     private int sources(GuiGraphics g, int x, int y, int w, int mx, int my) {
-        section(g, "▾ " + L.t("wynnlabs.search.how"), x, y, w);
+        section(g, "▾ " + L.t(entry.item() ? "wynnlabs.search.how" : "wynnlabs.search.where"), x, y, w);
         String allText = L.t("wynnlabs.search.mark_all");
         boolean places = rows.stream().anyMatch(Source::hasPlace);
         if (places && GameState.current().running()) {
@@ -230,7 +282,11 @@ final class SearchCardPanel extends MenuPaint {
             String trackText = trackable ? trackLabel(s.name()) : null;
             int trackW = trackable ? font().width(trackText) + 8 : 0;
             pinW += trackW == 0 ? 0 : trackW + 2;
-            String text = SourceText.row(s, wiki);
+            // the mob, town or dungeon the row names opens its own card
+            Entry link = i < rowLinks.size() ? rowLinks.get(i) : null;
+            int linkW = link == null ? 0 : 12;
+            pinW += linkW == 0 ? 0 : linkW + 2;
+            String text = rowText(s);
             ink(g, fit(text, w - 16 - pinW), x + 15, cy + 1, i == 0 ? Theme.INK : MUTED);
             if (font().width(text) > w - 16 - pinW && hover) {
                 menu.hits.add(new MenuHit(x, cy, w - pinW, rh, null, List.of(Component.literal(text)), null));
@@ -271,6 +327,9 @@ final class SearchCardPanel extends MenuPaint {
             if (trackable) {
                 trackButton(g, x + w - (s.hasPlace() ? 14 : 0) - trackW, cy, trackW, trackText, s.name(), mx, my);
             }
+            if (link != null) {
+                linkButton(g, x + w - (s.hasPlace() ? 14 : 0) - (trackW == 0 ? 0 : trackW + 2) - linkW, cy, link, mx, my);
+            }
             cy += rh;
         }
         return tracked(g, x, cy + 2, w, mx, my);
@@ -299,6 +358,17 @@ final class SearchCardPanel extends MenuPaint {
             boolean now = TrackedMobs.get().toggle(mob);
             menu.flash(L.t(now ? "wynnlabs.search.track_on" : "wynnlabs.search.track_off", mob));
         });
+    }
+
+    /** The small "open its card" button of a row that names a mob, a town or a dungeon. */
+    private void linkButton(GuiGraphics g, int bx, int y, Entry to, int mx, int my) {
+        boolean hover = over(mx, my) && mx >= bx && mx < bx + 12 && my >= y && my < y + 12;
+        Kit.button(g, bx, y, 12, 12, hover ? Kit.HOVER : Kit.REST);
+        Art.icon(g, "arrow-up-right", bx + 2, y + 2, 8, Kit.buttonText(hover ? Kit.HOVER : Kit.REST));
+        if (hover) {
+            menu.hits.add(new MenuHit(bx, y, 12, 12, null, List.of(Component.literal(L.t("wynnlabs.search.open_card", to.name()))), null));
+        }
+        click(bx, y, 12, 12, () -> tab.show(to.key()));
     }
 
     /** "Tracking: Reggie, Gelbor · stop all" under the rows, when any mob is tracked. */
@@ -349,7 +419,7 @@ final class SearchCardPanel extends MenuPaint {
     void pinEasiest() {
         for (Source s : rows) {
             if (s.hasPlace()) {
-                pin(s.main(), SourceText.row(s, wiki));
+                pin(s.main(), rowText(s));
                 return;
             }
         }
@@ -400,6 +470,28 @@ final class SearchCardPanel extends MenuPaint {
     }
 
     // ---- the wheel ----
+
+    /** A press on the card's bar; true when it took it. */
+    boolean barPress(double mx, double my) {
+        if (scrollMax > 0 && bar.mouseClicked(mx, my)) {
+            scroll = bar.offset();
+            return true;
+        }
+        return false;
+    }
+
+    /** The bar's thumb dragged; true while it is. */
+    boolean barDrag(double my) {
+        if (bar.mouseDragged(my)) {
+            scroll = Math.max(0, Math.min(scrollMax, bar.offset()));
+            return true;
+        }
+        return false;
+    }
+
+    void barRelease() {
+        bar.mouseReleased();
+    }
 
     /** The wheel over the card scrolls it; true when it was over the card. */
     boolean scrolled(double x, double y, double v) {
