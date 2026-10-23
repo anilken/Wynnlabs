@@ -16,6 +16,7 @@ import io.github.anilken.wynnlabs.search.MapMark;
 import io.github.anilken.wynnlabs.search.Source;
 import io.github.anilken.wynnlabs.search.SourceText;
 import io.github.anilken.wynnlabs.search.Sources;
+import io.github.anilken.wynnlabs.search.TrackedMobs;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -224,6 +225,11 @@ final class SearchCardPanel extends MenuPaint {
             Kit.seal(g, x, cy, 11, 11, Theme.sourceFill(s.badge()));
             Art.icon(g, s.badge(), x + 1, cy + 1, 8, Theme.CREAM);
             int pinW = s.hasPlace() ? 14 : 0;
+            // a named mob or miniboss can be tracked: its toggle sits left of the pin
+            boolean trackable = trackable(s);
+            String trackText = trackable ? trackLabel(s.name()) : null;
+            int trackW = trackable ? font().width(trackText) + 8 : 0;
+            pinW += trackW == 0 ? 0 : trackW + 2;
             String text = SourceText.row(s, wiki);
             ink(g, fit(text, w - 16 - pinW), x + 15, cy + 1, i == 0 ? Theme.INK : MUTED);
             if (font().width(text) > w - 16 - pinW && hover) {
@@ -262,9 +268,57 @@ final class SearchCardPanel extends MenuPaint {
                     marks();
                 });
             }
+            if (trackable) {
+                trackButton(g, x + w - (s.hasPlace() ? 14 : 0) - trackW, cy, trackW, trackText, s.name(), mx, my);
+            }
             cy += rh;
         }
-        return cy;
+        return tracked(g, x, cy + 2, w, mx, my);
+    }
+
+    /** Whether a row names a mob the tracker can look for. */
+    private static boolean trackable(Source s) {
+        return (s.type() == Source.Type.MOB || s.type() == Source.Type.MINIBOSS)
+                && s.name() != null && !io.github.anilken.wynnlabs.search.MobName.key(s.name()).isEmpty();
+    }
+
+    private static String trackLabel(String mob) {
+        return TrackedMobs.get().has(mob) ? "✔ " + L.t("wynnlabs.search.tracking") : L.t("wynnlabs.search.track");
+    }
+
+    /** "Track" / "✔ Tracking" on a mob row: a click flips it. */
+    private void trackButton(GuiGraphics g, int bx, int y, int bw, String label, String mob, int mx, int my) {
+        boolean on = TrackedMobs.get().has(mob);
+        boolean hover = over(mx, my) && mx >= bx && mx < bx + bw && my >= y && my < y + 11;
+        // gold while tracking, wood otherwise; the label drawn as on every wooden button (cream
+        // with a shadow, ink on gold), not in paper ink, which is unreadable on wood
+        int state = on ? Kit.ON : hover ? Kit.HOVER : Kit.REST;
+        Kit.button(g, bx, y, bw, 11, state);
+        onWood(g, label, bx + 4, y + 2, state);
+        click(bx, y, bw, 11, () -> {
+            boolean now = TrackedMobs.get().toggle(mob);
+            menu.flash(L.t(now ? "wynnlabs.search.track_on" : "wynnlabs.search.track_off", mob));
+        });
+    }
+
+    /** "Tracking: Reggie, Gelbor · stop all" under the rows, when any mob is tracked. */
+    private int tracked(GuiGraphics g, int x, int y, int w, int mx, int my) {
+        List<String> names = TrackedMobs.get().names();
+        if (names.isEmpty()) {
+            return y;
+        }
+        String stop = L.t("wynnlabs.search.track_clear");
+        int sw = font().width(stop);
+        String list = L.t("wynnlabs.search.tracked_list", String.join(", ", names));
+        scaledText(g, Component.literal(fit(list, (int) ((w - sw - 8) / DESC_SCALE))), x, y + 1, DESC_SCALE, FAINT);
+        int sx = x + w - sw;
+        boolean hover = over(mx, my) && mx >= sx && mx < sx + sw && my >= y - 1 && my < y + 9;
+        ink(g, stop, sx, y, hover ? Theme.GOLD_DEEP : Theme.LINK);
+        click(sx - 2, y - 1, sw + 4, 10, () -> {
+            TrackedMobs.get().clear();
+            menu.flash(L.t("wynnlabs.search.track_cleared"));
+        });
+        return y + 11;
     }
 
     /** A compass point of {@link Compass#direction} in the player's language. */

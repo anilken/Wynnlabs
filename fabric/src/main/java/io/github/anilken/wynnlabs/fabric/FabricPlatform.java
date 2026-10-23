@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -70,6 +71,11 @@ public final class FabricPlatform implements Platform {
     @Override
     public void addHud(Identifier id, HudLayer layer) {
         HudElementRegistry.addLast(id, layer::render);
+    }
+
+    @Override
+    public void onWorldRender(WorldLayer layer) {
+        WorldRenderEvents.AFTER_ENTITIES.register(context -> layer.render(context.matrices(), context.consumers()));
     }
 
     @Override

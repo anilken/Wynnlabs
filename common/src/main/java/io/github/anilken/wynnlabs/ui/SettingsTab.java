@@ -318,6 +318,7 @@ final class SettingsTab extends MenuTab {
                             "hotbarBadges"},
                     new String[] {"wynnlabs.settings.sec_ground", "groundGlow", "groundBeam", "groundGlowShop",
                             "groundGlowNormal"},
+                    new String[] {"wynnlabs.settings.sec_tracked", "mobTrack", "mobTrackSound"},
                     new String[] {"wynnlabs.settings.sec_menus", "glowTree"}),
             "coach", List.of(
                     new String[] {"wynnlabs.settings.sec_chat", "chatUpgrade", "chatSkills", "chatLevelUp"},

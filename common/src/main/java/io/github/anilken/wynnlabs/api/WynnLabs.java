@@ -59,6 +59,7 @@ import io.github.anilken.wynnlabs.quests.Waypoints;
 import io.github.anilken.wynnlabs.ui.DpsHud;
 import io.github.anilken.wynnlabs.ui.GroundDebug;
 import io.github.anilken.wynnlabs.ui.GroundMarkers;
+import io.github.anilken.wynnlabs.ui.MobTracker;
 import io.github.anilken.wynnlabs.ui.HotbarBadges;
 import io.github.anilken.wynnlabs.ui.RoadmapScreen;
 import net.minecraft.client.Minecraft;
@@ -174,6 +175,7 @@ public final class WynnLabs {
         platform.onEndTick(Perf.tick("tick.ManaMeter", ManaMeter::onTick));
         platform.onEndTick(Perf.tick("tick.TreePlanner", TreePlanner::onTick));
         platform.onEndTick(Perf.tick("tick.GroundMarkers", GroundMarkers::onTick));
+        platform.onEndTick(Perf.tick("tick.MobTracker", MobTracker::onTick));
         platform.onEndTick(Perf.tick("tick.QuestBook", QuestBook::onTick));
         platform.onEndTick(Perf.tick("tick.AutoAdvice", WornGear::snapshotArmour));
         platform.onGameMessage(QuestBook::onChat);
@@ -223,10 +225,32 @@ public final class WynnLabs {
                 Perf.end("hud.HotbarBadges", t);
             }
         });
+        // tracked mobs: the notice on the HUD, the markers in the world (only in plain sight)
+        platform.addHud(net.minecraft.resources.Identifier.fromNamespaceAndPath("wynnlabs", "mob_track"), (g, dt) -> {
+            long t = Perf.start();
+            try {
+                MobTracker.renderHud(g, dt);
+            } catch (Throwable ignored) {
+                // a notice must never break the HUD
+            } finally {
+                Perf.end("hud.MobTracker", t);
+            }
+        });
+        platform.onWorldRender((pose, buffers) -> {
+            long t = Perf.start();
+            try {
+                MobTracker.renderWorld(pose, buffers);
+            } catch (Throwable ignored) {
+                // a marker must never break the frame
+            } finally {
+                Perf.end("world.MobTracker", t);
+            }
+        });
         // leaving the server closes the session report
         platform.onDisconnect(() -> {
             Coach.saveSession(System.currentTimeMillis());
             DpsMeter.LIVE.reset();
+            MobTracker.reset();
             RaidLog.disconnected();
             LootrunLog.disconnected();
         });
