@@ -22,9 +22,9 @@ public final class Sources {
     /** Levels below and above the item's level that the normal-drop band covers. */
     public static final int BAND = 4;
     /** Places listed on a band or chest row. */
-    public static final int NEAR = 5;
+    public static final int NEAR = Integer.MAX_VALUE;          // no cap: every place, nearest first
     /** Gathering spots listed on a material's row, at least {@link #NODE_SPACING} blocks apart. */
-    static final int NODES = 3;
+    static final int NODES = Integer.MAX_VALUE;
     static final int NODE_SPACING = 64;
 
     private Sources() {}

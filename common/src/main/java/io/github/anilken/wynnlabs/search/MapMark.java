@@ -18,7 +18,7 @@ public record MapMark(int x, int y, int z, int radius, String label, String badg
     /** A point's dot, in screen pixels. */
     public static final int DOT_PX = 4;
     /** At most this many areas a row puts on the map. */
-    public static final int PER_ROW = 12;
+    public static final int PER_ROW = Integer.MAX_VALUE;       // no cap: every place of a row
 
     public boolean point() {
         return radius <= 0;

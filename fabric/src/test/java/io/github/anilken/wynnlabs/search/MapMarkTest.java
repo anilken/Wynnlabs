@@ -53,12 +53,12 @@ class MapMarkTest {
     }
 
     @Test
-    void aRowPutsAtMostTwelvePlaces() {
+    void aRowPutsEveryPlace() {
         List<Area> many = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
             many.add(Area.point(i * 100, 60, 0));
         }
         Source chests = new Source(Source.Type.LOOT_CHEST, null, many, 7, "box", 0, null, 70, 78, null);
-        assertEquals(MapMark.PER_ROW, MapMark.of(List.of(chests), 0, false, s -> "Chests").size());
+        assertEquals(chests.areas().size(), MapMark.of(List.of(chests), 0, false, s -> "Chests").size());
     }
 }

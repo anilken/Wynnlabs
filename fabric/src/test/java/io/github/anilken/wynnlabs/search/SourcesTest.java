@@ -63,7 +63,7 @@ class SourcesTest {
         Source band = rows.stream().filter(s -> s.type() == Source.Type.MOB_BAND).findFirst().orElseThrow();
         assertEquals(73, band.minLevel());
         assertEquals(81, band.maxLevel());
-        assertEquals(Sources.NEAR, band.areas().size());
+        assertTrue(band.areas().size() > 5, "every place of the band, no cap");
         assertEquals("Burning Bog", band.main().name());
         double last = -1;
         for (Area a : band.areas()) {
@@ -133,7 +133,7 @@ class SourcesTest {
         Source g = of("Copper Ingot", null, null, null).get(0);
         assertEquals(Source.Type.GATHERING, g.type());
         assertEquals("Copper", g.name());
-        assertTrue(g.areas().size() >= 1 && g.areas().size() <= 3);
+        assertTrue(g.areas().size() >= 1);
         for (int i = 0; i < g.areas().size(); i++) {
             for (int j = i + 1; j < g.areas().size(); j++) {
                 Area a = g.areas().get(i);
