@@ -121,7 +121,13 @@ public final class QuestGuides {
 
     static QuestWiki.Stage stage(JsonObject s) {
         List<String> hints = new ArrayList<>();
-        s.getAsJsonArray("hints").forEach(h -> hints.add(h.getAsString()));
+        // a wiki template's own lines ("{{RenderLocation", "}}") left in a guide are not hints
+        s.getAsJsonArray("hints").forEach(h -> {
+            String l = h.getAsString().trim();
+            if (!l.startsWith("{{") && !l.equals("}}")) {
+                hints.add(h.getAsString());
+            }
+        });
         List<int[]> points = new ArrayList<>();
         s.getAsJsonArray("points").forEach(p -> points.add(xyz(p.getAsJsonArray())));
         List<String> names = new ArrayList<>();
@@ -138,9 +144,16 @@ public final class QuestGuides {
      */
     private static QuestWiki.Stage translated(QuestWiki.Stage en, JsonObject t) {
         List<String> hints = new ArrayList<>();
-        JsonArray th = t.getAsJsonArray("hints");
+        // the same template lines left out as in the English, so the lines still pair up
+        List<String> th = new ArrayList<>();
+        t.getAsJsonArray("hints").forEach(h -> {
+            String l = h.getAsString().trim();
+            if (!l.startsWith("{{") && !l.equals("}}")) {
+                th.add(h.getAsString());
+            }
+        });
         for (int i = 0; i < en.hints().size(); i++) {
-            hints.add(i < th.size() ? th.get(i).getAsString() : en.hints().get(i));
+            hints.add(i < th.size() ? th.get(i) : en.hints().get(i));
         }
         String task = t.has("task") ? t.get("task").getAsString() : en.task();
         String title = t.has("title") ? t.get("title").getAsString() : en.title();

@@ -493,8 +493,10 @@ public final class QuestWiki {
     }
 
     private static void add(List<Place> out, Place p) {
+        // only within a stage: a later stage back at an earlier place (the quest giver at the end)
+        // is a step of its own, else it shows as done with the first visit
         for (Place q : out) {
-            if (Math.abs(q.at()[0] - p.at()[0]) <= 2 && Math.abs(q.at()[1] - p.at()[1]) <= 3 && Math.abs(q.at()[2] - p.at()[2]) <= 2) {
+            if (q.stage() == p.stage() && Math.abs(q.at()[0] - p.at()[0]) <= 2 && Math.abs(q.at()[1] - p.at()[1]) <= 3 && Math.abs(q.at()[2] - p.at()[2]) <= 2) {
                 return;                                 // the same place, already named
             }
         }
