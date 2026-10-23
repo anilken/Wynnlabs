@@ -1900,6 +1900,7 @@
   "wynnlabs.screen.tab_search": "Ara",
   "wynnlabs.setting.sourceHint": "İpucunda: nereden alınır",
   "wynnlabs.setting_desc.sourceHint": "Eşyanın en kolay alındığı yolu tek satırda yazar: tüccar, Trade Market fiyatı ya da mob seviyesi",
+  "wynnlabs.search.market": "Piyasa",
   "wynnlabs.search.tooltip_from": "Nereden: %s",
   "wynnlabs.search.box": "Ara",
   "wynnlabs.search.box_hint": "Eşya, mob, yer, görev ya da stat yaz…",

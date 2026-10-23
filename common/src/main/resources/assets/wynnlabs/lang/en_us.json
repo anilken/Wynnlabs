@@ -1900,6 +1900,7 @@
   "wynnlabs.screen.tab_search": "Search",
   "wynnlabs.setting.sourceHint": "Where it comes from, in tooltips",
   "wynnlabs.setting_desc.sourceHint": "One line with the easiest way to get the item: a merchant, its Trade Market price or the mobs' level",
+  "wynnlabs.search.market": "Market",
   "wynnlabs.search.tooltip_from": "From: %s",
   "wynnlabs.search.box": "Search",
   "wynnlabs.search.box_hint": "Type an item, mob, place, quest or stat…",

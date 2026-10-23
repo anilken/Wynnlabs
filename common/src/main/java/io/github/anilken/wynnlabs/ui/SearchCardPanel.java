@@ -240,8 +240,28 @@ final class SearchCardPanel extends MenuPaint {
                 cy += 17;
             }
             String url = ItemWiki.url(entry.name());
-            iconButton(g, bx, cy, "arrow-up-right", L.t("wynnlabs.search.wiki"), true, mx, my,
-                    () -> net.minecraft.client.gui.screens.ConfirmLinkScreen.confirmLinkNow(menu, java.net.URI.create(url), true));
+            bx += iconButton(g, bx, cy, "arrow-up-right", L.t("wynnlabs.search.wiki"), true, mx, my,
+                    () -> net.minecraft.client.gui.screens.ConfirmLinkScreen.confirmLinkNow(menu, java.net.URI.create(url), true)) + 4;
+        }
+        if (entry.item() && entry.tradable()) {
+            // the same market window the T key opens over a container: this item's listings and rolls
+            if (bx + font().width(L.t("wynnlabs.search.market")) + 22 > x + w) {
+                bx = x;
+                cy += 17;
+            }
+            Entry e = entry;
+            iconButton(g, bx, cy, "shopping-cart", L.t("wynnlabs.search.market"), true, mx, my, () -> {
+                io.github.anilken.wynnlabs.model.Tier rarity;
+                try {
+                    rarity = io.github.anilken.wynnlabs.model.Tier.valueOf(e.tier().toUpperCase(java.util.Locale.ROOT));
+                } catch (RuntimeException ex) {
+                    rarity = io.github.anilken.wynnlabs.model.Tier.NORMAL;
+                }
+                var item = new io.github.anilken.wynnlabs.search.BoxMarket.Item(e.name(),
+                        io.github.anilken.wynnlabs.model.Slot.UNKNOWN, rarity, e.level(), e.klass(), 0, true);
+                net.minecraft.client.Minecraft.getInstance().setScreen(
+                        new BoxScreen(new BoxScreen.Single(item, null, false), tab.icons.of(e), menu));
+            });
         }
         return cy + 14;
     }
