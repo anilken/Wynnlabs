@@ -317,7 +317,7 @@ public final class Prices {
         }
         FETCHER.submit(() -> {
             try {
-                fetch(name, k);
+                fetch(name, k, 1);
             } catch (Exception e) {
                 MISSES.put(name, System.currentTimeMillis());
             } finally {
@@ -403,6 +403,17 @@ public final class Prices {
                 t.setDaemon(true);
                 return t;
             });
+    /**
+     * The market window's listing requests: their own worker, so a window the player has open
+     * never waits behind the bag's background price lookups; those wait while any is pending.
+     */
+    private static final java.util.concurrent.ExecutorService LISTINGS_FETCHER =
+            java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r, "wynninv-listings");
+                t.setDaemon(true);
+                return t;
+            });
+    private static final java.util.concurrent.atomic.AtomicInteger LISTINGS_PENDING = new java.util.concurrent.atomic.AtomicInteger();
     private static final java.util.Set<String> QUEUED = ConcurrentHashMap.newKeySet();
     private static final Map<String, Long> MISSES = new ConcurrentHashMap<>();
 
@@ -604,7 +615,11 @@ public final class Prices {
             }
             FETCHER.submit(() -> {
                 try {
-                    fetch(name, k);
+                    // the window's listings go first: one request a second in all
+                    while (LISTINGS_PENDING.get() > 0) {
+                        Thread.sleep(250);
+                    }
+                    fetch(name, k, 1);
                     Thread.sleep(1000);
                 } catch (Exception e) {
                     System.out.println("[WynnLabs] price of " + name + " failed: " + e);
@@ -623,10 +638,21 @@ public final class Prices {
      * website shows): the lowest current price, how many listings, when the newest was seen.
      * No listings: the old price stays, marked "şu an ilan yok". Saved, so verdicts rebuild.
      */
-    private static void fetch(String name, String k) throws Exception {
+    private static void fetch(String name, String k, int page) throws Exception {
+        boolean ok = false;
+        try {
+            ok = fetchPage(name, k, page);
+        } finally {
+            Listings.finished(name, page, ok);  // the box window's row leaves "loading" either way
+        }
+    }
+
+    /** One page of the listings; page 1 also sets the price. True when the answer was read. */
+    private static boolean fetchPage(String name, String k, int page) throws Exception {
         String q = java.net.URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20");
         var req = java.net.http.HttpRequest.newBuilder(
-                        java.net.URI.create("https://www.wynnventory.com/api/v2/market/listings?item_name=" + q))
+                        java.net.URI.create("https://www.wynnventory.com/api/v2/market/listings?item_name=" + q
+                                + (page > 1 ? "&page=" + page : "")))
                 .header("X-API-Key", k)
                 .timeout(java.time.Duration.ofSeconds(20))
                 .GET().build();
@@ -635,13 +661,20 @@ public final class Prices {
             keyInvalid = true;                  // stop asking until the player saves another key
             problem = Words.of("wynnlabs.price.problem_key", res.statusCode());
             keyProblem = true;
-            return;
+            return false;
         }
         if (res.statusCode() != 200) {
-            MISSES.put(name, System.currentTimeMillis());
-            return;
+            if (page <= 1) {
+                MISSES.put(name, System.currentTimeMillis());
+            }
+            return false;
         }
-        var list = GSON.fromJson(res.body(), JsonObject.class).getAsJsonArray("data");
+        JsonObject body = GSON.fromJson(res.body(), JsonObject.class);
+        Listings.accept(name, page, body);      // the box window's listings (no seller fields)
+        if (page > 1) {
+            return true;                        // later pages feed the listings only, not the price
+        }
+        var list = body.getAsJsonArray("data");
         // Listings are what players saw on the market, in snapshots: an old snapshot keeps
         // listings that have sold since (the cheap ones go first). The prices come from those seen
         // within 3 hours of the newest; the count from every listing, since a snapshot holds only
@@ -683,7 +716,7 @@ public final class Prices {
                     now, null, 0);
             if (p == null) {
                 MISSES.put(name, now);
-                return;
+                return true;
             }
         } else {
             java.util.Collections.sort(prices);
@@ -694,10 +727,47 @@ public final class Prices {
         PRICES.put(name, p);
         save();
         version++;                              // verdicts that weigh market prices rebuild
+        return true;
+    }
+
+    /**
+     * For the box window ({@link Listings}): one page of an item's listings on the same worker,
+     * key, switch and one-per-second pace, whatever the age of its price. True when it will be
+     * fetched: queued now, or already waiting. A page-1 name that just failed waits as usual.
+     */
+    static boolean queueListings(String name, int page) {
+        if (!apiReady()) {
+            return false;
+        }
+        String token = "L:" + name + "#" + page;                // its own token: a queued price lookup of the same item does not hold it back
+        if (QUEUED.contains(token)) {
+            return true;
+        }
+        Long missed = MISSES.get(name);
+        if (page <= 1 && missed != null && System.currentTimeMillis() - missed < MAX_AGE / 6) {
+            return false;
+        }
+        String k = key();
+        if (k == null || !QUEUED.add(token)) {
+            return k != null;
+        }
+        LISTINGS_PENDING.incrementAndGet();
+        LISTINGS_FETCHER.submit(() -> {
+            try {
+                fetch(name, k, page);
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                System.out.println("[WynnLabs] listings of " + name + " failed: " + e.getClass().getSimpleName());
+            } finally {
+                QUEUED.remove(token);
+                LISTINGS_PENDING.decrementAndGet();
+            }
+        });
+        return true;
     }
 
     /** When a listing was seen, in epoch millis; 0 when unknown. */
-    private static long seenAt(JsonObject l) {
+    static long seenAt(JsonObject l) {
         try {
             return java.time.Instant.parse(l.get("timestamp").getAsString()).toEpochMilli();
         } catch (Exception e) {
