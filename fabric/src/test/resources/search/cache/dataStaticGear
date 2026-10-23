@@ -1,0 +1,861 @@
+{
+ "Abdomen": {
+  "base": {
+   "baseHealth": 100
+  },
+  "dropMeta": {
+   "coordinates": [
+    -157,
+    54,
+    -1819
+   ],
+   "name": "Infested Pit",
+   "type": "dungeonMerchant"
+  },
+  "dropRestriction": "never",
+  "emblem": "shield_2",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      11
+     ]
+    },
+    "id": "minecraft:leather_chestplate",
+    "name": "chestplate.pale_leather"
+   }
+  },
+  "identifications": {
+   "rawAgility": 4,
+   "walkSpeed": 7
+  },
+  "identified": true,
+  "internalName": "Abdomen",
+  "powderSlots": 1,
+  "requirements": {
+   "level": 20
+  },
+  "restriction": "untradable",
+  "sets": [
+   "Spider"
+  ],
+  "subType": "chestplate",
+  "tier": "rare",
+  "type": "armour"
+ },
+ "Aberrant's Amulet": {
+  "base": {
+   "baseWaterDefence": -100
+  },
+  "dropRestriction": "lootchest",
+  "elements": [
+   "fire"
+  ],
+  "emblem": "sticker_6",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      2867
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "necklace.fire2"
+   }
+  },
+  "identifications": {
+   "elementalDefence": {
+    "max": -6,
+    "min": -10,
+    "raw": -8
+   },
+   "healthRegenRaw": {
+    "max": 191,
+    "min": 44,
+    "raw": 147
+   },
+   "rawDefence": 4,
+   "spellDamage": {
+    "max": 16,
+    "min": 4,
+    "raw": 12
+   },
+   "sprint": {
+    "max": -6,
+    "min": -12,
+    "raw": -9
+   }
+  },
+  "internalName": "Aberrant's Amulet",
+  "requirements": {
+   "defence": 55,
+   "level": 114
+  },
+  "restriction": "none",
+  "subType": "necklace",
+  "tier": "unique",
+  "type": "accessory"
+ },
+ "About-Face": {
+  "base": {
+   "baseEarthDefence": 60,
+   "baseFireDefence": 60,
+   "baseHealth": 2675
+  },
+  "dropRestriction": "normal",
+  "elements": [
+   "earth",
+   "fire"
+  ],
+  "emblem": "shield_5",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      8
+     ]
+    },
+    "id": "minecraft:leather_chestplate",
+    "name": "chestplate.diamond"
+   }
+  },
+  "identifications": {
+   "damage": {
+    "max": -35,
+    "min": -65,
+    "raw": -50
+   },
+   "healthRegenRaw": {
+    "max": 346,
+    "min": 80,
+    "raw": 266
+   },
+   "lifeSteal": {
+    "max": 293,
+    "min": 68,
+    "raw": 225
+   },
+   "manaSteal": {
+    "max": 10,
+    "min": 2,
+    "raw": 8
+   },
+   "rawDefence": 10,
+   "rawStrength": 10,
+   "reflection": {
+    "max": 433,
+    "min": 100,
+    "raw": 333
+   },
+   "thorns": {
+    "max": 433,
+    "min": 100,
+    "raw": 333
+   }
+  },
+  "internalName": "About-Face",
+  "powderSlots": 2,
+  "requirements": {
+   "defence": 40,
+   "level": 86,
+   "strength": 40
+  },
+  "restriction": "none",
+  "subType": "chestplate",
+  "tier": "unique",
+  "type": "armour"
+ },
+ "Abrasion": {
+  "base": {
+   "baseFireDefence": 40,
+   "baseWaterDefence": 40
+  },
+  "dropMeta": {
+   "coordinates": [
+    662,
+    49,
+    -4448
+   ],
+   "name": "The Canyon Colossus",
+   "type": "raid"
+  },
+  "dropRestriction": "never",
+  "elements": [
+   "water",
+   "fire"
+  ],
+  "emblem": "sticker_5",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      2867
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "necklace.fire2"
+   }
+  },
+  "identifications": {
+   "fireDamage": {
+    "max": 13,
+    "min": 3,
+    "raw": 10
+   },
+   "manaRegen": {
+    "max": 8,
+    "min": 2,
+    "raw": 6
+   },
+   "manaSteal": {
+    "max": 5,
+    "min": 1,
+    "raw": 4
+   },
+   "spellDamage": {
+    "max": 10,
+    "min": 2,
+    "raw": 8
+   },
+   "walkSpeed": {
+    "max": -26,
+    "min": -48,
+    "raw": -37
+   }
+  },
+  "internalName": "Abrasion",
+  "requirements": {
+   "level": 100
+  },
+  "restriction": "none",
+  "subType": "necklace",
+  "tier": "fabled",
+  "type": "accessory"
+ },
+ "Absorption": {
+  "attackSpeed": "normal",
+  "averageDps": 205,
+  "base": {
+   "baseThunderDamage": {
+    "max": 85,
+    "min": 25,
+    "raw": 25
+   },
+   "baseWaterDamage": {
+    "max": 60,
+    "min": 30,
+    "raw": 30
+   }
+  },
+  "dropRestriction": "normal",
+  "elements": [
+   "thunder",
+   "water"
+  ],
+  "emblem": "diamond_3",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      3974
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "spear.water2"
+   }
+  },
+  "identifications": {
+   "combatExperience": {
+    "max": 20,
+    "min": 5,
+    "raw": 15
+   },
+   "healthRegen": {
+    "max": -17,
+    "min": -32,
+    "raw": -25
+   },
+   "manaRegen": {
+    "max": 8,
+    "min": 2,
+    "raw": 6
+   },
+   "manaSteal": {
+    "max": 12,
+    "min": 3,
+    "raw": 9
+   },
+   "rawThunderSpellDamage": {
+    "max": 92,
+    "min": 21,
+    "raw": 71
+   }
+  },
+  "internalName": "Absorption",
+  "powderSlots": 2,
+  "requirements": {
+   "classRequirement": "warrior",
+   "dexterity": 25,
+   "intelligence": 15,
+   "level": 57
+  },
+  "restriction": "none",
+  "subType": "spear",
+  "tier": "unique",
+  "type": "weapon"
+ },
+ "Acevro": {
+  "attackSpeed": "normal",
+  "averageDps": 482,
+  "base": {
+   "baseAirDamage": {
+    "max": 130,
+    "min": 85,
+    "raw": 85
+   },
+   "baseDamage": {
+    "max": 150,
+    "min": 105,
+    "raw": 105
+   }
+  },
+  "dropMeta": {
+   "coordinates": [
+    -458,
+    47,
+    -4939
+   ],
+   "name": "Cinfras",
+   "type": "merchant"
+  },
+  "dropRestriction": "never",
+  "elements": [
+   "air"
+  ],
+  "emblem": "diamond_4",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      397
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "bow.water2"
+   }
+  },
+  "identifications": {
+   "airDamage": 20,
+   "manaRegen": 10,
+   "rawDefence": -10,
+   "walkSpeed": 20,
+   "waterDamage": 40
+  },
+  "identified": true,
+  "internalName": "Acevro",
+  "powderSlots": 3,
+  "requirements": {
+   "agility": 40,
+   "classRequirement": "archer",
+   "level": 72
+  },
+  "restriction": "none",
+  "subType": "bow",
+  "tier": "rare",
+  "type": "weapon"
+ },
+ "Aerolia Boots": {
+  "base": {
+   "baseHealth": 55
+  },
+  "dropRestriction": "never",
+  "emblem": "shield_1",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      11
+     ]
+    },
+    "id": "minecraft:leather_boots",
+    "name": "boots.pale_leather"
+   }
+  },
+  "identifications": {
+   "healthRegenRaw": {
+    "max": 4,
+    "min": 1,
+    "raw": 3
+   },
+   "manaRegen": {
+    "max": 8,
+    "min": 2,
+    "raw": 6
+   }
+  },
+  "internalName": "Aerolia Boots",
+  "powderSlots": 1,
+  "requirements": {
+   "level": 14,
+   "quest": "Suspended Flowers"
+  },
+  "restriction": "none",
+  "subType": "boots",
+  "tier": "unique",
+  "type": "armour"
+ },
+ "Anthem": {
+  "attackSpeed": "normal",
+  "averageDps": 410,
+  "base": {
+   "baseAirDamage": {
+    "max": 80,
+    "min": 20,
+    "raw": 20
+   },
+   "baseDamage": {
+    "max": 100,
+    "min": 100,
+    "raw": 100
+   },
+   "baseFireDamage": {
+    "max": 60,
+    "min": 40,
+    "raw": 40
+   }
+  },
+  "dropMeta": {
+   "coordinates": [
+    -345,
+    35,
+    -3970
+   ],
+   "event": "bonfire",
+   "name": "Isles of Fiction",
+   "type": [
+    "event",
+    "merchant"
+   ]
+  },
+  "dropRestriction": "never",
+  "elements": [
+   "fire",
+   "air"
+  ],
+  "emblem": "diamond_4",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      3714
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "relik.air2"
+   }
+  },
+  "identifications": {
+   "4thSpellCost": -20,
+   "healthRegen": 10,
+   "healthRegenRaw": 170,
+   "mainAttackDamage": -20,
+   "rawAgility": 8,
+   "rawDefence": 8
+  },
+  "identified": true,
+  "internalName": "Anthem",
+  "powderSlots": 3,
+  "requirements": {
+   "agility": 25,
+   "classRequirement": "shaman",
+   "defence": 25,
+   "level": 62
+  },
+  "restriction": "untradable",
+  "subType": "relik",
+  "tier": "legendary",
+  "type": "weapon"
+ },
+ "Astrolabe": {
+  "base": {
+   "baseAirDefence": 200,
+   "baseEarthDefence": -190,
+   "baseHealth": 4200
+  },
+  "dropMeta": {
+   "type": "lootrun"
+  },
+  "dropRestriction": "never",
+  "elements": [
+   "air"
+  ],
+  "emblem": "shield_6",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      9
+     ]
+    },
+    "id": "minecraft:leather_helmet",
+    "name": "helmet.titanium"
+   }
+  },
+  "identifications": {
+   "airDamage": {
+    "max": 23,
+    "min": 5,
+    "raw": 18
+   },
+   "raw2ndSpellCost": {
+    "max": 6,
+    "min": 10,
+    "raw": 8
+   },
+   "raw4thSpellCost": {
+    "max": -4,
+    "min": -1,
+    "raw": -3
+   },
+   "rawAgility": 10,
+   "rawSpellDamage": {
+    "max": 280,
+    "min": 65,
+    "raw": 215
+   },
+   "sprint": {
+    "max": -28,
+    "min": -52,
+    "raw": -40
+   },
+   "walkSpeed": {
+    "max": 36,
+    "min": 8,
+    "raw": 28
+   }
+  },
+  "internalName": "Astrolabe",
+  "jsonMajorIds": {
+   "Orbwalk": [
+    {
+     "color": "#AAAAAA",
+     "text": "Lightweaver Orbs gain +1 area of effect, "
+    },
+    {
+     "color": "#FFAA00",
+     "font": "common",
+     "text": ""
+    },
+    {
+     "color": "#FFAA00",
+     "text": "20%"
+    },
+    {
+     "color": "#AAAAAA",
+     "text": ", and "
+    },
+    {
+     "color": "#FFFFFF",
+     "font": "common",
+     "text": ""
+    },
+    {
+     "color": "#FFFFFF",
+     "text": "20%"
+    },
+    {
+     "color": "#AAAAAA",
+     "text": ", but move slower."
+    }
+   ]
+  },
+  "majorIds": {
+   "Orbwalk": "<span class='font-ascii' style='color:#AAAAAA'>Lightweaver Orbs gain +1 area of effect, <span class='font-ascii' style='color:#FFAA00'><span class='font-common'></span>20%</span>, and <span class='font-ascii' style='color:#FFFFFF'><span class='font-common'></span>20%</span>, but move slower.</span></span></span>"
+  },
+  "powderSlots": 3,
+  "requirements": {
+   "agility": 80,
+   "level": 117
+  },
+  "restriction": "none",
+  "subType": "helmet",
+  "tier": "fabled",
+  "type": "armour"
+ },
+ "Bear Body": {
+  "base": {
+   "baseHealth": 78
+  },
+  "dropRestriction": "never",
+  "emblem": "shield_1",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      11
+     ]
+    },
+    "id": "minecraft:leather_chestplate",
+    "name": "chestplate.pale_leather"
+   }
+  },
+  "identifications": {
+   "mainAttackDamage": 6
+  },
+  "identified": true,
+  "internalName": "Bear Body",
+  "requirements": {
+   "level": 16
+  },
+  "restriction": "none",
+  "sets": [
+   "Bear"
+  ],
+  "subType": "chestplate",
+  "tier": "unique",
+  "type": "armour"
+ },
+ "Bear Head": {
+  "base": {
+   "baseHealth": 72
+  },
+  "dropRestriction": "never",
+  "emblem": "shield_1",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      11
+     ]
+    },
+    "id": "minecraft:leather_helmet",
+    "name": "helmet.pale_leather"
+   }
+  },
+  "identifications": {
+   "rawMainAttackDamage": {
+    "max": 33,
+    "min": 8,
+    "raw": 25
+   }
+  },
+  "internalName": "Bear Head",
+  "requirements": {
+   "level": 15
+  },
+  "restriction": "none",
+  "sets": [
+   "Bear"
+  ],
+  "subType": "helmet",
+  "tier": "rare",
+  "type": "armour"
+ },
+ "Bear Mask": {
+  "base": {
+   "baseHealth": 72
+  },
+  "dropRestriction": "never",
+  "emblem": "shield_1",
+  "icon": {
+   "format": "skin",
+   "value": "695bbf9f175b1e76a61b4cd0ba183b18c9467017f41ed1046abf65a4a63c4a0"
+  },
+  "identifications": {
+   "rawMainAttackDamage": 25
+  },
+  "identified": true,
+  "internalName": "Bear Mask",
+  "requirements": {
+   "level": 15
+  },
+  "restriction": "none",
+  "sets": [
+   "Bear"
+  ],
+  "subType": "helmet",
+  "tier": "unique",
+  "type": "armour"
+ },
+ "Bloodborne": {
+  "base": {
+   "baseAirDefence": 20,
+   "baseFireDefence": 20,
+   "baseThunderDefence": -35
+  },
+  "dropMeta": {
+   "coordinates": [
+    99999,
+    99999,
+    99999
+   ],
+   "name": "Lootrun Rewards",
+   "type": "lootrun"
+  },
+  "dropRestriction": "never",
+  "elements": [
+   "fire",
+   "air"
+  ],
+  "emblem": "sticker_5",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      3826
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "ring.fire2"
+   }
+  },
+  "identifications": {
+   "airSpellDamage": {
+    "max": 10,
+    "min": 2,
+    "raw": 8
+   },
+   "healingEfficiency": {
+    "max": 7,
+    "min": 2,
+    "raw": 5
+   },
+   "healthRegenRaw": {
+    "max": 200,
+    "min": 46,
+    "raw": 154
+   },
+   "lifeSteal": {
+    "max": -119,
+    "min": -221,
+    "raw": -170
+   }
+  },
+  "internalName": "Bloodborne",
+  "jsonMajorIds": {
+   "Coagulate": [
+    {
+     "color": "#AAAAAA",
+     "text": "Blood Connection and Eldritch Call's teleports launch you further and higher."
+    }
+   ]
+  },
+  "majorIds": {
+   "Coagulate": "<span class='font-ascii' style='color:#AAAAAA'>Blood Connection and Eldritch Call's teleports launch you further and higher.</span>"
+  },
+  "requirements": {
+   "agility": 30,
+   "defence": 30,
+   "level": 94
+  },
+  "restriction": "none",
+  "subType": "ring",
+  "tier": "fabled",
+  "type": "accessory"
+ },
+ "Fearmonger": {
+  "base": {
+   "baseAirDefence": -130,
+   "baseHealth": -3300,
+   "baseThunderDefence": -130,
+   "baseWaterDefence": -300
+  },
+  "dropRestriction": "never",
+  "elements": [
+   "thunder",
+   "air"
+  ],
+  "emblem": "shield_5",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      8
+     ]
+    },
+    "id": "minecraft:leather_boots",
+    "name": "boots.diamond"
+   }
+  },
+  "identifications": {
+   "knockback": 75,
+   "mainAttackRange": -20,
+   "rawAttackSpeed": -30,
+   "rawIntelligence": -10,
+   "rawMainAttackDamage": 2700,
+   "rawSpellDamage": -84213,
+   "walkSpeed": 80
+  },
+  "identified": true,
+  "internalName": "Fearmonger",
+  "requirements": {
+   "agility": 60,
+   "dexterity": 60,
+   "level": 105
+  },
+  "restriction": "untradable",
+  "subType": "boots",
+  "tier": "legendary",
+  "type": "armour"
+ },
+ "Papyrus": {
+  "base": {
+   "baseAirDefence": 90,
+   "baseFireDefence": -50,
+   "baseHealth": 1000
+  },
+  "dropRestriction": "normal",
+  "emblem": "shield_4",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      6
+     ]
+    },
+    "id": "minecraft:leather_chestplate",
+    "name": "chestplate.iron"
+   }
+  },
+  "identifications": {
+   "combatExperience": {
+    "max": 39,
+    "min": 9,
+    "raw": 30
+   },
+   "manaRegen": {
+    "max": 16,
+    "min": 4,
+    "raw": 12
+   },
+   "rawSpellDamage": {
+    "max": 182,
+    "min": 42,
+    "raw": 140
+   }
+  },
+  "internalName": "Papyrus",
+  "powderSlots": 5,
+  "requirements": {
+   "level": 77
+  },
+  "restriction": "none",
+  "subType": "chestplate",
+  "tier": "rare",
+  "type": "armour"
+ }
+}

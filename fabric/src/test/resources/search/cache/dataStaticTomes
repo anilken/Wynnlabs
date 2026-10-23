@@ -1,0 +1,48 @@
+{
+ "Abyssal Tome of Combat Mastery II": {
+  "allowCraftsman": true,
+  "dropMeta": {
+   "coordinates": [
+    -732,
+    100,
+    -6412
+   ],
+   "name": "Orphion's Nexus of Light",
+   "type": "raid"
+  },
+  "dropRestriction": "never",
+  "emblem": "square_5",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      4254
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "tome.weapon"
+   }
+  },
+  "identifications": {
+   "damage": {
+    "max": 4,
+    "min": 1,
+    "raw": 3
+   },
+   "waterDamage": {
+    "max": 8,
+    "min": 2,
+    "raw": 6
+   }
+  },
+  "internalName": "Abyssal Tome of Combat Mastery II",
+  "requirements": {
+   "level": 80
+  },
+  "restriction": "untradable",
+  "subType": "weapon_tome",
+  "tier": "mythic",
+  "type": "tome"
+ }
+}

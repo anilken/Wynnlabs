@@ -1,0 +1,41 @@
+{
+ "Charm of the Stone": {
+  "allowCraftsman": true,
+  "base": {
+   "damageFromMobs": {
+    "max": 91,
+    "min": 21,
+    "raw": 70
+   },
+   "leveledLootBonus": {
+    "max": 35,
+    "min": 24,
+    "raw": 30
+   }
+  },
+  "dropRestriction": "never",
+  "emblem": "sticker_5",
+  "icon": {
+   "format": "attribute",
+   "value": {
+    "customModelData": {
+     "rangeDispatch": [
+      603
+     ],
+     "select": [
+      "item_tier_fabled"
+     ]
+    },
+    "id": "minecraft:potion",
+    "name": "charm.stone"
+   }
+  },
+  "internalName": "Charm of the Stone",
+  "requirements": {
+   "level": 90
+  },
+  "restriction": "untradable",
+  "tier": "fabled",
+  "type": "charm"
+ }
+}

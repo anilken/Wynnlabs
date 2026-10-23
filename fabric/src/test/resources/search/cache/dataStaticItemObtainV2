@@ -1,0 +1,26 @@
+{
+ "Aerolia Boots": [
+  {
+   "name": "Mossy Grotto",
+   "type": "caveCompletion"
+  }
+ ],
+ "Bear Body": [
+  {
+   "name": "The Bear Zoo",
+   "type": "merchant"
+  }
+ ],
+ "Bear Head": [
+  {
+   "name": "Discontinued",
+   "type": "unavailable"
+  }
+ ],
+ "Bear Mask": [
+  {
+   "name": "The Bear Zoo",
+   "type": "merchant"
+  }
+ ]
+}

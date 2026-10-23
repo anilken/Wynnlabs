@@ -1,0 +1,90 @@
+[
+ {
+  "attributes": {
+   "label": "Corrupted Infested Pit",
+   "level": 74
+  },
+  "categoryId": "wynntils:content:dungeon:corrupted",
+  "featureId": "corrupted-infested-pit",
+  "location": {
+   "x": 3435,
+   "y": 35,
+   "z": 3510
+  }
+ },
+ {
+  "attributes": {
+   "label": "Infested Pit",
+   "level": 17
+  },
+  "categoryId": "wynntils:content:dungeon",
+  "featureId": "infested-pit",
+  "location": {
+   "x": -199,
+   "y": 53,
+   "z": -1854
+  }
+ },
+ {
+  "attributes": {
+   "label": "Mossy Grotto",
+   "level": 16
+  },
+  "categoryId": "wynntils:content:cave",
+  "featureId": "mossy-grotto",
+  "location": {
+   "x": -449,
+   "y": 68,
+   "z": -1394
+  }
+ },
+ {
+  "attributes": {
+   "label": "Nest of the Grootslangs",
+   "level": 54
+  },
+  "categoryId": "wynntils:content:raid",
+  "featureId": "nest-of-the-grootslangs",
+  "location": {
+   "x": -1977,
+   "y": 63,
+   "z": -5635
+  }
+ },
+ {
+  "attributes": {
+   "label": "Witness Church"
+  },
+  "categoryId": "wynntils:content:grind-spot",
+  "featureId": "witness-church",
+  "location": {
+   "x": 1055,
+   "y": 117,
+   "z": -390
+  }
+ },
+ {
+  "attributes": {
+   "label": "Frozen Fort"
+  },
+  "categoryId": "wynntils:content:grind-spot",
+  "featureId": "frozen-fort",
+  "location": {
+   "x": 1538,
+   "y": 190,
+   "z": -4563
+  }
+ },
+ {
+  "attributes": {
+   "label": "Angel Cave"
+  },
+  "categoryId": "wynntils:content:grind-spot",
+  "featureId": "angel-cave",
+  "location": {
+   "x": 1155,
+   "y": 160,
+   "z": -4365
+  }
+ }
+]

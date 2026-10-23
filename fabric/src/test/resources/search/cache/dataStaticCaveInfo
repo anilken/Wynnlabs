@@ -1,0 +1,136 @@
+[
+ {
+  "description": "§7The forgotten factory at §f[-1832, 33, -794]§7 may not be so empty after all.",
+  "difficulty": "hard",
+  "length": "long",
+  "lengthInfo": "2m",
+  "location": {
+   "x": -1832,
+   "y": 33,
+   "z": -794
+  },
+  "name": "Abandoned Steelworks",
+  "requirements": 110,
+  "rewards": [
+   "3181000 XP",
+   "Various Items"
+  ],
+  "specialInfo": "",
+  "type": "cave"
+ },
+ {
+  "description": "§7The bandits menacing the Cinfras County are trying to dig a new hideout at §f[-287, 46, -5552]",
+  "difficulty": "easy",
+  "length": "medium",
+  "lengthInfo": "1m20s",
+  "location": {
+   "x": -287,
+   "y": 46,
+   "z": -5552
+  },
+  "name": "Bandit Groundbreaking",
+  "requirements": 75,
+  "rewards": [
+   "130000 XP",
+   "Various Items"
+  ],
+  "specialInfo": "",
+  "type": "cave"
+ },
+ {
+  "description": "§7Kandrekk warlocks have claimed a bog hidden behind ancient Gylia Ruins at §f[-411, 38, -5205]§7, and seek to watch the world burn",
+  "difficulty": "hard",
+  "length": "long",
+  "lengthInfo": "2m30s",
+  "location": {
+   "x": -411,
+   "y": 38,
+   "z": -5205
+  },
+  "name": "Burning Bog",
+  "requirements": 79,
+  "rewards": [
+   "170000 XP",
+   "Various Items"
+  ],
+  "specialInfo": "§aCave Complex",
+  "type": "cave"
+ },
+ {
+  "description": "§7An elegant little Grotto full of life and danger at §f[-449, 68, -1394]",
+  "difficulty": "easy",
+  "length": "medium",
+  "lengthInfo": "1m",
+  "location": {
+   "x": -449,
+   "y": 68,
+   "z": -1394
+  },
+  "name": "Mossy Grotto",
+  "requirements": 16,
+  "rewards": [
+   "400 XP",
+   "1 §f󐀂§eAerolia Boots",
+   "Various Items"
+  ],
+  "specialInfo": "",
+  "type": "cave"
+ },
+ {
+  "description": "§7Watch your step around the Rockhill at §f[-111, 38, -4621]§7, Bandits and Raiders are known to lurk around and keep their stolen treasure inside",
+  "difficulty": "easy",
+  "length": "medium",
+  "lengthInfo": "1m",
+  "location": {
+   "x": -111,
+   "y": 38,
+   "z": -4621
+  },
+  "name": "Raiders' Rockhill",
+  "requirements": 73,
+  "rewards": [
+   "110000 XP",
+   "Various Items"
+  ],
+  "specialInfo": "",
+  "type": "cave"
+ },
+ {
+  "description": "§7Many mysteries and creatures make their home in the great tree at §f[-893, 55, -6217]",
+  "difficulty": "easy",
+  "length": "long",
+  "lengthInfo": "1m50s",
+  "location": {
+   "x": -893,
+   "y": 55,
+   "z": -6217
+  },
+  "name": "Tree of Light",
+  "requirements": 77,
+  "rewards": [
+   "150000 XP",
+   "Various Items"
+  ],
+  "specialInfo": "§aTree",
+  "type": "cave"
+ },
+ {
+  "description": "§7Thunder elementals have carved a thunderbolt-shaped crag in the cliff at §f[632, 47, -4947]§7, and...?",
+  "difficulty": "easy",
+  "length": "medium",
+  "lengthInfo": "1m",
+  "location": {
+   "x": 632,
+   "y": 47,
+   "z": -4947
+  },
+  "name": "Voltaic Crag",
+  "requirements": 81,
+  "rewards": [
+   "190000 XP",
+   "Various Items"
+  ],
+  "specialInfo": "",
+  "type": "cave"
+ }
+]

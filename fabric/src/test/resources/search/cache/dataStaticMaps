@@ -1,0 +1,32 @@
+[
+ {
+  "md5": "7a95ae2adc362a2de2ab87c9e0b42fe3",
+  "name": "Main 1-1",
+  "path": "Reference/maps/map-main-1-1.png",
+  "url": "https://cdn.wynntils.com/static/Reference/maps/map-main-1-1.png",
+  "x1": -2560,
+  "x2": -1025,
+  "z1": -6144,
+  "z2": -5121
+ },
+ {
+  "md5": "eeb9d40d384a9b9c484c68812e64dae7",
+  "name": "Main 1-2",
+  "path": "Reference/maps/map-main-1-2.png",
+  "url": "https://cdn.wynntils.com/static/Reference/maps/map-main-1-2.png",
+  "x1": -1024,
+  "x2": 1023,
+  "z1": -6144,
+  "z2": -5121
+ },
+ {
+  "md5": "4f82fdf7d236847a364fd4dcb255ca0f",
+  "name": "Main 2-1",
+  "path": "Reference/maps/map-main-2-1.png",
+  "url": "https://cdn.wynntils.com/static/Reference/maps/map-main-2-1.png",
+  "x1": -2560,
+  "x2": -1025,
+  "z1": -5120,
+  "z2": -4097
+ }
+]
