@@ -317,7 +317,7 @@ final class SettingsTab extends MenuTab {
                     new String[] {"wynnlabs.settings.sec_bag", "glowUpgrade", "glowShop", "sellGlow", "verdictBadges",
                             "hotbarBadges"},
                     new String[] {"wynnlabs.settings.sec_ground", "groundGlow", "groundBeam", "groundGlowShop",
-                            "groundGlowNormal"},
+                            "groundGlowNormal", "groundGlowOther"},
                     new String[] {"wynnlabs.settings.sec_tracked", "mobTrack", "mobTrackSound"},
                     new String[] {"wynnlabs.settings.sec_menus", "glowTree"}),
             "coach", List.of(

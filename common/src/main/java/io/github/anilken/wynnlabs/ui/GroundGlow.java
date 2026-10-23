@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Which items on the ground glow, and in what colour: their rarity's colour (Unique yellow,
  * Rare pink, Legendary aqua, Fabled red, Mythic purple, Set green), gold for shopping-list
- * gear. Uses the game's own outline, so it shows through walls like any glowing entity.
+ * gear. Ingredients and materials glow by their stars, everything else but emeralds white. Uses the game's own outline, so it shows through walls like any glowing entity.
  * Decided once a second per item; switches on the J menu's settings tab.
  */
 public final class GroundGlow {
@@ -78,8 +78,33 @@ public final class GroundGlow {
         return found.get();
     }
 
+    private static final int WHITE = 0xFFFFFF;
+
+    /** The "[✫✫✫]" a dropped ingredient's name may carry. */
+    private static final java.util.regex.Pattern STARS = java.util.regex.Pattern.compile("\\s*\\[[^\\]]*]\\s*$|✫");
+
+    /** An ingredient's or material's colour by its stars, as the game colours them: gray, yellow, pink, aqua. */
+    private static Integer stars(int n) {
+        return switch (n) {
+            case 1 -> 0xFFFF55;
+            case 2 -> 0xFF55FF;
+            case 3 -> 0x55FFFF;
+            default -> 0xAAAAAA;
+        };
+    }
+
+    private static boolean emerald(ItemStack stack) {
+        String name = stack.getHoverName().getString().toLowerCase(java.util.Locale.ROOT);
+        return name.contains("emerald") || name.contains("zümrüt") || name.contains("liquid em")
+                || stack.is(net.minecraft.world.item.Items.EMERALD)
+                || stack.is(net.minecraft.world.item.Items.EMERALD_BLOCK);
+    }
+
     private static Integer decide(ItemStack stack) {
         if (stack == null || stack.isEmpty()) {
+            return null;
+        }
+        if (emerald(stack)) {
             return null;
         }
         Optional<ItemView> parsed = WynntilsItems.view(stack);
@@ -91,7 +116,15 @@ public final class GroundGlow {
         } else if (parsed.isPresent() && parsed.get().isBox()) {
             tier = parsed.get().box().tier();
         } else if (parsed.isPresent() && !parsed.get().plain()) {
-            return null;                        // emeralds, potions, materials, powders: no glow
+            ItemView v = parsed.get();
+            if (v.type() != null && v.type().contains("Emerald")) {
+                return null;                    // pouches too
+            }
+            if (!Settings.on("groundGlowOther")) {
+                return null;
+            }
+            boolean starred = v.kind() == ItemView.Kind.INGREDIENT || v.kind() == ItemView.Kind.MATERIAL;
+            return starred && v.qualityTier() != null ? stars(v.qualityTier()) : WHITE;
         } else {
             // Drops come with little data, so Wynntils only knows them as a plain item: look the
             // name up in the item database first (exact tier), then fall back to the name colour
@@ -107,16 +140,14 @@ public final class GroundGlow {
                 Integer rgb = info.tier().colour().getColor();
                 return rgb == null ? 0xFFFFFF : rgb;
             }
-            // not recognised yet: only gear-looking drops by their name colour, never emeralds
-            String name = stack.getHoverName().getString().toLowerCase(java.util.Locale.ROOT);
-            if (name.contains("emerald") || name.contains("zümrüt")
-                    || stack.is(net.minecraft.world.item.Items.EMERALD)
-                    || stack.is(net.minecraft.world.item.Items.EMERALD_BLOCK)) {
-                return null;
+            Integer starCount = WynntilsItems.ingredientStars(STARS.matcher(plain).replaceAll("").trim());
+            if (starCount != null) {
+                return Settings.on("groundGlowOther") ? stars(starCount) : null;
             }
+            // not recognised yet: gear-looking drops by their name colour, anything else white
             tier = tierFromColour(stack.getHoverName());
-            if (tier == Tier.SET) {
-                return null;                    // green names are mostly emeralds and misc items
+            if (tier == null || tier == Tier.SET) {
+                return Settings.on("groundGlowOther") ? WHITE : null;   // green names are mostly misc items
             }
         }
         if (tier == null) {
