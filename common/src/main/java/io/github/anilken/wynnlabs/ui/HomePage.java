@@ -12,6 +12,7 @@ import io.github.anilken.wynnlabs.build.Locks;
 import io.github.anilken.wynnlabs.build.Plans;
 import io.github.anilken.wynnlabs.build.Setup;
 import io.github.anilken.wynnlabs.build.TreePlanner;
+import io.github.anilken.wynnlabs.build.roadmap.PanelOptions;
 import io.github.anilken.wynnlabs.build.roadmap.Roadmap;
 import io.github.anilken.wynnlabs.core.L;
 import io.github.anilken.wynnlabs.core.Rules;
@@ -58,6 +59,8 @@ public final class HomePage extends MenuTab {
         slotHits.clear();
         cardHits.clear();
         backRect = null;
+        filterRects = null;
+        listRect = null;
     }
 
     /** The build window covers the home: its slots and level pills take no click. */
@@ -69,7 +72,7 @@ public final class HomePage extends MenuTab {
     @Override
     void draw(GuiGraphics g, int x, int y, int w, int h, int mx, int my, float pt) {
         if (detail != null) {
-            drawDetail(g, x, y, w, mx, my);
+            drawDetail(g, x, y, w, h, mx, my);
         } else {
             drawHome(g, x, y, w, h, mx, my);
         }
@@ -104,8 +107,15 @@ public final class HomePage extends MenuTab {
                 detail = null;
                 return true;
             }
+            for (int i = 0; filterRects != null && i < filterRects.length; i++) {
+                if (in(ex, ey, filterRects[i])) {
+                    detailMarket = i == 1;
+                    detailScroll = 0;
+                    return true;
+                }
+            }
             for (Object[] c : cardHits) {
-                if (in(ex, ey, (int[]) c[0])) {
+                if (listRect != null && in(ex, ey, listRect) && in(ex, ey, (int[]) c[0])) {
                     String n = ((ItemData) c[1]).name();
                     Minecraft.getInstance().keyboardHandler.setClipboard(n);
                     menu.flash(L.t("wynnlabs.screen.copied", n));
@@ -119,6 +129,7 @@ public final class HomePage extends MenuTab {
                 detail = (Roadmap.Gear) sh[1];
                 detailLabel = (String) sh[2];
                 detailWorn = (ItemStack) sh[3];
+                detailScroll = 0;
                 return true;
             }
         }
@@ -149,6 +160,11 @@ public final class HomePage extends MenuTab {
 
     @Override
     void mouseScrolled(double x, double y, double v) {
+        if (detail != null) {
+            // the comparison panel's cards scroll; the milestone stays
+            detailScroll = Math.max(0, Math.min(detailScrollMax, detailScroll - (int) Math.signum(v) * CARD_H / 2));
+            return;
+        }
         if (menu.steps.isEmpty()) {
             return;
         }
@@ -256,6 +272,14 @@ public final class HomePage extends MenuTab {
     Roadmap.Gear detail;
     private String detailLabel;
     private ItemStack detailWorn = ItemStack.EMPTY;
+    // the panel's filter (only what the Trade Market sells), kept for the session; its list's
+    // scroll in pixels; this frame's filter buttons {all, market} and list area (no initializers:
+    // fields a hot swap adds keep no value)
+    private boolean detailMarket;
+    private int detailScroll;
+    private int detailScrollMax;
+    private int[][] filterRects;
+    private int[] listRect;
 
     /** The goal list under the goal button, open after a click on it. */
     private boolean goalOpen;
@@ -770,39 +794,36 @@ public final class HomePage extends MenuTab {
                 L.c("wynnlabs.home.archetype_click").withStyle(ChatFormatting.DARK_GRAY)), "#qarch:"));
         nx += font().width(archLabel) + 18;
         g.drawString(font(), "Lv " + level, nx, y + 7, Theme.CREAM_DIM, true);
-        // the right side: the goal button with the XP switch beside it, the powder button, the
-        // nearest bank and Trade Market below
-        int chipW = 112;
+        // the right side: the goal button and its XP switch, the powder button, the nearest bank
+        // and Trade Market below
+        int chipW = 92;
         int cx = x + w - chipW - 6;
-        // the XP switch at the column's right edge, its short label before it; the goal button
-        // takes the rest of the row
-        boolean xpOn = Setup.countsXp();
-        String xpLabel = L.t("wynnlabs.home.count_xp_short");
-        int sx = cx + chipW - 19;
-        int lx = sx - 3 - font().width(xpLabel);
-        int goalW = lx - 4 - cx;
         int gs = goalOpen ? Kit.ON : Kit.REST;
-        Kit.button(g, cx, y + 7, goalW, 13, gs);
-        woodIconText(g, "target", fit(Setup.goalName(Setup.goal()), goalW - 28), cx + 4, y + 10, gs);
-        Art.icon(g, "chevron-down", cx + goalW - 12, y + 10, 8, goalOpen ? Theme.INK_2 : Theme.CREAM_DIM);
-        goalAnchor = new int[] {cx, y + 7, goalW, 13};
-        menu.hits.add(new MenuHit(cx, y + 8, goalW, 12, null, goalOpen ? List.of() : List.of(
+        Kit.button(g, cx, y + 4, chipW, 13, gs);
+        woodIconText(g, "target", fit(Setup.goalName(Setup.goal()), chipW - 28), cx + 4, y + 7, gs);
+        Art.icon(g, "chevron-down", cx + chipW - 12, y + 7, 8, goalOpen ? Theme.INK_2 : Theme.CREAM_DIM);
+        goalAnchor = new int[] {cx, y + 4, chipW, 13};
+        menu.hits.add(new MenuHit(cx, y + 5, chipW, 12, null, goalOpen ? List.of() : List.of(
                 L.c("wynnlabs.home.goal_tip", Setup.goalName(Setup.goal())).withStyle(ChatFormatting.LIGHT_PURPLE),
                 L.c("wynnlabs.home.goal_click").withStyle(ChatFormatting.DARK_GRAY)), "#qgoal:"));
-        g.drawString(font(), xpLabel, lx, y + 10, xpOn ? Theme.CREAM : Theme.CREAM_DIM, true);
-        Kit.toggle(g, sx, y + 8, xpOn);
-        menu.hits.add(new MenuHit(lx, y + 8, sx + 19 - lx, 12, null, List.of(
-                L.c("wynnlabs.home.count_xp", L.t(xpOn ? "wynnlabs.rules.on" : "wynnlabs.rules.off")).withStyle(ChatFormatting.LIGHT_PURPLE),
-                L.c(xpOn ? "wynnlabs.home.count_xp_on_tip" : "wynnlabs.home.count_xp_off_tip").withStyle(ChatFormatting.GRAY),
+        // the XP switch under it: the switch at the button's right edge, its label before it
+        boolean xpOn = Setup.countsXp();
+        int sx = cx + chipW - 19;
+        String xpLabel = fit(L.t("wynnlabs.home.count_xp"), chipW + 4);
+        int lx = sx - 4 - font().width(xpLabel);
+        g.drawString(font(), xpLabel, lx, y + 20, xpOn ? Theme.CREAM : Theme.CREAM_DIM, true);
+        Kit.toggle(g, sx, y + 19, xpOn);
+        menu.hits.add(new MenuHit(lx, y + 19, sx + 19 - lx, 11, null, List.of(
+                L.c(xpOn ? "wynnlabs.home.count_xp_on_tip" : "wynnlabs.home.count_xp_off_tip").withStyle(ChatFormatting.LIGHT_PURPLE),
                 L.c("wynnlabs.home.powder_click").withStyle(ChatFormatting.DARK_GRAY)), "#qxp:"));
         boolean powdered = Rules.sub("model", "assumePowders", 1) > 0;
         String powLabel = powdered ? L.t("wynnlabs.home.powder_on") : L.t("wynnlabs.home.powder_off");
-        Kit.button(g, cx, y + 23, chipW, 13, powdered ? Kit.ON : Kit.REST);
-        woodIconText(g, "diamond", fit(powLabel, chipW - 18), cx + 4, y + 26, powdered ? Kit.ON : Kit.REST);
-        menu.hits.add(new MenuHit(cx, y + 24, chipW, 12, null, List.of(
+        Kit.button(g, cx, y + 31, chipW, 12, powdered ? Kit.ON : Kit.REST);
+        woodIconText(g, "diamond", fit(powLabel, chipW - 18), cx + 4, y + 33, powdered ? Kit.ON : Kit.REST);
+        menu.hits.add(new MenuHit(cx, y + 31, chipW, 12, null, List.of(
                 L.c(powdered ? "wynnlabs.home.powder_on_tip" : "wynnlabs.home.powder_off_tip").withStyle(ChatFormatting.LIGHT_PURPLE),
                 L.c("wynnlabs.home.powder_click").withStyle(ChatFormatting.DARK_GRAY)), "#qpowder:"));
-        drawNearest(g, cx, y + 40, chipW);
+        drawNearest(g, cx, y + 44, chipW);
         // the gauge: the build score against the next milestone's
         Build.Plan plan = Build.plan();
         Damage.Result now = plan == null ? null : plan.current();
@@ -1190,17 +1211,34 @@ public final class HomePage extends MenuTab {
 
     // ---- comparison panel (a slot's options) ----
 
-    private void drawDetail(GuiGraphics g, int x, int y, int w, int mx, int my) {
-        List<Roadmap.Option> opts = detail.options();
-        ink(g, Component.literal(detailLabel).withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(UiFont::bold)
-                .append(L.c("wynnlabs.home.detail_sub").withStyle(ChatFormatting.DARK_GRAY)), x, y,
-                0xFFFFFFFF);
+    private void drawDetail(GuiGraphics g, int x, int y, int w, int h, int mx, int my) {
+        List<Roadmap.Option> all = detail.options() == null ? List.of() : detail.options();
+        Roadmap.Option pick = all.isEmpty() ? null : all.get(0);
+        List<Roadmap.Option> opts = PanelOptions.shown(all, detailMarket, Wyn.level());
         String back = L.t("wynnlabs.home.back");
         int bw = font().width(back) + 24;
+        String[] fl = {L.t("wynnlabs.home.filter_all"), L.t("wynnlabs.home.filter_market")};
+        int fx = x + w - bw - 8 - (font().width(fl[0]) + 12) - (font().width(fl[1]) + 12) - 2;
+        // the title, without "options, by gain" when the filter needs its room
+        Component title = Component.literal(detailLabel).withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(UiFont::bold);
+        Component full = title.copy().append(L.c("wynnlabs.home.detail_sub").withStyle(ChatFormatting.DARK_GRAY));
+        ink(g, font().width(full) + 8 <= fx - x ? full : title, x, y, 0xFFFFFFFF);
         boolean bh = mx >= x + w - bw && mx < x + w && my >= y - 2 && my < y + 11;
         Kit.button(g, x + w - bw, y - 2, bw, 13, bh ? Kit.HOVER : Kit.REST);
         woodIconText(g, "chevron-left", back, x + w - bw + 7, y, bh ? Kit.HOVER : Kit.REST);
         backRect = new int[] {x + w - bw, y - 2, bw, 13};
+        // the filter, left of Back: every option, or only what the Trade Market sells
+        filterRects = new int[2][];
+        for (int i = 0; i < 2; i++) {
+            int fw = font().width(fl[i]) + 12;
+            boolean on = detailMarket == (i == 1);
+            boolean fh = mx >= fx && mx < fx + fw && my >= y - 2 && my < y + 11;
+            int state = on ? Kit.ON : fh ? Kit.HOVER : Kit.REST;
+            Kit.button(g, fx, y - 2, fw, 13, state);
+            onWood(g, fl[i], fx + 6, y + 1, state);
+            filterRects[i] = new int[] {fx, y - 2, fw, 13};
+            fx += fw + 2;
+        }
 
         // what you wear now
         int ry = y + 14;
@@ -1215,19 +1253,42 @@ public final class HomePage extends MenuTab {
         ink(g, nowLabel, x + 24, ry + 6, FAINT);
         ink(g, Component.literal(wn).withStyle(ChatFormatting.WHITE).withStyle(UiFont::bold),
                 x + 24 + font().width(nowLabel) + 6, ry + 6, Theme.INK);
-        if (!opts.isEmpty()) {
-            Damage.Result f = opts.get(0).from();
+        if (pick != null) {
+            Damage.Result f = pick.from();
             String now = L.t("wynnlabs.home.detail_now", Math.round(f.spellDps()), Math.round(f.ehp()), signed(f.speed()));
             ink(g, now, x + w - font().width(now) - 5, ry + 6, MUTED);
         }
 
-        int cy = ry + 25;
-        for (int i = 0; i < opts.size() && i < 3; i++) {
-            drawCard(g, opts.get(i), i, x, cy, w, mx, my);
+        // the cards, best gain first, scrolled by the wheel when they are taller than the panel
+        int top = ry + 25;
+        int bottom = y + h - 2;
+        int listH = opts.size() * CARD_H;
+        detailScrollMax = Math.max(0, listH - (bottom - top));
+        detailScroll = Math.min(detailScroll, detailScrollMax);
+        boolean bar = detailScrollMax > 0;
+        int cw = bar ? w - ScrollBar.W - 4 : w;
+        listRect = new int[] {x, top, w, bottom - top};
+        int hitsFrom = menu.hits.size();
+        g.enableScissor(x, top, x + w, bottom);
+        int cy = top - detailScroll;
+        for (int i = 0; i < opts.size(); i++) {
+            if (cy + CARD_H > top && cy < bottom) {
+                drawCard(g, opts.get(i), i, opts.get(i) == pick, x, cy, cw, mx, my);
+            }
             cy += CARD_H;
         }
-        if (opts.size() < 3) {
-            ink(g, L.c("wynnlabs.home.detail_none")
+        g.disableScissor();
+        // an item's tooltip only where its card is in view
+        menu.hits.subList(hitsFrom, menu.hits.size()).removeIf(hb -> hb.y() < top || hb.y() + hb.h() > bottom);
+        if (bar) {
+            int trackH = bottom - top - 8;
+            int thumb = Math.max(ScrollBar.MIN_THUMB, trackH * (bottom - top) / listH);
+            int ty = top + (trackH - thumb) * detailScroll / detailScrollMax;
+            g.fill(x + w - ScrollBar.W + 2, top, x + w - 2, top + trackH, 0x30000000);
+            Kit.button(g, x + w - ScrollBar.W, ty, ScrollBar.W, thumb, Kit.REST);
+        }
+        if (opts.size() <= (detailMarket ? 0 : 1)) {
+            ink(g, L.c(detailMarket ? "wynnlabs.home.detail_none_market" : "wynnlabs.home.detail_none")
                     .withStyle(ChatFormatting.DARK_GRAY), x, cy + 2, 0xFFFFFFFF);
         }
     }
@@ -1238,10 +1299,10 @@ public final class HomePage extends MenuTab {
      * two to a row, and one line naming what stays the same; on the right the build's total as
      * a large seal and a button that copies the name (for the Trade Market search).
      */
-    private void drawCard(GuiGraphics g, Roadmap.Option o, int rank, int x, int y, int w, int mx, int my) {
+    private void drawCard(GuiGraphics g, Roadmap.Option o, int rank, boolean pick, int x, int y, int w, int mx, int my) {
         int h = CARD_H - 8;                     // 8px between cards for the shadow
         boolean hover = mx >= x && mx < x + w && my >= y && my < y + h;
-        card(g, x, y, w, h, hover, rank == 0 ? GOOD : 0);
+        card(g, x, y, w, h, hover, pick ? GOOD : 0);
         ItemStack icon = menu.icon(o.info());
         int sy = y + (h - 40) / 2;
         Kit.slot(g, x + 4, sy, 40, tierRing(o.info()));
@@ -1255,7 +1316,7 @@ public final class HomePage extends MenuTab {
         String build = L.t("wynnlabs.home.card_build");
         ink(g, build, rx + rw - font().width(build), y + 8, FAINT);
         String total = (o.gain() >= 0 ? "+" : "−") + RoadmapScreen.pct(Math.round(Math.abs(o.gain())));
-        Kit.seal(g, rx + 4, y + 19, rw - 4, 18, o.gain() >= 0 ? (rank == 0 ? Theme.SEAL_3 : Theme.SEAL_2) : Theme.BAD);
+        Kit.seal(g, rx + 4, y + 19, rw - 4, 18, o.gain() >= 0 ? (pick ? Theme.SEAL_3 : Theme.SEAL_2) : Theme.BAD);
         g.drawString(font(), total, rx + 4 + (rw - 4 - font().width(total)) / 2, y + 24, Theme.SEAL_TEXT, true);
         String copy = L.t("wynnlabs.home.card_copy");
         int cbw = font().width(copy) + 12;

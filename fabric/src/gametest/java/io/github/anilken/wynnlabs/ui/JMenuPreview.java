@@ -133,6 +133,7 @@ public class JMenuPreview implements FabricClientGameTest {
                 ctx.waitTicks(3);
                 shot(ctx, out, "jmenu-" + (i == 0 ? "now" : "step" + i));
             }
+            optionShots(ctx, out);
             craftScales(ctx, out);
             questGuides(ctx, out);
         } catch (Exception e) {
@@ -310,6 +311,62 @@ public class JMenuPreview implements FabricClientGameTest {
         ctx.runOnClient(mc -> CraftPreview.set(CraftingTab.INSTANCE, "drawerOpen", false));
     }
 
+    /**
+     * A slot's comparison panel (the slot with the most options), every option and only the
+     * Trade Market's, at GUI scale 2, 3 and 4, and scrolled to its end.
+     */
+    private static void optionShots(ClientGameTestContext ctx, Path out) throws Exception {
+        int[] at = ctx.computeOnClient(mc -> {
+            int[] best = {-1, -1, 0};
+            List<Roadmap.Step> steps = Roadmap.cached();
+            for (int i = 0; i < steps.size(); i++) {
+                for (int k = 0; k < steps.get(i).gear().size(); k++) {
+                    var o = steps.get(i).gear().get(k).options();
+                    if (o != null && o.size() > best[2]) {
+                        best = new int[] {i, k, o.size()};
+                    }
+                }
+            }
+            return best;
+        });
+        if (at[0] < 0) {
+            return;
+        }
+        ctx.runOnClient(mc -> {
+            HomePage home = ((RoadmapScreen) mc.screen).home;
+            set(mc.screen, "selected", at[0]);
+            home.detail = Roadmap.cached().get(at[0]).gear().get(at[1]);
+            put(home, "detailLabel", home.detail.slot());
+        });
+        for (int scale : new int[] {2, 3, 4}) {
+            for (boolean market : new boolean[] {false, true}) {
+                ctx.runOnClient(mc -> {
+                    mc.options.guiScale().set(scale);
+                    mc.resizeDisplay();
+                    HomePage home = ((RoadmapScreen) mc.screen).home;
+                    flag(home, "detailMarket", market);
+                    set(home, "detailScroll", 0);
+                });
+                ctx.waitTicks(5);
+                shot(ctx, out, "jmenu-options-gui" + scale + (market ? "-market" : ""));
+            }
+        }
+        ctx.runOnClient(mc -> {
+            mc.options.guiScale().set(3);
+            mc.resizeDisplay();
+            HomePage home = ((RoadmapScreen) mc.screen).home;
+            flag(home, "detailMarket", false);
+            set(home, "detailScroll", 100000);
+        });
+        ctx.waitTicks(5);
+        shot(ctx, out, "jmenu-options-end");
+        ctx.runOnClient(mc -> {
+            HomePage home = ((RoadmapScreen) mc.screen).home;
+            home.detail = null;
+            set(home, "detailScroll", 0);
+        });
+    }
+
     /** The recorded bag as a 9 x 4 grid, each slot with its advice word and sell icon. */
     static final class BagPreview extends net.minecraft.client.gui.screens.Screen {
         BagPreview() {
@@ -397,6 +454,12 @@ public class JMenuPreview implements FabricClientGameTest {
         Field f = screen.getClass().getDeclaredField(field);
         f.setAccessible(true);
         f.setBoolean(screen, value);
+    }
+
+    private static void put(Object screen, String field, Object value) throws ReflectiveOperationException {
+        Field f = screen.getClass().getDeclaredField(field);
+        f.setAccessible(true);
+        f.set(screen, value);
     }
 
     private static void set(Object screen, String field, int value) throws ReflectiveOperationException {

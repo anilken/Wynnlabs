@@ -91,8 +91,16 @@ public final class Shopping {
             case "SPECIFIC_MOB_DROP", "MINIBOSS" -> L.t("wynnlabs.shop.where_dropped_by", name);
             case "WORLD_EVENT" -> L.t("wynnlabs.shop.where_event", name);
             case "BOSS_ALTAR" -> L.t("wynnlabs.shop.where_altar", name);
-            default -> source.toLowerCase(java.util.Locale.ROOT);
+            case "RAID" -> L.t("wynnlabs.shop.where_raid", name);
+            case "CHALLENGE" -> L.t("wynnlabs.shop.where_challenge", name);
+            default -> plain(parts[0], name);
         };
+    }
+
+    /** A kind with no words of its own, for people: "TINKERING: Scavenger's Workshop" → "Scavenger's Workshop (tinkering)". */
+    static String plain(String kind, String name) {
+        String k = kind.toLowerCase(java.util.Locale.ROOT).replace('_', ' ').trim();
+        return name.isBlank() ? k : name.trim() + " (" + k + ")";
     }
 
     /**
