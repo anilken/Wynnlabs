@@ -210,7 +210,8 @@ public final class QuestWiki {
                 .getAsJsonObject("main").get("*").getAsString();
     }
 
-    static String clean(String s) {
+    /** Wikitext → plain text: links to their labels, colour templates to their text, other templates and tags dropped. */
+    public static String clean(String s) {
         String t = s.trim();
         // colour templates keep their text: {{c|var(--…)|[5 Gold Chunks]}} → 5 Gold Chunks; the
         // innermost first, so one nested in another ({{c|#a00|told {{c|#aaa|you}}}}) unwraps too
