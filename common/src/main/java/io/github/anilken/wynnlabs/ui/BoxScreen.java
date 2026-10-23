@@ -205,8 +205,9 @@ public final class BoxScreen extends Screen {
         super.render(g, mx, my, pt);
         rebuild();
         hits.clear();
-        int w = Math.min(width - 20, 600);
-        int h = Math.min(height - 20, 340);
+        // a window over the container, not a second menu: about four fifths of the screen at most
+        int w = Math.min(width - 20, Math.max(360, Math.min(480, width * 4 / 5)));
+        int h = Math.min(height - 20, Math.max(220, Math.min(280, height * 4 / 5)));
         int x = (width - w) / 2;
         int y = (height - h) / 2;
         Kit.window(g, x - 5, y - 5, w + 10, h + 10);
@@ -230,7 +231,10 @@ public final class BoxScreen extends Screen {
             // Wynntils' gear data is not in yet: say so, keep the fee
             ink(g, fit(L.t("wynnlabs.box.unknown_contents"), iw), in, top + 4, Theme.INK_2);
         } else if (single != null) {
-            right.draw(g, in, top, iw, bottom - top, mx, my);       // one item: its listings across the window
+            // one item: its stats on the left (what the listings' rolls are out of), its listings on the right
+            int leftW = Math.max(150, Math.min(200, iw * 2 / 5));
+            BoxStatsPanel.draw(this, g, single.item().name(), in, top, leftW, bottom - top);
+            right.draw(g, in + leftW + 8, top, iw - leftW - 8, bottom - top, mx, my);
         } else {
             int leftW = Math.max(180, Math.min(260, iw * 2 / 5));
             left.draw(g, in, top, leftW, bottom - top, mx, my);

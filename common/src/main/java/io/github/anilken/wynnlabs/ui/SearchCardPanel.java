@@ -58,6 +58,9 @@ final class SearchCardPanel extends MenuPaint {
     private boolean all;
     int scroll;
     private int scrollMax;
+    /** The name last copied with the name button, and when: its icon shows a tick for a moment. */
+    private String copiedName;
+    private long copiedAt;
     /** The card's bar, kept between frames so its thumb can be dragged. */
     private final ScrollBar bar = new ScrollBar();
     private int[] view = new int[4];
@@ -182,7 +185,21 @@ final class SearchCardPanel extends MenuPaint {
         }
         int tx = x + 42;
         int tw = w - 42;
-        ink(g, Component.literal(fit(entry.name(), tw)).withStyle(UiFont::bold), tx, y + 1, SearchResultsPanel.colour(entry));
+        // the name, then a small button that copies it (to paste into the Trade Market's search or chat)
+        Component nameText = Component.literal(fit(entry.name(), tw - 14)).withStyle(UiFont::bold);
+        ink(g, nameText, tx, y + 1, SearchResultsPanel.colour(entry));
+        int cx = tx + font().width(nameText) + 4;
+        String copied = entry.name();
+        boolean ch = over(mx, my) && mx >= cx && mx < cx + 10 && my >= y && my < y + 10;
+        Kit.button(g, cx, y, 10, 10, ch ? Kit.HOVER : Kit.REST);
+        // no words: the icon turns into a tick for a moment once the name is on the clipboard
+        boolean justCopied = copied.equals(copiedName) && System.currentTimeMillis() - copiedAt < 1200;
+        Art.icon(g, justCopied ? "check" : "copy", cx + 1, y + 1, 8, Kit.buttonText(ch ? Kit.HOVER : Kit.REST));
+        click(cx, y, 10, 10, () -> {
+            net.minecraft.client.Minecraft.getInstance().keyboardHandler.setClipboard(copied);
+            copiedName = copied;
+            copiedAt = System.currentTimeMillis();
+        });
         String tier = entry.tier() == null ? "" : SearchResultsPanel.words(entry.tier()) + " · ";
         String lv = entry.level() > 0 ? " · Lv " + entry.level() : "";
         String kind = entry.item() ? SearchResultsPanel.kindText(entry) : SearchThingCard.typeText(entry);
