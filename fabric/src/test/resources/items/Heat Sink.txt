@@ -1,0 +1,30 @@
+{{Infobox/Armour
+| name = Heat Sink
+| item = Leggings
+| material = Diamond
+| level = 92
+| type = Legendary
+| obtain = Dungeon Merchant, ([[Dungeon Merchant#Fallen Factory|Fallen Factory]])
+| health = +3750
+| fire = +160
+| r_defense = 45
+| r_agility = 55
+| slots = 2
+| tag = Untradable
+}}
+'''Heat Sink''' is an untradable pair of level 92 [[Legendary]] [[Leggings]]. It can be purchased from the [[Dungeon Merchant]] at the entrance to the {{CBIcon|Dungeon|1}} [[Fallen Factory]] [[Dungeon]].
+
+== Identifications ==
+{{IDcost|preset|[[Dungeon Merchant#Fallen Factory|Fallen Factory Dungeon Merchant]]|4 {{WynnIcon|quartz}} [[Dungeon Fragments|Antikythera Supercomputer's Chips]]}}
+{{Identification/Preset
+| lifeSteal = +450
+| walkSpeed = +15
+| airDefence = +20
+| fireDamage = +15
+| rawAgility = +10
+| rawDefence = +5
+| healthRegen = +25
+| sprintRegen = +10
+}}
+
+[[Category:Untradable Items]][[Category:Dungeon Rewards]][[Category:Rewards from the Fallen Factory]]
