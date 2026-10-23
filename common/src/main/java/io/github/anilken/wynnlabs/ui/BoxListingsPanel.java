@@ -45,13 +45,15 @@ final class BoxListingsPanel {
         if (r == null) {
             return;
         }
-        // the head: the item and how many of its listings are held of the market's total
-        String count = L.t("wynnlabs.box.held_of", r.held(), Math.max(r.held(), r.count()));
-        int cw = s.font().width(count);
-        s.ink(g, count, x + w - cw, y, Theme.INK_3);
-        s.ink(g, s.fit(r.name(), w - cw - 6), x, y, HomePart.tierColour(r.item().tier()));
         boolean plain = !s.rolled();
-        int head = plain ? 12 + BoxPlainRows.HEAD : 12;
+        if (!plain) {
+            // the head: the item and how many of its listings are held of the market's total
+            String count = L.t("wynnlabs.box.held_of", r.held(), Math.max(r.held(), r.count()));
+            int cw = s.font().width(count);
+            s.ink(g, count, x + w - cw, y, Theme.INK_3);
+            s.ink(g, s.fit(r.name(), w - cw - 6), x, y, HomePart.tierColour(r.item().tier()));
+        }
+        int head = plain ? BoxPlainRows.HEAD : 12;     // no rolls: the window's header names the item already
         int top = y + head;
         int listH = h - head;
         if (r.listings().isEmpty()) {
@@ -74,7 +76,7 @@ final class BoxListingsPanel {
         scroll = Math.max(0, Math.min(max, scroll));
         int rw = w - ScrollBar.W - 2;
         if (plain) {
-            BoxPlainRows.header(s, g, x, y + 12, rw);
+            BoxPlainRows.header(s, g, x, y, rw);
         }
         g.enableScissor(x, top, x + w, top + listH);
         int ry = top - scroll;
@@ -171,20 +173,25 @@ final class BoxListingsPanel {
 
     /**
      * One item's chips: its listing count, lowest and middle price, best roll, and for a rolled
-     * piece its own roll against the market ("Seninki %72 · piyasada 3 daha iyi").
+     * piece its own roll against the market ("Seninki %72 · piyasada 3 daha iyi"). An item
+     * without rolls gets a single chip: count, lowest price and total stock.
      */
     void singleChips(GuiGraphics g, int x, int y, BoxScreen.Single single) {
         BoxMarket.Row r = s.rows.isEmpty() ? null : s.rows.get(0);
         int cx = x;
         int count = r == null ? 0 : r.count();
+        String lowest = BoxScreen.money(r == null || r.lowest() == null ? null : (double) r.lowest());
+        if (!s.rolled()) {
+            // no rolls: one chip, "8 ilan · En düşük 44 EB · Stok 137"
+            String t = L.n("wynnlabs.box.listings", count) + " · " + L.t("wynnlabs.box.lowest", lowest)
+                    + (r == null ? "" : " · " + L.t("wynnlabs.box.stock", BoxPlainRows.stock(r.listings())));
+            s.chip(g, cx, y, t, Theme.PLAQUE, Theme.INK);
+            return;
+        }
         cx += s.chip(g, cx, y, L.n("wynnlabs.box.listings", count), Theme.PLAQUE, Theme.INK) + 4;
-        cx += s.chip(g, cx, y, L.t("wynnlabs.box.lowest", BoxScreen.money(r == null || r.lowest() == null ? null : (double) r.lowest())),
-                Theme.PLAQUE, Theme.INK) + 4;
+        cx += s.chip(g, cx, y, L.t("wynnlabs.box.lowest", lowest), Theme.PLAQUE, Theme.INK) + 4;
         cx += s.chip(g, cx, y, L.t("wynnlabs.box.median", BoxScreen.money(r == null || r.median() == null ? null : (double) r.median())),
                 Theme.PLAQUE, Theme.INK) + 4;
-        if (r != null && !s.rolled()) {
-            cx += s.chip(g, cx, y, L.t("wynnlabs.box.stock", BoxPlainRows.stock(r.listings())), Theme.PLAQUE, Theme.INK) + 4;
-        }
         if (r != null && r.bestRoll() != null) {
             cx += s.chip(g, cx, y, L.t("wynnlabs.box.best_roll", BoxScreen.pct(r.bestRoll())), Theme.PLAQUE, Theme.INK) + 4;
         }

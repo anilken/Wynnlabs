@@ -20,19 +20,16 @@ import net.minecraft.client.gui.GuiGraphics;
 /**
  * The left column of the one-item window: what the item is (kind, level, class, skill points
  * it asks for) and its stats with their roll ranges, so the listings' percentages on the right
- * read against something. An item without rolls (an ingredient, a material) also gets where
- * it comes from (the three easiest ways besides the market and what the player holds) and how
- * many the player has in the bag and the bank. Lines past the column's height are left out.
+ * read against something. An item without rolls (an ingredient, a material) also gets one line
+ * on where it comes from: the easiest way besides the market. Lines past the column's height
+ * are left out.
  */
 final class BoxStatsPanel {
 
-    /** How many ways to get the item are listed. */
-    private static final int FROM = 3;
-    /** The sources and holdings, read once per item and then every few seconds, never per frame. */
+    /** The easiest source, read once per item and then every few seconds, never per frame. */
     private static String readFor;
     private static long readAt;
-    private static List<Source> from;
-    private static Sources.Owned owned;
+    private static Source from;
 
     private BoxStatsPanel() {}
 
@@ -91,62 +88,41 @@ final class BoxStatsPanel {
         }
     }
 
-    /** "Nereden" and "Sende" under the stats, from {@code cy} down to {@code bottom}. */
+    /**
+     * The easiest way to get the item besides the market, as one line under the stats: its
+     * badge, a short text and how far away it is, from {@code cy} down to {@code bottom}.
+     */
     private static void more(BoxScreen s, GuiGraphics g, Entry e, int x, int cy, int w, int bottom) {
         long now = System.currentTimeMillis();
         if (!e.name().equals(readFor) || now - readAt > 3000) {
             readFor = e.name();
             readAt = now;
-            owned = SearchCardSections.owned(e.name());
-            List<Source> keep = new ArrayList<>();
+            from = null;
             for (Source src : Sources.of(e, ItemIndex.get().places(), Sources.Owned.NONE, null, SearchTab.position())) {
-                if (src.type() != Source.Type.MARKET && keep.size() < FROM) {
-                    keep.add(src);              // the market is this whole window; the bag and bank have their own lines
+                if (src.type() != Source.Type.MARKET) {
+                    from = src;                 // the market is this whole window
+                    break;
                 }
             }
-            from = keep;
         }
+        Source src = from;
+        cy += 4;
+        if (src == null || cy + 14 > bottom) {
+            return;
+        }
+        g.fill(x, cy, x + w, cy + 1, Theme.LINE);
+        cy += 5;
+        Kit.seal(g, x, cy - 1, 10, 10, Theme.sourceFill(src.badge()));
+        Art.icon(g, src.badge(), x + 1, cy, 8, Theme.CREAM);
         double[] pos = SearchTab.position();
-        cy = heading(s, g, L.t("wynnlabs.box.from"), x, cy, w, bottom);
-        for (Source src : from) {
-            if (cy + 10 > bottom) {
-                return;
-            }
-            Kit.seal(g, x, cy - 1, 10, 10, Theme.sourceFill(src.badge()));
-            Art.icon(g, src.badge(), x + 1, cy, 8, Theme.CREAM);
-            s.ink(g, s.fit(SourceText.row(src, null), w - 13), x + 13, cy, Theme.INK_2);
-            cy += 11;
-            Area a = src.main();
-            double d = Compass.distance(a, pos);
-            if (a != null && !Double.isNaN(d) && cy + 8 <= bottom) {
-                String dir = Compass.direction(a, pos);
-                String where = RoadmapScreen.dist((int) Math.round(d)) + (dir == null ? "" : " · " + SearchCardPanel.dirName(dir));
-                s.small(g, s.fit(where, (int) ((w - 13) / MenuPaint.DESC_SCALE)), x + 13, cy - 1, Theme.INK_3);
-                cy += 9;
-            }
+        Area a = src.main();
+        double d = Compass.distance(a, pos);
+        String dist = a == null || Double.isNaN(d) ? "" : RoadmapScreen.dist((int) Math.round(d));
+        int dw = dist.isEmpty() ? 0 : s.smallWidth(dist) + 6;
+        s.ink(g, s.fit(SourceText.row(src, null), w - 13 - dw), x + 13, cy, Theme.INK_2);
+        if (!dist.isEmpty()) {
+            s.small(g, dist, x + w - s.smallWidth(dist), cy + 1, Theme.INK_3);
         }
-        cy = heading(s, g, L.t("wynnlabs.box.owned"), x, cy, w, bottom);
-        if (cy + 10 > bottom) {
-            return;
-        }
-        int bank = owned.bank().values().stream().mapToInt(Integer::intValue).sum();
-        if (!owned.any()) {
-            s.ink(g, s.fit(L.t("wynnlabs.box.owned_none"), w), x, cy, Theme.INK_3);
-            return;
-        }
-        String line = L.t("wynnlabs.box.owned_bag", owned.bag()) + " · " + L.t("wynnlabs.box.owned_bank", bank);
-        s.ink(g, s.fit(line, w), x, cy, Theme.GOOD);
-    }
-
-    /** A section's name with a line under it; returns where its first line goes (past {@code bottom}: nothing drawn). */
-    private static int heading(BoxScreen s, GuiGraphics g, String t, int x, int cy, int w, int bottom) {
-        cy += 3;
-        if (cy + 10 > bottom) {
-            return bottom;
-        }
-        s.ink(g, s.fit(t, w), x, cy, Theme.INK);
-        g.fill(x, cy + 10, x + w, cy + 11, Theme.LINE);
-        return cy + 13;
     }
 
     private static String signed(int v) {
