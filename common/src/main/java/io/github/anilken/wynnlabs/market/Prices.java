@@ -403,6 +403,17 @@ public final class Prices {
                 t.setDaemon(true);
                 return t;
             });
+    /**
+     * The market window's listing requests: their own worker, so a window the player has open
+     * never waits behind the bag's background price lookups; those wait while any is pending.
+     */
+    private static final java.util.concurrent.ExecutorService LISTINGS_FETCHER =
+            java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r, "wynninv-listings");
+                t.setDaemon(true);
+                return t;
+            });
+    private static final java.util.concurrent.atomic.AtomicInteger LISTINGS_PENDING = new java.util.concurrent.atomic.AtomicInteger();
     private static final java.util.Set<String> QUEUED = ConcurrentHashMap.newKeySet();
     private static final Map<String, Long> MISSES = new ConcurrentHashMap<>();
 
@@ -604,6 +615,10 @@ public final class Prices {
             }
             FETCHER.submit(() -> {
                 try {
+                    // the window's listings go first: one request a second in all
+                    while (LISTINGS_PENDING.get() > 0) {
+                        Thread.sleep(250);
+                    }
                     fetch(name, k, 1);
                     Thread.sleep(1000);
                 } catch (Exception e) {
@@ -724,7 +739,7 @@ public final class Prices {
         if (!apiReady()) {
             return false;
         }
-        String token = page > 1 ? name + "#" + page : name;
+        String token = "L:" + name + "#" + page;                // its own token: a queued price lookup of the same item does not hold it back
         if (QUEUED.contains(token)) {
             return true;
         }
@@ -736,7 +751,8 @@ public final class Prices {
         if (k == null || !QUEUED.add(token)) {
             return k != null;
         }
-        FETCHER.submit(() -> {
+        LISTINGS_PENDING.incrementAndGet();
+        LISTINGS_FETCHER.submit(() -> {
             try {
                 fetch(name, k, page);
                 Thread.sleep(1000);
@@ -744,6 +760,7 @@ public final class Prices {
                 System.out.println("[WynnLabs] listings of " + name + " failed: " + e.getClass().getSimpleName());
             } finally {
                 QUEUED.remove(token);
+                LISTINGS_PENDING.decrementAndGet();
             }
         });
         return true;
