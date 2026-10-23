@@ -133,6 +133,10 @@ public final class BoxScreen extends Screen {
     /** The rows again when an answer came, the filter or the sort changed, or the prices moved. */
     private void rebuild() {
         boolean live = Listings.live();
+        if (!rolled()) {
+            filter = BoxMarket.Filter.ALL;
+            sort = BoxMarket.Sort.PRICE;
+        }
         String key = Listings.version + "/" + Prices.version + "/" + filter + "/" + sort + "/" + live;
         if (key.equals(builtFor)) {
             return;
@@ -333,6 +337,9 @@ public final class BoxScreen extends Screen {
 
     /** Hepsi / Tanımlı / Tanımsız on the left, the sort on the right. */
     private void filters(GuiGraphics g, int x, int fy, int w, int mx, int my) {
+        if (!rolled()) {
+            return;                             // an ingredient or material: no rolls, no identifying, sorted by price
+        }
         int fx = x;
         BoxMarket.Filter[] fs = BoxMarket.Filter.values();
         for (BoxMarket.Filter f : fs) {
@@ -343,6 +350,20 @@ public final class BoxScreen extends Screen {
         int sw = font.width(sortLabel) + 12;
         toggle(g, x + w - sw, fy, sortLabel, false, mx, my,
                 () -> sort = sort == BoxMarket.Sort.ROLL ? BoxMarket.Sort.PRICE : BoxMarket.Sort.ROLL);
+    }
+
+    /**
+     * Whether this window's items have rolls: a box (gear), or one piece of gear. Ingredients,
+     * materials and the like sell without rolls, so their roll column, the identified filter and
+     * the roll sort are left out.
+     */
+    boolean rolled() {
+        if (single == null) {
+            return true;
+        }
+        io.github.anilken.wynnlabs.search.Entry e = io.github.anilken.wynnlabs.search.ItemIndex.get().byName(single.item().name());
+        return e != null ? e.kind() == io.github.anilken.wynnlabs.search.Kind.GEAR
+                : single.item().slot() != io.github.anilken.wynnlabs.model.Slot.UNKNOWN;
     }
 
     /** "72%" or "%72", as the language writes it. */

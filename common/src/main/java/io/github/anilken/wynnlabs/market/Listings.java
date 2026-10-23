@@ -144,9 +144,15 @@ public final class Listings {
                 continue;
             }
             Double overall = num(l, "overall_roll");
+            List<BoxMarket.StatRoll> rolls = stats(l.get("stat_rolls"));
+            // 0 % with no stat above 0 % is no roll at all (fixed stats, or the uploader saw none):
+            // shown as unknown, not as the worst roll, and kept out of "best"
+            if (overall != null && overall == 0 && rolls.stream().noneMatch(r -> r.percent() != null && r.percent() > 0)) {
+                overall = null;
+            }
             Double rerolls = num(l, "reroll_count");
             Double amount = num(l, "amount");
-            out.add(new BoxMarket.Listing(bool(l, "unidentified"), overall, stats(l.get("stat_rolls")),
+            out.add(new BoxMarket.Listing(bool(l, "unidentified"), overall, rolls,
                     rerolls == null ? 0 : rerolls.intValue(), amount == null ? 1 : Math.max(1, amount.intValue()),
                     (int) Math.round(price), Prices.seenAt(l), false));
         }

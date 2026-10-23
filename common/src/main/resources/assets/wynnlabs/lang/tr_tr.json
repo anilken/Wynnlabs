@@ -2047,6 +2047,7 @@
   "wynnlabs.search.not_found": "Henüz bulunmadı",
   "wynnlabs.search.start_npc": "Başlangıç: %s",
   "key.wynnlabs.box_guide": "Kutu içeriği ve pazar ilanları",
+  "wynnlabs.box.no_roll": "Sabit statlar",
   "wynnlabs.box.stats_unknown": "Eşya verisi henüz yok",
   "wynnlabs.box.stats_needs": "Gereksinimler",
   "wynnlabs.box.stats_level": "Seviye",

@@ -103,8 +103,10 @@ final class BoxListingsPanel {
             Kit.row(g, x, y, w, ROW, i, false);
         }
         // line 1: the roll (or "unidentified"), then amount and price on the right
-        if (l.unidentified() || l.overallRoll() == null) {
-            s.ink(g, l.unidentified() ? L.t("wynnlabs.box.unidentified") : "?", x + 4, y + 2, Theme.INK_3);
+        if (!s.rolled()) {
+            // no rolls on this kind of item: the line starts with nothing, the price says it all
+        } else if (l.unidentified() || l.overallRoll() == null) {
+            s.ink(g, l.unidentified() ? L.t("wynnlabs.box.unidentified") : L.t("wynnlabs.box.no_roll"), x + 4, y + 2, Theme.INK_3);
         } else {
             double roll = l.overallRoll();
             int[] c = rollColours(roll);

@@ -2047,6 +2047,7 @@
   "wynnlabs.search.not_found": "Not found yet",
   "wynnlabs.search.start_npc": "Start: %s",
   "key.wynnlabs.box_guide": "Box contents and market listings",
+  "wynnlabs.box.no_roll": "Fixed stats",
   "wynnlabs.box.stats_unknown": "No item data yet",
   "wynnlabs.box.stats_needs": "Needs",
   "wynnlabs.box.stats_level": "Level",
