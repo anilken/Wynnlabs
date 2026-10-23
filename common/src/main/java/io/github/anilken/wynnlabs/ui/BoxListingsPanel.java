@@ -113,7 +113,7 @@ final class BoxListingsPanel {
             Kit.bar(g, x + 4, y + 3, 40, 7, roll / 100.0, c[0], c[1], c[2], false);
             s.ink(g, BoxScreen.pct(Math.round(roll)), x + 48, y + 2, lit ? Theme.GOOD : Theme.INK);
         }
-        String price = Prices.fmt(l.price()) + (l.amount() > 1 ? " ×" + l.amount() : "");
+        String price = exact(l.price()) + (l.amount() > 1 ? " ×" + l.amount() : "");
         int pw = s.font().width(price);
         s.ink(g, price, x + w - 4 - pw, y + 2, Theme.PRICE);
         // line 2: the key stats, then rerolls and age (or "may be sold")
@@ -221,5 +221,26 @@ final class BoxListingsPanel {
         if (r != null && r.hasMore() && max > 0 && scroll >= max) {
             Listings.requestMore(r.name());
         }
+    }
+
+    /**
+     * A listing's price to the emerald, the way the Trade Market writes it: "2 EB 49 E",
+     * "1 LE 12 EB 3 E" (1 LE = 64 EB = 4096 E); parts that are 0 are left out.
+     */
+    static String exact(int emeralds) {
+        int le = emeralds / 4096;
+        int eb = emeralds % 4096 / 64;
+        int e = emeralds % 64;
+        StringBuilder b = new StringBuilder();
+        if (le > 0) {
+            b.append(le).append(" LE");
+        }
+        if (eb > 0) {
+            b.append(b.length() > 0 ? " " : "").append(eb).append(" EB");
+        }
+        if (e > 0 || b.length() == 0) {
+            b.append(b.length() > 0 ? " " : "").append(e).append(" E");
+        }
+        return b.toString();
     }
 }
