@@ -48,6 +48,7 @@ public class JMenuPreview implements FabricClientGameTest {
                 FixtureState.load(fixture).install(System.getProperty("wynnlabs.previewLang", "tr"));
                 Wyn.clearDown();                // marked down before the recording was in
             });
+            SearchPreview.loadIndex();
             ctx.setScreen(RoadmapScreen::new);
             ctx.waitForScreen(RoadmapScreen.class);
             ctx.getInput().setCursorPos(2, 2);      // the window's corner: no tooltip over the menu
@@ -118,6 +119,7 @@ public class JMenuPreview implements FabricClientGameTest {
                 shot(ctx, out, scroll == 0 ? "jmenu-settings-glow" : "jmenu-settings-glow-end");
             }
             craftShots(ctx, out);
+            SearchPreview.shots(ctx, out);
             // the bag's advice words and where-to-sell icons, on the recorded inventory
             ctx.setScreen(BagPreview::new);
             ctx.waitTicks(5);

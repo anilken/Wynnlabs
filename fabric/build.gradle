@@ -96,6 +96,11 @@ loom.runs.matching { it.name == 'clientGameTest' }.configureEach {
     if (rootProject.hasProperty('previewFont')) {
         vmArg "-Dwynnlabs.previewFont=${rootProject.property('previewFont')}"
     }
+    // -PpreviewWynntils=<game folder>: the search tab's shots read that folder's wynntils/cache
+    // (read only) instead of the trimmed test copies
+    if (rootProject.hasProperty('previewWynntils')) {
+        vmArg "-Dwynnlabs.previewWynntils=${rootProject.property('previewWynntils')}"
+    }
     if (rootProject.hasProperty('layoutStrict')) {
         vmArg "-Dwynnlabs.layoutStrict=true"
     }
