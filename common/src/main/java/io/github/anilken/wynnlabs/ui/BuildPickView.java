@@ -119,10 +119,19 @@ final class BuildPickView {
 
     void drawPick(GuiGraphics g, BuildWindow.Host host, int x, int y, int titleW, int w, int h, int mx, int my, float pt) {
         int bottom = y + h;
-        Component title = Component.literal(ui.fit(L.t("wynnlabs.pick.title"), titleW - 12, true)).withStyle(UiFont::bold);
+        // "Import from WynnBuilder" at the title's right, before the close seal
+        String imp = L.t("wynnlabs.pick.import");
+        int iw = ui.controlW("clipboard", imp, titleW / 2);
+        ui.control(g, host, x + titleW - iw, y - 2, 12, "clipboard", imp, BuildControls.WOOD, win.imports().shown != null, titleW / 2,
+                "wbImport", null, List.of(L.c("wynnlabs.pick.import_tip").withStyle(ChatFormatting.GRAY)), mx, my);
+        Component title = Component.literal(ui.fit(L.t("wynnlabs.pick.title"), titleW - iw - 18, true)).withStyle(UiFont::bold);
         Art.icon(g, "target", x, y, 8, BuildControls.CHOSEN);
         Kit.text(g, ui.font, title, x + 11, y, Theme.INK);
         int cy = y + 14;
+        if (win.imports().shown != null) {
+            win.imports().draw(g, host, x, cy, w, bottom - cy, mx, my);    // a WynnBuilder link read: all the page below the title
+            return;
+        }
         // the win.search box
         Kit.field(g, x, cy, w, 12, win.search.isFocused());
         win.search.setX(x + 4);

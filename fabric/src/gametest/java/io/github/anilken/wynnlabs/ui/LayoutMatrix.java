@@ -716,7 +716,7 @@ public class LayoutMatrix implements FabricClientGameTest {
             }
             Plans.clearAll();
         });
-        String[] states = {"pick", "loading", "results", "results-high", "plan", "plan-removed", "plan-done", "plan-hint", "saved", "saved-rename",
+        String[] states = {"pick", "pick-import", "loading", "results", "results-high", "plan", "plan-removed", "plan-done", "plan-hint", "saved", "saved-rename",
             "saved-edit", "road-none", "road-building", "road-stale", "road-stale-plan", "road-stale-hint"};
         for (String s : states) {
             ctx.runOnClient(mc -> homeState(s));
@@ -811,6 +811,8 @@ public class LayoutMatrix implements FabricClientGameTest {
         long now = System.currentTimeMillis();
         switch (s) {
             case "pick" -> w.previewPick("thunder", AROUND, builds.tuning());
+            // a link WynnBuilder wrote: six pieces (a bow the Shaman cannot use), powders, a tome
+            case "pick-import" -> w.previewImport("https://wynnbuilder.github.io/builder/#CZ0W9W5G000uQG0500m454+GhcXYfy-200k-Jn0");
             case "loading" -> {
                 w.previewPick("thunder", AROUND, builds.tuning());
                 Around.previewLoading = new double[] {0.45, 2, 12873, 7621};
