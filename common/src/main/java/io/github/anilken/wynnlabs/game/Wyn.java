@@ -1060,6 +1060,11 @@ public final class Wyn {
         return guard(Feature.RAIDS, () -> Models.Raid.getRaidBestTime(raid), -1L);
     }
 
+    /** Whether the player is in a raid right now (Wynntils' current raid); false when unknown. */
+    public static boolean inRaid() {
+        return guard(Feature.RAIDS, () -> Models.Raid.getCurrentRaid() != null, false);
+    }
+
     /**
      * Whether Wynntils' own raid tracking ("trackRaids") is on. True when this release has no
      * such switch, and when it cannot be read (the feature's self-test says whether raids work).
