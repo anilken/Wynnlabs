@@ -62,6 +62,8 @@ public class LayoutMatrix implements FabricClientGameTest {
         "discoveries", "tree", "craft", "endgame"};
     private static final int ENDGAME = 11;
     private static final int SETTINGS = 5;
+    private static final int TAB_AI = 6;
+    private static final int TAB_DISCOVERIES = 8;
     /** The settings tab's categories, in its order: each one is measured and shot. */
     private static final String[] SETTING_CATS = {"about", "look", "tips", "glow", "coach", "quests", "build", "rules", "data"};
     /**
@@ -83,7 +85,7 @@ public class LayoutMatrix implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext ctx) {
         String only = System.getProperty("wynnlabs.previewOnly");
-        if (only != null && !only.equals("layout")) {
+        if (only != null && !only.equals("layout") && !only.equals("fill")) {
             return;
         }
         Path out = Path.of(System.getProperty("wynnlabs.preview", "preview"));
@@ -163,6 +165,10 @@ public class LayoutMatrix implements FabricClientGameTest {
                         "Depurinated Genome", "Exquisite Marsh Scale", "Gunkfueled Core");
                 set(mc.screen, "tab", 10);                 // the tab draws once: its ingredients load
             });
+            if ("fill".equals(only)) {
+                fill(ctx, shots);                          // the same data, the fill shots alone
+                return;
+            }
             ctx.waitTicks(10);
             ctx.runOnClient(mc -> {
                 CraftPreview.set(CraftingTab.INSTANCE, "view", 1);
@@ -238,6 +244,59 @@ public class LayoutMatrix implements FabricClientGameTest {
                 throw new AssertionError(n + " layout problems: see build/preview/layout-report.txt");
             }
         }
+    }
+
+    /**
+     * -PpreviewOnly=fill: the menu at 80% of a 1920x1080 window, the game on scale 3 and the menu
+     * on 2: the rail and its merged pages (home, three merged pages, the AI section) and the icon-only rail, in one run.
+     */
+    private static void fill(ClientGameTestContext ctx, Path shots) throws Exception {
+        ctx.getInput().resizeWindow(1920, 1080);
+        ctx.runOnClient(mc -> {
+            Settings.setNumber("menuScale", 2);
+            Settings.setNumber("menuFill", 80);
+            mc.options.guiScale().set(3);
+            mc.resizeDisplay();
+        });
+        // the home's cards read their data in the background: a few seconds before the first shot
+        ctx.setScreen(RoadmapScreen::new);
+        ctx.waitForScreen(RoadmapScreen.class);
+        ctx.waitTicks(20 * 5);
+        // the rail's pages: name, tab number
+        Object[][] plan = {
+            {"fill80-home", 0}, {"fill80-today-summary", 1}, {"fill80-today-deaths", 3},
+            {"fill80-quests-discoveries", TAB_DISCOVERIES}, {"fill80-settings-ai", TAB_AI}};
+        for (Object[] p : plan) {
+            if (!ONLY.isEmpty() && !((String) p[0]).contains(ONLY)) {
+                continue;                               // -PpreviewTab=home: only the shots that name it
+            }
+            int tab = (Integer) p[1];
+            ctx.setScreen(RoadmapScreen::new);
+            ctx.waitForScreen(RoadmapScreen.class);
+            ctx.runOnClient(mc -> set(mc.screen, "tab", tab));
+            ctx.waitTicks(5);
+            ctx.takeScreenshot(TestScreenshotOptions.of(p[0] + "-1920x1080").disableCounterPrefix().withDestinationDir(shots));
+        }
+        // the icon-only rail: the menu at scale 4 is 480x270, under the compact size
+        ctx.runOnClient(mc -> Settings.setNumber("menuScale", 4));
+        ctx.setScreen(RoadmapScreen::new);
+        ctx.waitForScreen(RoadmapScreen.class);
+        ctx.runOnClient(mc -> set(mc.screen, "tab", 0));
+        ctx.waitTicks(5);
+        ctx.takeScreenshot(TestScreenshotOptions.of("fill80-compact-home-1920x1080").disableCounterPrefix().withDestinationDir(shots));
+        // the home with two of the first steps open: compact, standard and large
+        ctx.runOnClient(mc -> FirstSteps.preview = new boolean[] {true, false, true, false});
+        for (Object[] p : new Object[][] {{"fill80-compact-home-steps", 4}, {"fill80-home-steps", 2}, {"fill80-large-home-steps", 1}}) {
+            int scale = (Integer) p[1];
+            ctx.runOnClient(mc -> Settings.setNumber("menuScale", scale));
+            ctx.setScreen(RoadmapScreen::new);
+            ctx.waitForScreen(RoadmapScreen.class);
+            ctx.runOnClient(mc -> set(mc.screen, "tab", 0));
+            ctx.waitTicks(5);
+            ctx.takeScreenshot(TestScreenshotOptions.of(p[0] + "-1920x1080").disableCounterPrefix().withDestinationDir(shots));
+        }
+        ctx.runOnClient(mc -> FirstSteps.preview = null);
+        ctx.runOnClient(mc -> Settings.setNumber("menuScale", 2));
     }
 
     /**

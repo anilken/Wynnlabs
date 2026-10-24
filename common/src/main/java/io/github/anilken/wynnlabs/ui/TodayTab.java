@@ -153,9 +153,8 @@ final class TodayTab extends MenuTab {
             long tm = bankJunk.stream().filter(j -> "Trade Market".equals(Vault.place(j))).count();
             todo.add(new Object[] {icon("emerald"), L.n("wynnlabs.today.todo_bank", bankJunk.size())
                     + (tm > 0 ? " (" + tm + " Trade Market)" : ""), L.t("wynnlabs.today.go_bank"), "#qgo:bank", null, null});
-        } else if (Vault.count() == 0) {
-            todo.add(new Object[] {icon("emerald"), L.t("wynnlabs.today.open_bank"), null, null, null, null});
         }
+        // a bank never opened is one of the home's first steps, not a daily task
         if (!vaultFinds.isEmpty()) {
             List<String> names = new ArrayList<>();
             for (Vault.Find f : vaultFinds) {
