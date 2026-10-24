@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.anilken.wynnlabs.core.Rules;
+import io.github.anilken.wynnlabs.core.Settings;
 import io.github.anilken.wynnlabs.game.GameState;
 import io.github.anilken.wynnlabs.game.Wyn;
 import io.github.anilken.wynnlabs.model.AbilityNode;
@@ -28,7 +29,9 @@ import java.util.regex.Pattern;
  * Cheaper node lowers the spell it names; a spell not bought yet gets no share; summons and
  * traps that hit on their own clock ("Total Damage: 40% (of your DPS)" … "every 0.25s") add
  * passive damage in their elements; "0.5 Mana per second" adds to the mana that comes back;
- * and before the archetype's first node the main attack weighs as for no archetype.
+ * before the archetype's first node the main attack weighs as for no archetype; and with the
+ * treeBonuses setting on, the passive damage bonuses ({@link TreeBonuses}: "Main Attack Damage:
+ * +5%", "Earth Damage: +20%", "Total Damage: +4%" for a spell or a summon) raise what they name.
  *
  * <p>An {@link Overlay} is in force on a thread while a build or a road map milestone is worked
  * out ({@link #with}, like {@link Tuning#with}); {@link Damage}'s model reads it. A tree whose
@@ -125,6 +128,14 @@ public final class TreeModel {
         return o == null ? rules : o.spells(rules);
     }
 
+    /** The tree's main attack and element % bonuses (overlay in force) into a build's stats; none: as they are. */
+    static void addStats(Map<String, Double> s) {
+        Overlay o = active();
+        if (o != null) {
+            o.addStats(s);
+        }
+    }
+
     /** The overlay in force for cache keys: "" when none. */
     public static String key() {
         Overlay o = active();
@@ -136,7 +147,8 @@ public final class TreeModel {
      * {@code known}: the spells the tree has, {@code unlocked}: those you have by then;
      * {@code passive}: summon and trap damage per second as conversions in
      * {@link Damage#ELEMENTS} order; {@code manaPer5}: mana every 5 s on top of the base;
-     * {@code mainAttack}: the factor on rules.model.mainAttackWeight.
+     * {@code mainAttack}: the factor on rules.model.mainAttackWeight; {@code bonus}: the passive
+     * damage bonuses of the nodes taken ({@link TreeBonuses.Sum#NONE} with the setting off).
      */
     public static final class Overlay {
         final int level;
@@ -146,12 +158,13 @@ public final class TreeModel {
         final double[] passive;
         final double manaPer5;
         final double mainAttack;
+        final TreeBonuses.Sum bonus;
         private final String key;
         /** {rules array, adjusted array}: the model asks for the spells on every evaluation. */
         private volatile Object[] cached;
 
         Overlay(int level, Map<String, Double> cost, Set<String> known, Set<String> unlocked, double[] passive,
-                double manaPer5, double mainAttack) {
+                double manaPer5, double mainAttack, TreeBonuses.Sum bonus) {
             this.level = level;
             this.cost = cost;
             this.known = known;
@@ -159,12 +172,16 @@ public final class TreeModel {
             this.passive = passive;
             this.manaPer5 = manaPer5;
             this.mainAttack = mainAttack;
+            this.bonus = bonus;
             StringBuilder k = new StringBuilder();
             k.append(cost).append('|').append(new TreeSet<>(unlocked)).append('|');
             for (double p : passive) {
                 k.append(Math.round(p * 10000)).append(',');
             }
             k.append('|').append(Math.round(manaPer5 * 1000)).append('|').append(Math.round(mainAttack * 1000));
+            if (!bonus.isEmpty()) {
+                k.append("|b").append(bonus.key());             // none: the key as it was before bonuses
+            }
             this.key = k.toString();
         }
 
@@ -221,10 +238,16 @@ public final class TreeModel {
                 if (d != null && s.has("cost")) {
                     s.addProperty("cost", Math.max(1, s.get("cost").getAsDouble() + d));
                 }
+                bonus.raise(name, s);                       // "Total Damage: +50%" nodes for this spell
                 out.add(s);
             }
             cached = new Object[] {rules, out};
             return out;
+        }
+
+        /** The main attack and element % bonuses into a build's stats ({@code s}, as Damage sums them). */
+        void addStats(Map<String, Double> s) {
+            bonus.addStats(s);
         }
 
         @Override
@@ -285,7 +308,7 @@ public final class TreeModel {
     }
 
     /** A spell node of the class: its type says so and it has a click combo (ultimates are on a meter). */
-    private static boolean spellNode(AbilityNode n, String cls) {
+    static boolean spellNode(AbilityNode n, String cls) {
         return n.type() != null && cls != null && n.type().startsWith(cls + "_ABILITY")
                 && text(n).contains("Click Combo");
     }
@@ -426,6 +449,13 @@ public final class TreeModel {
      */
     static Overlay overlay(int level, List<Read> reads, Collection<String> spellNames, Collection<String> taken,
             double mainAttack, double passiveCap) {
+        return overlay(level, reads, spellNames, taken, mainAttack, passiveCap, Map.of());
+    }
+
+    /** {@link #overlay} with the tree's passive damage bonuses ({@link TreeBonuses#read}; none: as before). */
+    static Overlay overlay(int level, List<Read> reads, Collection<String> spellNames, Collection<String> taken,
+            double mainAttack, double passiveCap, Map<String, TreeBonuses.Bonus> bonuses) {
+        TreeBonuses.Sum bonus = TreeBonuses.Sum.of(bonuses, taken);
         Set<String> have = new HashSet<>(taken);
         Map<String, String> byLow = new TreeMap<>();
         spellNames.forEach(s -> byLow.put(s.toLowerCase(Locale.ROOT), s));
@@ -459,8 +489,10 @@ public final class TreeModel {
             }
             int count = r.count() + (r.noun() == null ? 0 : more.getOrDefault(r.noun(), 0));
             double times = r.rate() * count * (r.summon() ? summonAlive() : AREA_UPTIME);
+            // a node that makes this summon's hits stronger ("Your Puppet's knives become stronger")
+            double[] add = r.summon() && r.noun() != null ? bonus.summons().get(r.noun()) : null;
             for (int i = 0; i < passive.length; i++) {
-                passive[i] += r.conv()[i] * times;
+                passive[i] += (r.conv()[i] + (add == null ? 0 : add[i])) * times;
             }
         }
         // a few dozen puppets and traps do not hit a pack all at once: past the cap they scale down
@@ -476,7 +508,7 @@ public final class TreeModel {
         for (int i = 0; i < passive.length; i++) {
             passive[i] = Math.round(passive[i] * 10000) / 10000.0;
         }
-        return new Overlay(level, cost, known, unlocked, passive, mana * 5, mainAttack);
+        return new Overlay(level, cost, known, unlocked, passive, mana * 5, mainAttack, bonus);
     }
 
     // ---- per level ----------------------------------------------------------------------------
@@ -496,9 +528,17 @@ public final class TreeModel {
         /** The main attack's weight with no archetype node yet over the archetype's own (1: no archetype). */
         final double earlyMainAttack;
         final double passiveCap;
+        /** The nodes' passive damage bonuses by node name; empty with the treeBonuses setting off. */
+        final Map<String, TreeBonuses.Bonus> bonuses;
 
         Run(List<Read> reads, List<String> spellNames, List<String> unlocked, List<TreePlanner.Step> plan, int level,
                 String archetype, double earlyMainAttack, double passiveCap) {
+            this(reads, spellNames, unlocked, plan, level, archetype, earlyMainAttack, passiveCap, Map.of());
+        }
+
+        Run(List<Read> reads, List<String> spellNames, List<String> unlocked, List<TreePlanner.Step> plan, int level,
+                String archetype, double earlyMainAttack, double passiveCap, Map<String, TreeBonuses.Bonus> bonuses) {
+            this.bonuses = bonuses;
             this.reads = reads;
             this.spellNames = spellNames;
             this.unlocked = unlocked;
@@ -536,7 +576,7 @@ public final class TreeModel {
                 }
                 main = in ? 1 : earlyMainAttack;
             }
-            return overlay(m, reads, spellNames, taken, main, passiveCap);
+            return overlay(m, reads, spellNames, taken, main, passiveCap, bonuses);
         }
     }
 
@@ -583,7 +623,8 @@ public final class TreeModel {
             List<String> have = gs.unlockedAbilities() == null ? List.of() : List.copyOf(gs.unlockedAbilities());
             List<String> spells = spellNames(tree, cls);
             double cap = Rules.sub("model", "summonCap", 2.5);
-            String key = cls + "|" + arch + "|" + gs.level() + "|" + have + "|" + spells + "|" + cap + "|" + summonAlive() + "|"
+            boolean withBonuses = Settings.on("treeBonuses");
+            String key = withBonuses + "|" + cls + "|" + arch + "|" + gs.level() + "|" + have + "|" + spells + "|" + cap + "|" + summonAlive() + "|"
                     + System.identityHashCode(tree) + ":" + tree.size();
             Object[] last = lastRun;
             if (last != null && last[0].equals(key)) {
@@ -596,7 +637,18 @@ public final class TreeModel {
             List<TreePlanner.Step> plan = have.isEmpty() ? TreePlanner.wholePlan(arch) : TreePlanner.plan(arch, have);
             double archWeight = ClassProfiles.mainAttackWeight(cls, arch, tree);
             double early = arch.isEmpty() || archWeight <= 0 ? 1 : ClassProfiles.mainAttackWeight(cls, "", tree) / archWeight;
-            Run r = new Run(read(tree, cls, spells), spells, have, plan, gs.level(), arch, early, cap);
+            List<Read> reads = read(tree, cls, spells);
+            Map<String, TreeBonuses.Bonus> bonuses = Map.of();
+            if (withBonuses) {
+                List<String> summons = new ArrayList<>();
+                for (Read rd : reads) {
+                    if (rd.summon() && rd.conv() != null && rd.noun() != null) {
+                        summons.add(rd.noun());
+                    }
+                }
+                bonuses = TreeBonuses.read(tree, cls, spells, summons);
+            }
+            Run r = new Run(reads, spells, have, plan, gs.level(), arch, early, cap, bonuses);
             lastRun = new Object[] {key, r};
             return r;
         } catch (Throwable t) {
