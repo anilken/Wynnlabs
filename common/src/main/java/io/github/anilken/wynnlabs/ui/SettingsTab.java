@@ -115,6 +115,20 @@ final class SettingsTab extends MenuTab {
                     saveRuleBox();
                     return true;
                 }
+                if (id.startsWith("#fill:")) {
+                    int v = Integer.parseInt(id.substring(6));
+                    if (v == 100) {
+                        Settings.resetNumber("menuFill");
+                    } else {
+                        Settings.setNumber("menuFill", v);
+                    }
+                    return true;
+                }
+                if (id.startsWith("#lang:")) {
+                    Settings.setNumber("langOverride", Integer.parseInt(id.substring(6)));
+                    menu.rebuildMap();              // its text is in the old language: rebuilt in the background
+                    return true;
+                }
                 if (id.startsWith("#cat:")) {
                     settingsCat = Integer.parseInt(id.substring(5));
                     settingsScroll = 0;
@@ -275,6 +289,10 @@ final class SettingsTab extends MenuTab {
             for (int j = 1; j < sec.length; j++) {
                 if (sec[j].equals("menu_scale")) {
                     rows.add(new SetRow("scale", "menu_scale", -1));
+                } else if (sec[j].equals("menu_fill")) {
+                    rows.add(new SetRow("fill", "menu_fill", -1));
+                } else if (sec[j].equals("language")) {
+                    rows.add(new SetRow("lang", "language", -1));
                 } else if (Settings.LABELS.containsKey(sec[j]) && cat.equals(Settings.category(sec[j]))) {
                     addSwitch(rows, sec[j]);
                     done.add(sec[j]);
@@ -309,7 +327,7 @@ final class SettingsTab extends MenuTab {
      */
     private static final Map<String, List<String[]>> SETTING_SECTIONS = Map.of(
             "look", List.<String[]>of(
-                    new String[] {"wynnlabs.settings.sec_text", "webFont", "menu_scale"}),
+                    new String[] {"wynnlabs.settings.sec_text", "webFont", "menu_scale", "menu_fill", "language"}),
             "tips", List.of(
                     new String[] {"wynnlabs.settings.sec_advice", "itemAdvice", "altAdvice", "wornHint"},
                     new String[] {"wynnlabs.settings.sec_tooltip", "powderHint", "tooltipPrice", "boxPrices", "bankHint",
@@ -354,6 +372,8 @@ final class SettingsTab extends MenuTab {
             case "arch" -> L.t("wynnlabs.settings.arch_title");
             case "goal" -> L.t("wynnlabs.settings.goal_title");
             case "scale" -> L.t("wynnlabs.settings.menu_scale");
+            case "lang" -> L.t("wynnlabs.settings.language");
+            case "fill" -> L.t("wynnlabs.settings.menu_fill");
             case "key" -> L.t("wynnlabs.settings.key_title");
             case "rule" -> L.t(r.r().title());
             default -> L.t(r.id());
@@ -367,6 +387,8 @@ final class SettingsTab extends MenuTab {
             case "arch" -> L.t("wynnlabs.settings.arch_desc");
             case "goal" -> L.t("wynnlabs.settings.goal_desc");
             case "scale" -> L.t("wynnlabs.settings.menu_scale_desc");
+            case "lang" -> L.t("wynnlabs.settings.language_desc");
+            case "fill" -> L.t("wynnlabs.settings.menu_fill_desc");
             case "key" -> L.t("wynnlabs.settings.key_hint");
             case "rule" -> L.t(r.r().desc());
             default -> "";
@@ -382,6 +404,8 @@ final class SettingsTab extends MenuTab {
             case "arch" -> TreePlanner.chosen().isEmpty() ? L.t("wynnlabs.settings.archetype_off") : TreePlanner.chosen();
             case "goal" -> Setup.goalName(Setup.goal());
             case "scale" -> MenuScale.setting() == 0 ? L.t("wynnlabs.settings.scale_game") : String.valueOf(MenuScale.setting());
+            case "lang" -> langNames()[Math.max(0, Math.min(2, Settings.number("langOverride", 0)))];
+            case "fill" -> RoadmapScreen.pct(menuFill());
             case "key" -> L.t(Prices.embeddedKeyInUse() && !Prices.keyInvalid ? "wynnlabs.settings.key_state_builtin"
                     : Prices.maskedKey() == null ? "wynnlabs.settings.key_state_none"
                     : Prices.keyInvalid ? "wynnlabs.settings.key_state_invalid" : "wynnlabs.settings.key_state_saved");
@@ -392,7 +416,7 @@ final class SettingsTab extends MenuTab {
     /** Whether the row has a default to go back to. */
     private static boolean hasDefault(SetRow r) {
         return switch (r.kind()) {
-            case "switch", "step", "advice", "scale", "rule" -> true;
+            case "switch", "step", "advice", "scale", "fill", "lang", "rule" -> true;
             default -> false;
         };
     }
@@ -404,6 +428,8 @@ final class SettingsTab extends MenuTab {
             case "step" -> Settings.stepValue(r.id()) != Settings.stepDefault(r.id());
             case "advice" -> !Rules.adviceHere();
             case "scale" -> MenuScale.setting() != 0;
+            case "lang" -> Settings.number("langOverride", 0) != 0;
+            case "fill" -> menuFill() != 100;
             case "rule" -> RuleEditor.changed(r.r());
             default -> false;
         };
@@ -437,6 +463,8 @@ final class SettingsTab extends MenuTab {
                 String d = L.t("wynnlabs.settings.default", L.t("wynnlabs.settings.menu_scale_game"));
                 yield pick > 0 && used != pick ? d + " · " + L.t("wynnlabs.settings.menu_scale_used", used) : d;
             }
+            case "lang" -> L.t("wynnlabs.settings.default", langNames()[0]);
+            case "fill" -> L.t("wynnlabs.settings.default", RoadmapScreen.pct(100));
             case "rule" -> {
                 RuleEditor.Rule rule = r.r();
                 if (rule.isSwitch()) {
@@ -933,6 +961,12 @@ final class SettingsTab extends MenuTab {
             case "scale" -> {
                 return new int[] {scaleButtons(g, x, y, w, mx, my), 14};
             }
+            case "lang" -> {
+                return new int[] {langButtons(g, x, y, mx, my), 14};
+            }
+            case "fill" -> {
+                return new int[] {fillButtons(g, x, y, mx, my), 14};
+            }
             case "key" -> {
                 return new int[] {w, drawKeyDetail(g, x, y, w, mx, my)};
             }
@@ -960,6 +994,56 @@ final class SettingsTab extends MenuTab {
             Kit.button(g, bx, y, bw, 14, state);
             g.drawString(font(), names[i], bx + (bw - font().width(names[i])) / 2, y + 3, Kit.buttonText(state), !sel);
             scaleRects.add(new int[] {bx, y, bw, 14, values[i]});
+            bx += bw + 3;
+        }
+        return bx - 3 - x;
+    }
+
+    /** Appearance → Menu size: the menu at 100%, 90% or 80% of the screen (MenuLayout). */
+    private static final int[] FILLS = {100, 90, 80};
+
+    /** The menu size in use, one of {@link #FILLS}. */
+    private static int menuFill() {
+        int v = Settings.number("menuFill", 100);
+        return v >= 95 ? 100 : v >= 85 ? 90 : 80;
+    }
+
+    /** The menu size buttons; returns the width taken. */
+    private int fillButtons(GuiGraphics g, int x, int y, int mx, int my) {
+        int pick = menuFill();
+        int bx = x;
+        for (int v : FILLS) {
+            String label = RoadmapScreen.pct(v);
+            int bw = Math.max(30, font().width(label) + 12);
+            boolean sel = pick == v;
+            boolean hover = mx >= bx && mx < bx + bw && my >= y && my < y + 14;
+            int state = sel ? Kit.ON : hover ? Kit.HOVER : Kit.REST;
+            Kit.button(g, bx, y, bw, 14, state);
+            g.drawString(font(), label, bx + (bw - font().width(label)) / 2, y + 3, Kit.buttonText(state), !sel);
+            menu.toggles.add(new Object[] {new int[] {bx, y, bw, 14}, "#fill:" + v});
+            bx += bw + 3;
+        }
+        return bx - 3 - x;
+    }
+
+    /** The language choices: Auto (follows the game), EN, TR. */
+    private static String[] langNames() {
+        return new String[] {L.t("wynnlabs.settings.lang_auto"), "EN", "TR"};
+    }
+
+    /** Appearance → Language: Auto, EN or TR for the mod's text (the game's own language is left alone); returns the width taken. */
+    private int langButtons(GuiGraphics g, int x, int y, int mx, int my) {
+        int pick = Settings.number("langOverride", 0);
+        String[] names = langNames();
+        int bx = x;
+        for (int i = 0; i < names.length; i++) {
+            int bw = Math.max(26, font().width(names[i]) + 12);
+            boolean sel = pick == i;
+            boolean hover = mx >= bx && mx < bx + bw && my >= y && my < y + 14;
+            int state = sel ? Kit.ON : hover ? Kit.HOVER : Kit.REST;
+            Kit.button(g, bx, y, bw, 14, state);
+            g.drawString(font(), names[i], bx + (bw - font().width(names[i])) / 2, y + 3, Kit.buttonText(state), !sel);
+            menu.toggles.add(new Object[] {new int[] {bx, y, bw, 14}, "#lang:" + i});
             bx += bw + 3;
         }
         return bx - 3 - x;
@@ -1005,6 +1089,11 @@ final class SettingsTab extends MenuTab {
             case "step" -> Settings.resetNumber(r.id());
             case "advice" -> adviceHere(true);
             case "scale" -> Settings.resetNumber("menuScale");
+            case "lang" -> {
+                Settings.setNumber("langOverride", 0);
+                menu.rebuildMap();
+            }
+            case "fill" -> Settings.resetNumber("menuFill");
             case "rule" -> RuleEditor.reset(r.r());
             default -> {
                 return;

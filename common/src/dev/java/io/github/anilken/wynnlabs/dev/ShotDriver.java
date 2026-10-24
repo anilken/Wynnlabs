@@ -53,7 +53,7 @@ final class ShotDriver {
 
     /** The tabs' numbers in rail order. */
     static int[] railOrder() {
-        return ((int[]) Peek.get(RoadmapScreen.class, "RAIL")).clone();
+        return java.util.Arrays.stream((int[][]) Peek.get(RoadmapScreen.class, "RAIL")).flatMapToInt(java.util.Arrays::stream).toArray();
     }
 
     static int tabCount() {

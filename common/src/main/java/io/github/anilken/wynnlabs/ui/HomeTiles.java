@@ -13,14 +13,11 @@ import io.github.anilken.wynnlabs.model.RankedAspect;
 import io.github.anilken.wynnlabs.model.Tier;
 import io.github.anilken.wynnlabs.quests.Discoveries;
 import io.github.anilken.wynnlabs.quests.QuestAdvisor;
-import io.github.anilken.wynnlabs.quests.QuestBook;
 import io.github.anilken.wynnlabs.quests.QuestGuides;
 import io.github.anilken.wynnlabs.ui.HomeTab.Host;
 import io.github.anilken.wynnlabs.ui.HomeTab.In;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -279,7 +276,7 @@ final class HomeTiles extends HomePart {
         int px = large && h >= 52 ? 3 : 2;                  // the arrow's pixel: 7 of them across
         int ds = 7 * px + 8;
         int tx = x + 6;
-        if (dial(g, q.quest(), x + 6, y + 18, ds)) {
+        if (HomeDial.draw(g, q.quest(), x + 6, y + 18, ds)) {
             tx = x + 6 + ds + 5;
         }
         int tw = x + w - 6 - tx;
@@ -300,69 +297,9 @@ final class HomeTiles extends HomePart {
         host.quest(x, y, w, h, tip, q.quest());
     }
 
-    /**
-     * A round dial with an arrow from where you look to the quest's start (up: straight ahead);
-     * false and nothing drawn when its place or yours is unknown.
-     */
-    private boolean dial(GuiGraphics g, QuestBook.Entry e, int x, int y, int size) {
-        LocalPlayer me = Minecraft.getInstance().player;
-        if (me == null || e.x() == null || e.z() == null) {
-            return false;
-        }
-        Art.box(g, x, y, size, size, 4, Theme.WELL, Theme.LINE);
-        // the bearing in the game's yaw (0 south, 90 west) less where you face, clockwise on screen,
-        // to the nearest of eight directions
-        double bearing = Math.toDegrees(Math.atan2(-(e.x() - me.getX()), e.z() - me.getZ()));
-        int dir = Math.floorMod((int) Math.round((bearing - me.getYRot()) / 45.0), 8);
-        String[] art = dir % 2 == 0 ? ARROW_N : ARROW_NE;
-        int px = (size - 8) / 7;
-        int ox = x + (size - 7 * px) / 2;
-        int oy = y + (size - 7 * px) / 2;
-        for (int r = 0; r < 7; r++) {
-            for (int c = 0; c < 7; c++) {
-                if (art[r].charAt(c) != '#') {
-                    continue;
-                }
-                // a quarter turn clockwise per two steps: (row, col) → (col, 6 - row)
-                int rr = r;
-                int cc = c;
-                for (int t = 0; t < dir / 2; t++) {
-                    int n = cc;
-                    cc = 6 - rr;
-                    rr = n;
-                }
-                g.fill(ox + cc * px, oy + rr * px, ox + (cc + 1) * px, oy + (rr + 1) * px, Theme.LINK);
-            }
-        }
-        return true;
-    }
-
-    /** The dial's arrows as 7×7 pixel art, straight up and up-right; the other six are these turned. */
-    private static final String[] ARROW_N = {
-        "...#...",
-        "..###..",
-        ".#.#.#.",
-        "#..#..#",
-        "...#...",
-        "...#...",
-        "...#..."};
-    private static final String[] ARROW_NE = {
-        "..#####",
-        ".....##",
-        "....#.#",
-        "...#..#",
-        "..#....",
-        ".#.....",
-        "#......"};
-
     /** Where to level: the safest place for now with its safety dot, and the experience to the next level. */
     void grindTile(GuiGraphics g, In in, Host host, int x, int y, int w, int h, int mx, int my) {
-        String raw = null;
-        for (String p : in.places()) {
-            if (raw == null || RoadmapScreen.placeRisk(p) < RoadmapScreen.placeRisk(raw)) {
-                raw = p;
-            }
-        }
+        String raw = HomeNext.safest(in.places());
         int risk = raw == null ? 1 : RoadmapScreen.placeRisk(raw);
         tile(g, x, y, w, h, "sword", L.t("wynnlabs.home.grind"), RoadmapScreen.RISK[risk], mx, my);
         int xp;
@@ -469,24 +406,24 @@ final class HomeTiles extends HomePart {
     // ---- compact: the tiles as rows ----
 
     /**
-     * The compact page's tiles as rows beside the stand, in order of use (quest, where to level,
-     * this week, aspects, bank, professions, discovery); the ones that do not fit are left out. A row
+     * The compact page's tiles as rows beside the stand, in order of use (the first steps while
+     * any is open, quest, where to level, this week, aspects, bank (not beside the first steps),
+     * professions, discovery); the ones that do not fit are left out. A row
      * is a label over its answer when tall enough, else one line.
      */
-    void rows(GuiGraphics g, In in, Host host, int x, int y, int w, int h, int mx, int my) {
+    void rows(GuiGraphics g, In in, Host host, int x, int y, int w, int h, int mx, int my, HomeSteps steps) {
         List<String[]> rows = new ArrayList<>();       // {icon, label, value, action}
         List<List<Component>> tips = new ArrayList<>();
+        if (steps != null) {
+            rows.add(steps.row());                     // the menus still to open: first, in the bank's place
+            tips.add(steps.tip(FirstSteps.done()).subList(1, FirstSteps.STEPS.size() + 2));
+        }
         QuestAdvisor.Suggestion q = in.quest();
         rows.add(new String[] {"map-2", L.t("wynnlabs.homev.quest"), q == null ? L.t("wynnlabs.home.no_quest")
             : QuestGuides.title(q.quest().name()) + (q.distance() >= 0 ? " · " + RoadmapScreen.dist(q.distance()) : ""), q == null ? "#qopen:2" : null});
         tips.add(q == null ? List.of() : List.of(Component.literal(QuestGuides.title(q.quest().name())).withStyle(ChatFormatting.AQUA),
                 L.c("wynnlabs.home.click_track").withStyle(ChatFormatting.GREEN)));
-        String raw = null;
-        for (String p : in.places()) {
-            if (raw == null || RoadmapScreen.placeRisk(p) < RoadmapScreen.placeRisk(raw)) {
-                raw = p;
-            }
-        }
+        String raw = HomeNext.safest(in.places());
         String place = raw == null ? null : RoadmapScreen.shortPlace(raw);
         String cmd = raw == null ? null : RoadmapScreen.compassFor(raw);
         rows.add(new String[] {"sword", L.t("wynnlabs.home.grind"), place == null ? L.t("wynnlabs.home.no_place") : place,
@@ -504,9 +441,11 @@ final class HomeTiles extends HomePart {
             "#qopen:" + RoadmapScreen.TAB_ENDGAME});
         tips.add(List.of(opens("wynnlabs.screen.tab_endgame")));
         int[] b = d.bank();
-        rows.add(new String[] {"building-bank", L.t("wynnlabs.homev.bank"), b == null ? L.t("wynnlabs.homev.bank_none")
-            : L.t("wynnlabs.homev.bank_sell", b[0]) + (d.sellWorth() > 0 ? " · ≈" + Prices.fmt(d.sellWorth()) : ""), "#qopen:" + RoadmapScreen.TAB_BANK});
-        tips.add(List.of(opens("wynnlabs.screen.tab_bank")));
+        if (steps == null) {
+            rows.add(new String[] {"building-bank", L.t("wynnlabs.homev.bank"), b == null ? L.t("wynnlabs.homev.bank_none")
+                : L.t("wynnlabs.homev.bank_sell", b[0]) + (d.sellWorth() > 0 ? " · ≈" + Prices.fmt(d.sellWorth()) : ""), "#qopen:" + RoadmapScreen.TAB_BANK});
+            tips.add(List.of(opens("wynnlabs.screen.tab_bank")));
+        }
         String top = d.profs().isEmpty() ? null : d.profs().get(0);
         rows.add(new String[] {"hammer", L.t("wynnlabs.homev.profs"), top == null ? L.t("wynnlabs.homev.profs_none")
             : Professions.name(top) + " " + d.levels().get(top), "#qopen:" + RoadmapScreen.TAB_CRAFT});
@@ -537,7 +476,7 @@ final class HomeTiles extends HomePart {
             List<Component> tip = new ArrayList<>();
             tip.add(Component.literal(r[1] + ": " + r[2]).withStyle(ChatFormatting.WHITE));
             tip.addAll(tips.get(i));
-            if (i == 0 && q != null) {
+            if (r[0].equals("map-2") && q != null) {
                 host.quest(x, ry, w, rh, tip, q.quest());
             } else {
                 host.area(x, ry, w, rh, null, tip, r[3]);

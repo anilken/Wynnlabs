@@ -334,17 +334,44 @@ public final class RoadmapScreen extends Screen {
 
     /** This frame's size class, panel and rail (MenuLayout): set at the start of each render. */
     MenuLayout layout = MenuLayout.of(640, 360);
-    /** The rail's order (the tab numbers stay what the rest of the screen uses). */
-    private static final int[] RAIL = {0, TAB_SEARCH, TAB_CRAFT, TAB_TREE, 1, TAB_ENDGAME, 2, TAB_DISCOVERIES, TAB_BANK, TAB_DAMAGE, 3,
-        TAB_AI, TAB_SETTINGS};
     /**
-     * Each rail entry's hint as a language key ("" for none). The Endgame tab's title line holds
-     * its pills, so its hint is drawn under its aspect list instead.
+     * The rail: nine entries in two groups (game, items) and Settings alone at the bottom. An
+     * entry with more than one tab number shows those tabs as sections along the top of its page;
+     * the tab numbers stay what the rest of the screen uses.
      */
-    private static final String[] RAIL_HINT = {
-        "", "", "", "wynnlabs.screen.hint_tree", "wynnlabs.screen.hint_today", "wynnlabs.screen.hint_endgame",
-        "wynnlabs.screen.hint_quests", "wynnlabs.screen.hint_discoveries", "wynnlabs.screen.hint_bank", "wynnlabs.screen.hint_damage", "wynnlabs.screen.hint_deaths", "wynnlabs.screen.hint_ai",
-        "wynnlabs.screen.hint_settings"};
+    private static final int[][] RAIL = {{0}, {1, 3, TAB_DAMAGE}, {2, TAB_DISCOVERIES}, {TAB_TREE}, {TAB_ENDGAME},
+        {TAB_BANK}, {TAB_CRAFT}, {TAB_SEARCH}, {TAB_SETTINGS, TAB_AI}};
+    /** Each rail entry's name as a language key. */
+    private static final String[] RAIL_NAMES = {"wynnlabs.screen.rail_home", "wynnlabs.screen.tab_today",
+        "wynnlabs.screen.tab_quests", "wynnlabs.screen.rail_tree", "wynnlabs.screen.rail_endgame", "wynnlabs.screen.tab_bank",
+        "wynnlabs.screen.tab_craft", "wynnlabs.screen.tab_search", "wynnlabs.screen.tab_settings"};
+    /** The group titles, and the entry each one starts at. */
+    private static final String[] RAIL_GROUPS = {"wynnlabs.screen.rail_group_game", "wynnlabs.screen.rail_group_items"};
+    private static final int[] RAIL_GROUP_AT = {0, 5};
+    /** A section's name on its page's strip, by tab number ("" for a tab that is never a section). */
+    private static final String[] SECTION_NAMES = {"", "wynnlabs.screen.sec_summary", "wynnlabs.screen.tab_quests",
+        "wynnlabs.screen.tab_deaths", "", "wynnlabs.screen.tab_settings", "wynnlabs.screen.sec_ai", "wynnlabs.screen.tab_damage",
+        "wynnlabs.screen.sec_discoveries", "", "", "", ""};
+    /**
+     * Each tab's hint as a language key ("" for none), by tab number. The Endgame tab's title line
+     * holds its pills, so its hint is drawn under its aspect list instead.
+     */
+    private static final String[] TAB_HINT = {"", "wynnlabs.screen.hint_today", "wynnlabs.screen.hint_quests",
+        "wynnlabs.screen.hint_deaths", "wynnlabs.screen.hint_bank", "wynnlabs.screen.hint_settings", "wynnlabs.screen.hint_ai",
+        "wynnlabs.screen.hint_damage", "wynnlabs.screen.hint_discoveries", "wynnlabs.screen.hint_tree", "",
+        "wynnlabs.screen.hint_endgame", ""};
+
+    /** The rail entry that holds tab {@code t}. */
+    private static int railEntry(int t) {
+        for (int i = 0; i < RAIL.length; i++) {
+            for (int s : RAIL[i]) {
+                if (s == t) {
+                    return i;
+                }
+            }
+        }
+        return 0;
+    }
     private final Map<Integer, ItemStack> railIcons = new HashMap<>();
 
     /** For the preview's layout check: the click areas drawn this frame (rows and buttons with an action). */
@@ -450,7 +477,7 @@ public final class RoadmapScreen extends Screen {
         // the window: a wooden frame around the panel (outside it, so nothing inside moves),
         // planks under the rail and parchment under the page
         Kit.window(g, x0 - 5, y0 - 5, w + 10, h + 10);
-        Kit.planks(g, x0, y0, railW(), h);
+        Kit.railPlain(g, x0, y0, railW(), h, railW());
         // the page: content keeps 10px from the parchment's sides (14 at the top, 8 at the bottom)
         Kit.paper(g, x0 + railW() + 2, y0 + 2, w - railW() - 4, h - 4);
 
@@ -460,20 +487,23 @@ public final class RoadmapScreen extends Screen {
         int cy = y0 + 16;
         int ch = h - 26;
         if (tab != 0) {
-            // a page title and what you can do on it, instead of a crowded tab bar
-            int idx = 0;
-            for (int i = 0; i < RAIL.length; i++) {
-                if (RAIL[i] == tab) {
-                    idx = i;
-                }
+            // a page title and what you can do on it, instead of a crowded tab bar; an entry
+            // with sections shows them as a strip of chips in the title's place
+            int[] group = RAIL[railEntry(tab)];
+            int titleW;
+            if (group.length > 1) {
+                titleW = drawSections(g, group, cx, cy - 3, mx, my);
+            } else {
+                Component title = L.c(RAIL_NAMES[railEntry(tab)]).withStyle(UiFont::bold);
+                Kit.text(g, font, title, cx, cy, Theme.INK);
+                titleW = font.width(title);
             }
-            Kit.text(g, font, L.c(TABS[tab]).withStyle(UiFont::bold), cx, cy, Theme.INK);
-            int titleRoom = cw - font.width(L.c(TABS[tab]).withStyle(UiFont::bold)) - 12;
+            int titleRoom = cw - titleW - 12;
             // the quests tab: when the list was read and its "Yenile" chip on the right
             int right = pages[tab] != null ? pages[tab].titleRight(g, cx + cw, cy, titleRoom, mx, my) : 0;
             int gap = right > 0 ? right + 10 : 0;
             // the page hint where it fits beside the title (none in the compact layout)
-            String hint = RAIL_HINT[idx].isEmpty() || tab == 1 || tab == TAB_ENDGAME || layout.compact() ? "" : L.t(RAIL_HINT[idx]);
+            String hint = TAB_HINT[tab].isEmpty() || tab == 1 || tab == TAB_ENDGAME || layout.compact() ? "" : L.t(TAB_HINT[tab]);
             hint = right > 0 && titleRoom - gap < 60 ? "" : paint.fit(hint, titleRoom - gap);
             Kit.text(g, font, hint, cx + cw - gap - font.width(hint), cy, Theme.INK_3);
             g.fill(cx, cy + 12, cx + cw, cy + 13, Theme.LINE);
@@ -561,93 +591,94 @@ public final class RoadmapScreen extends Screen {
     // ---- rail (the menu on the left) ----
 
     private void drawRail(GuiGraphics g, int x, int y, int h, int mx, int my) {
-        // the class and level are on the Home tab's HUD; the rail is the tabs alone
-        int ry = y + 10;
+        // the class and level are on the Home tab's HUD; the rail is the tabs alone: paper labels
+        // stacked from the top under two group titles, then Settings as its own short group under
+        // a rule; the rail below is plain wood
         boolean compact = layout.compact();
-        // 24 apart, closer on a short window so the entries stay above the language picker (one
-        // button and no "Esc" line in the compact rail)
-        int foot = compact ? 22 : 42;
-        int pitch = Math.max(14, Math.min(24, (h - foot - 10 - 4) / RAIL.length));
-        // 2px between entries; the icon shrinks with a short entry so it never spills over
-        int eh = pitch - 2;
-        int icon = compact ? Math.min(18, eh & ~1) : Math.min(16, (eh - 4) & ~1);
+        int eh = compact ? 16 : 19;
+        int gap = compact ? 2 : 3;
+        int lead = compact ? 4 : 8;                 // before a group title or the rule
+        int headH = compact ? 5 : 14;
+        int last = RAIL.length - 1;
+        int ry = y + 6;
         for (int i = 0; i < RAIL.length; i++) {
-            int t = RAIL[i];
-            boolean on = t == tab;
-            boolean hover = mx >= x && mx < x + railW() && my >= ry && my < ry + eh;
-            // the discoveries' page title is too long for the rail: a shorter name there
-            String name = t == TAB_DISCOVERIES ? L.t("wynnlabs.screen.rail_discoveries") : L.t(TABS[t]);
-            if (compact) {
-                // icons only, the tile is the button: gold behind the selected one, a frame on
-                // hover, the name in the tooltip
-                int ix = x + 2 + (railW() - 4 - icon) / 2;
-                int iy = ry + (eh - icon) / 2;
-                if (on) {
-                    Kit.button(g, x + 4, ry, railW() - 4, eh, Kit.ON);
-                    Kit.tip(g, x + railW(), ry, eh);
-                } else if (hover) {
-                    Kit.button(g, ix - 3, ry, icon + 6, eh, Kit.HOVER);
+            for (int gi = 0; gi < RAIL_GROUP_AT.length; gi++) {
+                if (RAIL_GROUP_AT[gi] == i) {
+                    if (i > 0) {
+                        ry += lead - gap;
+                    }
+                    railHead(g, L.t(RAIL_GROUPS[gi]), x, ry, compact);
+                    ry += headH;
                 }
-                paint.badge(g, t, ix, iy, icon);
-                hits.add(new MenuHit(x, ry, railW(), eh, null, List.of(Component.literal(name)), null));
-            } else {
-                if (on) {
-                    // the selected tab is gold and reaches over the page's torn rim with a tip
-                    Kit.button(g, x + 4, ry, railW() - 4, eh, Kit.ON);
-                    Kit.tip(g, x + railW(), ry, eh);
-                } else {
-                    Kit.button(g, x + 4, ry, railW() - 8, eh, hover ? Kit.HOVER : Kit.REST);
-                }
-                paint.badge(g, t, x + 8 + (16 - icon) / 2, ry + (eh - icon) / 2, icon);
-                g.drawString(font, paint.fit(name, railW() - 34), x + 30, ry + (eh - 8) / 2, on ? Theme.INK : Theme.CREAM, !on);
             }
-            tabs.add(new int[] {x, ry, railW(), eh, t});
-            ry += pitch;
-        }
-        if (compact) {
-            drawLanguageButton(g, x + 3, y + h - 18, railW() - 6, mx, my);
-        } else {
-            drawLanguage(g, x + 8, y + h - 42, railW() - 16, mx, my);
-            g.drawString(font, L.t("wynnlabs.screen.esc_close"), x + 8, y + h - 14, Theme.CREAM_DIM);
+            if (i == last) {
+                // Settings: its own short group under a thin rule
+                ry += lead - gap;
+                Kit.railRule(g, x + (compact ? 6 : 8), ry, railW() - (compact ? 12 : 16));
+                ry += compact ? 5 : 6;
+            }
+            railRow(g, i, x, ry, eh, compact, mx, my);
+            ry += eh + gap;
         }
     }
 
-    /** The compact rail's language: one button showing the choice, a click moves to the next. */
-    private void drawLanguageButton(GuiGraphics g, int x, int y, int w, int mx, int my) {
-        langRects.clear();
-        int pick = Settings.number("langOverride", 0);
-        String[] names = {L.t("wynnlabs.settings.lang_auto"), "EN", "TR"};
-        String label = paint.fit(names[pick], w - 4);
-        boolean hover = mx >= x && mx < x + w && my >= y && my < y + 14;
-        int state = hover ? Kit.HOVER : Kit.REST;
-        Kit.button(g, x, y, w, 14, state);
-        g.drawString(font, label, x + (w - font.width(label)) / 2, y + 3, Kit.buttonText(state), true);
-        langRects.add(new int[] {x, y, w, 14, (pick + 1) % names.length});
-        hits.add(new MenuHit(x, y, w, 14, null, List.of(Component.literal(L.t("wynnlabs.settings.language") + ": " + names[pick])), null));
+    /** A group title on the rail: light text and an engraved rule after it (the rule alone when compact). */
+    private void railHead(GuiGraphics g, String title, int x, int y, boolean compact) {
+        if (compact) {
+            Kit.railRule(g, x + 6, y + 1, railW() - 12);
+            return;
+        }
+        g.drawString(font, title, x + 8, y + 2, Theme.CREAM_DIM, true);
+        Kit.railRule(g, x + 8 + font.width(title) + 5, y + 5, railW() - 16 - font.width(title) - 5);
+    }
+
+    /** One rail entry: a paper label, gold-washed with a brass strip when its page is open. */
+    private void railRow(GuiGraphics g, int i, int x, int ry, int eh, boolean compact, int mx, int my) {
+        int t = RAIL[i][0];
+        boolean on = railEntry(tab) == i;
+        boolean hover = mx >= x && mx < x + railW() && my >= ry && my < ry + eh;
+        String name = L.t(RAIL_NAMES[i]);
+        int icon = compact ? 12 : 11;
+        int ink = on ? Theme.INK : Theme.INK_2;        // one ink for every icon: no colours per tab
+        // a paper label; the open one is pulled out 2px further, like a tab drawn from a file
+        int tagX = compact ? x + 3 : x + 4;
+        Kit.paperTag(g, tagX, ry, railW() - (compact ? 6 : 8) + (on ? 2 : 0), eh, on, hover && !on);
+        if (compact) {
+            paint.badge(g, t, tagX + (railW() - 6 - icon) / 2 + (on ? 2 : 0), ry + (eh - icon) / 2, icon, ink);
+            hits.add(new MenuHit(x, ry, railW(), eh, null, List.of(Component.literal(name)), null));
+        } else {
+            paint.badge(g, t, x + (on ? 15 : 12), ry + (eh - icon) / 2, icon, ink);
+            g.drawString(font, paint.fit(name, railW() - 40), x + (on ? 32 : 29), ry + (eh - 8) / 2, on ? Theme.INK : Theme.INK_2, false);
+        }
+        // a click opens the entry's first section, or stays on the section already open
+        tabs.add(new int[] {x, ry, railW(), eh, on ? tab : t});
     }
 
     /**
-     * The mod's language, one segmented control at the bottom of the rail: Auto follows the
-     * game, EN and TR pin the mod's text (the game's own language is left alone).
+     * A page's sections as light paper chips along its top (the open one washed gold); returns
+     * the strip's width. A click on a chip opens that section.
      */
-    private void drawLanguage(GuiGraphics g, int x, int y, int w, int mx, int my) {
-        langRects.clear();
-        g.drawString(font, L.t("wynnlabs.settings.language"), x, y, Theme.CREAM_DIM);
-        int pick = Settings.number("langOverride", 0);
-        String[] names = {L.t("wynnlabs.settings.lang_auto"), "EN", "TR"};
-        int sy = y + 11;
-        int sh = 14;
-        int segW = w / names.length;
-        for (int i = 0; i < names.length; i++) {
-            int sx = x + i * segW;
-            int ew = i == names.length - 1 ? w - i * segW : segW;
-            boolean sel = pick == i;
-            boolean hover = mx >= sx && mx < sx + ew && my >= sy && my < sy + sh;
-            int state = sel ? Kit.ON : hover ? Kit.HOVER : Kit.REST;
-            Kit.button(g, sx, sy, ew, sh, state);
-            g.drawString(font, names[i], sx + (ew - font.width(names[i])) / 2, sy + 3, Kit.buttonText(state), !sel);
-            langRects.add(new int[] {sx, sy, ew, sh, i});
+    private int drawSections(GuiGraphics g, int[] group, int x, int y, int mx, int my) {
+        int sx = x;
+        for (int t : group) {
+            boolean on = t == tab;
+            Component c = on ? L.c(SECTION_NAMES[t]).withStyle(UiFont::bold) : L.c(SECTION_NAMES[t]);
+            int w = font.width(c) + 14 + 13;           // the label and, before it, the tab's ink icon
+            boolean hover = !on && mx >= sx && mx < sx + w && my >= y && my < y + 14;
+            Kit.plaque(g, sx, y, w, 14);
+            if (on) {
+                g.fill(sx + 1, y + 1, sx + w - 1, y + 13, 0x66FFE071);
+                Kit.outline(g, sx, y, w, 14, Theme.GOLD_EDGE);
+            } else if (hover) {
+                Kit.outline(g, sx, y, w, 14, Theme.LINE);
+            }
+            int ink = on ? Theme.INK : Theme.INK_2;
+            paint.badge(g, t, sx + 6, y + 2, 10, ink);
+            Kit.text(g, font, c, sx + 20, y + 3, ink);
+            tabs.add(new int[] {sx, y, w, 14, t});
+            sx += w + 4;
         }
+        return sx - 4 - x;
     }
 
     /** An explicit change the road map follows (archetype, goal, powders, language): built again when there is one. */
@@ -704,7 +735,6 @@ public final class RoadmapScreen extends Screen {
         return super.keyPressed(event);
     }
     private int[] closeRect;
-    private final List<int[]> langRects = new ArrayList<>();   // {x, y, w, h, choice}
 
     // ---- input ----
 
@@ -768,13 +798,6 @@ public final class RoadmapScreen extends Screen {
         }
         if (tab == TAB_SETTINGS && settings.scaleClicked(ex, ey)) {
             return true;                                // the next frame draws at the new scale
-        }
-        for (int[] r : langRects) {
-            if (MenuPaint.in(ex, ey, r)) {
-                Settings.setNumber("langOverride", r[4]);
-                rebuildMap();                       // its text is in the old language: rebuilt in the background
-                return true;
-            }
         }
         for (int[] t : tabs) {
             if (MenuPaint.in(ex, ey, t)) {
