@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "render": "node render.mjs",
-    "icon": "node icon.mjs"
+    "icon": "node icon.mjs",
+    "icons": "node render.mjs icons"
   },
   "devDependencies": {
     "@expo-google-fonts/inter": "^0.2.3",

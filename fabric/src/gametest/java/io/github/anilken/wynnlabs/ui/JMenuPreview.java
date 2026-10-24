@@ -75,10 +75,11 @@ public class JMenuPreview implements FabricClientGameTest {
             ctx.waitTicks(3);
             shot(ctx, out, "jmenu-goals");
             ctx.runOnClient(mc -> flag(((RoadmapScreen) mc.screen).home, "goalOpen", false));
+            ArchetypePreview.shots(ctx, out);
             // every rail tab in the rail's order (jmenu-tab-<n>: the tab's number, not its place)
             Field railField = RoadmapScreen.class.getDeclaredField("RAIL");
             railField.setAccessible(true);
-            for (int t : (int[]) railField.get(null)) {
+            for (int t : java.util.Arrays.stream((int[][]) railField.get(null)).flatMapToInt(java.util.Arrays::stream).toArray()) {
                 ctx.runOnClient(mc -> set(mc.screen, "tab", t));
                 ctx.waitTicks(10);
                 shot(ctx, out, "jmenu-tab-" + t);

@@ -153,9 +153,8 @@ final class TodayTab extends MenuTab {
             long tm = bankJunk.stream().filter(j -> "Trade Market".equals(Vault.place(j))).count();
             todo.add(new Object[] {icon("emerald"), L.n("wynnlabs.today.todo_bank", bankJunk.size())
                     + (tm > 0 ? " (" + tm + " Trade Market)" : ""), L.t("wynnlabs.today.go_bank"), "#qgo:bank", null, null});
-        } else if (Vault.count() == 0) {
-            todo.add(new Object[] {icon("emerald"), L.t("wynnlabs.today.open_bank"), null, null, null, null});
         }
+        // a bank never opened is one of the home's first steps, not a daily task
         if (!vaultFinds.isEmpty()) {
             List<String> names = new ArrayList<>();
             for (Vault.Find f : vaultFinds) {
@@ -223,7 +222,9 @@ final class TodayTab extends MenuTab {
                 ink(g, action, x + w - 8 - font().width(action), ty + 7, FAINT);
             }
             if (t[3] != null) {
-                menu.hits.add(new MenuHit(x, ty, w, rowH, null, null, (String) t[3]));
+                // a row naming a game word (a Spectral Ticket…) explains it on hover
+                List<Component> tip = Glossary.mentions((String) t[1]) ? List.of(Component.literal((String) t[1])) : null;
+                menu.hits.add(new MenuHit(x, ty, w, rowH, null, tip, (String) t[3]));
             } else if (t[4] != null) {
                 QuestBook.Entry q = (QuestBook.Entry) t[4];
                 menu.hits.add(new MenuHit(x, ty, w, rowH, null, List.of(Component.literal(QuestGuides.title(q.name())).withStyle(ChatFormatting.AQUA),

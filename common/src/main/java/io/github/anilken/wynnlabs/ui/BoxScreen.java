@@ -323,9 +323,9 @@ public final class BoxScreen extends Screen {
                 case KEEP -> Theme.NEAR;
             };
             int vw = chip(g, cx, y, verdict.text(), fill, Theme.SEAL_TEXT);
-            String via = verdict.routeText();
-            if (via != null && mx >= cx && mx < cx + vw && my >= y && my < y + 14) {
-                g.setTooltipForNextFrame(font, Component.literal(via), mx, my);
+            if (mx >= cx && mx < cx + vw && my >= y && my < y + 14) {
+                // the route, what the word means and why this box got it
+                Glossary.draw(g, font, verdict.tipLines().stream().map(Glossary::grey).toList(), mx, my, width);
             }
             cx += vw + 4;
         }

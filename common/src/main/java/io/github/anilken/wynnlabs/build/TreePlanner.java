@@ -52,7 +52,7 @@ public final class TreePlanner {
      * the tree's first archetype was no lean, only the tree's order). From that level on with
      * none unlocked (Wynntils has not read them yet), the tree's first.
      */
-    static String mostUnlocked() {
+    public static String mostUnlocked() {
         List<String> archs = archetypes();
         if (archs.isEmpty()) {
             return "";
@@ -77,8 +77,20 @@ public final class TreePlanner {
         return best;
     }
 
+    /** How many of the archetype's nodes you have unlocked (0 when the tree is unknown). */
+    public static int unlockedIn(String archetype) {
+        Set<String> have = new HashSet<>(GameState.current().unlockedAbilities());
+        int n = 0;
+        for (AbilityNode node : nodes()) {
+            if (arch(node).equalsIgnoreCase(archetype) && have.contains(node.name())) {
+                n++;
+            }
+        }
+        return n;
+    }
+
     /** Archetypes of the current class's tree, e.g. Summoner, Ritualist, Acolyte. */
-    static List<String> archetypes() {
+    public static List<String> archetypes() {
         Set<String> out = new LinkedHashSet<>();
         for (AbilityNode n : nodes()) {
             String a = arch(n);
@@ -422,12 +434,12 @@ public final class TreePlanner {
         }
     }
 
-    /** Next archetype in the list (the settings button cycles: off, A, B, C). */
-    public static void cycle() {
-        List<String> archs = archetypes();
-        String now = chosen();
-        int i = archs.indexOf(now);
-        String next = i + 1 < archs.size() ? archs.get(i + 1) : "";
+    /**
+     * Your choice of archetype ("" for automatic: no tree plan, the build follows the one you
+     * lean to). Never guessed again after; the class profile follows a named archetype.
+     */
+    public static void choose(String archetype) {
+        String next = archetype == null ? "" : archetype;
         JsonObject tree = new JsonObject();
         tree.addProperty("archetype", next);
         tree.add("guess", com.google.gson.JsonNull.INSTANCE);  // your choice: never guessed again
