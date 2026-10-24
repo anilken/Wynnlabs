@@ -122,6 +122,16 @@ test {
                     .each { excludeTestsMatching "*.${it}" }
         }
     }
+    // -PprTests (CI on a pull request): also leaves out the classes that take over five seconds
+    // (road map, tuning and tree runs); a push to main runs them with the rest of -PquickTests
+    if (rootProject.hasProperty('prTests')) {
+        filter {
+            ['TuningTest', 'RoadmapLocksTest', 'RoadmapOnDemandTest', 'TreeModelTest', 'RoadmapMythicsTest',
+             'FightingGoalXpRoadmapTest', 'AroundTest', 'NowSetTest', 'PlansTest', 'BoxVerdictTest',
+             'ElementalDefenceTest', 'DefenceNotHoardedTest', 'PowderRollTest']
+                    .each { excludeTestsMatching "*.${it}" }
+        }
+    }
     // the root build/test-run, as before the split: tests find build/discoveries-wiki next to it
     workingDir = rootProject.layout.buildDirectory.dir('test-run').get().asFile
     // -PfixturesDir=<folder>: run on fixtures kept elsewhere (another class, a scratch copy)
