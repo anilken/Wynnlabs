@@ -724,6 +724,8 @@ public final class Damage {
                 bonus.minor().forEach(sv -> s.merge(sv.key(), (double) sv.value(), Double::sum));
             }
         }
+        // the tree's passive bonuses at this level (TreeModel): Main Attack Damage, the masteries' element %
+        TreeModel.addStats(s);
         double[] skill = new double[SkillKind.values().length];
         for (SkillKind sk : SkillKind.values()) {
             String api = "raw" + sk.name().charAt(0) + sk.name().substring(1).toLowerCase(Locale.ROOT);
