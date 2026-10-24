@@ -502,9 +502,20 @@ public final class WynnLabs {
                                 o.get("z").getAsInt()});
                             labels.add(o.has("label") ? o.get("label").getAsString() : "");
                         }
+                        // keep:true: every point a lasting pin, all on the map at once
+                        boolean lastingAll = in.has("keep") && in.get("keep").getAsBoolean();
                         out = onGameThread(() -> {
                             JsonObject o = new JsonObject();
-                            o.addProperty("queued", Waypoints.all(points, labels));
+                            if (lastingAll) {
+                                int n = 0;
+                                for (int i = 0; i < points.size(); i++) {
+                                    int[] q = points.get(i);
+                                    n += Waypoints.keep(q[0], q[1], q[2], labels.get(i)) ? 1 : 0;
+                                }
+                                o.addProperty("kept", n);
+                            } else {
+                                o.addProperty("queued", Waypoints.all(points, labels));
+                            }
                             return o;
                         });
                     } else if (in != null && in.has("x") && in.has("z")) {
