@@ -12,16 +12,20 @@ import net.minecraft.network.chat.HoverEvent;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Locale;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Once per game run, a few seconds after the player first shows up in a world, asks GitHub for
- * the newest release and, only when it is newer than this jar, says so in one chat line with a
- * link to the release page. Setting {@code updateCheck}: while it is off no request is made. A dev
- * or unknown version skips the check. One request, on its own thread, never retried; a failure
- * is one log line. The line goes to this client's chat only, never to the server.
+ * the newest release and, only when it is newer than this jar, says so in one chat line with
+ * [Update] (download now, installed on exit), [Details] (the update window) and [GitHub] (the
+ * release page). Settings {@code updateCheck} (the
+ * reminder) and {@code autoUpdate} (download now, install on exit, no screen): while both are off
+ * no request is made. A dev or unknown version skips the check. One request, on its own thread,
+ * never retried; a failure is one log line. The line goes to this client's chat only, never to
+ * the server. The release's jar for this game is picked by {@link UpdateAsset}; downloading and
+ * installing are {@link UpdateDownload} and {@link UpdateInstall}.
  *
  * <p>The settings tab's About page reads {@link #state()} and may ask again with {@link #checkNow()}:
  * only on the player's press, never in a loop, and at most once every ten seconds.
@@ -34,10 +38,13 @@ public final class UpdateCheck {
     /** The shortest time between two requests (a press on "Check again" sooner does nothing). */
     static final long DEBOUNCE_MS = 10_000;
 
-    /** A release as GitHub describes it: its tag ("v0.3.0"), its page and when it came out (0: unknown). */
-    record Release(String tag, String url, long published) {
+    /**
+     * A release as GitHub describes it: its tag ("v0.3.0"), its page, when it came out (0:
+     * unknown), its notes (markdown) and the jars attached to it that can be trusted.
+     */
+    record Release(String tag, String url, long published, String notes, List<UpdateAsset> assets) {
         Release(String tag, String url) {
-            this(tag, url, 0);
+            this(tag, url, 0, "", List.of());
         }
     }
 
@@ -49,9 +56,15 @@ public final class UpdateCheck {
 
     /**
      * What the About page shows: the status (and why it failed), this jar's version, the newest
-     * release's tag, page and date, and when the answer came (0: never).
+     * release's tag, page and date, when the answer came (0: never), the release notes and the
+     * jar for this game (null: none fits, only the page is offered).
      */
-    public record State(Status status, Reason reason, String own, String latest, String url, long published, long checkedAt) {}
+    public record State(Status status, Reason reason, String own, String latest, String url, long published, long checkedAt,
+                        String notes, UpdateAsset asset) {
+        public State(Status status, Reason reason, String own, String latest, String url, long published, long checkedAt) {
+            this(status, reason, own, latest, url, published, checkedAt, "", null);
+        }
+    }
 
     private static int ticks;
     /** Whether this run already asked (or decided not to). */
@@ -78,21 +91,46 @@ public final class UpdateCheck {
         if (mc.player == null) {
             return;
         }
+        UpdateInstall.greet(mc);                // last run's install, said once
         Release r = pending;
         if (r != null) {
             pending = null;
-            mc.gui.getChat().addMessage(line(r, own));
+            if (!UpdatePrefs.silenced(r.tag())) {
+                mc.gui.getChat().addMessage(line(r, own));
+            }
             return;
         }
-        if (started || ++ticks < DELAY_TICKS || !Settings.on("updateCheck")) {
-            return;                             // off: nothing is asked (turned on later, it asks then)
+        UpdateDownload.Phase done = UpdateDownload.takeNotice();
+        if (done != null) {
+            mc.gui.getChat().addMessage(done == UpdateDownload.Phase.READY
+                    ? note("wynnlabs.update.downloaded", ChatFormatting.GREEN, UpdateDownload.tag())
+                    : note("wynnlabs.update.failed_line", ChatFormatting.RED, UpdateDownload.tag(), failText(UpdateDownload.failure())));
+        }
+        if (!started && ++ticks >= DELAY_TICKS) {
+            firstJoin(System.currentTimeMillis());
+        }
+    }
+
+    /** The reminder or the auto update is on: the automatic check may ask. */
+    private static boolean wanted() {
+        return Settings.on("updateCheck") || Settings.on("autoUpdate");
+    }
+
+    /**
+     * The automatic check, once a run: true when a request started. Both settings off: nothing
+     * is asked (turned on later, it asks then).
+     */
+    static boolean firstJoin(long now) {
+        if (started || !wanted()) {
+            return false;
         }
         started = true;
         own = ownVersion();
         if (!checkable(own)) {
-            return;                             // a dev build or an unknown version: nothing to compare
+            return false;                       // a dev build or an unknown version: nothing to compare
         }
-        start(own, true, System.currentTimeMillis());
+        start(own, true, now);
+        return true;
     }
 
     /**
@@ -101,9 +139,9 @@ public final class UpdateCheck {
      */
     public static State state() {
         State s = state;
-        if (s.status() == Status.IDLE || s.reason() == Reason.OFF && Settings.on("updateCheck")) {
+        if (s.status() == Status.IDLE || s.reason() == Reason.OFF && wanted()) {
             String mine = ownVersion();
-            if (!Settings.on("updateCheck")) {
+            if (!wanted()) {
                 return new State(Status.FAILED, Reason.OFF, mine, null, null, 0, 0);
             }
             if (!checkable(mine)) {
@@ -125,7 +163,7 @@ public final class UpdateCheck {
             return false;
         }
         String mine = ownVersion();
-        if (!Settings.on("updateCheck")) {
+        if (!wanted()) {
             state = new State(Status.FAILED, Reason.OFF, mine, null, null, 0, now);
             return false;
         }
@@ -140,7 +178,8 @@ public final class UpdateCheck {
     private static synchronized void start(String mine, boolean auto, long now) {
         lastStart = now;
         State was = state;
-        state = new State(Status.CHECKING, Reason.NONE, mine, was.latest(), was.url(), was.published(), was.checkedAt());
+        state = new State(Status.CHECKING, Reason.NONE, mine, was.latest(), was.url(), was.published(), was.checkedAt(),
+                was.notes(), was.asset());
         starter.accept(() -> fetch(mine, auto));
     }
 
@@ -170,7 +209,46 @@ public final class UpdateCheck {
         }
     }
 
-    /** GitHub's answer into the state; a newer release found by the automatic check is also said in chat. */
+    /**
+     * [Update] in the chat line ({@code /wynnlabs-update}): the download starts at once, no window
+     * opens. "Downloading…" now, the result (ready on restart, or why not) when it ends; with
+     * nothing newer known, that this jar is up to date.
+     */
+    public static void updateFromChat(Consumer<Component> say) {
+        State s = state();
+        String tag = s.latest();
+        if (!checkable(ownVersion())) {
+            say.accept(note("wynnlabs.about.reason_dev", ChatFormatting.GRAY));
+        } else if (s.status() != Status.NEWER) {
+            say.accept(s.status() == Status.UP_TO_DATE ? note("wynnlabs.update.up_to_date", ChatFormatting.GREEN, tag)
+                    : note("wynnlabs.update.none_known", ChatFormatting.GRAY));
+        } else if (s.asset() == null) {
+            say.accept(note("wynnlabs.update.failed_line", ChatFormatting.RED, tag, L.t("wynnlabs.update.no_fit_short")));
+        } else if (tag.equals(UpdateDownload.tag()) && UpdateDownload.phase() == UpdateDownload.Phase.READY) {
+            say.accept(note("wynnlabs.update.downloaded", ChatFormatting.GREEN, tag));
+        } else if (UpdateDownload.phase() == UpdateDownload.Phase.DOWNLOADING
+                || UpdateDownload.start(s.asset(), tag, true)) {
+            say.accept(note("wynnlabs.update.downloading", ChatFormatting.YELLOW, tag));
+        } else {
+            say.accept(note("wynnlabs.update.failed_line", ChatFormatting.RED, tag, failText(UpdateDownload.failure())));
+        }
+    }
+
+    /** Why a download failed, in words. */
+    public static String failText(UpdateDownload.Failure f) {
+        return L.t("wynnlabs.update.fail." + f.name().toLowerCase(java.util.Locale.ROOT));
+    }
+
+    /** "Wynn Labs ▸ " and one text in a colour: the updater's chat lines. */
+    static Component note(String key, ChatFormatting colour, Object... args) {
+        return L.c("wynnlabs.wear.prefix").withStyle(ChatFormatting.GOLD).append(L.c(key, args).withStyle(colour));
+    }
+
+    /**
+     * GitHub's answer into the state. A newer release found by the automatic check, unless
+     * ignored: with auto update on and a jar for this game, downloaded (one line once ready);
+     * otherwise, with the reminder on, said in chat.
+     */
     static void finish(String mine, int status, String body, boolean auto, long now) {
         if (status != 200) {
             System.out.println("[WynnLabs] update check: HTTP " + status);
@@ -184,8 +262,16 @@ public final class UpdateCheck {
             return;
         }
         boolean newer = newer(r.tag(), mine);
-        state = new State(newer ? Status.NEWER : Status.UP_TO_DATE, Reason.NONE, mine, r.tag(), r.url(), r.published(), now);
-        if (newer && auto) {
+        UpdateAsset asset = newer ? UpdateAsset.choose(r.assets(), r.tag()) : null;
+        state = new State(newer ? Status.NEWER : Status.UP_TO_DATE, Reason.NONE, mine, r.tag(), r.url(), r.published(), now,
+                r.notes(), asset);
+        if (!newer || !auto || UpdatePrefs.silenced(r.tag())) {
+            return;
+        }
+        if (Settings.on("autoUpdate") && UpdateDownload.start(asset, r.tag(), true)) {
+            return;
+        }
+        if (Settings.on("updateCheck")) {
             pending = r;
         }
     }
@@ -215,20 +301,27 @@ public final class UpdateCheck {
         state = new State(Status.IDLE, Reason.NONE, "", null, null, 0, 0);
         lastStart = 0;
         pending = null;
+        started = false;
+        ticks = 0;
     }
 
-    /** "Wynn Labs ▸ A new version is out: v0.3.0 (you have v0.2.0) · [Download]", the link clickable. */
+    /**
+     * "Wynn Labs ▸ You are running v0.2.0, but the latest version is v0.3.0. Update by clicking
+     * here.", as Wynntils says it: "here" downloads at once ({@code /wynnlabs-update}, a client
+     * command); the changes and the release page are on the About page.
+     */
     static Component line(Release r, String mine) {
         String have = mine.startsWith("v") ? mine : "v" + mine;
-        Component download = L.c("wynnlabs.update.download").withStyle(s -> s
-                .withColor(ChatFormatting.AQUA)
+        Component here = L.c("wynnlabs.update.update_link").withStyle(s -> s
+                .withColor(ChatFormatting.GREEN)
                 .withUnderlined(true)
-                .withClickEvent(new ClickEvent.OpenUrl(URI.create(r.url())))
-                .withHoverEvent(new HoverEvent.ShowText(L.c("wynnlabs.update.download_hover"))));
+                .withBold(true)
+                .withClickEvent(new ClickEvent.RunCommand("/wynnlabs-update"))
+                .withHoverEvent(new HoverEvent.ShowText(L.c("wynnlabs.update.update_hover"))));
         return L.c("wynnlabs.wear.prefix").withStyle(ChatFormatting.GOLD)
-                .append(L.c("wynnlabs.update.newer", r.tag(), have).withStyle(ChatFormatting.YELLOW))
-                .append(Component.literal(" · ").withStyle(ChatFormatting.GRAY))
-                .append(download);
+                .append(L.c("wynnlabs.update.newer", have, r.tag()).withStyle(ChatFormatting.GREEN))
+                .append(here)
+                .append(L.c("wynnlabs.update.newer_end").withStyle(ChatFormatting.GREEN));
     }
 
     /**
@@ -251,7 +344,10 @@ public final class UpdateCheck {
                 return null;
             }
             URI.create(url);                    // a page we could not open is no use
-            return new Release(tag.trim(), url, instant(text(o, "published_at")));
+            String notes = text(o, "body");
+            JsonElement assets = o.get("assets");
+            return new Release(tag.trim(), url, instant(text(o, "published_at")), notes == null ? "" : notes,
+                    UpdateAsset.parse(assets != null && assets.isJsonArray() ? assets.getAsJsonArray() : null));
         } catch (RuntimeException e) {
             return null;
         }
@@ -279,119 +375,18 @@ public final class UpdateCheck {
         return e != null && e.isJsonPrimitive() && e.getAsJsonPrimitive().isBoolean() && e.getAsBoolean();
     }
 
-    /**
-     * Whether this jar's version is worth comparing: a release number, not a dev build or 0.0.0.
-     * A local build after a release ("0.2.1+dev", build metadata) compares as that release.
-     */
+    /** Whether this jar's version is worth comparing (see {@link Versions#checkable}). */
     static boolean checkable(String version) {
-        String core = core(version);
-        if (core == null) {
-            return false;
-        }
-        String v = core.toLowerCase(Locale.ROOT);
-        if (v.contains("dev") || v.contains("snapshot")) {
-            return false;
-        }
-        int[] n = numbers(version);
-        return n != null && (n[0] | n[1] | n[2]) != 0;
+        return Versions.checkable(version);
     }
 
-    /** Whether {@code latest} is a newer version than {@code mine} (a leading "v" ignored). */
+    /** Whether {@code latest} is a newer version than {@code mine}. */
     static boolean newer(String latest, String mine) {
-        Integer c = compare(latest, mine);
-        return c != null && c > 0;
+        return Versions.newer(latest, mine);
     }
 
-    /**
-     * Semver order of two versions, numbers compared as numbers ("0.10.0" after "0.9.0"), a
-     * pre-release ("1.0.0-beta") before its release, build metadata ("+mc1.21") ignored; null
-     * when either is not a version.
-     */
+    /** Semver order of two versions, null when either is not a version (see {@link Versions#compare}). */
     static Integer compare(String a, String b) {
-        int[] x = numbers(a);
-        int[] y = numbers(b);
-        if (x == null || y == null) {
-            return null;
-        }
-        for (int i = 0; i < 3; i++) {
-            if (x[i] != y[i]) {
-                return Integer.compare(x[i], y[i]);
-            }
-        }
-        String pa = pre(a);
-        String pb = pre(b);
-        if (pa.isEmpty() || pb.isEmpty()) {
-            return Boolean.compare(pa.isEmpty(), pb.isEmpty());  // a release after its pre-releases
-        }
-        return comparePre(pa, pb);
-    }
-
-    /** The three version numbers ("v1.2" is 1.2.0), or null when it does not start with a number. */
-    static int[] numbers(String version) {
-        String core = core(version);
-        if (core == null) {
-            return null;
-        }
-        int dash = core.indexOf('-');
-        if (dash >= 0) {
-            core = core.substring(0, dash);
-        }
-        String[] parts = core.split("\\.", -1);
-        if (parts.length == 0 || parts.length > 3) {
-            return null;
-        }
-        int[] n = new int[3];
-        for (int i = 0; i < parts.length; i++) {
-            if (parts[i].isEmpty() || parts[i].length() > 9 || !parts[i].chars().allMatch(Character::isDigit)) {
-                return null;
-            }
-            n[i] = Integer.parseInt(parts[i]);
-        }
-        return n;
-    }
-
-    /** The version without spaces, a leading "v" and build metadata; null when blank. */
-    private static String core(String version) {
-        if (version == null) {
-            return null;
-        }
-        String v = version.trim();
-        if (v.startsWith("v") || v.startsWith("V")) {
-            v = v.substring(1);
-        }
-        int plus = v.indexOf('+');
-        if (plus >= 0) {
-            v = v.substring(0, plus);
-        }
-        return v.isEmpty() ? null : v;
-    }
-
-    /** The pre-release part ("beta.2" of "1.0.0-beta.2"), empty for a release. */
-    private static String pre(String version) {
-        String core = core(version);
-        int dash = core == null ? -1 : core.indexOf('-');
-        return dash < 0 ? "" : core.substring(dash + 1);
-    }
-
-    /** Semver pre-release order: dot-separated, numbers as numbers and before words, shorter first. */
-    private static int comparePre(String a, String b) {
-        String[] x = a.split("\\.");
-        String[] y = b.split("\\.");
-        for (int i = 0; i < Math.min(x.length, y.length); i++) {
-            boolean nx = !x[i].isEmpty() && x[i].length() <= 9 && x[i].chars().allMatch(Character::isDigit);
-            boolean ny = !y[i].isEmpty() && y[i].length() <= 9 && y[i].chars().allMatch(Character::isDigit);
-            int c;
-            if (nx && ny) {
-                c = Integer.compare(Integer.parseInt(x[i]), Integer.parseInt(y[i]));
-            } else if (nx != ny) {
-                c = nx ? -1 : 1;
-            } else {
-                c = x[i].compareTo(y[i]);
-            }
-            if (c != 0) {
-                return c;
-            }
-        }
-        return Integer.compare(x.length, y.length);
+        return Versions.compare(a, b);
     }
 }

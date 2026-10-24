@@ -11,7 +11,10 @@ import io.github.anilken.wynnlabs.coach.Today;
 import io.github.anilken.wynnlabs.core.Dirs;
 import io.github.anilken.wynnlabs.core.RuleEditor;
 import io.github.anilken.wynnlabs.core.Settings;
+import io.github.anilken.wynnlabs.core.UpdateAsset;
 import io.github.anilken.wynnlabs.core.UpdateCheck;
+import io.github.anilken.wynnlabs.core.UpdateDownload;
+import io.github.anilken.wynnlabs.core.UpdateInstall;
 import io.github.anilken.wynnlabs.core.Words;
 import io.github.anilken.wynnlabs.game.FixtureState;
 import io.github.anilken.wynnlabs.game.Fixtures;
@@ -66,7 +69,8 @@ public class LayoutMatrix implements FabricClientGameTest {
      * a rule picked (changed from its default) and a switch picked; compact shows each picked
      * row's own page.
      */
-    private static final String[] SETTING_EXTRAS = {"about-uptodate", "about-new", "about-failed", "rules-picked", "tips-picked"};
+    private static final String[] SETTING_EXTRAS = {"about-uptodate", "about-new", "about-failed", "about-downloading",
+            "about-ready", "about-install-failed", "rules-picked", "tips-picked"};
     /** The regions of decision 11's drawings, lit in the Havuzlar shots. */
     private static final String TCC = "The Canyon Colossus";
     private static final String COTL = "Canyon of the Lost";
@@ -198,6 +202,9 @@ public class LayoutMatrix implements FabricClientGameTest {
                     checkMenu(ctx, where, gui, report, scale == 0 || size[0] == 1920 && (scale == 2 || scale == 3) ? shots : null);
                     if (ONLY.isEmpty()) {
                         checkScreen(ctx, where + " guide", gui, report, () -> new GuideScreen("Jungle Fever", ""), null);
+                    }
+                    if (ONLY.isEmpty() || ONLY.equals("settings")) {
+                        updateScreens(ctx, where, gui, report);
                     }
                     ctx.setScreen(RoadmapScreen::new);
                     ctx.waitForScreen(RoadmapScreen.class);
@@ -964,6 +971,19 @@ public class LayoutMatrix implements FabricClientGameTest {
                 UpdateCheck.preview(new UpdateCheck.State(UpdateCheck.Status.FAILED, UpdateCheck.Reason.OFFLINE, "0.3.0",
                         null, null, 0, now - 60_000L));
             }
+            case "about-downloading", "about-ready", "about-install-failed" -> {
+                // the updater's states: a jar for this game, then downloading at 40 %, ready, or last run's install failed
+                screen.settings.previewSettings(0, 0, false);
+                UpdateAsset jar = new UpdateAsset("wynnlabs-fabric-0.4.0.jar", 4_320_605, "0".repeat(64),
+                        "https://github.com/anilken/Wynnlabs/releases/download/v0.4.0/wynnlabs-fabric-0.4.0.jar");
+                UpdateCheck.preview(new UpdateCheck.State(UpdateCheck.Status.NEWER, UpdateCheck.Reason.NONE, "0.3.0",
+                        "v0.4.0", page + "v0.4.0", now - 3 * 86_400_000L, now - 2 * 60_000L, "", jar));
+                switch (name) {
+                    case "about-downloading" -> UpdateDownload.preview(UpdateDownload.Phase.DOWNLOADING, 0.4, UpdateDownload.Failure.NONE, "v0.4.0");
+                    case "about-ready" -> UpdateDownload.preview(UpdateDownload.Phase.READY, 1, UpdateDownload.Failure.NONE, "v0.4.0");
+                    default -> UpdateInstall.preview("v0.4.0");
+                }
+            }
             case "rules-picked" -> {
                 RuleEditor.Rule tooLow = RuleEditor.RULES.get(0);
                 RuleEditor.step(tooLow, 1);
@@ -980,6 +1000,10 @@ public class LayoutMatrix implements FabricClientGameTest {
 
     /** After a settings view's shot: the rule it changed back to its default. */
     private static void settingsViewDone(int view) {
+        if (settingsName(view).startsWith("about-")) {
+            UpdateDownload.preview(UpdateDownload.Phase.IDLE, 0, UpdateDownload.Failure.NONE, null);
+            UpdateInstall.preview(null);
+        }
         if (settingsName(view).equals("rules-picked")) {
             RuleEditor.reset(RuleEditor.RULES.get(0));
         }
@@ -1032,6 +1056,37 @@ public class LayoutMatrix implements FabricClientGameTest {
             QuestBook.previewHidden(false);
             QuestBook.previewRescanning(false);
         });
+    }
+
+    /** The update window over a newer release: its summary, its changelog, and while downloading. */
+    private static void updateScreens(ClientGameTestContext ctx, String where, int[] gui, Map<String, List<String>> report) {
+        String notes = "## [v0.4.0](https://github.com/anilken/Wynnlabs/compare/v0.3.0...v0.4.0) (2026-10-23)\n\n### New Features\n\n"
+                + "* **roadmap:** more options per slot, with a Trade Market filter ([#66](https://github.com/anilken/Wynnlabs/pull/66))\n"
+                + "* **ui:** show where each gear slot's piece comes from ([#62](https://github.com/anilken/Wynnlabs/pull/62))\n\n"
+                + "### Bug Fixes\n\n* **quests:** finished quests are recognised right away ([#63](https://github.com/anilken/Wynnlabs/pull/63))\n";
+        ctx.runOnClient(mc -> UpdateCheck.preview(new UpdateCheck.State(UpdateCheck.Status.NEWER, UpdateCheck.Reason.NONE, "0.3.0",
+                "v0.4.0", "https://github.com/anilken/Wynnlabs/releases/tag/v0.4.0", System.currentTimeMillis() - 86_400_000L,
+                System.currentTimeMillis(), notes, new UpdateAsset("wynnlabs-fabric-0.4.0.jar", 4_320_605, "0".repeat(64),
+                        "https://github.com/anilken/Wynnlabs/releases/download/v0.4.0/wynnlabs-fabric-0.4.0.jar"))));
+        checkScreen(ctx, where + " update", gui, report, () -> new UpdateScreen(null, false), null);
+        updateShot(ctx, where, "update");
+        checkScreen(ctx, where + " update-changelog", gui, report, () -> new UpdateScreen(null, true), null);
+        updateShot(ctx, where, "update-changelog");
+        ctx.runOnClient(mc -> UpdateDownload.preview(UpdateDownload.Phase.DOWNLOADING, 0.4, UpdateDownload.Failure.NONE, "v0.4.0"));
+        checkScreen(ctx, where + " update-downloading", gui, report, () -> new UpdateScreen(null, false), null);
+        updateShot(ctx, where, "update-downloading");
+        ctx.runOnClient(mc -> {
+            UpdateDownload.preview(UpdateDownload.Phase.IDLE, 0, UpdateDownload.Failure.NONE, null);
+            UpdateCheck.reset();
+        });
+    }
+
+    /** One shot of the update window, at the smallest window on Auto. */
+    private static void updateShot(ClientGameTestContext ctx, String where, String name) {
+        if (where.startsWith("1280x720@auto")) {
+            ctx.takeScreenshot(TestScreenshotOptions.of(name).disableCounterPrefix()
+                    .withDestinationDir(Path.of(System.getProperty("wynnlabs.preview", "preview")).resolve("layout")));
+        }
     }
 
     private static void checkScreen(ClientGameTestContext ctx, String where, int[] gui, Map<String, List<String>> report,
