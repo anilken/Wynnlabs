@@ -79,11 +79,14 @@ public final class Locks {
         return tuning;
     }
 
-    /** Chooses these items for the character you play and saves them. */
+    /**
+     * Chooses these items for the character you play and saves them. A name may come twice (two
+     * of the same ring); {@link #resolve} keeps a second copy only where its slot takes two.
+     */
     public static void set(List<String> list) {
         List<String> clean = new ArrayList<>();
         for (String n : list) {
-            if (n != null && !n.isBlank() && !clean.contains(n)) {
+            if (n != null && !n.isBlank() && java.util.Collections.frequency(clean, n) < RINGS) {
                 clean.add(n);
             }
         }

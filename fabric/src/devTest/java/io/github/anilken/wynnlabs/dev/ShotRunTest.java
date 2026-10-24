@@ -181,11 +181,12 @@ class ShotRunTest {
         List<ShotRun.Shot> plan = ShotRun.plan(RAIL, NAMES, "all");
         List<String> names = plan.stream().map(s -> s.name() + "-" + (s.state() == null ? "main" : s.state())).toList();
         // the rail's order, each tab first as it opens, then its views
-        assertEquals(List.of("home-main", "home-slot-tip", "home-week-tip", "home-picker", "home-picker-weapon", "home-picker-tip",
-                "home-results", "home-plan", "home-plan-tip", "home-plan-source-tip", "home-saved"), names.subList(0, 11));
-        assertEquals("settings-main", names.get(11));
-        assertEquals("settings-data", names.get(19));
-        assertEquals("endgame-main", names.get(20));
+        assertEquals(List.of("home-main", "home-slot-tip", "home-week-tip", "home-picker", "home-picker-weapon",
+                "home-picker-import", "home-picker-tip", "home-results", "home-plan", "home-plan-tip", "home-plan-source-tip",
+                "home-saved"), names.subList(0, 12));
+        assertEquals("settings-main", names.get(12));
+        assertEquals("settings-data", names.get(20));
+        assertEquals("endgame-main", names.get(21));
         assertEquals("today-main", names.get(names.size() - 1));
         assertEquals(ShotRun.FIRST_WAIT, plan.get(0).ticks());
         // the same plan every time: the numbers are stable
@@ -231,8 +232,8 @@ class ShotRunTest {
         ShotRun run = new ShotRun(game, ShotRun.plan(RAIL, NAMES, "home"), 1, false);
         runToEnd(run, game);
         assertEquals(List.of("en-01-home-main.png", "en-02-home-slot-tip.png", "en-03-home-picker.png",
-                "en-04-home-picker-weapon.png", "en-05-home-picker-tip.png"), captured(game));
-        assertEquals(5, game.doneCount);
+                "en-04-home-picker-weapon.png", "en-05-home-picker-import.png", "en-06-home-picker-tip.png"), captured(game));
+        assertEquals(6, game.doneCount);
         assertEquals(6, run.skipped());
         // a skipped view is never grabbed
         assertTrue(only(game.log, "grab").stream().noneMatch(g -> g.contains("results") || g.contains("plan") || g.contains("saved")));

@@ -221,6 +221,22 @@ public class RoadmapLocksTest {
     }
 
     @Test
+    void twoOfTheSameRingStayTwo(@TempDir Path tmp) throws Exception {
+        // a WynnBuilder link can wear the same ring on both hands
+        FixtureState.load(shaman()).install("en");
+        Locks.rootOverride = tmp;
+        Locks.forget();
+        Locks.set(List.of("Morph-Emerald", "Morph-Emerald", "Morph-Emerald"));
+        assertEquals(List.of("Morph-Emerald", "Morph-Emerald"), Locks.names(), "two, never more");
+        List<ItemData> items = Locks.resolve(GameState.current(), Locks.names());
+        assertEquals(2, items.size(), "both hands");
+        Locks.clear();
+        Saver.flush();
+        Locks.forget();
+        Locks.rootOverride = null;
+    }
+
+    @Test
     void theChoiceIsSavedPerCharacter(@TempDir Path tmp) throws Exception {
         FixtureState.load(shaman()).install("en");
         Locks.rootOverride = tmp;
