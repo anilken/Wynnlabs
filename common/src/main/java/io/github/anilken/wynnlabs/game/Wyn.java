@@ -408,6 +408,14 @@ public final class Wyn {
         return guard(Feature.GEAR_DB, () -> Models.Gear.getGearInfoFromDisplayName(name), null);
     }
 
+    /** An ingredient's star count (0-3) by its name, or null when it is not one. */
+    static Integer ingredientTier(String name) {
+        return guard(Feature.GEAR_DB, () -> {
+            var info = Models.Ingredient.getIngredientInfoFromName(name);
+            return info == null ? null : info.tier();
+        }, null);
+    }
+
     /**
      * A piece's picture as Wynntils' gear data has it now (its item with today's model number),
      * or null when unknown. Wynntils' own stack: read it, never change it.

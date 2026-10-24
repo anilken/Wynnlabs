@@ -118,6 +118,11 @@ public final class WynntilsItems {
         return data(Wyn.gearByName(name));
     }
 
+    /** An ingredient's star count (0-3) by its name, or null when it is not one. */
+    public static Integer ingredientStars(String name) {
+        return Wyn.ingredientTier(name);
+    }
+
     /** What can come out of a gear box; empty when unknown. */
     public static List<ItemData> possibleGears(ItemView.Box box) {
         GearBoxItem b;
