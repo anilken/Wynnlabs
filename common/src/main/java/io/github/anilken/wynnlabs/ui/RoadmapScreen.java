@@ -94,6 +94,8 @@ public final class RoadmapScreen extends Screen {
     final DiscoveriesTab discoveries = new DiscoveriesTab(this);
     public final TreeTab tree = new TreeTab(this);
     final SearchTab search = new SearchTab(this);
+    /** The archetype list the archetype buttons open (home, tree, settings). */
+    final ArchetypePicker archPicker = new ArchetypePicker(this);
     /** The tabs by number (null for the Crafting and Endgame tabs, which are their own singletons). */
     private final MenuTab[] pages = {home, today, questsTab, deaths, bank, settings, ai, damage, discoveries, tree, null, null,
         search};
@@ -488,6 +490,7 @@ public final class RoadmapScreen extends Screen {
         if (tab == 0) {
             home.drawGoalList(g, mx, my);
         }
+        archPicker.draw(g, mx, my);
         // the build window over the home: what is under it neither shows a tooltip nor takes a click
         if (tab == 0 && BuildWindow.INSTANCE.isOpen()) {
             hits.clear();
@@ -684,6 +687,9 @@ public final class RoadmapScreen extends Screen {
             }
             return true;
         }
+        if (archPicker.keyPressed(event.key())) {
+            return true;
+        }
         // the build window first: Esc closes a rename or the window, never the menu
         if (tab == 0 && BuildWindow.INSTANCE.keyPressed(event.key())) {
             return true;
@@ -759,7 +765,7 @@ public final class RoadmapScreen extends Screen {
             }
             return BuildWindow.INSTANCE.mouseClicked(ex, ey, event.button());
         }
-        if (home.goalClicked(ex, ey)) {
+        if (home.goalClicked(ex, ey) || archPicker.clicked(ex, ey)) {
             return true;
         }
         if (closeRect != null && MenuPaint.in(ex, ey, closeRect)) {
@@ -920,6 +926,7 @@ public final class RoadmapScreen extends Screen {
         }
         x = MenuScale.at(x);
         y = MenuScale.at(y);
+        archPicker.close();                         // the page moves under it
         if (tab == 0 && BuildWindow.INSTANCE.isOpen()) {
             return BuildWindow.INSTANCE.mouseScrolled(x, y, v);
         }

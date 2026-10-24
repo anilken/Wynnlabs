@@ -237,10 +237,7 @@ public final class HomePage extends MenuTab {
             menu.flash(L.t(on ? "wynnlabs.home.powder_off" : "wynnlabs.home.powder_on"));
             menu.rebuildMap();                     // rebuilt in the background, picked up when ready
         } else if (c.startsWith("#qarch:")) {
-            TreePlanner.cycle();
-            String a = TreePlanner.chosen();
-            menu.flash(L.t("wynnlabs.home.archetype_set", a.isEmpty() ? L.t("wynnlabs.settings.archetype_off") : a));
-            menu.rebuildMap();                     // rebuilt in the background, picked up when ready
+            menu.archPicker.openAt(c);             // the list opens; a row picks the archetype
         } else if (c.startsWith("#qnear:")) {
             String[] f = c.substring(7).split(" ", 4);
             boolean ok = Waypoints.go(Integer.parseInt(f[0]), Integer.parseInt(f[1]), Integer.parseInt(f[2]), f[3]);
@@ -777,7 +774,7 @@ public final class HomePage extends MenuTab {
         }
         Kit.slate(g, x, y, w, HUD_H);
         classMedal(g, x + 6, y + 17, cls);
-        // the name line: class, archetype (click: the next), level
+        // the name line: class, archetype (click: the list), level
         String arch = TreePlanner.chosen();
         int tx = x + 36;
         // the name large and bright, with its shadow: ink() would dull the gold for paper

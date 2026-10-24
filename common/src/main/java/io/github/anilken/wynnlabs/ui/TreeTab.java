@@ -518,11 +518,7 @@ public final class TreeTab extends MenuTab {
     /** A click on the tab: the archetype chip or a page button. */
     private void treeClick(String action) {
         if (action.equals("#tree:arch")) {
-            TreePlanner.cycle();
-            String a = TreePlanner.chosen();
-            menu.flash(L.t("wynnlabs.home.archetype_set", a.isEmpty() ? L.t("wynnlabs.settings.archetype_off") : a));
-            treeFocus = "";                         // the view opens on the new plan's next pick
-            menu.rebuildMap();                      // the build follows the archetype: rebuilt in the background
+            menu.archPicker.openAt(action);         // the list opens; a row picks the archetype
         } else if (action.startsWith("#tree:page:")) {
             treeScroll = Integer.parseInt(action.substring(11)) * TreeLayout.ROWS * treeCell;
         }
