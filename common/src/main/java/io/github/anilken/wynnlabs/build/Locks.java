@@ -286,7 +286,8 @@ public final class Locks {
 
     /**
      * Why these pieces cannot be worn together at {@code level}: the skill points they need (their
-     * own bonuses counted) against the points earned by then, or a skill past 100. Null when they fit.
+     * own bonuses counted) against the points earned by then, or a skill past 100 even with the
+     * most the slots still open could give it. Null when they fit.
      */
     public record Problem(int need, int earned, SkillKind skill, int skillNeed) {
 
@@ -306,13 +307,43 @@ public final class Locks {
         int[] min = Build.minPoints(pieces);
         int earned = Math.max(0, (Math.min(level, 101) - 1) * 2);
         int used = 0;
+        int[] reach = null;
         for (SkillKind k : SkillKind.values()) {
             int v = min[k.ordinal()];
             used += v;
             if (v > 100) {
-                return new Problem(0, earned, k, v);
+                if (reach == null) {
+                    reach = openReach(items, level);
+                }
+                if (v - reach[k.ordinal()] > 100) {
+                    return new Problem(0, earned, k, v);
+                }
             }
         }
         return used > earned ? new Problem(used, earned, null, 0) : null;
     }
+
+    /**
+     * The most each skill could get from the armour and accessory slots none of {@code items}
+     * fills, among the gear your class can wear at {@code level} (and your tomes).
+     */
+    private static int[] openReach(Collection<ItemData> items, int level) {
+        String key = level + ":" + items.stream().map(ItemData::name).sorted().toList();
+        Object[] last = lastReach;
+        if (last != null && last[0].equals(key)) {
+            return (int[]) last[1];             // the pick view asks every frame
+        }
+        GameState state = GameState.current();
+        java.util.Set<Slot> taken = new java.util.HashSet<>();
+        items.forEach(i -> taken.add(kind(i)));
+        List<Damage.Piece> open = new ArrayList<>();
+        state.allGear().filter(i -> i.level() <= level && usable(i, state.classType()) && !taken.contains(kind(i)))
+                .forEach(i -> open.add(Damage.piece(i)));
+        int[] reach = Build.reach(open);
+        lastReach = new Object[] {key, reach};
+        return reach;
+    }
+
+    /** {key, reach} of the last {@link #openReach}. */
+    private static volatile Object[] lastReach;
 }
