@@ -120,6 +120,7 @@ public class JMenuPreview implements FabricClientGameTest {
                 shot(ctx, out, scroll == 0 ? "jmenu-settings-glow" : "jmenu-settings-glow-end");
             }
             craftShots(ctx, out);
+            CraftPreview.planShots(ctx, n -> shot(ctx, out, n));
             SearchPreview.shots(ctx, out);
             // the bag's advice words and where-to-sell icons, on the recorded inventory
             ctx.setScreen(BagPreview::new);

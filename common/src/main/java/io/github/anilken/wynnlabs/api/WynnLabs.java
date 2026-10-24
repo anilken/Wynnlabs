@@ -313,6 +313,12 @@ public final class WynnLabs {
             } catch (Throwable t) {
                 System.out.println("[WynnLabs] raid and lootrun hooks unavailable: " + t);
             }
+            // the crafting planner's XP per gather: the gains the game shows
+            try {
+                Wyn.listen(Wyn.Feature.PROFESSIONS, new WynntilsEvents.ProfessionGains());
+            } catch (Throwable t) {
+                System.out.println("[WynnLabs] profession xp hook unavailable: " + t);
+            }
         });
         // The local API only runs while "Local API for tools" is on; checked once a second, so
         // flipping the setting starts or stops it without a restart
