@@ -183,7 +183,7 @@ public final class WynnLabs {
         platform.onEndTick(Perf.tick("tick.DeathCoach", DeathCoach::onTick));
         platform.onEndTick(Perf.tick("tick.Today", Today::onTick));
         platform.onEndTick(Perf.tick("tick.WearCheck", WearCheck::onTick));
-        // once per game run, a few seconds into a world: a chat line when GitHub has a newer release
+        // once per game run, a few seconds into a world: a chat line (or the auto update) when GitHub has a newer release
         platform.onEndTick(Perf.tick("tick.UpdateCheck", UpdateCheck::onTick));
         platform.onEndTick(Perf.tick("tick.DiscoveryBook", DiscoveryBook::onTick));
         platform.onEndTick(Perf.tick("tick.Danger", Danger::onTick));
@@ -256,6 +256,8 @@ public final class WynnLabs {
         });
         // /av <item>: a hunt (client-side command, never sent to the server)
         platform.registerClientCommand(WynnLabs::huntCommand);
+        // /wynnlabs-update: the update window, from the chat line's [Update] (client-side, never sent to the server)
+        platform.registerClientCommand(io.github.anilken.wynnlabs.ui.UpdateScreen::command);
         // dev builds only: the developer tools (the /wynnlabs shots command); nothing in a release jar
         if (DevHooks.ON) {
             DevHooks.register(platform);

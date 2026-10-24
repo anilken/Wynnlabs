@@ -93,6 +93,23 @@ public final class NeoForgePlatform implements Platform {
         return ModList.get().getModContainerById(id).map(c -> c.getModInfo().getVersion().toString());
     }
 
+    /** The mod file's path when it is a plain jar (a dev run from classes: empty). */
+    @Override
+    public Optional<Path> modFile(String id) {
+        try {
+            var info = ModList.get().getModFileById(id);
+            if (info == null) {
+                return Optional.empty();
+            }
+            Path p = info.getFile().getFilePath();
+            return p != null && java.nio.file.Files.isRegularFile(p)
+                    && p.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".jar")
+                    ? Optional.of(p) : Optional.empty();
+        } catch (RuntimeException e) {
+            return Optional.empty();
+        }
+    }
+
     @Override
     public void onEndTick(Consumer<Minecraft> listener) {
         NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, e -> listener.accept(Minecraft.getInstance()));

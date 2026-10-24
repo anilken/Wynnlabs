@@ -59,6 +59,7 @@ public final class Settings {
         LABELS.put("miniQuests", "wynnlabs.setting.miniQuests");
         LABELS.put("questGuides", "wynnlabs.setting.questGuides");
         LABELS.put("updateCheck", "wynnlabs.setting.updateCheck");
+        LABELS.put("autoUpdate", "wynnlabs.setting.autoUpdate");
         LABELS.put("localApi", "wynnlabs.setting.localApi");
         LABELS.put("apiWrite", "wynnlabs.setting.apiWrite");
         LABELS.put("debug", "wynnlabs.setting.debug");
@@ -149,6 +150,8 @@ public final class Settings {
         DESC.put("questGuides", "wynnlabs.setting_desc.questGuides");
         CATEGORY.put("updateCheck", "data");
         DESC.put("updateCheck", "wynnlabs.setting_desc.updateCheck");
+        CATEGORY.put("autoUpdate", "data");
+        DESC.put("autoUpdate", "wynnlabs.setting_desc.autoUpdate");
         CATEGORY.put("localApi", "ai");
         DESC.put("localApi", "wynnlabs.setting_desc.localApi");
         CATEGORY.put("apiWrite", "ai");
@@ -305,7 +308,7 @@ public final class Settings {
 
     /** Switches that start off; everything else starts on. */
     private static final java.util.Set<String> OFF_BY_DEFAULT = java.util.Set.of("altAdvice", "groundGlowNormal", "priceApi", "miniQuests",
-            "localApi", "apiWrite", "debug", "dpsHud");
+            "localApi", "apiWrite", "debug", "dpsHud", "autoUpdate");
 
     public static boolean on(String key) {
         load();

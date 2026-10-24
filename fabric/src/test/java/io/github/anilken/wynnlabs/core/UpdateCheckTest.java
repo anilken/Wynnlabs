@@ -97,6 +97,10 @@ class UpdateCheckTest {
     @org.junit.jupiter.api.AfterEach
     void restore() {
         UpdateCheck.reset();
+        UpdateDownload.reset();
+        UpdatePrefs.reset();
+        UpdatePrefs.folder = () -> Dirs.config().resolve("updates");
+        UpdateDownload.starter = job -> { };
         Settings.use(new com.google.gson.JsonObject());
     }
 
@@ -156,5 +160,142 @@ class UpdateCheckTest {
         assertNull(UpdateCheck.parse("{\"tag_name\": \"v0.3.0\", \"html_url\": \"https://evil.example/x\"}"));
         assertNull(UpdateCheck.parse("{\"tag_name\": 3, \"html_url\": \"https://github.com/anilken/wynnlabs\"}"));
         assertNull(UpdateCheck.parse("{\"tag_name\": \"v0.3.0\", \"html_url\": \"https://github.com/a/b\", \"draft\": true}"));
+    }
+
+    // ---- the updater: notes, assets, the first join, the chat line, ignoring ----
+
+    private static final String WITH_ASSETS = """
+            {"tag_name": "v0.3.0", "html_url": "https://github.com/anilken/Wynnlabs/releases/tag/v0.3.0",
+             "draft": false, "prerelease": false, "body": "### Bug Fixes\\n\\n* one",
+             "assets": [
+               {"name": "wynnlabs-fabric-0.3.0.jar", "size": 4320605, "state": "uploaded",
+                "digest": "sha256:d4d3f04e5cb10bf4601652ca12cef4ab785d44d49a4f918af5c1c01cd126a5ad",
+                "browser_download_url": "https://github.com/anilken/Wynnlabs/releases/download/v0.3.0/wynnlabs-fabric-0.3.0.jar"},
+               {"name": "wynnlabs-neoforge-0.3.0.jar", "size": 4329012, "state": "uploaded",
+                "digest": "sha256:8ed4b3b425e7a8c7f986ba7c64a97e24d515eb7bbb6604905a6bb85cf2f144c4",
+                "browser_download_url": "https://github.com/anilken/Wynnlabs/releases/download/v0.3.0/wynnlabs-neoforge-0.3.0.jar"}
+             ]}
+            """;
+
+    @Test
+    void readsNotesAndAssetsAndPicksThisGamesJar() {
+        UpdateCheck.Release r = UpdateCheck.parse(WITH_ASSETS);
+        assertEquals("### Bug Fixes\n\n* one", r.notes());
+        assertEquals(2, r.assets().size());
+        assertNull(UpdateCheck.parse(WITH_ASSETS.replace("\"prerelease\": false", "\"prerelease\": true")));
+        fresh("0.2.0", true);
+        UpdateAsset.loader = () -> "neoforge";
+        UpdateAsset.minecraft = () -> "1.21.11";
+        try {
+            UpdateCheck.finish("0.2.0", 200, WITH_ASSETS, false, 1);
+            UpdateCheck.State s = UpdateCheck.state();
+            assertEquals("wynnlabs-neoforge-0.3.0.jar", s.asset().name());
+            assertEquals("### Bug Fixes\n\n* one", s.notes());
+        } finally {
+            UpdateAsset.loader = () -> io.github.anilken.wynnlabs.core.Platform.get().loaderName();
+        }
+    }
+
+    @Test
+    void theFirstJoinAsksOnlyWhenTheReminderOrAutoUpdateIsOn() {
+        com.google.gson.JsonObject both = new com.google.gson.JsonObject();
+        both.addProperty("updateCheck", false);
+        both.addProperty("autoUpdate", false);
+        int[] started = fresh("0.2.0", false);
+        Settings.use(both);
+        assertFalse(UpdateCheck.firstJoin(1));
+        assertEquals(0, started[0]);
+        both.addProperty("autoUpdate", true);
+        Settings.use(both);
+        assertTrue(UpdateCheck.firstJoin(2));
+        assertFalse(UpdateCheck.firstJoin(3), "once a run");
+        assertEquals(1, started[0]);
+    }
+
+    @Test
+    void autoUpdateDownloadsInsteadOfTheReminder(@org.junit.jupiter.api.io.TempDir java.nio.file.Path tmp) throws Exception {
+        fresh("0.2.0", true);
+        com.google.gson.JsonObject on = new com.google.gson.JsonObject();
+        on.addProperty("autoUpdate", true);
+        Settings.use(on);
+        UpdatePrefs.folder = () -> tmp;
+        UpdateAsset.loader = () -> "fabric";
+        UpdateAsset.minecraft = () -> "1.21.11";
+        java.nio.file.Path jar = java.nio.file.Files.writeString(tmp.resolve("wynnlabs.jar"), "old");
+        UpdateDownload.ownJar = () -> java.util.Optional.of(jar);
+        int[] downloads = {0};
+        UpdateDownload.starter = job -> downloads[0]++;
+        try {
+            UpdateCheck.finish("0.2.0", 200, WITH_ASSETS, true, 1);
+            assertEquals(1, downloads[0], "the download started");
+            assertEquals(UpdateDownload.Phase.DOWNLOADING, UpdateDownload.phase());
+            // ignored: neither a download nor a line
+            UpdateDownload.reset();
+            UpdatePrefs.ignore("v0.3.0");
+            UpdateCheck.finish("0.2.0", 200, WITH_ASSETS, true, 2);
+            assertEquals(1, downloads[0]);
+        } finally {
+            UpdateAsset.loader = () -> io.github.anilken.wynnlabs.core.Platform.get().loaderName();
+            UpdateDownload.ownJar = UpdateDownload::findOwnJar;
+        }
+    }
+
+    @Test
+    void ignoringAVersionKeepsLaterOnesAnnounced(@org.junit.jupiter.api.io.TempDir java.nio.file.Path tmp) {
+        UpdatePrefs.folder = () -> tmp;
+        UpdatePrefs.reset();
+        assertFalse(UpdatePrefs.silenced("v0.2.5"));
+        UpdatePrefs.ignore("v0.2.5");
+        UpdatePrefs.reset();                    // a new run reads the stored choice
+        assertTrue(UpdatePrefs.silenced("v0.2.5"));
+        assertFalse(UpdatePrefs.silenced("v0.2.6"));
+        UpdatePrefs.ignoreNow();
+        assertTrue(UpdatePrefs.silenced("v0.2.6"), "ignore now: everything, this run");
+    }
+
+    @Test
+    void theChatLineHasOneLinkThatUpdates() {
+        UpdateCheck.Release r = new UpdateCheck.Release("v0.3.0", "https://github.com/anilken/Wynnlabs/releases/tag/v0.3.0");
+        java.util.List<net.minecraft.network.chat.ClickEvent> clicks = new java.util.ArrayList<>();
+        UpdateCheck.line(r, "0.2.0").visit((style, text) -> {
+            if (style.getClickEvent() != null && !text.isEmpty()) {
+                clicks.add(style.getClickEvent());
+            }
+            return java.util.Optional.empty();
+        }, net.minecraft.network.chat.Style.EMPTY);
+        assertEquals(java.util.List.of(new net.minecraft.network.chat.ClickEvent.RunCommand("/wynnlabs-update")), clicks);
+    }
+
+    @Test
+    void updateInChatDownloadsAtOnceAndSaysSo(@org.junit.jupiter.api.io.TempDir java.nio.file.Path tmp) throws Exception {
+        fresh("0.2.0", true);
+        java.util.List<String> said = new java.util.ArrayList<>();
+        UpdateCheck.updateFromChat(c -> said.add(c.getString()));
+        assertEquals(java.util.List.of(L.c("wynnlabs.wear.prefix").getString() + L.t("wynnlabs.update.none_known")), said);
+
+        UpdateAsset.loader = () -> "fabric";
+        UpdateAsset.minecraft = () -> "1.21.11";
+        java.nio.file.Path jar = java.nio.file.Files.writeString(tmp.resolve("wynnlabs.jar"), "old");
+        UpdateDownload.ownJar = () -> java.util.Optional.of(jar);
+        int[] downloads = {0};
+        UpdateDownload.starter = job -> downloads[0]++;
+        try {
+            UpdateCheck.finish("0.2.0", 200, WITH_ASSETS, false, 1);
+            said.clear();
+            UpdateCheck.updateFromChat(c -> said.add(c.getString()));
+            assertEquals(1, downloads[0], "no window: the download started");
+            assertTrue(said.get(0).endsWith(L.t("wynnlabs.update.downloading", "v0.3.0")));
+            UpdateCheck.updateFromChat(c -> said.add(c.getString()));
+            assertEquals(1, downloads[0], "pressed again while it runs");
+
+            UpdateDownload.preview(UpdateDownload.Phase.READY, 1, UpdateDownload.Failure.NONE, "v0.3.0");
+            said.clear();
+            UpdateCheck.updateFromChat(c -> said.add(c.getString()));
+            assertTrue(said.get(0).endsWith(L.t("wynnlabs.update.downloaded", "v0.3.0")));
+            assertEquals(1, downloads[0]);
+        } finally {
+            UpdateAsset.loader = () -> io.github.anilken.wynnlabs.core.Platform.get().loaderName();
+            UpdateDownload.ownJar = UpdateDownload::findOwnJar;
+        }
     }
 }
