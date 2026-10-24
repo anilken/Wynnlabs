@@ -83,7 +83,7 @@ public class LayoutMatrix implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext ctx) {
         String only = System.getProperty("wynnlabs.previewOnly");
-        if (only != null && !only.equals("layout")) {
+        if (only != null && !only.equals("layout") && !only.equals("fill")) {
             return;
         }
         Path out = Path.of(System.getProperty("wynnlabs.preview", "preview"));
@@ -108,6 +108,10 @@ public class LayoutMatrix implements FabricClientGameTest {
             // the road map is built only when asked: as the panel's button would
             ctx.runOnClient(mc -> Roadmap.forceRefresh());
             ctx.waitFor(mc -> !Roadmap.cached().isEmpty() && !Roadmap.isBuilding(), 20 * 60);
+            if ("fill".equals(only)) {
+                fill(ctx, shots);
+                return;
+            }
             // something in every tab: the recorded quest book and bank, professions, deaths, found
             // discoveries; one quest started, a crafted relik, suggestions and sets
             ctx.runOnClient(mc -> {
@@ -237,6 +241,29 @@ public class LayoutMatrix implements FabricClientGameTest {
             if (n > 0) {
                 throw new AssertionError(n + " layout problems: see build/preview/layout-report.txt");
             }
+        }
+    }
+
+    /**
+     * -PpreviewOnly=fill: the menu at 80% of a 1920x1080 window, the game on scale 3 and the menu
+     * on 2, home and today, in one run.
+     */
+    private static void fill(ClientGameTestContext ctx, Path shots) throws Exception {
+        ctx.getInput().resizeWindow(1920, 1080);
+        ctx.runOnClient(mc -> {
+            Settings.setNumber("menuScale", 2);
+            Settings.setNumber("menuFill", 80);
+            mc.options.guiScale().set(3);
+            mc.resizeDisplay();
+        });
+        for (String name : new String[] {"home", "today"}) {
+            int tab = List.of(TAB_NAMES).indexOf(name);
+            ctx.setScreen(RoadmapScreen::new);
+            ctx.waitForScreen(RoadmapScreen.class);
+            ctx.runOnClient(mc -> set(mc.screen, "tab", tab));
+            ctx.waitTicks(5);
+            ctx.takeScreenshot(TestScreenshotOptions.of("fill80-" + name + "-1920x1080")
+                    .disableCounterPrefix().withDestinationDir(shots));
         }
     }
 
