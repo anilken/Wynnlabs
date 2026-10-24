@@ -267,11 +267,22 @@ final class HomeSlots extends HomePart {
         int frame = v.mark() == Mark.CHOSEN ? CHOSEN : v.gear() != null || v.mark() == Mark.GET ? UP : 0;
         slotBox(g, sx, sy, s, frame);
         LayoutCheck.part(g.pose(), sx - 1, sy - 1, s + 2, s + 2, "slot" + v.index(), "the " + v.label() + " slot");
-        // the corner badges: about a third of the slot (8 to 12px), a third of them outside its
-        // corner, so they mark the slot without covering the item
-        int d = Math.max(8, Math.min(12, s * 3 / 10));
-        int bx = badgeRight ? sx + s - d + d / 3 : sx - d / 3;
-        int by = sy - d / 3;
+        // the corner badges: in the compact menu about a third of the slot, a third of it outside
+        // the corner; elsewhere 11px, readable, sitting on the corner with only 3px over the frame,
+        // so neither covers the item
+        boolean compact = net.minecraft.client.Minecraft.getInstance().screen instanceof RoadmapScreen rs && rs.layout.compact();
+        int d;
+        int bx;
+        int by;
+        if (compact) {
+            d = Math.max(8, Math.min(12, s * 3 / 10));
+            bx = badgeRight ? sx + s - d + d / 3 : sx - d / 3;
+            by = sy - d / 3;
+        } else {
+            d = 11;
+            bx = badgeRight ? sx + s - 3 : sx - d + 3;
+            by = sy - d + 3;
+        }
         if (v.mark() == Mark.CHOSEN || v.mark() == Mark.DONE_CHOSEN) {
             // the lock badge on the corner away from the pill (the item's transparent corner may lie over its edge)
             Kit.seal(g, bx, by, d, d, CHOSEN);
