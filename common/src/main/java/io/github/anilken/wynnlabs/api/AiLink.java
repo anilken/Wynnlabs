@@ -43,7 +43,7 @@ public final class AiLink {
             new Endpoint("/characters", "every character seen, with class, level and goal", "wynnlabs.ai.ep_characters"),
             new Endpoint("/rules", "the rules behind the verdicts (POST merges, DELETE resets; needs writing on)", "wynnlabs.ai.ep_rules"),
             new Endpoint("/advice", "your own verdicts (POST {items:[{key,verdict,note}]}; needs writing on)", "wynnlabs.ai.ep_advice"),
-            new Endpoint("/compass", "point the compass and map pin: POST {x,y,z,label} or {points:[{x,y,z,label}]}, DELETE clears; needs writing on",
+            new Endpoint("/compass", "point the compass and map pin: POST {x,y,z,label} or {points:[{x,y,z,label}]} (one at a time; with keep:true all at once and lasting), DELETE clears (?keep=1 the lasting ones); needs writing on",
                     "wynnlabs.ai.ep_compass"));
 
     private AiLink() {}
