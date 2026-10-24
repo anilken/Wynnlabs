@@ -309,9 +309,14 @@ public final class Settings {
         return v == null ? fallback : v;
     }
 
-    /** Switches that start off; everything else starts on. */
-    private static final java.util.Set<String> OFF_BY_DEFAULT = java.util.Set.of("altAdvice", "groundGlowNormal", "priceApi", "miniQuests",
-            "localApi", "apiWrite", "debug", "dpsHud", "autoUpdate");
+    /**
+     * Switches that start off; everything else starts on. Past the second line: the chattier and
+     * busier extras, so a first run shows the mod's main work and the rest is a switch away.
+     */
+    private static final java.util.Set<String> OFF_BY_DEFAULT = java.util.Set.of("altAdvice", "groundGlowNormal", "priceApi",
+            "localApi", "apiWrite", "debug", "dpsHud", "autoUpdate",
+            "chatUpgrade", "coachToasts", "mobTrackSound", "groundBeam", "groundGlowOther", "hotbarBadges", "learning",
+            "powderHint", "boxPrices");
 
     public static boolean on(String key) {
         load();
