@@ -254,7 +254,7 @@ class UpdateCheckTest {
     }
 
     @Test
-    void theChatLineHasUpdateAndGitHub() {
+    void theChatLineHasOneLinkThatUpdates() {
         UpdateCheck.Release r = new UpdateCheck.Release("v0.3.0", "https://github.com/anilken/Wynnlabs/releases/tag/v0.3.0");
         java.util.List<net.minecraft.network.chat.ClickEvent> clicks = new java.util.ArrayList<>();
         UpdateCheck.line(r, "0.2.0").visit((style, text) -> {
@@ -263,10 +263,7 @@ class UpdateCheckTest {
             }
             return java.util.Optional.empty();
         }, net.minecraft.network.chat.Style.EMPTY);
-        assertEquals(3, clicks.size());
-        assertEquals(new net.minecraft.network.chat.ClickEvent.RunCommand("/wynnlabs-update"), clicks.get(0));
-        assertEquals(new net.minecraft.network.chat.ClickEvent.RunCommand("/wynnlabs-update details"), clicks.get(1));
-        assertTrue(clicks.get(2) instanceof net.minecraft.network.chat.ClickEvent.OpenUrl);
+        assertEquals(java.util.List.of(new net.minecraft.network.chat.ClickEvent.RunCommand("/wynnlabs-update")), clicks);
     }
 
     @Test

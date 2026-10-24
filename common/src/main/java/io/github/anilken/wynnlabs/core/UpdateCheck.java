@@ -306,35 +306,22 @@ public final class UpdateCheck {
     }
 
     /**
-     * "Wynn Labs ▸ A new version is out: v0.3.0 (you have v0.2.0) · [Update] · [Details] · [GitHub]":
-     * Update downloads at once ({@code /wynnlabs-update}, a client command), Details opens the
-     * update window ({@code /wynnlabs-update details}), GitHub the release page.
+     * "Wynn Labs ▸ You are running v0.2.0, but the latest version is v0.3.0. Update by clicking
+     * here.", as Wynntils says it: "here" downloads at once ({@code /wynnlabs-update}, a client
+     * command); the changes and the release page are on the About page.
      */
     static Component line(Release r, String mine) {
         String have = mine.startsWith("v") ? mine : "v" + mine;
-        Component update = L.c("wynnlabs.update.update_link").withStyle(s -> s
+        Component here = L.c("wynnlabs.update.update_link").withStyle(s -> s
                 .withColor(ChatFormatting.GREEN)
                 .withUnderlined(true)
+                .withBold(true)
                 .withClickEvent(new ClickEvent.RunCommand("/wynnlabs-update"))
                 .withHoverEvent(new HoverEvent.ShowText(L.c("wynnlabs.update.update_hover"))));
-        Component details = L.c("wynnlabs.update.details_link").withStyle(s -> s
-                .withColor(ChatFormatting.YELLOW)
-                .withUnderlined(true)
-                .withClickEvent(new ClickEvent.RunCommand("/wynnlabs-update details"))
-                .withHoverEvent(new HoverEvent.ShowText(L.c("wynnlabs.update.details_hover"))));
-        Component download = L.c("wynnlabs.update.download").withStyle(s -> s
-                .withColor(ChatFormatting.AQUA)
-                .withUnderlined(true)
-                .withClickEvent(new ClickEvent.OpenUrl(URI.create(r.url())))
-                .withHoverEvent(new HoverEvent.ShowText(L.c("wynnlabs.update.download_hover"))));
         return L.c("wynnlabs.wear.prefix").withStyle(ChatFormatting.GOLD)
-                .append(L.c("wynnlabs.update.newer", r.tag(), have).withStyle(ChatFormatting.YELLOW))
-                .append(Component.literal(" · ").withStyle(ChatFormatting.GRAY))
-                .append(update)
-                .append(Component.literal(" · ").withStyle(ChatFormatting.GRAY))
-                .append(details)
-                .append(Component.literal(" · ").withStyle(ChatFormatting.GRAY))
-                .append(download);
+                .append(L.c("wynnlabs.update.newer", have, r.tag()).withStyle(ChatFormatting.GREEN))
+                .append(here)
+                .append(L.c("wynnlabs.update.newer_end").withStyle(ChatFormatting.GREEN));
     }
 
     /**
