@@ -75,10 +75,11 @@ public class JMenuPreview implements FabricClientGameTest {
             ctx.waitTicks(3);
             shot(ctx, out, "jmenu-goals");
             ctx.runOnClient(mc -> flag(((RoadmapScreen) mc.screen).home, "goalOpen", false));
+            ArchetypePreview.shots(ctx, out);
             // every rail tab in the rail's order (jmenu-tab-<n>: the tab's number, not its place)
             Field railField = RoadmapScreen.class.getDeclaredField("RAIL");
             railField.setAccessible(true);
-            for (int t : (int[]) railField.get(null)) {
+            for (int t : java.util.Arrays.stream((int[][]) railField.get(null)).flatMapToInt(java.util.Arrays::stream).toArray()) {
                 ctx.runOnClient(mc -> set(mc.screen, "tab", t));
                 ctx.waitTicks(10);
                 shot(ctx, out, "jmenu-tab-" + t);
@@ -119,6 +120,7 @@ public class JMenuPreview implements FabricClientGameTest {
                 shot(ctx, out, scroll == 0 ? "jmenu-settings-glow" : "jmenu-settings-glow-end");
             }
             craftShots(ctx, out);
+            CraftPreview.planShots(ctx, n -> shot(ctx, out, n));
             SearchPreview.shots(ctx, out);
             // the bag's advice words and where-to-sell icons, on the recorded inventory
             ctx.setScreen(BagPreview::new);

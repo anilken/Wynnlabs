@@ -15,6 +15,7 @@ import com.wynntils.models.items.items.game.AspectItem;
 import com.wynntils.models.items.properties.NamedItemProperty;
 import com.wynntils.models.lootrun.event.LootrunBeaconSelectedEvent;
 import com.wynntils.models.lootrun.event.LootrunFinishedEvent;
+import com.wynntils.models.profession.event.ProfessionXpGainEvent;
 import com.wynntils.models.raid.event.RaidEndedEvent;
 import com.wynntils.models.raid.event.RaidStartedEvent;
 import com.wynntils.models.raid.raids.RaidKind;
@@ -24,6 +25,7 @@ import com.wynntils.models.spells.type.SpellFailureReason;
 import io.github.anilken.wynnlabs.advice.TooltipListener;
 import io.github.anilken.wynnlabs.coach.Coach;
 import io.github.anilken.wynnlabs.core.Perf;
+import io.github.anilken.wynnlabs.crafting.ProfessionXp;
 import io.github.anilken.wynnlabs.endgame.LootrunLog;
 import io.github.anilken.wynnlabs.endgame.RaidLog;
 import io.github.anilken.wynnlabs.model.RaidRun;
@@ -250,6 +252,19 @@ public final class WynntilsEvents {
                 });
             }
             return new RaidRun(kind.getRaidName(), kind.getAbbreviation(), completed, now, info.getTimeInRaid(), rooms);
+        }
+    }
+
+    /** Profession XP gains, for the crafting tab's planner ({@link ProfessionXp}). */
+    public static final class ProfessionGains {
+
+        @SubscribeEvent
+        public void onProfessionXp(ProfessionXpGainEvent e) {
+            String profession = Wyn.guard(Wyn.Feature.PROFESSIONS, () -> e.getProfession().name(), null);
+            double xp = Wyn.guard(Wyn.Feature.PROFESSIONS, () -> (double) e.getGainedXpRaw(), 0.0);
+            if (profession != null) {
+                hand("profession xp", () -> ProfessionXp.gained(profession, xp));
+            }
         }
     }
 

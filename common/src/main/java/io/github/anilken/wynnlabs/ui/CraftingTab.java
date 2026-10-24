@@ -87,7 +87,7 @@ public final class CraftingTab {
     boolean foldWhat;
     int subTab;
     boolean drawerOpen;
-    /** The calculator (0) or the suggestions (1). */
+    /** The calculator (0), the suggestions (1) or the profession planner (2). */
     int view;
     /** Suggestions as whole sets (0) or single pieces (1). */
     int suggestMode;
@@ -129,6 +129,7 @@ public final class CraftingTab {
     final CraftSuggestionsPanel suggestionsPanel = new CraftSuggestionsPanel(this);
     final CraftSetsPanel setsPanel = new CraftSetsPanel(this);
     final CraftSavedPanel savedPanel = new CraftSavedPanel(this);
+    final CraftPlanPanel planPanel = new CraftPlanPanel(this);
     private final CraftDropdowns dropdowns = new CraftDropdowns(this);
 
     private CraftingTab() {}
@@ -349,6 +350,13 @@ public final class CraftingTab {
         int top = y - scroll;
         int cw = w - 6;                             // room for the scroll bar
         int used;
+        if (view == 2) {
+            used = planPanel.drawPlan(g, x, top, cw, mx, my) + 4;
+            g.disableScissor();
+            scrollBar(g, x, y, w, h, used);
+            showTooltip(g, mx, my);
+            return;
+        }
         if (two) {
             int colW = (cw - 10) / 2;
             int left = recipePanel.drawRecipe(g, x, top, colW, mx, my);
@@ -378,18 +386,22 @@ public final class CraftingTab {
             used = sy - top;
         }
         g.disableScissor();
-        scrollMax = Math.max(0, used - h + 4);
-        scroll = Math.min(scroll, scrollMax);
-        if (scrollMax > 0) {
-            int trackH = h;
-            int knobH = Math.max(14, trackH * h / (used + 4));
-            int knobY = y + (trackH - knobH) * scroll / scrollMax;
-            g.fill(x + w - 3, y, x + w - 1, y + h, 0x30624E3C);
-            g.fill(x + w - 3, knobY, x + w - 1, knobY + knobH, Theme.WOOD);
-        }
+        scrollBar(g, x, y, w, h, used);
         savedPanel.drawSaved(g, frame, screenW, x, y, w, h, two, mx, my);
         dropdowns.drawDrop(g, mx, my, pt);
         showTooltip(g, mx, my);
+    }
+
+    /** The page's scroll limit for {@code used} pixels of content, and its bar when it scrolls. */
+    private void scrollBar(GuiGraphics g, int x, int y, int w, int h, int used) {
+        scrollMax = Math.max(0, used - h + 4);
+        scroll = Math.min(scroll, scrollMax);
+        if (scrollMax > 0) {
+            int knobH = Math.max(14, h * h / (used + 4));
+            int knobY = y + (h - knobH) * scroll / scrollMax;
+            g.fill(x + w - 3, y, x + w - 1, y + h, 0x30624E3C);
+            g.fill(x + w - 3, knobY, x + w - 1, knobY + knobH, Theme.WOOD);
+        }
     }
 
     Craft.Result result() {

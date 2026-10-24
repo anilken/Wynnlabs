@@ -583,6 +583,10 @@ public final class BankTab extends MenuTab {
                             .withStyle(sell ? ChatFormatting.RED : ChatFormatting.GREEN).withStyle(UiFont::bold))
                     .append(Component.literal(st.by() == null ? "" : L.t("wynnlabs.bank.tip_checked_by", AutoAdvice.nice(st.by())))
                             .withStyle(ChatFormatting.DARK_GRAY)));
+            // what the word means, then why this item got it (the note)
+            for (String l : Advice.wrap(Verdict.of(st.verdict()).meaning(), 40)) {
+                tip.add(Component.literal(l).withStyle(ChatFormatting.DARK_GRAY));
+            }
             String note = Vault.noteNow(st);
             if (note != null) {
                 for (String l : Advice.wrap(note, 40)) {

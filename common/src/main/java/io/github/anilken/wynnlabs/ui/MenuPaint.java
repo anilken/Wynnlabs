@@ -154,6 +154,11 @@ class MenuPaint {
     }
 
     void badge(GuiGraphics g, int tab, int x, int y, int size) {
+        badge(g, tab, x, y, size, 0);
+    }
+
+    /** {@code ink} not 0: no tile, the icon alone straight on paper in that one ink colour. */
+    void badge(GuiGraphics g, int tab, int x, int y, int size, int ink) {
         String icon;
         int bg;
         int fg;
@@ -171,6 +176,10 @@ class MenuPaint {
             case RoadmapScreen.TAB_ENDGAME -> { icon = "trophy"; bg = 0xFF40280C; fg = 0xFFFFD36B; }
             case RoadmapScreen.TAB_SEARCH -> { icon = "search"; bg = 0xFF2E2414; fg = 0xFFF2D59A; }
             default -> { icon = "settings"; bg = 0xFF24242E; fg = 0xFFB4B2A9; }
+        }
+        if (ink != 0) {
+            Art.icon(g, icon, x, y, size, ink);
+            return;
         }
         Art.iconTile(g, icon, x, y, size, bg, fg);
     }

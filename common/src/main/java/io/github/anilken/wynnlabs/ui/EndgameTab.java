@@ -11,7 +11,6 @@ import io.github.anilken.wynnlabs.model.WeeklyPool;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -250,13 +249,7 @@ public final class EndgameTab {
         if (tip == null || tip.isEmpty()) {
             return;
         }
-        int maxW = Math.max(160, Math.min(260, screenW / 2));
-        List<FormattedCharSequence> lines = new ArrayList<>();
-        for (Component c : tip) {
-            List<FormattedCharSequence> part = font.split(c, maxW);
-            lines.addAll(part.isEmpty() ? List.of(FormattedCharSequence.EMPTY) : part);
-        }
-        g.setTooltipForNextFrame(font, lines, mx, my);
+        Glossary.draw(g, font, tip, mx, my, screenW);
     }
 
     // =====================================================================================

@@ -267,11 +267,22 @@ final class HomeSlots extends HomePart {
         int frame = v.mark() == Mark.CHOSEN ? CHOSEN : v.gear() != null || v.mark() == Mark.GET ? UP : 0;
         slotBox(g, sx, sy, s, frame);
         LayoutCheck.part(g.pose(), sx - 1, sy - 1, s + 2, s + 2, "slot" + v.index(), "the " + v.label() + " slot");
+        // the compact menu's corner badges: about a third of the slot, a third of it outside the
+        // corner, so they mark the slot without covering the item; elsewhere as they always were
+        boolean compact = net.minecraft.client.Minecraft.getInstance().screen instanceof RoadmapScreen rs && rs.layout.compact();
+        int d = Math.max(8, Math.min(12, s * 3 / 10));
+        int cx = badgeRight ? sx + s - d + d / 3 : sx - d / 3;
+        int cy = sy - d / 3;
         if (v.mark() == Mark.CHOSEN || v.mark() == Mark.DONE_CHOSEN) {
             // the lock badge on the corner away from the pill (the item's transparent corner may lie over its edge)
-            int bx = badgeRight ? sx + s - 7 : sx - 3;
-            Kit.seal(g, bx, sy - 3, 10, 10, CHOSEN);
-            Art.icon(g, "lock", bx + 1, sy - 2, 8, CHOSEN_TEXT);
+            if (compact) {
+                Kit.seal(g, cx, cy, d, d, CHOSEN);
+                Art.icon(g, "lock", cx + 1, cy + 1, d - 2, CHOSEN_TEXT);
+            } else {
+                int bx = badgeRight ? sx + s - 7 : sx - 3;
+                Kit.seal(g, bx, sy - 3, 10, 10, CHOSEN);
+                Art.icon(g, "lock", bx + 1, sy - 2, 8, CHOSEN_TEXT);
+            }
         } else if (!show.isEmpty()) {
             // where the shown piece comes from, on the slot's outer top corner; a suggested piece
             // already in the bag or bank shows the bank (the lookups behind both are cached)
@@ -283,9 +294,14 @@ final class HomeSlots extends HomePart {
                     ? "building-bank" : BuildWindow.sourceIcon(name);
             // each kind of place its own colour, a light icon on it, so the kind reads at a glance
             int fill = Theme.sourceFill(icon);
-            int bx = badgeRight ? sx + s - 10 : sx - 5;
-            Kit.seal(g, bx, sy - 5, 15, 15, fill);
-            Art.icon(g, icon, bx + 2, sy - 3, 11, Theme.CREAM);
+            if (compact) {
+                Kit.seal(g, cx, cy, d, d, fill);
+                Art.icon(g, icon, cx + 2, cy + 2, d - 4, Theme.CREAM);
+            } else {
+                int bx = badgeRight ? sx + s - 10 : sx - 5;
+                Kit.seal(g, bx, sy - 5, 15, 15, fill);
+                Art.icon(g, icon, bx + 2, sy - 3, 11, Theme.CREAM);
+            }
         }
         int is = large ? 32 : 16;
         int o = (s - is) / 2;

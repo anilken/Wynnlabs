@@ -123,3 +123,5 @@ wynnlabs.road.trace_start_searched      after "Name LvN: " or as a note in the r
 wynnlabs.road.trace_start_wins          after "Name LvN: " or as a note in the road map trace
 wynnlabs.update.update_link  the "here" link inside the update line
 wynnlabs.update.newer_end  the end of the update line, after the link
+wynnlabs.next.bag  after "+12% · " on the home's Next line
+wynnlabs.next.bank  after "+12% · " on the home's Next line
