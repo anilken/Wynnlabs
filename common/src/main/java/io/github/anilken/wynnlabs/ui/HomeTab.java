@@ -21,6 +21,8 @@ import java.util.List;
  * the build bar under it; this week's raid pool, the aspects and the professions on the left; the
  * next quest, where to level, the bank and the nearest secret discovery on the right. A tile
  * opens its tab. Compact: the stand on the left and the tiles as rows beside it, as many as fit.
+ * Above it all the "Next" line ({@link HomeNext}); while a menu the mod reads is unopened, the
+ * "First steps" card ({@link HomeSteps}) stands in for the bank and discovery tiles.
  *
  * <p>{@link RoadmapScreen} keeps the band, the level buttons, the clicks and the tooltips: it
  * hands this frame's slots in ({@link In}) and takes the areas back through {@link Host}. Only
@@ -122,6 +124,8 @@ public final class HomeTab {
 
     private final HomeGearPanel gear = new HomeGearPanel(this);
     private final HomeTiles tiles = new HomeTiles();
+    private final HomeNext next = new HomeNext();
+    private final HomeSteps steps = new HomeSteps();
 
     private HomeTab() {}
 
@@ -157,17 +161,28 @@ public final class HomeTab {
         gear.slots.frame(font, large);
         gear.bars.frame(font, large);
         tiles.frame(font, large);
+        next.frame(font, large);
+        steps.frame(font, large);
         firstPill = null;
         long now = System.currentTimeMillis();
         tiles.refresh(now);
+        int gap = compact ? 6 : large ? 10 : 8;
+        // the one thing to do now, a slim line on top (none: the endgame with nothing left)
+        HomeNext.Pick pick = next.pick(in);
+        if (pick != null) {
+            int nh = next.height(compact);
+            next.draw(g, pick, host, x, y, w, nh, compact, mx, my);
+            y += nh + (compact ? 4 : gap - 2);
+            h -= nh + (compact ? 4 : gap - 2);
+        }
+        boolean firstSteps = FirstSteps.show();
         if (compact) {
             int lw = Math.max(118, Math.min(160, w * 36 / 100));
             int pw = w - lw - 6;
             gear.panel(g, in, host, x, y, pw, h, true, false, mx, my);
-            tiles.rows(g, in, host, x + pw + 6, y, lw, h, mx, my);
+            tiles.rows(g, in, host, x + pw + 6, y, lw, h, mx, my, firstSteps ? steps : null);
             return;
         }
-        int gap = large ? 10 : 8;
         // the sides give the gear panel room for its slots' names
         int side = large ? Math.max(170, Math.min(220, w * 24 / 100)) : Math.max(112, Math.min(140, (w - 2 * gap) * 24 / 100));
         int cw = w - 2 * side - 2 * gap;
@@ -180,6 +195,11 @@ public final class HomeTab {
         int rh = (h - 3 * gap) / 4;
         tiles.questTile(g, in, host, rx, y, side, rh, mx, my);
         tiles.grindTile(g, in, host, rx, y + rh + gap, side, rh, mx, my);
+        if (firstSteps) {
+            // the menus still to open, in the bank's and discovery's place until all are done
+            steps.draw(g, host, rx, y + 2 * (rh + gap), side, h - 2 * (rh + gap), mx, my);
+            return;
+        }
         tiles.bankTile(g, host, rx, y + 2 * (rh + gap), side, rh, mx, my);
         tiles.discoveryTile(g, host, rx, y + 3 * (rh + gap), side, h - 3 * (rh + gap), mx, my);
     }

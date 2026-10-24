@@ -284,6 +284,18 @@ public class LayoutMatrix implements FabricClientGameTest {
         ctx.runOnClient(mc -> set(mc.screen, "tab", 0));
         ctx.waitTicks(5);
         ctx.takeScreenshot(TestScreenshotOptions.of("fill80-compact-home-1920x1080").disableCounterPrefix().withDestinationDir(shots));
+        // the home with two of the first steps open: compact, standard and large
+        ctx.runOnClient(mc -> FirstSteps.preview = new boolean[] {true, false, true, false});
+        for (Object[] p : new Object[][] {{"fill80-compact-home-steps", 4}, {"fill80-home-steps", 2}, {"fill80-large-home-steps", 1}}) {
+            int scale = (Integer) p[1];
+            ctx.runOnClient(mc -> Settings.setNumber("menuScale", scale));
+            ctx.setScreen(RoadmapScreen::new);
+            ctx.waitForScreen(RoadmapScreen.class);
+            ctx.runOnClient(mc -> set(mc.screen, "tab", 0));
+            ctx.waitTicks(5);
+            ctx.takeScreenshot(TestScreenshotOptions.of(p[0] + "-1920x1080").disableCounterPrefix().withDestinationDir(shots));
+        }
+        ctx.runOnClient(mc -> FirstSteps.preview = null);
         ctx.runOnClient(mc -> Settings.setNumber("menuScale", 2));
     }
 
