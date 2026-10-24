@@ -44,6 +44,12 @@ public interface Platform {
     /** The version a mod declares, when it is loaded. */
     Optional<String> modVersion(String id);
 
+    /**
+     * The jar a mod was loaded from, when it is one plain {@code .jar} file (empty for a dev run
+     * from classes, a jar nested in another, or anything unknown). The updater replaces it.
+     */
+    Optional<Path> modFile(String id);
+
     /** Runs at the end of every client tick, in the order registered. */
     void onEndTick(Consumer<Minecraft> listener);
 

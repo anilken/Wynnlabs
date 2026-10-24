@@ -4,7 +4,6 @@ import io.github.anilken.wynnlabs.advice.MarketSlots;
 import io.github.anilken.wynnlabs.build.Setup;
 import io.github.anilken.wynnlabs.build.TreePlanner;
 import io.github.anilken.wynnlabs.core.L;
-import io.github.anilken.wynnlabs.core.Platform;
 import io.github.anilken.wynnlabs.core.RuleEditor;
 import io.github.anilken.wynnlabs.core.Rules;
 import io.github.anilken.wynnlabs.core.Settings;
@@ -329,7 +328,7 @@ final class SettingsTab extends MenuTab {
             "build", List.<String[]>of(
                     new String[] {"wynnlabs.settings.sec_tree", "menuAdvice", "autoTree", "learning", "manaMeter"}),
             "data", List.of(
-                    new String[] {"wynnlabs.settings.sec_online", "priceApi", "questGuides", "updateCheck"},
+                    new String[] {"wynnlabs.settings.sec_online", "priceApi", "questGuides", "updateCheck", "autoUpdate"},
                     new String[] {"wynnlabs.settings.sec_dev", "debug"}));
 
     private static boolean isToggle(SetRow r) {
@@ -995,119 +994,26 @@ final class SettingsTab extends MenuTab {
 
     // ---- settings: About ----
 
-    /** "v0.3.0" for "0.3.0"; "?" when unknown. */
-    private static String vName(String v) {
-        if (v == null || v.isBlank()) {
-            return "?";
-        }
-        return Character.isDigit(v.charAt(0)) ? "v" + v : v;
-    }
+    /** The update card, made on first use. */
+    private AboutUpdateCard updateCard;
 
-    private static String loaderLabel() {
-        try {
-            String l = Platform.get().loaderName();
-            return l.equals("neoforge") ? "NeoForge" : l.equals("fabric") ? "Fabric" : l;
-        } catch (Throwable e) {
-            return "?";
+    private AboutUpdateCard updateCard() {
+        if (updateCard == null) {
+            updateCard = new AboutUpdateCard(menu);
         }
+        return updateCard;
     }
 
     /**
-     * About: whether this is the newest Wynn Labs (up to date, a newer one out, or why it could not
-     * tell) with its button, the links (source, a bug report, the licence), the mod's version and
-     * loader, and which Wynntils features work.
+     * About: whether this is the newest Wynn Labs and what to do about it ({@link AboutUpdateCard}),
+     * the links (source, a bug report, the licence), the mod's version and loader, and which
+     * Wynntils features work.
      */
     private void drawAboutPage(GuiGraphics g, int x, int y, int w, int h, int mx, int my) {
         UpdateCheck.State s = UpdateCheck.state();
-        String mine = vName(s.own().isEmpty() ? UpdateCheck.version.get() : s.own());
-        String loader = loaderLabel();
-        String title;
-        String sub;
-        String icon;
-        int iconColour;
-        String button;
-        String action;
-        switch (s.status()) {
-            case UP_TO_DATE -> {
-                title = L.t("wynnlabs.about.uptodate_title");
-                sub = L.t("wynnlabs.about.uptodate_sub", mine, loader, ago(s.checkedAt()));
-                icon = "check";
-                iconColour = Theme.GOOD;
-                button = L.t("wynnlabs.about.check_again");
-                action = "#upd:check";
-            }
-            case NEWER -> {
-                title = L.t("wynnlabs.about.newer_title", s.latest());
-                sub = s.published() > 0 ? L.t("wynnlabs.about.newer_sub", mine, ago(s.published()))
-                        : L.t("wynnlabs.about.newer_sub_nodate", mine);
-                icon = "arrow-up";
-                iconColour = Theme.WARN;
-                button = L.t("wynnlabs.about.open_github");
-                action = "#upd:open";
-            }
-            case FAILED -> {
-                title = L.t("wynnlabs.about.failed_title");
-                sub = L.t(switch (s.reason()) {
-                    case OFFLINE -> "wynnlabs.about.reason_offline";
-                    case OFF -> "wynnlabs.about.reason_off";
-                    case DEV -> "wynnlabs.about.reason_dev";
-                    default -> "wynnlabs.about.reason_no_answer";
-                });
-                icon = "alert-triangle";
-                iconColour = Theme.BAD;
-                button = s.reason() == UpdateCheck.Reason.OFF ? L.t("wynnlabs.about.go_setting")
-                        : s.reason() == UpdateCheck.Reason.DEV ? null : L.t("wynnlabs.about.try_again");
-                action = s.reason() == UpdateCheck.Reason.OFF ? "#upd:setting" : "#upd:check";
-            }
-            case CHECKING -> {
-                title = L.t("wynnlabs.about.checking_title");
-                sub = L.t("wynnlabs.about.idle_sub", mine, loader);
-                icon = "refresh";
-                iconColour = Theme.INK_3;
-                button = null;
-                action = null;
-            }
-            default -> {
-                title = L.t("wynnlabs.about.idle_title");
-                sub = L.t("wynnlabs.about.idle_sub", mine, loader);
-                icon = "clock";
-                iconColour = Theme.INK_3;
-                button = L.t("wynnlabs.about.check_now");
-                action = "#upd:check";
-            }
-        }
-        boolean newer = s.status() == UpdateCheck.Status.NEWER;
-        int cardH = 40;
-        Kit.card(g, x, y, w, cardH, newer ? Theme.GOLD_DEEP : 0, newer);
-        if (newer) {
-            Kit.outline(g, x - 1, y - 1, w + 2, cardH + 2, Theme.GOLD_DEEP);
-        }
-        Art.icon(g, icon, x + 8, y + 9, 12, Theme.paperRgb(iconColour));
-        int tx = x + 26;
-        int bx = x + w - 8;
-        if (button != null) {
-            boolean linkOut = "#upd:open".equals(action);
-            int bw = font().width(button) + 14 + (linkOut ? 11 : 0);
-            bx -= bw;
-            int by = y + (cardH - 14) / 2;
-            boolean bh = mx >= bx && mx < bx + bw && my >= by && my < by + 14;
-            int st = newer ? Kit.ON : bh ? Kit.HOVER : Kit.REST;
-            Kit.button(g, bx, by, bw, 14, st);
-            if (linkOut) {
-                Art.icon(g, "arrow-up-right", bx + 6, by + 3, 8, Kit.buttonText(st));
-            }
-            g.drawString(font(), button, bx + 7 + (linkOut ? 11 : 0), by + 3, Kit.buttonText(st), st != Kit.ON);
-            menu.toggles.add(new Object[] {new int[] {bx, by, bw, 14}, action});
-            if (linkOut && s.url() != null) {
-                menu.hits.add(new MenuHit(bx, by, bw, 14, null, List.of(L.c("wynnlabs.about.link_tip", s.url())), null));
-            }
-        }
-        int room = bx - tx - 8;
-        ink(g, Component.literal(fit(title, room - 6)).withStyle(UiFont::bold), tx, y + 8, Theme.INK);
-        List<String> subLines = wrapText(sub, room, 2);
-        for (int i = 0; i < subLines.size(); i++) {
-            ink(g, subLines.get(i), tx, y + 20 + i * 9, Theme.INK_2);
-        }
+        String mine = UpdateScreen.vName(s.own().isEmpty() ? UpdateCheck.version.get() : s.own());
+        String loader = UpdateScreen.loaderLabel();
+        int cardH = updateCard().draw(g, x, y, w, mx, my);
         int cy = y + cardH + 8;
 
         // the links, each opened in the browser only after the game's "open this link?" prompt
@@ -1141,26 +1047,9 @@ final class SettingsTab extends MenuTab {
         }
     }
 
-    /** Opens a GitHub page in the browser after the game's "open this link?" prompt; anything else is refused. */
-    private void openLink(String url) {
-        if (url == null || !url.startsWith("https://github.com/")) {
-            return;
-        }
-        net.minecraft.client.gui.screens.ConfirmLinkScreen.confirmLinkNow(menu, java.net.URI.create(url), true);
-    }
-
-    /** The About page's buttons: check again, open the release, the setting, a link. */
+    /** The About page's buttons: the update card's, the setting, a link. */
     private void aboutClick(String id) {
         switch (id) {
-            case "#upd:check" -> {
-                if (!UpdateCheck.checkNow()) {
-                    UpdateCheck.State s = UpdateCheck.state();
-                    if (s.status() != UpdateCheck.Status.FAILED) {
-                        menu.flash(L.t("wynnlabs.about.wait"));
-                    }
-                }
-            }
-            case "#upd:open" -> openLink(UpdateCheck.state().url());
             case "#upd:setting" -> {
                 // Prices and data, the update check picked
                 for (int c = 0; c < SETTING_CATS.length; c++) {
@@ -1178,9 +1067,12 @@ final class SettingsTab extends MenuTab {
                 }
             }
             default -> {
+                if (updateCard().click(id) || !id.startsWith("#link:")) {
+                    return;
+                }
                 int i = Integer.parseInt(id.substring("#link:".length()));
                 if (i >= 0 && i < ABOUT_LINKS.length) {
-                    openLink(ABOUT_LINKS[i][1]);
+                    updateCard().openLink(ABOUT_LINKS[i][1]);
                 }
             }
         }

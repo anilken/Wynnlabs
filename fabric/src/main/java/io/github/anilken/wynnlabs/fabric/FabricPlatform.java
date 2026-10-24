@@ -53,6 +53,22 @@ public final class FabricPlatform implements Platform {
                 .map(c -> c.getMetadata().getVersion().getFriendlyString());
     }
 
+    /** The container's origin when it is one path that is a plain jar (dev runs and nested jars: empty). */
+    @Override
+    public Optional<Path> modFile(String id) {
+        return FabricLoader.getInstance().getModContainer(id).flatMap(c -> {
+            net.fabricmc.loader.api.metadata.ModOrigin o = c.getOrigin();
+            if (o.getKind() != net.fabricmc.loader.api.metadata.ModOrigin.Kind.PATH) {
+                return Optional.empty();
+            }
+            List<Path> jars = o.getPaths().stream()
+                    .filter(p -> java.nio.file.Files.isRegularFile(p)
+                            && p.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".jar"))
+                    .toList();
+            return jars.size() == 1 ? Optional.of(jars.get(0)) : Optional.<Path>empty();
+        });
+    }
+
     @Override
     public void onEndTick(Consumer<Minecraft> listener) {
         ClientTickEvents.END_CLIENT_TICK.register(listener::accept);
