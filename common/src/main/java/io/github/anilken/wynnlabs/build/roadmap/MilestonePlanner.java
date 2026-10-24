@@ -455,28 +455,31 @@ final class MilestonePlanner {
             java.util.Set<String> fixed, int level) {
         int earned = Math.max(0, (Math.min(level, 101) - 1) * 2);
         long rings = locked.stream().filter(i -> Locks.kind(i) == Slot.RING).count();
-        Map<ItemData, String> slotOf = new LinkedHashMap<>();
+        // by position in the list: two of the same ring are two entries
+        Map<Integer, String> slotOf = new LinkedHashMap<>();
         // the rings first into the hand that holds them already
-        for (ItemData info : locked) {
+        for (int i = 0; i < locked.size(); i++) {
+            ItemData info = locked.get(i);
             if (Locks.kind(info) == Slot.RING && baseline != null) {
                 for (String s : new String[] {"RING1", "RING2"}) {
                     Damage.Piece p = baseline.get(s);
                     if (!slotOf.containsValue(s) && p != null && p.name().equals(info.name())) {
-                        slotOf.put(info, s);
+                        slotOf.put(i, s);
                         break;
                     }
                 }
             }
         }
-        for (ItemData info : locked) {
-            if (slotOf.containsKey(info)) {
+        for (int i = 0; i < locked.size(); i++) {
+            ItemData info = locked.get(i);
+            if (slotOf.containsKey(i)) {
                 continue;
             }
             Slot k = Locks.kind(info);
             String s = k == Slot.WEAPON ? "WEAPON" : k == Slot.RING ? (slotOf.containsValue("RING1") ? "RING2" : "RING1")
                     : Build.slotOf(k, 0);
             if (s != null) {
-                slotOf.put(info, s);
+                slotOf.put(i, s);
             }
         }
         Map<String, Damage.Piece> start = baseline == null ? null : new LinkedHashMap<>(baseline);
@@ -484,7 +487,7 @@ final class MilestonePlanner {
         List<Object[]> made = new ArrayList<>();        // {info, build slot, row name}
         int ringRow = 0;
         for (var e : slotOf.entrySet()) {
-            ItemData info = e.getKey();
+            ItemData info = locked.get(e.getKey());
             String slot = e.getValue();
             fixed.add(slot);
             Slot k = Locks.kind(info);
