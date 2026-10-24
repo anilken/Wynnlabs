@@ -36,6 +36,19 @@ public final class BoxVerdict {
         public String routeText() {
             return route == null ? null : L.t("wynnlabs.box.route." + route);
         }
+
+        /** The chip's tooltip: the route when there is one, what the word means, and the note (why). */
+        public java.util.List<String> tipLines() {
+            java.util.List<String> out = new java.util.ArrayList<>();
+            if (route != null) {
+                out.add(routeText());
+            }
+            out.add(Verdict.valueOf(label.name()).meaning());
+            if (note != null && !note.isBlank()) {
+                out.add(note);
+            }
+            return out;
+        }
     }
 
     /** The verdict for a box, as the tooltip has it, for the player's class and level. */
