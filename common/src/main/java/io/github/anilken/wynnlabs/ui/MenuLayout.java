@@ -11,7 +11,7 @@ public record MenuLayout(Size size, int x, int y, int w, int h, int railW) {
     enum Size { COMPACT, STANDARD, LARGE }
 
     static final int RAIL = 100;
-    static final int RAIL_COMPACT = 28;
+    static final int RAIL_COMPACT = 34;
 
     public static MenuLayout of(int screenW, int screenH) {
         Size size = screenW < 560 || screenH < 300 ? Size.COMPACT

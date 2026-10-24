@@ -62,6 +62,8 @@ public class LayoutMatrix implements FabricClientGameTest {
         "discoveries", "tree", "craft", "endgame"};
     private static final int ENDGAME = 11;
     private static final int SETTINGS = 5;
+    private static final int TAB_AI = 6;
+    private static final int TAB_DISCOVERIES = 8;
     /** The settings tab's categories, in its order: each one is measured and shot. */
     private static final String[] SETTING_CATS = {"about", "look", "tips", "glow", "coach", "quests", "build", "rules", "data"};
     /**
@@ -108,10 +110,6 @@ public class LayoutMatrix implements FabricClientGameTest {
             // the road map is built only when asked: as the panel's button would
             ctx.runOnClient(mc -> Roadmap.forceRefresh());
             ctx.waitFor(mc -> !Roadmap.cached().isEmpty() && !Roadmap.isBuilding(), 20 * 60);
-            if ("fill".equals(only)) {
-                fill(ctx, shots);
-                return;
-            }
             // something in every tab: the recorded quest book and bank, professions, deaths, found
             // discoveries; one quest started, a crafted relik, suggestions and sets
             ctx.runOnClient(mc -> {
@@ -167,6 +165,10 @@ public class LayoutMatrix implements FabricClientGameTest {
                         "Depurinated Genome", "Exquisite Marsh Scale", "Gunkfueled Core");
                 set(mc.screen, "tab", 10);                 // the tab draws once: its ingredients load
             });
+            if ("fill".equals(only)) {
+                fill(ctx, shots);                          // the same data, the fill shots alone
+                return;
+            }
             ctx.waitTicks(10);
             ctx.runOnClient(mc -> {
                 CraftPreview.set(CraftingTab.INSTANCE, "view", 1);
@@ -246,7 +248,7 @@ public class LayoutMatrix implements FabricClientGameTest {
 
     /**
      * -PpreviewOnly=fill: the menu at 80% of a 1920x1080 window, the game on scale 3 and the menu
-     * on 2, home and today, in one run.
+     * on 2: the rail and its merged pages (home, three merged pages, the AI section) and the icon-only rail, in one run.
      */
     private static void fill(ClientGameTestContext ctx, Path shots) throws Exception {
         ctx.getInput().resizeWindow(1920, 1080);
@@ -256,15 +258,33 @@ public class LayoutMatrix implements FabricClientGameTest {
             mc.options.guiScale().set(3);
             mc.resizeDisplay();
         });
-        for (String name : new String[] {"home", "today"}) {
-            int tab = List.of(TAB_NAMES).indexOf(name);
+        // the home's cards read their data in the background: a few seconds before the first shot
+        ctx.setScreen(RoadmapScreen::new);
+        ctx.waitForScreen(RoadmapScreen.class);
+        ctx.waitTicks(20 * 5);
+        // the rail's pages: name, tab number
+        Object[][] plan = {
+            {"fill80-home", 0}, {"fill80-today-summary", 1}, {"fill80-today-deaths", 3},
+            {"fill80-quests-discoveries", TAB_DISCOVERIES}, {"fill80-settings-ai", TAB_AI}};
+        for (Object[] p : plan) {
+            if (!ONLY.isEmpty() && !((String) p[0]).contains(ONLY)) {
+                continue;                               // -PpreviewTab=home: only the shots that name it
+            }
+            int tab = (Integer) p[1];
             ctx.setScreen(RoadmapScreen::new);
             ctx.waitForScreen(RoadmapScreen.class);
             ctx.runOnClient(mc -> set(mc.screen, "tab", tab));
             ctx.waitTicks(5);
-            ctx.takeScreenshot(TestScreenshotOptions.of("fill80-" + name + "-1920x1080")
-                    .disableCounterPrefix().withDestinationDir(shots));
+            ctx.takeScreenshot(TestScreenshotOptions.of(p[0] + "-1920x1080").disableCounterPrefix().withDestinationDir(shots));
         }
+        // the icon-only rail: the menu at scale 4 is 480x270, under the compact size
+        ctx.runOnClient(mc -> Settings.setNumber("menuScale", 4));
+        ctx.setScreen(RoadmapScreen::new);
+        ctx.waitForScreen(RoadmapScreen.class);
+        ctx.runOnClient(mc -> set(mc.screen, "tab", 0));
+        ctx.waitTicks(5);
+        ctx.takeScreenshot(TestScreenshotOptions.of("fill80-compact-home-1920x1080").disableCounterPrefix().withDestinationDir(shots));
+        ctx.runOnClient(mc -> Settings.setNumber("menuScale", 2));
     }
 
     /**

@@ -130,6 +130,33 @@ final class Kit {
         g.fill(x + w - 3, y, x + w - 2, y + h, Theme.WOOD_HI);
     }
 
+    /**
+     * The rail's backdrop: {@link Theme#PLANK_B} with a faint ship's deck in it (kit/rail_wood,
+     * tone on tone), a little darker toward the page along its right side.
+     */
+    static void railPlain(GuiGraphics g, int x, int y, int w, int h, int railW) {
+        LayoutCheck.textArea(g.pose(), x, y, railW, h);
+        g.blitSprite(RenderPipelines.GUI_TEXTURED, sprite("rail_wood"), x, y, w, h);
+        for (int i = 0; i < 4; i++) {
+            g.fill(x + railW - 6 + i, y, x + railW - 5 + i, y + h, (0x10 + i * 0x0C) << 24 | (Theme.WOOD_EDGE & 0xFFFFFF));
+        }
+    }
+
+    /**
+     * A rail tab as a paper label (kit/tag*): cream with V-notched ends; hover a lighter paper;
+     * selected a gold-washed label with a gold edge and a brass strip on its left end.
+     */
+    static void paperTag(GuiGraphics g, int x, int y, int w, int h, boolean on, boolean hover) {
+        nine(g, on ? "tag_on" : hover ? "tag_hover" : "tag", x, y, w, h);
+    }
+
+    /** An engraved rule on the rail (kit/rail_rule), 2px tall. */
+    static void railRule(GuiGraphics g, int x, int y, int w) {
+        if (w > 0) {
+            g.blitSprite(RenderPipelines.GUI_TEXTURED, sprite("rail_rule"), x, y, w, 2);
+        }
+    }
+
     /** The parchment page: shadow, torn rim with its inner rule, grain and corner ornaments. */
     static void paper(GuiGraphics g, int x, int y, int w, int h) {
         LayoutCheck.textArea(g.pose(), x, y, w, h);                // the preview's layout check: text may sit here

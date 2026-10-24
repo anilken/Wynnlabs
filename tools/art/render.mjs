@@ -3,7 +3,9 @@
 //    any size; white, tinted in game, so one shape serves every colour
 //  - Tabler icons (MIT, https://tabler.io/icons), white, tinted in game
 // Textures are drawn at DENSITY pixels per GUI pixel, so they stay sharp at GUI scale 2.
-// Run: npm install && npm run render   (from tools/art)
+// Run: npm install && npm run render   (from tools/art); npm run icons for the icons alone.
+// The rail's sprites (kit/rail_wood, kit/rail_rule, kit/tag*) come from rail_sprites.py, not
+// from here: after a full render, run python rail_sprites.py from the repo root to put them back.
 import { Resvg } from '@resvg/resvg-js';
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -13,10 +15,24 @@ import { renderKit } from './kit.mjs';
 const here = dirname(fileURLToPath(import.meta.url));
 const out = join(here, '../../common/src/main/resources/assets/wynnlabs/textures/gui/sprites');
 const DENSITY = 2;
+// Icons come in two sizes: icon/ at 4 px per GUI px (64 px), sharp up to menu scale 4, and
+// icon_lo/ at 2 (32 px), whose thin strokes survive being drawn small; Art.icon picks the closer.
+const ICON_DENSITIES = { icon: 4, icon_lo: 2 };
 
-rmSync(out, { recursive: true, force: true });
-mkdirSync(join(out, 'shape'), { recursive: true });
-mkdirSync(join(out, 'icon'), { recursive: true });
+// "node render.mjs icons" (npm run icons) writes only icon/ and icon_lo/ and leaves the kit, the
+// shapes and the fonts alone; with no argument everything is rendered again from scratch.
+const ONLY_ICONS = process.argv[2] === 'icons';
+if (ONLY_ICONS) {
+  for (const dir of ['icon', 'icon_lo']) {
+    rmSync(join(out, dir), { recursive: true, force: true });
+    mkdirSync(join(out, dir), { recursive: true });
+  }
+} else {
+  rmSync(out, { recursive: true, force: true });
+  mkdirSync(join(out, 'shape'), { recursive: true });
+  mkdirSync(join(out, 'icon'), { recursive: true });
+  mkdirSync(join(out, 'icon_lo'), { recursive: true });
+}
 
 function png(svg, file, size) {
   const r = new Resvg(svg, { fitTo: { mode: 'width', value: size } });
@@ -29,6 +45,68 @@ function meta(file, gui, border) {
   writeFileSync(file + '.mcmeta', JSON.stringify({
     gui: { scaling: { type: 'nine_slice', width: gui, height: gui, border, stretch_inner: true } },
   }, null, 2) + '\n');
+}
+
+// Icons: Tabler outline names, rendered white at 16 GUI px.
+const ICONS = [
+  'home', 'sun', 'map-2', 'building-bank', 'skull', 'settings', 'world', 'clock', 'clock-hour-4',
+  'trending-up', 'x', 'gift', 'check', 'pick', 'coin', 'map-pin', 'diamond', 'bolt', 'arrow-up-right',
+  'wand', 'plus', 'minus', 'chevron-right', 'chevron-left', 'chevron-down', 'compass', 'star', 'alert-triangle', 'ticket',
+  'sword', 'shield', 'heart', 'flame', 'droplet', 'leaf', 'search', 'filter', 'list-check', 'target',
+  'trophy', 'route', 'bookmark', 'refresh', 'info-circle', 'lock', 'user', 'package', 'shopping-cart',
+  'arrow-up', 'arrow-down', 'player-play', 'eye', 'sparkles', 'tag', 'box', 'hierarchy', 'hammer',
+  'copy', 'clipboard', 'pencil', 'trash', 'arrows-horizontal', 'arrow-left', 'device-floppy',
+  'helmet', 'shirt', 'hanger', 'shoe', 'circle-dot', 'circles', 'trident', 'bow', 'crystal-ball', 'flask-2', 'script', 'meat',
+  // the build window: the balanced focus, Clear and Edit
+  'scale', 'eraser', 'edit',
+  // a plan's missing piece whose source is unknown
+  'question-mark',
+];
+
+/** The icons alone: icon/ and icon_lo/ (and the tree node shapes in both). */
+function renderIcons() {
+  const tabler = join(here, 'node_modules/@tabler/icons/icons/outline');
+  for (const name of ICONS) {
+    let svg = readFileSync(join(tabler, name + '.svg'), 'utf8')
+      .replace(/currentColor/g, '#fff')
+      .replace(/width="24"/, 'width="64"').replace(/height="24"/, 'height="64"');
+    for (const [dir, d] of Object.entries(ICON_DENSITIES)) {
+      png(svg, join(out, dir, name + '.png'), 16 * d);
+    }
+  }
+  // Filled Tabler icons, named "<name>-filled".
+  for (const name of ['star']) {
+    const svg = readFileSync(join(here, 'node_modules/@tabler/icons/icons/filled', name + '.svg'), 'utf8')
+      .replace(/currentColor/g, '#fff')
+      .replace(/width="24"/, 'width="64"').replace(/height="24"/, 'height="64"');
+    for (const [dir, d] of Object.entries(ICON_DENSITIES)) {
+      png(svg, join(out, dir, name + '-filled.png'), 16 * d);
+    }
+  }
+
+  // Ability tree nodes without the Wynncraft pack: a circle for abilities, a diamond for
+  // ultimates, each with a ring for the state; white, tinted in game.
+  const TREE = {
+    'tree-circle': '<circle cx="32" cy="32" r="30" fill="#fff"/>',
+    'tree-circle-ring': '<circle cx="32" cy="32" r="28.5" fill="none" stroke="#fff" stroke-width="6"/>',
+    'tree-diamond': '<polygon points="32,2 62,32 32,62 2,32" fill="#fff"/>',
+    'tree-diamond-ring': '<polygon points="32,5 59,32 32,59 5,32" fill="none" stroke="#fff" stroke-width="6" stroke-linejoin="round"/>',
+  };
+  for (const [name, body] of Object.entries(TREE)) {
+    png(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">${body}</svg>`,
+      join(out, 'icon', name + '.png'), 16 * DENSITY);
+    png(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">${body}</svg>`,
+      join(out, 'icon_lo', name + '.png'), 16 * DENSITY);
+  }
+
+  for (const dir of Object.keys(ICON_DENSITIES)) writeFileSync(join(out, dir, 'NOTICE.txt'),
+    'Icons from Tabler Icons (https://tabler.io/icons), MIT License, Copyright (c) 2020-2024 Paweł Kuna.\n');
+}
+
+if (ONLY_ICONS) {
+  renderIcons();
+  console.log(`rendered ${ICONS.length} icons into ${join(out, 'icon')} and ${join(out, 'icon_lo')}`);
+  process.exit(0);
 }
 
 // Rounded shapes: radius r (GUI px). The sprite is (2r + 2) GUI px square; its border is r.
@@ -49,51 +127,7 @@ for (const r of [2, 3, 4, 5, 6, 8]) {
   }
 }
 
-// Icons: Tabler outline names, rendered white at 16 GUI px.
-const ICONS = [
-  'home', 'sun', 'map-2', 'building-bank', 'skull', 'settings', 'world', 'clock', 'clock-hour-4',
-  'trending-up', 'x', 'gift', 'check', 'pick', 'coin', 'map-pin', 'diamond', 'bolt', 'arrow-up-right',
-  'wand', 'plus', 'minus', 'chevron-right', 'chevron-left', 'chevron-down', 'compass', 'star', 'alert-triangle', 'ticket',
-  'sword', 'shield', 'heart', 'flame', 'droplet', 'leaf', 'search', 'filter', 'list-check', 'target',
-  'trophy', 'route', 'bookmark', 'refresh', 'info-circle', 'lock', 'user', 'package', 'shopping-cart',
-  'arrow-up', 'arrow-down', 'player-play', 'eye', 'sparkles', 'tag', 'box', 'hierarchy', 'hammer',
-  'copy', 'clipboard', 'pencil', 'trash', 'arrows-horizontal', 'arrow-left', 'device-floppy',
-  'helmet', 'shirt', 'hanger', 'shoe', 'circle-dot', 'circles', 'trident', 'bow', 'crystal-ball', 'flask-2', 'script', 'meat',
-  // the build window: the balanced focus, Clear and Edit
-  'scale', 'eraser', 'edit',
-  // a plan's missing piece whose source is unknown
-  'question-mark',
-];
-const tabler = join(here, 'node_modules/@tabler/icons/icons/outline');
-for (const name of ICONS) {
-  let svg = readFileSync(join(tabler, name + '.svg'), 'utf8')
-    .replace(/currentColor/g, '#fff')
-    .replace(/width="24"/, 'width="64"').replace(/height="24"/, 'height="64"');
-  png(svg, join(out, 'icon', name + '.png'), 16 * DENSITY);
-}
-// Filled Tabler icons, named "<name>-filled".
-for (const name of ['star']) {
-  const svg = readFileSync(join(here, 'node_modules/@tabler/icons/icons/filled', name + '.svg'), 'utf8')
-    .replace(/currentColor/g, '#fff')
-    .replace(/width="24"/, 'width="64"').replace(/height="24"/, 'height="64"');
-  png(svg, join(out, 'icon', name + '-filled.png'), 16 * DENSITY);
-}
-
-// Ability tree nodes without the Wynncraft pack: a circle for abilities, a diamond for
-// ultimates, each with a ring for the state; white, tinted in game.
-const TREE = {
-  'tree-circle': '<circle cx="32" cy="32" r="30" fill="#fff"/>',
-  'tree-circle-ring': '<circle cx="32" cy="32" r="28.5" fill="none" stroke="#fff" stroke-width="6"/>',
-  'tree-diamond': '<polygon points="32,2 62,32 32,62 2,32" fill="#fff"/>',
-  'tree-diamond-ring': '<polygon points="32,5 59,32 32,59 5,32" fill="none" stroke="#fff" stroke-width="6" stroke-linejoin="round"/>',
-};
-for (const [name, body] of Object.entries(TREE)) {
-  png(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">${body}</svg>`,
-    join(out, 'icon', name + '.png'), 16 * DENSITY);
-}
-
-writeFileSync(join(out, 'icon', 'NOTICE.txt'),
-  'Icons from Tabler Icons (https://tabler.io/icons), MIT License, Copyright (c) 2020-2024 Paweł Kuna.\n');
+renderIcons();
 // The J menu's wood-and-parchment kit (kit.mjs).
 const kit = renderKit(out, DENSITY);
 
