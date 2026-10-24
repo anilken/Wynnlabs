@@ -1,6 +1,9 @@
 # build output and Gradle caches
 .gradle/
-build/
+/build/
+/common/build/
+/fabric/build/
+/neoforge/build/
 run/
 *.log
 
