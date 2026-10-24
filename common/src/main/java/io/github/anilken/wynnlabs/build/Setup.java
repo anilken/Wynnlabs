@@ -53,7 +53,7 @@ public final class Setup {
      * A character that leaned to no archetype yet (rules.tree.guess): once it does (an archetype
      * node bought, or Lv 10 reached), the archetype is set and the class profile follows it, as
      * for a new character. Returns the archetype set, or "" when nothing changed. Choosing an
-     * archetype yourself ends the guessing ({@link TreePlanner#cycle}).
+     * archetype yourself ends the guessing ({@link TreePlanner#choose}).
      */
     public static String reguess() {
         if (Rules.sub("tree", "guess", 0) <= 0 || !TreePlanner.chosen().isEmpty()) {

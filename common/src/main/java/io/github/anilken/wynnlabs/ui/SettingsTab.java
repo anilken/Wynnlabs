@@ -158,7 +158,7 @@ final class SettingsTab extends MenuTab {
                     Prices.setKey("");
                     menu.flash(L.t("wynnlabs.settings.key_removed"));
                 } else if ("#archetype".equals(t[1])) {
-                    TreePlanner.cycle();
+                    menu.archPicker.open((int[]) t[0]);
                 } else if ("#goal".equals(t[1])) {
                     Setup.cycleGoal();
                 } else {

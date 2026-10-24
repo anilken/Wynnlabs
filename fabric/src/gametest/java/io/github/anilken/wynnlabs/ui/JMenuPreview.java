@@ -75,6 +75,7 @@ public class JMenuPreview implements FabricClientGameTest {
             ctx.waitTicks(3);
             shot(ctx, out, "jmenu-goals");
             ctx.runOnClient(mc -> flag(((RoadmapScreen) mc.screen).home, "goalOpen", false));
+            ArchetypePreview.shots(ctx, out);
             // every rail tab in the rail's order (jmenu-tab-<n>: the tab's number, not its place)
             Field railField = RoadmapScreen.class.getDeclaredField("RAIL");
             railField.setAccessible(true);
