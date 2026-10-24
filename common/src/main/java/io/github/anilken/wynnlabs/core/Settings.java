@@ -44,6 +44,7 @@ public final class Settings {
         LABELS.put("autoTree", "wynnlabs.setting.autoTree");
         LABELS.put("learning", "wynnlabs.setting.learning");
         LABELS.put("manaMeter", "wynnlabs.setting.manaMeter");
+        LABELS.put("treeBonuses", "wynnlabs.setting.treeBonuses");
         LABELS.put("glowQuest", "wynnlabs.setting.glowQuest");
         LABELS.put("priceApi", "wynnlabs.setting.priceApi");
         LABELS.put("dangerWarn", "wynnlabs.setting.dangerWarn");
@@ -144,6 +145,8 @@ public final class Settings {
         DESC.put("learning", "wynnlabs.setting_desc.learning");
         CATEGORY.put("manaMeter", "build");
         DESC.put("manaMeter", "wynnlabs.setting_desc.manaMeter");
+        CATEGORY.put("treeBonuses", "build");
+        DESC.put("treeBonuses", "wynnlabs.setting_desc.treeBonuses");
         CATEGORY.put("priceApi", "data");
         DESC.put("priceApi", "wynnlabs.setting_desc.priceApi");
         CATEGORY.put("questGuides", "data");
