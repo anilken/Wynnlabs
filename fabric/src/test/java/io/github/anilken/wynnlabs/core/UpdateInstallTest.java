@@ -159,4 +159,20 @@ class UpdateInstallTest {
             UpdateInstall.hooks = t -> Runtime.getRuntime().addShutdownHook(t);
         }
     }
+
+    @Test
+    void theJarIsNamedForTheNewVersion() {
+        assertEquals("wynnlabs-fabric-0.2.5.jar", UpdateInstall.newName("wynnlabs-fabric-0.2.4.jar", "0.2.4", "v0.2.5"));
+        assertEquals("wynnlabs-neoforge-1.0.0.jar", UpdateInstall.newName("wynnlabs-neoforge-0.9.9.jar", "v0.9.9", "v1.0.0"));
+        assertNull(UpdateInstall.newName("my-mod.jar", "0.2.4", "v0.2.5"), "a name you chose stays");
+        assertNull(UpdateInstall.newName("wynnlabs-fabric-0.2.5.jar", "0.2.5", "v0.2.5"));
+    }
+
+    @Test
+    void afterAnInstallTheJarTakesItsNewName(@TempDir Path tmp) throws Exception {
+        Path jar = Files.writeString(tmp.resolve("wynnlabs-fabric-0.2.4.jar"), "new");
+        UpdateInstall.rename(new UpdateInstall.Plan(tmp.resolve("p"), "", jar, tmp, "v0.2.5", "wynnlabs-fabric-0.2.5.jar"));
+        assertFalse(Files.exists(jar));
+        assertEquals("new", Files.readString(tmp.resolve("wynnlabs-fabric-0.2.5.jar")));
+    }
 }

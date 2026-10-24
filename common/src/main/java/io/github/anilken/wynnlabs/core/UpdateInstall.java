@@ -31,8 +31,15 @@ public final class UpdateInstall {
     /** What the last install did: the release, whether it worked, why not, and when. */
     record Outcome(String tag, boolean ok, String reason, long time) {}
 
-    /** What the hook installs: the verified jar, its hash, the jar to replace, the release. */
-    record Plan(Path pending, String sha256, Path target, Path dir, String tag) {}
+    /**
+     * What the hook installs: the verified jar, its hash, the jar to replace, the release, and
+     * the name the jar takes afterwards ("wynnlabs-fabric-0.2.5.jar"; null: it keeps its name).
+     */
+    record Plan(Path pending, String sha256, Path target, Path dir, String tag, String rename) {
+        Plan(Path pending, String sha256, Path target, Path dir, String tag) {
+            this(pending, sha256, target, dir, tag, null);
+        }
+    }
 
     /** The two ways of putting the new bytes in place; tests make either one fail. */
     interface Writer {
@@ -99,7 +106,8 @@ public final class UpdateInstall {
             return false;
         }
         Path dir = UpdatePrefs.folder();
-        plan = new Plan(dir.resolve(UpdateDownload.PENDING), sha256, jar.get(), dir, tag);
+        plan = new Plan(dir.resolve(UpdateDownload.PENDING), sha256, jar.get(), dir, tag,
+                newName(jar.get().getFileName().toString(), version, tag));
         // the classes the hook uses are loaded now: later they would be read from the very jar it overwrites
         java.util.Objects.requireNonNull(new Outcome(tag, false, "", 0).tag());
         if (!hooked) {
@@ -116,8 +124,54 @@ public final class UpdateInstall {
 
     private static void onExit() {
         Plan p = plan;
-        if (p != null) {
-            install(p, writer);
+        if (p != null && install(p, writer).ok()) {
+            rename(p);
+        }
+    }
+
+    /**
+     * The jar's name with the new version in place of the old ("wynnlabs-fabric-0.2.4.jar" for
+     * v0.2.5 → "wynnlabs-fabric-0.2.5.jar"), or null when the name does not carry the old version
+     * (a jar you renamed keeps your name).
+     */
+    static String newName(String name, String mine, String tag) {
+        String now = tag.startsWith("v") ? tag.substring(1) : tag;
+        String old = mine.startsWith("v") ? mine.substring(1) : mine;
+        if (old.isEmpty() || now.equals(old) || !name.contains(old)) {
+            return null;
+        }
+        int at = name.lastIndexOf(old);
+        return name.substring(0, at) + now + name.substring(at + old.length());
+    }
+
+    /**
+     * After an install: the jar takes its new name. Windows keeps the running jar locked until the
+     * game has quit, so there a small command waits a few seconds and renames it then; elsewhere
+     * it is renamed at once. Nothing when a file of that name is already there.
+     */
+    static void rename(Plan p) {
+        if (p.rename() == null) {
+            return;
+        }
+        Path to = p.target().resolveSibling(p.rename());
+        if (Files.exists(to)) {
+            return;
+        }
+        try {
+            Files.move(p.target(), to);
+        } catch (IOException | RuntimeException locked) {
+            if (!System.getProperty("os.name", "").toLowerCase(Locale.ROOT).startsWith("windows")) {
+                return;
+            }
+            try {
+                new ProcessBuilder("cmd", "/c", "ping", "-n", "6", "127.0.0.1", ">nul", "&",
+                        "move", "/y", p.target().toString(), to.toString())
+                        .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                        .redirectError(ProcessBuilder.Redirect.DISCARD)
+                        .start();
+            } catch (IOException | RuntimeException e) {
+                System.out.println("[WynnLabs] update: the jar keeps its old name (" + e.getMessage() + ")");
+            }
         }
     }
 
