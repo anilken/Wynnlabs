@@ -820,6 +820,12 @@ final class SettingsTab extends MenuTab {
         while (desc.size() > 1 && cy + desc.size() * 10 + 4 + needBelow > floor) {
             desc = wrapText(rowDesc(r), pw, desc.size() - 1);
         }
+        String what = rowTitle(r) + "\n" + rowDesc(r);
+        if (Glossary.mentions(what)) {
+            // a game word in the name or the description (roll, reveal fee…): explained on hover
+            menu.hits.add(new MenuHit(px, cy - 13, pw, 13 + desc.size() * 10, null,
+                    List.of(Component.literal(rowTitle(r)).withStyle(ChatFormatting.WHITE), Glossary.grey(rowDesc(r))), null));
+        }
         for (String line : desc) {
             ink(g, line, px, cy, Theme.INK_2);
             cy += 10;

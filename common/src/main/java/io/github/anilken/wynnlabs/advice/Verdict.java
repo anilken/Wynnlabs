@@ -51,6 +51,17 @@ public enum Verdict {
         return L.t("wynnlabs.verdict." + name().toLowerCase(Locale.ROOT));
     }
 
+    /**
+     * What the verdict asks of you, in one short line for under it in a tooltip, led by the
+     * slot's short badge word when it differs from the full one ("ID: Its stats are hidden…").
+     */
+    public String meaning() {
+        String key = name().toLowerCase(Locale.ROOT);
+        String badge = L.t("wynnlabs.badge." + key);
+        String text = L.t("wynnlabs.verdict_tip." + key);
+        return badge.equals(label()) ? text : badge + ": " + text;
+    }
+
     /** Any spelling: enum name, old Turkish word (any case). Unknown or empty → null. */
     static Verdict parse(String token) {
         if (token == null || token.isBlank()) {

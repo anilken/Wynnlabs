@@ -21,7 +21,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -574,14 +573,8 @@ public final class RoadmapScreen extends Screen {
                 } else if (hit.stack() != null) {
                     g.setTooltipForNextFrame(font, hit.stack(), mx, my);
                 } else if (hit.tip() != null && !hit.tip().isEmpty()) {
-                    // long lines wrap instead of running across the screen
-                    int maxW = Math.max(160, Math.min(260, width / 2));
-                    List<FormattedCharSequence> lines = new ArrayList<>();
-                    for (Component c : hit.tip()) {
-                        List<FormattedCharSequence> part = font.split(c, maxW);
-                        lines.addAll(part.isEmpty() ? List.of(FormattedCharSequence.EMPTY) : part);
-                    }
-                    g.setTooltipForNextFrame(font, lines, mx, my);
+                    // long lines wrap, and the game words in it are explained under it
+                    Glossary.draw(g, font, hit.tip(), mx, my, width);
                 }
                 break;
             }
