@@ -324,6 +324,12 @@ public final class Settings {
         return v != null ? v : byDefault(key);
     }
 
+    /** Whether the player set this switch (it is in settings.json), on or off. */
+    public static boolean saved(String key) {
+        load();
+        return valuesNow.containsKey(key);
+    }
+
     /** What a switch is before the player touches it. */
     public static boolean byDefault(String key) {
         return !OFF_BY_DEFAULT.contains(key);

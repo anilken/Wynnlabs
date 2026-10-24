@@ -111,7 +111,12 @@ public final class Coach {
         double left = hp / rate;
         // in a place the danger check calls risky, warn earlier: more time to react (the cheap
         // checks first: the danger check walks every grind spot)
-        if (left > 4.5 || now - warnedAt < 4000) {
+        if (left > 4.5) {
+            return;
+        }
+        // in a raid: quiet, and not every few seconds (health drops fast there all the time)
+        boolean raid = Wyn.inRaid();
+        if (!SurvivalPace.due(now, warnedAt, raid)) {
             return;
         }
         double limit = Danger.riskHere(mc) >= 2 ? 4.5 : 3;
@@ -126,6 +131,9 @@ public final class Coach {
         warnText = potions <= 0 ? L.t("wynnlabs.coach.warn_no_potion", secs)
                 : slot >= 0 ? L.t("wynnlabs.coach.warn_potion_slot", secs, slot + 1)
                 : L.t("wynnlabs.coach.warn_potion_bag", secs);
+        if (!SurvivalPace.sound(raid)) {
+            return;
+        }
         try {
             mc.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
                     net.minecraft.sounds.SoundEvents.NOTE_BLOCK_BASS, 0.7f));
