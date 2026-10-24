@@ -185,6 +185,8 @@ public final class WynnLabs {
         platform.onEndTick(Perf.tick("tick.WearCheck", WearCheck::onTick));
         // once per game run, a few seconds into a world: a chat line (or the auto update) when GitHub has a newer release
         platform.onEndTick(Perf.tick("tick.UpdateCheck", UpdateCheck::onTick));
+        // once ever, a little later: whether to turn live prices on ([Yes] [No] in chat)
+        platform.onEndTick(Perf.tick("tick.PricePrompt", io.github.anilken.wynnlabs.market.PricePrompt::onTick));
         platform.onEndTick(Perf.tick("tick.DiscoveryBook", DiscoveryBook::onTick));
         platform.onEndTick(Perf.tick("tick.Danger", Danger::onTick));
         platform.onEndTick(Perf.tick("tick.SellSummary", SellSummary::onTick));
@@ -258,6 +260,8 @@ public final class WynnLabs {
         platform.registerClientCommand(WynnLabs::huntCommand);
         // /wynnlabs-update: the update window, from the chat line's [Update] (client-side, never sent to the server)
         platform.registerClientCommand(io.github.anilken.wynnlabs.ui.UpdateScreen::command);
+        // /wynnlabs-prices yes|no: the answer to the live prices question (client-side, never sent to the server)
+        platform.registerClientCommand(io.github.anilken.wynnlabs.market.PricePrompt::command);
         // dev builds only: the developer tools (the /wynnlabs shots command); nothing in a release jar
         if (DevHooks.ON) {
             DevHooks.register(platform);
