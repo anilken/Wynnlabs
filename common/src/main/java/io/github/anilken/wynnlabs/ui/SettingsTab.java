@@ -121,6 +121,8 @@ final class SettingsTab extends MenuTab {
                     settingsDetail = false;
                     keyBox.setFocused(false);
                     menu.setFocused(null);
+                } else if (id.startsWith("#sall:")) {
+                    SectionSwitches.flip(sectionKeys(settingRows(SETTING_CATS[settingsCat]), Integer.parseInt(id.substring(6))));
                 } else if (id.startsWith("#ssel:") || id.startsWith("#stog:") || id.startsWith("#sreset:")) {
                     settingsAction(id);
                 } else if ("#sback".equals(id)) {
@@ -618,7 +620,9 @@ final class SettingsTab extends MenuTab {
         for (int i = 0; i < rows.size(); i++) {
             SetRow r = rows.get(i);
             int rh = r.head() ? LIST_HEAD : LIST_ROW;
-            if (ry + rh > top && ry < bottomY) {
+            if (ry + rh > top && ry < bottomY && r.head()) {
+                drawListHead(g, r, sectionKeys(rows, i), i, ix, ry, iw, mx, rowMy);
+            } else if (ry + rh > top && ry < bottomY) {
                 drawListRow(g, r, i, i == pick, ix, ry, iw, rh, mx, rowMy, steppers);
             }
             ry += rh;
@@ -645,12 +649,43 @@ final class SettingsTab extends MenuTab {
         }
     }
 
-    private void drawListRow(GuiGraphics g, SetRow r, int i, boolean picked, int x, int y, int w, int h, int mx, int my,
-            boolean steppers) {
-        if (r.head()) {
-            section(g, L.t(r.id()), x + 2, y + 3, w - 4);
+    /** The switches under the section title at {@code head}, when it gets the "All off / All on" button. */
+    private List<String> sectionKeys(List<SetRow> rows, int head) {
+        List<String> keys = new ArrayList<>();
+        for (int j = head + 1; j < rows.size() && !rows.get(j).head(); j++) {
+            if (rows.get(j).kind().equals("switch")) {
+                keys.add(rows.get(j).id());
+            }
+        }
+        return SectionSwitches.keys(SETTING_CATS[settingsCat], keys);
+    }
+
+    /** A section title, and on its right the button that turns the section's switches all off or all on. */
+    private void drawListHead(GuiGraphics g, SetRow r, List<String> keys, int i, int x, int y, int w, int mx, int my) {
+        String title = L.t(r.id());
+        boolean anyOn = SectionSwitches.anyOn(keys);
+        String label = SectionSwitches.label(anyOn);
+        int bw = font().width(label) + 10;
+        if (keys.isEmpty() || w - bw - 4 < 40) {
+            section(g, title, x + 2, y + 3, w - 4);         // no button, or no room for one beside the title
             return;
         }
+        int bx = x + w - 2 - bw;
+        int by = y + 1;
+        boolean hover = mx >= bx && mx < bx + bw && my >= by && my < by + 12;
+        int state = hover ? Kit.HOVER : Kit.REST;
+        String cut = fit(title, bx - x - 16);
+        section(g, cut, x + 2, y + 3, bx - x - 6);
+        Kit.button(g, bx, by, bw, 12, state);
+        onWood(g, label, bx + 5, by + 2, state);
+        menu.toggles.add(new Object[] {new int[] {bx, by, bw, 12}, "#sall:" + i});
+        if (hover) {
+            rowTip(bx, by, bw, 12, label, SectionSwitches.tip(anyOn, title));
+        }
+    }
+
+    private void drawListRow(GuiGraphics g, SetRow r, int i, boolean picked, int x, int y, int w, int h, int mx, int my,
+            boolean steppers) {
         boolean hover = mx >= x && mx < x + w && my >= y && my < y + h;
         if (picked) {
             g.fill(x, y, x + w, y + h, Theme.SELECTED);
