@@ -126,7 +126,8 @@ final class CraftHeaderPanel extends CraftPanel {
     }
 
     int viewTabs(GuiGraphics g, int x, int y, int w, int mx, int my) {
-        String[][] tabs = {{"hammer", L.t("wynnlabs.craft.view_calc")}, {"star-filled", L.t("wynnlabs.craft.view_suggest")}};
+        String[][] tabs = {{"hammer", L.t("wynnlabs.craft.view_calc")}, {"star-filled", L.t("wynnlabs.craft.view_suggest")},
+            {"trending-up", L.t("wynnlabs.craft.view_plan")}};
         int tx = x;
         for (int i = 0; i < tabs.length; i++) {
             int bw = width(tabs[i][1]) + 24;
@@ -137,6 +138,9 @@ final class CraftHeaderPanel extends CraftPanel {
             wood(g, tabs[i][1], tx + 17, y + 3, Kit.buttonText(state), !on);
             int v = i;
             tab.acts.add(new Act(tx, y, bw, 14, () -> {
+                if (v == 2 || tab.view == 2) {
+                    tab.scroll = 0;                 // the planner scrolls on its own
+                }
                 tab.view = v;
                 tab.open = Drop.NONE;
                 if (v == 1) {

@@ -135,6 +135,15 @@ public final class Crafting {
         return v == null ? null : new CraftSearch.Price(Math.round(v), p.doubt() != null);
     }
 
+    /**
+     * A tier 1 material's price by its shown name ("Copper Gem"), from the prices already kept
+     * (nothing is asked for); null when there is none.
+     */
+    public static Long materialPrice(String shown) {
+        CraftSearch.Price p = price(shown + " T1");
+        return p == null ? null : p.emeralds();
+    }
+
     /** Prices for some names, read now, for a search on another thread. */
     public static Map<String, CraftSearch.Price> prices(Iterable<Ingredient> ingredients) {
         Map<String, CraftSearch.Price> out = new HashMap<>();
