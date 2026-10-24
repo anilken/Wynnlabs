@@ -185,10 +185,14 @@ final class ShotDriver {
         }
     }
 
+    /** A link WynnBuilder wrote (data 2.2.5.0): six pieces, a bow with powders, a tome, a level. */
+    private static final String IMPORT_LINK = "https://wynnbuilder.github.io/builder/#CZ0W9W5G000uQG0500m454+GhcXYfy-200k-Jn0";
+
     private boolean open(String what) {
         BuildWindow w = BuildWindow.INSTANCE;
         switch (what) {
             case "picker" -> w.openPick();
+            case "import" -> w.previewImport(IMPORT_LINK);
             case "results" -> {
                 Around.Result r = Around.result();
                 if (r == null) {

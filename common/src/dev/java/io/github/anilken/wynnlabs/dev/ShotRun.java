@@ -136,6 +136,7 @@ final class ShotRun {
                 out.add(shot(t, name, "week-tip", WAIT, List.of(), "week", List.of()));
                 out.add(shot(t, name, "picker", WAIT, List.of("open:picker"), null, List.of()));
                 out.add(shot(t, name, "picker-weapon", WAIT, List.of("open:picker", "click:type:1"), null, List.of()));
+                out.add(shot(t, name, "picker-import", WAIT, List.of("open:import"), null, List.of()));
                 out.add(shot(t, name, "picker-tip", WAIT, List.of("open:picker"), "pickrow", List.of()));
                 out.add(shot(t, name, "results", WAIT, List.of("open:results"), null, List.of("results")));
                 out.add(shot(t, name, "plan", WAIT, List.of("plan"), null, List.of("gear")));

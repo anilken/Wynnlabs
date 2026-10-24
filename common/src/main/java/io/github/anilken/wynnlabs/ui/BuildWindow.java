@@ -3,9 +3,11 @@ package io.github.anilken.wynnlabs.ui;
 import io.github.anilken.wynnlabs.build.Around;
 import io.github.anilken.wynnlabs.build.BuildSources;
 import io.github.anilken.wynnlabs.build.Damage;
+import io.github.anilken.wynnlabs.build.LinkImport;
 import io.github.anilken.wynnlabs.build.Locks;
 import io.github.anilken.wynnlabs.build.Plans;
 import io.github.anilken.wynnlabs.build.Tuning;
+import io.github.anilken.wynnlabs.build.WynnBuilderLink;
 import io.github.anilken.wynnlabs.build.roadmap.Roadmap;
 import io.github.anilken.wynnlabs.core.DevHooks;
 import io.github.anilken.wynnlabs.core.L;
@@ -76,6 +78,8 @@ public final class BuildWindow {
     private final BuildPickView pick = new BuildPickView(this, ui);
     private final BuildResultsView results = new BuildResultsView(this, ui);
     private final BuildSavedView saved = new BuildSavedView(this, ui);
+    /** "Import from WynnBuilder", made on first use. */
+    private BuildImportView imports;
 
     // ---- PICK ----
     List<ItemData> chosen = new ArrayList<>();
@@ -179,6 +183,13 @@ public final class BuildWindow {
         unseenGen = -1;
     }
 
+    BuildImportView imports() {
+        if (imports == null) {
+            imports = new BuildImportView(ui);
+        }
+        return imports;
+    }
+
     /** Tests and the preview: whether a result list is held. */
     boolean hasResults() {
         return result != null;
@@ -246,6 +257,9 @@ public final class BuildWindow {
 
     public void close() {
         open = false;
+        if (imports != null) {
+            imports.shown = null;
+        }
         renameId = null;
         focusSearch(false);
         if (rename != null) {
@@ -471,6 +485,18 @@ public final class BuildWindow {
                 Locks.setTuning(tuning);
                 awaitGen = Around.request(names(chosen), tuning, false);
                 search.setFocused(false);
+            }
+            case "wbImport" -> {
+                search.setFocused(false);
+                imports().read(lastHost);
+            }
+            case "wbCancel" -> imports().shown = null;
+            case "wbConfirm" -> {
+                chosen = new ArrayList<>(imports().take());
+                changed();
+                if (lastHost != null) {
+                    lastHost.flash(L.n("wynnlabs.import.done", chosen.size(), chosen.size()));
+                }
             }
             case "cancelRun" -> {
                 Around.cancel();
@@ -710,6 +736,17 @@ public final class BuildWindow {
         chosen = new ArrayList<>(Locks.resolve(GameState.current(), items));
         tuning = t;
         awaitGen = -1;
+        if (imports != null) {
+            imports.shown = null;
+        }
+    }
+
+    /** The preview: the picker with WynnBuilder's link {@code link} read, as after "Import from WynnBuilder". */
+    public void previewImport(String link) {
+        openPick();
+        BuildImportView v = imports();
+        WynnBuilderLink.Build b = WynnBuilderLink.decode(link);
+        v.shown = b == null ? null : LinkImport.of(GameState.current(), b);
     }
 
     /** The preview: the RESULTS view of {@code r}, card {@code pick}. */
