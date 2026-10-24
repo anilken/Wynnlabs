@@ -47,9 +47,15 @@ public final class Art {
         box(g, x, y, w, h, h / 2, fill, line);
     }
 
-    /** A Tabler icon (tools/art's list), tinted. */
+    /**
+     * A Tabler icon (tools/art's list), tinted. Drawn from the 64 px set when it lands larger than
+     * 45 screen pixels, else from the 32 px one, so it is neither blocky when big nor loses strokes
+     * when small.
+     */
     public static void icon(GuiGraphics g, String name, int x, int y, int size, int colour) {
-        g.blitSprite(RenderPipelines.GUI_TEXTURED, sprite("icon/" + name), x, y, size, size, colour);
+        double screen = size * g.pose().m00() * net.minecraft.client.Minecraft.getInstance().getWindow().getGuiScale();
+        String set = screen > 45 ? "icon/" : "icon_lo/";
+        g.blitSprite(RenderPipelines.GUI_TEXTURED, sprite(set + name), x, y, size, size, colour);
     }
 
     /** An icon on a rounded square of its own colour family, like the web mock-up. */

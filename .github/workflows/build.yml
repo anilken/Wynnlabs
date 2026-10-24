@@ -44,9 +44,10 @@ jobs:
           curl -fsSL -o "libs/wynntils-$ver-fabric+MC-1.21.11.jar" "$url"
 
       # Only the quick JUnit tests, Fabric only: no game is started and NeoForge is not set up.
-      # The slow upgrade-search tests, the jars and the other checks run locally.
+      # A pull request leaves out the few slower classes too (-PprTests, about a minute in all);
+      # a push to main runs them. The slow upgrade-search tests, the jars and the other checks run locally.
       - name: Tests
-        run: gradle :fabric:test -PquickTests -PnoEmbeddedKey -Penabled_platforms=fabric
+        run: gradle :fabric:test -PquickTests ${{ github.event_name == 'pull_request' && '-PprTests' || '' }} -PnoEmbeddedKey -Penabled_platforms=fabric
 
       - uses: actions/upload-artifact@v7
         if: failure()

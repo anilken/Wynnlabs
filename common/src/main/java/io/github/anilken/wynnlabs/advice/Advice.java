@@ -318,6 +318,7 @@ public final class Advice {
             tag = inBank ? L.t("wynnlabs.advice.tag_rule_bank") : L.t("wynnlabs.advice.tag_rule");
         }
         List<Component> out = new ArrayList<>();
+        List<Component> meaning = new ArrayList<>(2);
         // what keeps you from wearing it, first and loud: level, class, skill points, a quest
         if (gear != null && showAdvice) {
             var info = gear.data();
@@ -383,6 +384,12 @@ public final class Advice {
                 head.append(Component.literal(tag).withStyle(ChatFormatting.DARK_GRAY));
             }
             out.add(head);
+            // what the word (and the slot's badge) means, then why this item got it: the note
+            for (String line : wrap(e.verdict().meaning(), 38)) {
+                Component c = Component.literal(line).withStyle(ChatFormatting.DARK_GRAY);
+                meaning.add(c);
+                out.add(c);
+            }
             if (e.note() != null && !e.note().isBlank()) {
                 for (String line : wrap(e.note(), 38)) {
                     out.add(Component.literal(line).withStyle(ChatFormatting.GRAY));
@@ -481,7 +488,7 @@ public final class Advice {
         if (out.size() <= 5 || net.minecraft.client.Minecraft.getInstance().hasShiftDown()) {
             return out;
         }
-        // Short by default: each verdict with its first two note lines, the first downside (red),
+        // Short by default: each verdict with its meaning and its first two note lines, the first downside (red),
         // what a shop also wants, prices and the bank line; the rest behind Shift.
         List<Component> shortList = new ArrayList<>();
         String markerText = TooltipListener.marker();
@@ -495,7 +502,9 @@ public final class Advice {
             var colour = c.getStyle().getColor();
             boolean red = colour != null && colour.equals(net.minecraft.network.chat.TextColor.fromLegacyFormat(ChatFormatting.RED));
             boolean keep;
-            if (t.isEmpty()) {
+            if (meaning.contains(c)) {
+                keep = true;                    // the verdict's meaning stays with its head line
+            } else if (t.isEmpty()) {
                 keep = shortList.isEmpty() || !shortList.get(shortList.size() - 1).getString().isEmpty();
             } else if (t.contains(markerText) || t.startsWith(wornWord)) {
                 keep = true;
